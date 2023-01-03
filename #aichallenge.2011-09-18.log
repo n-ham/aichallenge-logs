@@ -1,0 +1,1126 @@
+2011-09-18T00:00:02  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-18T00:28:17  <ChrisH> McLeopold: yt?
+2011-09-18T00:49:02  *** eashoka <eashoka!708758f5@gateway/web/freenode/ip.112.135.88.245> has joined #aichallenge
+2011-09-18T00:49:03  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-09-18T00:50:29  <ChrisH> Is there anyone here who can help me figure out why my submission won't compile. It works for me locally, but not on the beta server and the error message the beta server reports isn't very helpful.
+2011-09-18T00:53:19  <eashoka> ChrishH : check for any class or some other dependency which is in ur platform but not in the bundle u submitted ...
+2011-09-18T00:53:51  <ChrisH> I already did.
+2011-09-18T00:55:22  <eashoka> eashoka : r using a tool like Ant to package or doing it manually ?
+2011-09-18T00:56:14  <ChrisH> I have submitted a very minimal bot just to verify the server will compile it, and it claimed to once but then failed in one game.
+2011-09-18T00:56:26  <ChrisH> A couple days ago I was on here and some of the organizers were discussing some discrepencies between the main server and the workers causing my bot to fail.
+2011-09-18T00:57:04  <ChrisH> eashoka: no, but I am using Go, which apparently is not well tested on the beta server.
+2011-09-18T00:57:06  <eashoka> eashoka : ah ok. what's the language u sued ?
+2011-09-18T00:57:16  <eashoka> ah ok.
+2011-09-18T00:57:36  <ChrisH> So I'm here to help work it out, but I must say I'm getting frustrated.
+2011-09-18T00:58:07  <ChrisH> I posted on the forum two days ago, but no response yet.
+2011-09-18T00:58:44  <ChrisH> IRC seems to be better when I can find someone, but even then ... not sure what more I can do.
+2011-09-18T00:59:11  <ChrisH> I have been told that the servers are running Go version r.60.
+2011-09-18T00:59:17  <ChrisH> And that's what I am using as well.
+2011-09-18T00:59:37  <ChrisH> My code runs properly when compiled on my machine and tested with the latest tools from Github.
+2011-09-18T00:59:54  <ChrisH> e.g. play_one_game.sh, etc.
+2011-09-18T01:00:18  <ChrisH> Any suggestions how I can move forward to help resolve whatever the problem is?
+2011-09-18T01:00:23  <eashoka> eashoka : there aren't many Go users I think. did u have a look at source code of Go framework classes ?
+2011-09-18T01:01:17  <ChrisH> True, gobang2 is the only other one listed on the beta server.
+2011-09-18T01:01:40  <ChrisH> I did have a look at the Go sample bot.
+2011-09-18T01:01:52  <ChrisH> I tried uploading it unchanged and it also failed to compile.
+2011-09-18T01:03:12  <ChrisH> It would really help if I could get the compile error messages, but all I see is: "Output file _go_.6 was not created." which doesn't really tell me much.
+2011-09-18T01:04:16  <eashoka> what is _go_.6 ?
+2011-09-18T01:06:36  <ChrisH> The file extension of .6 means it is a compiled version of a Go module targeted for an 64 bit x86 architecture.
+2011-09-18T01:06:47  <ChrisH> It's like a .o file for C or C++
+2011-09-18T01:10:39  <eashoka> just wondering. r u submitting a similar file with ur source code as well or u r submitting only the source code ?
+2011-09-18T01:11:57  <ChrisH> Only the source.
+2011-09-18T01:12:34  <ChrisH> I'm looking through the worker/compiler.py code now to see if I can figure out how the server runs the Go compiler.
+2011-09-18T01:13:58  <eashoka> Chrish : g8, I think that's a promising way forward. If that fails too (hope not :-) ), u can always try with another language to be familiar with the competition until this issue get eventually resolved.
+2011-09-18T01:14:59  <ChrisH> Well, I can always work on my bot locally as well, but I don't want to sink too much time into doing it in Go if the language won't really be supported.
+2011-09-18T01:21:04  <ChrisH> eashoka: I'm simulating the same compiler commands that the server uses and starting to get an idea of what's going on.
+2011-09-18T01:23:39  <eashoka> ChrisH : glad to hear!
+2011-09-18T01:23:55  *** Chris_0076 <Chris_0076!~Chris_007@adsl-98-66-199-132.asm.bellsouth.net> has quit IRC (Remote host closed the connection)
+2011-09-18T01:24:10  <ChrisH> Ok, I see the problem.
+2011-09-18T01:25:52  <ChrisH> I have my code split into multiple files (lexer.go, parser.go, map.go, MyBot.go, etc.) and the code in worker/compile.py doesn't handle that properly for Go.
+2011-09-18T01:26:09  *** Chris_0076 <Chris_0076!~Chris_007@adsl-98-66-199-132.asm.bellsouth.net> has joined #aichallenge
+2011-09-18T01:26:49  <ChrisH> So I have two choices, put all my code in one big source file or get compile.py updated to allow multiple go sources for one bot.
+2011-09-18T01:27:12  <ChrisH> Any idea if I can get compile.py patched?
+2011-09-18T01:30:10  *** eashoka <eashoka!708758f5@gateway/web/freenode/ip.112.135.88.245> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T01:30:30  <antimatroid> ChrisH: talk to McLeopold I rekon
+2011-09-18T01:30:44  <antimatroid> @later tell Chris H use this
+2011-09-18T01:30:44  <contestbot> antimatroid: OK
+2011-09-18T01:30:56  <antimatroid> oh, he's even in the channel
+2011-09-18T01:31:01  <ChrisH> antimatroid: ok
+2011-09-18T01:32:32  <ChrisH> McLeopold: I have taken a look at the latest worker/compiler.py code and I know why my Go code won't compile on the server and I also have a suggestion for an improvement to compile.py that would fix the problem. Are you interested?
+2011-09-18T01:33:34  <antimatroid> ChrisH: he might not actually be here, is there much of a change to the file? you could submit a pull request on github if you know how (i'm not very knowledgeable with github)
+2011-09-18T01:33:48  <antimatroid> then someone should be able to just take a look at the changes and let it come through
+2011-09-18T01:33:59  <ChrisH> I already did a pull before browsing the code.
+2011-09-18T01:34:34  <antimatroid> yeah, i think a pull request let's you upload changes to go through once someone with privileges allows it
+2011-09-18T01:34:43  <antimatroid> (I am not good with github :))
+2011-09-18T01:35:11  <ChrisH> hmmm, I understand pull to retrieve the latest changes from the server (I'm not great at git either).
+2011-09-18T01:36:13  <ChrisH> I can do some reading though, I'm sure I can figure it out given a little time.
+2011-09-18T01:54:46  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2011-09-18T01:56:23  *** eashoka <eashoka!70875bfd@gateway/web/freenode/ip.112.135.91.253> has joined #aichallenge
+2011-09-18T01:58:36  <ChrisH> Well, now I'm not so sure that I have this figured out.
+2011-09-18T02:00:35  <ChrisH> I tried merging all my code into a single MyBot.go source file and submit it, but the server still fails to compile it. In addition I just noticed a part of worker/compiler.py that seems to handle the muliple source file situation for Go properly. So I'm back to being stumped and wishing I could see more information about the errors the compiler is producing.
+2011-09-18T02:13:19  <ChrisH> McLeopold: I did some further testing. I ran compiler.py on my machine with both a single source file and with multiple source files and both worked correctly, resulting in a fully functional bot that works with play_one_game.sh, so I can only assume that the problem is a difference in the Go environment on my machine and on the servers. I will need help from the organizers to figure that out.
+2011-09-18T02:24:56  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-09-18T02:26:49  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-18T02:28:53  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 276 seconds)
+2011-09-18T03:48:52  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has joined #aichallenge
+2011-09-18T04:37:17  <mleise> McLeopold: Do you use Eclipse + PyDev ?
+2011-09-18T04:45:18  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-09-18T04:55:18  <antimatroid> @beta
+2011-09-18T04:55:19  <contestbot> antimatroid: beta could be http://aichallengebeta.hypertriangle.com/.
+2011-09-18T05:01:09  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-18T05:16:35  *** berak <berak!~chatzilla@89.204.137.193> has joined #aichallenge
+2011-09-18T05:21:39  *** cody__ <cody__!b4972a43@gateway/web/freenode/ip.180.151.42.67> has joined #aichallenge
+2011-09-18T05:22:50  *** gobang <gobang!~gobang@89.204.137.193> has joined #aichallenge
+2011-09-18T05:45:55  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T05:50:36  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has joined #aichallenge
+2011-09-18T05:53:32  <mleise> antimatroid: still there?
+2011-09-18T05:54:00  *** berak <berak!~chatzilla@89.204.137.193> has quit IRC (Read error: Connection reset by peer)
+2011-09-18T05:54:00  *** gobang <gobang!~gobang@89.204.137.193> has quit IRC (Read error: Connection reset by peer)
+2011-09-18T05:56:04  *** gobang <gobang!~gobang@89.204.153.229> has joined #aichallenge
+2011-09-18T06:05:44  <antimatroid> mleise: yeah
+2011-09-18T06:06:18  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-18T06:24:33  *** arlequ1 <arlequ1!58aff739@gateway/web/freenode/ip.88.175.247.57> has joined #aichallenge
+2011-09-18T06:36:35  <mleise> antimatroid: I added an issue up for discussion about adding some Eclipse projects to the source repo. I know it is unusual, but may be handy to get a quick start on the project.
+2011-09-18T06:36:58  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T06:38:32  *** cody__ <cody__!b4972a43@gateway/web/freenode/ip.180.151.42.67> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T06:53:15  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has quit IRC (Ping timeout: 260 seconds)
+2011-09-18T06:54:40  *** onensora <onensora!~c@546B4161.cm-12-4b.dynamic.ziggo.nl> has joined #aichallenge
+2011-09-18T07:03:00  *** onensora <onensora!~c@546B4161.cm-12-4b.dynamic.ziggo.nl> has quit IRC (Ping timeout: 240 seconds)
+2011-09-18T07:04:38  *** sir_macelon <sir_macelon!4e08f863@gateway/web/freenode/ip.78.8.248.99> has joined #aichallenge
+2011-09-18T07:04:46  <sir_macelon> hi
+2011-09-18T07:05:14  <eashoka> sir_macelon : hi
+2011-09-18T07:05:49  <sir_macelon> eashoka: hi, what's up?
+2011-09-18T07:06:14  <sir_macelon> see, you're leading now, congrats :)
+2011-09-18T07:06:25  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has joined #aichallenge
+2011-09-18T07:09:02  <eashoka> sir_macelon : Tx. but it's a temporary effect of the 255 cut off limit I guess :-)
+2011-09-18T07:09:53  <sir_macelon> eashoka: I guess so, but anyway :)
+2011-09-18T07:10:09  <eashoka> hopefully the real thing would start from next week :-)
+2011-09-18T07:11:54  <sir_macelon> hopefully, cause during last month I did almost nothing with my bot, been on holidays etc.
+2011-09-18T07:13:06  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has quit IRC ()
+2011-09-18T07:13:37  <eashoka> sit_macelon : ah g8! where to ?
+2011-09-18T07:24:10  <sir_macelon> eashoka: locally in poland, by the see, but also had to attend two weddings, so travelled a lot
+2011-09-18T07:24:36  *** delt0r_ <delt0r_!~bob@213-33-19-244.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-09-18T07:24:42  <sir_macelon> hopefully next year I'll be able to plan it better
+2011-09-18T07:25:00  <eashoka> sir_macelon : BTW, SL is the number 1 ranked tourist destination these days ;-)
+2011-09-18T07:25:58  <sir_macelon> eashoka: haven't heard that, but to far for me at the moment, maybe the other day :)
+2011-09-18T07:26:11  <sir_macelon> *too far
+2011-09-18T07:26:45  <eashoka> sir_macelon : I finally got my timeout issues solved. it is still not upto ur strength in battles I think. very impressed with the strategy in mathis's bot.
+2011-09-18T07:27:08  <eashoka> sir_macelon : SL = Sri Lanka
+2011-09-18T07:27:57  <sir_macelon> I've been speeding up my calculations recently also
+2011-09-18T07:28:55  <sir_macelon> yep, he's very aggresive, which seems to pay off in a low-food-spawn-rate games
+2011-09-18T07:30:58  <sir_macelon> I'm yet to develop a strategy for that, it is my next to-do
+2011-09-18T07:32:06  <eashoka> eashoka : me too having a long list of improvements and defects to fix, time is the problem :-(
+2011-09-18T07:34:41  *** olexs <olexs!~Leviathan@drms-590c44f0.pool.mediaWays.net> has joined #aichallenge
+2011-09-18T07:37:18  *** delt0r_ <delt0r_!~bob@178-190-67-232.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-18T07:53:33  *** mcstar <mcstar!~mcstar@adsl-89-134-9-218.monradsl.monornet.hu> has joined #aichallenge
+2011-09-18T08:08:09  *** xathis <xathis!~Mathis@g224150255.adsl.alicedsl.de> has joined #aichallenge
+2011-09-18T09:06:34  <mleise> When we are out of beta, you two will already have bots noone will be able to beat in 2 months work
+2011-09-18T09:17:24  *** olexs <olexs!~Leviathan@drms-590c44f0.pool.mediaWays.net> has left #aichallenge
+2011-09-18T09:17:26  *** olexs <olexs!~Leviathan@drms-590c44f0.pool.mediaWays.net> has joined #aichallenge
+2011-09-18T09:19:20  <mcstar> mleise: did you write a bot? i think they are all quite simple really
+2011-09-18T09:20:52  *** rabidus <rabidus!~tan@a91-154-95-43.elisa-laajakaista.fi> has joined #aichallenge
+2011-09-18T09:25:00  <McLeopold> mleise: I do, but I've been sticking to vim only for awhile
+2011-09-18T09:25:57  <McLeopold> @later tell ChrisH you bot is still breaking the server, which is ok, we are in beta.  I'm trying to get it to report to you correctly.
+2011-09-18T09:25:57  <contestbot> McLeopold: I think that worked...
+2011-09-18T09:28:15  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-18T09:39:13  <eashoka> mleise : I started coding two months ago and guess I was in first 10 in abt 1 month. So I think it's possible for a smart hardworking person to still join and storm to the top beating all of us, but yea in most cases beta testers will have an edge. may be the contest duration be increased to 3 months as antimatroid once suggested.
+2011-09-18T09:40:57  <eashoka> mleise :BTW,  what's your bot ?
+2011-09-18T09:42:31  <mleise> eashoka: My bot is still the starter bot. I didn't find the motivation to work on my bot. But working on the contest is nice, too.
+2011-09-18T09:43:28  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-09-18T09:44:43  <ChrisH> McLeopold: Ok, thanks.  Let me know if there is anything I can do to help.
+2011-09-18T09:45:01  <mleise> McLeopold: ah ok, because I was raising the issue if it would make sense to share our Eclipse projects on github. I figure if someone would want to work on the visualizer then it would be nice to have the IDE ready to start the debugger on it.
+2011-09-18T09:46:19  <mleise> + the plugins detect a lot of minor bugs or stuff like shadowed identifier names, invalid characters in html etc.
+2011-09-18T09:50:19  <McLeopold> I don't think it would hurt
+2011-09-18T09:50:27  <mcstar> soon there will be an omnipotent IDE, that will enslave humans, will use them to push the buttons on those many keyboards
+2011-09-18T09:51:14  <McLeopold> mcstar: reading too much smbc
+2011-09-18T09:51:44  <mcstar> http://www.smbc-comics.com/?
+2011-09-18T09:51:44  <McLeopold> ChrisH: what's your patch for compiler?
+2011-09-18T09:51:49  <McLeopold> :) yes
+2011-09-18T09:51:49  <mleise> mcstar: Actually I can understand if people don't like that Eclipse centrism, but look how we all use Google's search engine now. It is just a convinient starting point.
+2011-09-18T09:52:04  <mcstar> apparently its down, i cant see whats that
+2011-09-18T09:52:13  <McLeopold> it's just a .project file, people can ignore it if they want
+2011-09-18T09:52:19  <mleise> sure
+2011-09-18T09:52:26  <mcstar> i was recently confronted with eclipse
+2011-09-18T09:52:40  <mcstar> i had to use an older version, and use its package manager
+2011-09-18T09:52:44  <mcstar> or whatnot
+2011-09-18T09:53:02  <mleise> and I would put all projects in /eclipse_projects, so they don't show up inside the source directories at all
+2011-09-18T09:53:24  <mleise> mcstar: an older version? why is that? discontinued plugins?
+2011-09-18T09:53:25  <McLeopold> the only thing is, I havent found a syntax highlighter/object browser that does javascript well
+2011-09-18T09:54:05  <mcstar> the software i was trying to use(an agent model) was written as an extension to eclipse, and used java
+2011-09-18T09:54:24  <mcstar> and it was only available to an earlier version
+2011-09-18T09:54:30  <mcstar> helios
+2011-09-18T09:55:19  <mleise> McLeopold: I switched to NetBeans for that, but the latest update to Eclipse made me come back
+2011-09-18T09:55:37  <ChrisH> McLeopold: I followed the instructions on the Go website to get the latest stable release using Mercurial and my compiler reports version "release.r60 9481"
+2011-09-18T09:55:40  <mleise> mcstar: i see
+2011-09-18T09:56:13  * mcstar just doesnt understand why doesnt emacs(maybe vim) rule the developer world
+2011-09-18T09:56:37  <McLeopold> ChrisH: compiler.py can put all go files in one command
+2011-09-18T09:56:50  <mleise> McLeopold: Although not everyone may be happy about the current state of the type inference. It sometimes bites you, especially if you repurpose variables for different data types
+2011-09-18T09:57:12  <ChrisH> Mcleopold: Yes, I figured that out eventually, and I tested it on my machine and it worked.
+2011-09-18T09:59:08  <ChrisH> McLeopold: So that left me with the assumption that there was some type of compile error, and thus no _go_.6 file generated (which is all the server tells me), and if I saw the compile errors I might have a better idea what the real problem was.
+2011-09-18T09:59:16  <mcstar> whats the difference between suns jre and openjdk? are the hotspots different? or just the libraries? whats the diff. in startup speed?
+2011-09-18T09:59:28  <McLeopold> ChrisH: It's probably the SplitN issue
+2011-09-18T09:59:44  *** jako <jako!5b2cbce4@gateway/web/freenode/ip.91.44.188.228> has joined #aichallenge
+2011-09-18T09:59:45  <McLeopold> I'm checking why you are not getting a full error message now.
+2011-09-18T09:59:50  <ChrisH> McLeopold:  What's that?  I don't use SplitN in my code, BTW.
+2011-09-18T10:00:13  <ChrisH> McLeopold: Doesn't mean it isn't used by something I do call though.
+2011-09-18T10:00:16  <McLeopold> or the __MACOSX directory
+2011-09-18T10:00:29  <mleise> mcstar: I think openjdk is a complete open-source implementation of java
+2011-09-18T10:00:44  <ChrisH> I gotta go for a bit, be back later.
+2011-09-18T10:00:49  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-09-18T10:00:53  <mleise> that is - for many - reason enough to use it :)
+2011-09-18T10:00:55  <mcstar> i was under the impression that only one JVM exists
+2011-09-18T10:01:11  <mleise> hmm, then i must be wrong
+2011-09-18T10:01:22  <mcstar> im not saying that
+2011-09-18T10:01:35  <mcstar> but you need a better arguemtn to convince me
+2011-09-18T10:01:37  <mcstar> :)
+2011-09-18T10:01:48  <McLeopold> like, one jvm at all, or just for linux?
+2011-09-18T10:02:03  <mcstar> from oracle's/sun's side
+2011-09-18T10:02:08  <mcstar> there are others, i know
+2011-09-18T10:02:08  <mleise> it is the default in many linux distributions
+2011-09-18T10:02:14  <McLeopold> JRockIt
+2011-09-18T10:02:20  <McLeopold> from Oracle
+2011-09-18T10:02:22  <mleise> so i think it must be open-source
+2011-09-18T10:02:53  <mcstar> McLeopold: so my question is: are the jvm's for sun's proprietary java and openjdk's java are the same?
+2011-09-18T10:03:59  <mcstar> jvm startup: ~10sec, sbcl ~2 sec, python ~0 sec
+2011-09-18T10:04:11  <mleise> python 0 ? Oo
+2011-09-18T10:04:14  <mcstar> im staying with python for my scripts
+2011-09-18T10:04:19  <mcstar> essentially 0
+2011-09-18T10:04:41  <mleise> yeah, don't load up a 'platform' just for a script ;)
+2011-09-18T10:04:44  <mcstar> i dont like it(the stupid identation) but python is very good for certain tasks
+2011-09-18T10:06:17  <mcstar> i came across a hint that jvm can be started in "server" mode? to reduce initial startup time, and after that all processes spawn from that one
+2011-09-18T10:06:30  <mcstar> do you know anything about this? i couldnt find details
+2011-09-18T10:06:55  <McLeopold> indentation is clean, I like it, so does CoffeeScript
+2011-09-18T10:06:59  <mcstar> sry, to amortize initial startup time*
+2011-09-18T10:07:12  <mleise> mcstar: no idea, but I know that applets are loaded into one VM
+2011-09-18T10:07:27  <mcstar> McLeopold: its very hard to follow levels of indentation through pages
+2011-09-18T10:07:27  <mleise> so a web site with many applets has the startup time of only one VM
+2011-09-18T10:08:15  <McLeopold> mcstar: yes it is.  I've heard the argument that if it is too hard, you probably need to refactor
+2011-09-18T10:08:42  <mcstar> yeah, i heard that too :)
+2011-09-18T10:08:57  <mcstar> the problem, is that indentation changes semantics
+2011-09-18T10:09:10  <McLeopold> well, that's the benifit if you like it :)
+2011-09-18T10:09:23  <mcstar> it happended to me that i un-indented a code-segment, which belonged to a conditional
+2011-09-18T10:10:02  <mcstar> basically, i think what im saying is that an end-delimiter would come handy
+2011-09-18T10:10:20  <mcstar> it would help the editor to understand the code too
+2011-09-18T10:10:37  <mleise> no semicolon, but {} ?
+2011-09-18T10:10:59  <McLeopold> that last argument doesn't make sense, the editor should be able to read indentation just like the interpreter
+2011-09-18T10:11:38  <McLeopold> unless by editor, you mean you?
+2011-09-18T10:11:40  <mcstar> McLeopold: it would understand if something were to belong to a something:
+2011-09-18T10:11:45  <mcstar> hehe
+2011-09-18T10:11:46  <mcstar> nooo
+2011-09-18T10:11:55  <mcstar> something:
+2011-09-18T10:12:00  <mcstar>      statement1
+2011-09-18T10:12:03  <mcstar>       statement2
+2011-09-18T10:12:14  <mcstar> the editor doesnt know where sattement2 belongs
+2011-09-18T10:12:25  <mcstar> forget thet 1 space
+2011-09-18T10:12:30  <McLeopold> of course it does, it uses the indentation levels
+2011-09-18T10:12:34  <mcstar> nono
+2011-09-18T10:12:39  <mcstar> the editor should indent for me
+2011-09-18T10:12:51  <mcstar> you see what i mean?
+2011-09-18T10:12:57  <mcstar> i dont want to keep track of indentation
+2011-09-18T10:13:10  <McLeopold> oh, then no, you have to type tab or backspace at some point in your life
+2011-09-18T10:13:18  <mleise> hehe
+2011-09-18T10:13:22  <mcstar> maybe i f up, idk, but i put in an end clause, than C-M-q and voila, its done
+2011-09-18T10:14:24  <mcstar> another problem, is that python should reject beginning of line tabs
+2011-09-18T10:14:39  <mcstar> it should be standard to accept only sapces
+2011-09-18T10:15:00  <mcstar> i think even hard-ass pythoners agree with this
+2011-09-18T10:15:02  <mcstar> dont you?
+2011-09-18T10:15:07  <McLeopold> no
+2011-09-18T10:15:14  <mcstar> :D
+2011-09-18T10:15:32  <McLeopold> some people want tabs, even if it is against pep8
+2011-09-18T10:15:52  <mcstar> against what?
+2011-09-18T10:16:10  <McLeopold> http://www.python.org/dev/peps/pep-0008/
+2011-09-18T10:16:57  <mcstar> forgive me if i dont read that page
+2011-09-18T10:17:12  <mcstar> i guess it argues for my point right?
+2011-09-18T10:17:47  <mcstar> McLeopold: did you use emacs with python?
+2011-09-18T10:18:21  <McLeopold> no, I haven't gotten into emacs yet
+2011-09-18T10:18:30  <mcstar> i still find python editing unconfortable as long as i cant dynamically execute my code, and re-evaluate revious whole expressions
+2011-09-18T10:18:41  <McLeopold> IPython
+2011-09-18T10:18:47  <mcstar> thats not good enough
+2011-09-18T10:18:52  <mcstar> at least not the terminal version
+2011-09-18T10:18:59  <mcstar> maybe the gui a bit better
+2011-09-18T10:19:03  <McLeopold> http://ipython.org/
+2011-09-18T10:19:09  <mcstar> what IS better, is pySclices
+2011-09-18T10:19:20  <mleise> "For new projects, spaces-only are strongly recommended over tabs."
+2011-09-18T10:19:21  <mcstar> Slices
+2011-09-18T10:19:33  <mcstar> and the other is sage's we interface
+2011-09-18T10:19:37  <mleise> I like my tabs
+2011-09-18T10:19:42  <mcstar> McLeopold: have you heard of sagemath?
+2011-09-18T10:20:25  <mcstar> its a glue-every-opensource-math-project-with-python-together CAS
+2011-09-18T10:20:45  <mcstar> it has a very good notebook-like interface, that you access from the browser
+2011-09-18T10:21:05  <mcstar> you have cells, you type in it, it can send that input to different interpreters
+2011-09-18T10:21:16  <mcstar> python/maxima/sage/bash/mathematica
+2011-09-18T10:21:38  <mcstar> and displays the results, inline graphics, inline 3d java visualization
+2011-09-18T10:22:00  <mcstar> and you can save the notebooks, and manage them, and easily share them on the network if you want to
+2011-09-18T10:22:13  <mcstar> it was quite good for python editing
+2011-09-18T10:22:26  <mcstar> but ultimately i want to use emacs
+2011-09-18T10:23:06  <mcstar> but i havent succeeded with all the dependencies yet, the py-shell throuws errors
+2011-09-18T10:24:44  <mcstar> back to the indentation/syntax: one of the main reasons i really lile lisp, is that indentation doesnt change the semantics, its indentation is very canonical, and it doesnt have precedence rules!
+2011-09-18T10:34:08  <mcstar> sorry, did i short-circuit something?
+2011-09-18T10:35:47  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@117.231.37.227> has joined #aichallenge
+2011-09-18T10:35:47  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-09-18T10:35:51  <mcstar> ah, i forgot to add latex to the list of interpreters, sage notebook displays inline latex too
+2011-09-18T10:38:19  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-09-18T10:56:25  <McLeopold> @later tell janzert the sandbox compilation is what causes golang to fail, the temp _go_.6 file would be deleted between commands
+2011-09-18T10:56:25  <contestbot> McLeopold: I think that worked...
+2011-09-18T10:57:53  <mcstar> how does the c compilation work btw? if the compiler script looks for MyBot.c?
+2011-09-18T11:01:36  <McLeopold> I need to review that...
+2011-09-18T11:03:32  <McLeopold> it uses the TargetCompiler
+2011-09-18T11:09:11  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-09-18T11:20:12  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-09-18T11:21:01  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-18T11:33:06  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-09-18T11:41:35  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-09-18T11:56:23  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 260 seconds)
+2011-09-18T11:58:10  <eashoka> mleise :any idea abt the planned date to go official beat stage ?
+2011-09-18T11:58:36  <mleise> fix your keyboard! what did you ask? :p
+2011-09-18T11:58:45  <mleise> out of beta stage?
+2011-09-18T11:58:53  <mcstar> hahaha
+2011-09-18T11:58:59  <mcstar> start?
+2011-09-18T11:59:05  <mcstar> (succint enough?)
+2011-09-18T11:59:08  <mcstar> or:
+2011-09-18T11:59:11  <mcstar> start when?
+2011-09-18T11:59:22  <mleise> next week as far as I know eashoka
+2011-09-18T11:59:37  <eashoka> oh sorry. I meant when are we planning to reach official beta stage ? :-)
+2011-09-18T11:59:53  <mleise> but we are in the beta stage
+2011-09-18T12:00:11  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-09-18T12:00:15  <mleise> in other words we reached it months ago
+2011-09-18T12:01:03  <eashoka> oh yea. I red someone coining the 'official beta" phrase to mean everything running on final env but still at testing stage
+2011-09-18T12:01:23  <mleise> ok, then you know more than I do :)
+2011-09-18T12:01:31  <mcstar> i know what you mean, lets just call this stage beta, the other no
+2011-09-18T12:01:42  <mcstar> t*
+2011-09-18T12:01:56  <mleise> live-test ?
+2011-09-18T12:02:02  <mcstar> armed/official/is on
+2011-09-18T12:02:27  <mcstar> mleise: i think mcleo meant the short period after launch, when he fixes some thigns
+2011-09-18T12:03:40  <mleise> how does he know it will be short, har har. ok i understand. then this must be the alpha phase. ahh screw that wikipedia must help
+2011-09-18T12:04:06  <mleise> ah it will be a release candidate
+2011-09-18T12:04:28  <eashoka> So next week would be the grand official launch ? (being programmers, everybody knows there could be fixes even after the launch)
+2011-09-18T12:05:43  <eashoka> yea release candidate sounds much better :-)
+2011-09-18T12:05:48  <mleise> eashoka: This is how I understood it.
+2011-09-18T12:06:08  <mcstar> eashoka: the launch means one thing: the contest will be hosted on another servers
+2011-09-18T12:06:20  <mcstar> you get resources, registrations will go live too
+2011-09-18T12:06:50  <mleise> mcstar: what 'resources' and what 'registrations' that aren't there already?
+2011-09-18T12:06:54  <mcstar> and surely, if some bugs arise, they will get fixed, before the end, when the final rankings will be made
+2011-09-18T12:07:20  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-18T12:07:40  <mcstar> mleise: there will be more workers available, abnd people will need to register again
+2011-09-18T12:07:54  <mcstar> dont they?
+2011-09-18T12:07:59  <mcstar> all accounts will be deleted
+2011-09-18T12:08:02  <mleise> yes, you are correct
+2011-09-18T12:08:19  <mleise> some people have multiple accounts that wouldn't be allowed anyway
+2011-09-18T12:08:40  <mcstar> yeah, and the many starter bots..
+2011-09-18T12:09:14  <mcstar> but pls, do tell me, if there will be more computational resources availabl?
+2011-09-18T12:10:38  <mleise> mcstar: yes
+2011-09-18T12:10:59  <mleise> I'll name my bot ᓚᐂᓗ
+2011-09-18T12:11:20  <eashoka> is that a mexican hat ?
+2011-09-18T12:11:27  <_flag> Why is the turn limit on the server 255?
+2011-09-18T12:11:51  <mcstar> _flag: i think they are testing trueskill, and they want fast matches
+2011-09-18T12:11:59  <mcstar> (not sure)
+2011-09-18T12:12:02  <_flag> Ah, okay
+2011-09-18T12:12:06  <mleise> eashoka: hmm... maybe then I'll use ᖧᐂᖨ
+2011-09-18T12:12:36  <_flag> Because this way the matches between top bots rarely actually finish
+2011-09-18T12:13:30  <mcstar> i hope i can name my bot A.Smith
+2011-09-18T12:14:50  <mleise> Is there a Neo to counter you?
+2011-09-18T12:15:12  <mcstar> why mr anderson? why? why do you persist???
+2011-09-18T12:15:25  <mcstar> because i chose to!!!!!
+2011-09-18T12:15:32  <mcstar> whoa, thats huge
+2011-09-18T12:16:04  <mcstar> i can have my reasons to call my bot A.Smith, its very logical
+2011-09-18T12:16:13  <mcstar> i cant see why i would call it Neo
+2011-09-18T12:16:27  <mcstar> not that i dont like the character, i do very much
+2011-09-18T12:16:35  <mcstar> but Smith is the grater antagonist ever
+2011-09-18T12:16:40  <mcstar> greates
+2011-09-18T12:16:42  <mcstar> t
+2011-09-18T12:16:54  <mleise> Your username must be longer than 6 characters and composed only of the characters a-z, A-Z, 0-9, '-', '_', and '.'
+2011-09-18T12:17:01  <mcstar> eashoka seems to interfere with our keyboards
+2011-09-18T12:17:12  <mcstar> my other bot is lore
+2011-09-18T12:17:20  <mcstar> .Lore.
+2011-09-18T12:17:27  <mcstar> for that reason i added the dots
+2011-09-18T12:17:47  <mcstar> its 6, though, but it was accepted
+2011-09-18T12:19:26  <eashoka> mleise : so there goes your mexican hats :-( I really like those.
+2011-09-18T12:20:11  <eashoka> --007-- would be a cool id too
+2011-09-18T12:20:28  <mcstar> is that the police? or is it 911?
+2011-09-18T12:20:45  <eashoka> Bond. James Bond
+2011-09-18T12:24:23  <mcstar> blow. job blow
+2011-09-18T12:25:30  <mcstar> i just dont see why would that be cool
+2011-09-18T12:25:38  <mcstar> :D
+2011-09-18T12:25:59  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-18T12:25:59  *** ChanServ sets mode: +o amstan
+2011-09-18T12:27:09  <mcstar> eashoka: you know im being sarcastic all the time, and i theoretize that A.Smith cant be topped
+2011-09-18T12:28:12  *** cody__ <cody__!b4972a70@gateway/web/freenode/ip.180.151.42.112> has joined #aichallenge
+2011-09-18T12:28:24  <mleise> hihi: http://aichallengebeta.hypertriangle.com/profile.php?user=1
+2011-09-18T12:30:23  <mcstar> i would laugh at rank 361 too
+2011-09-18T12:31:24  <eashoka> mleise : woa!! is that you!
+2011-09-18T12:31:28  <eashoka> ?
+2011-09-18T12:31:45  <mleise> eashoka: Just a quick db hack, yes it is me
+2011-09-18T12:32:48  <eashoka> that's easily the coolest I have seen yet!
+2011-09-18T12:33:11  <mleise> uh.. ok thx
+2011-09-18T12:39:08  <mcstar> mleise: i suggest you disable unicode
+2011-09-18T12:39:25  <mcstar> do you really want to refer people by kanji charaters?
+2011-09-18T12:39:33  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-09-18T12:40:43  <mleise> no, I hate that with online games ^^
+2011-09-18T12:41:17  <mleise> um.. you ... with that cryptic name, could you stop shooting your teammates?
+2011-09-18T12:42:12  <mcstar> :)
+2011-09-18T12:42:22  <mcstar> i just refer them as fucks
+2011-09-18T12:42:33  <mcstar> he you f, stop teamkilling me you a.whole
+2011-09-18T12:44:18  <eashoka> for some reason, workers are running blazing fast right now. a whopping 25 players per minute!
+2011-09-18T12:44:57  <mcstar> i got to seet hat
+2011-09-18T12:46:18  <mcstar> eashoka: keep in mind that games are cut at 255 turns
+2011-09-18T12:48:30  *** eashoka <eashoka!70875bfd@gateway/web/freenode/ip.112.135.91.253> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T12:49:22  *** eashoka <eashoka!708752b8@gateway/web/freenode/ip.112.135.82.184> has joined #aichallenge
+2011-09-18T12:49:46  <mleise> lol the timeout almost matches the turn limit
+2011-09-18T12:50:08  <mcstar> :)
+2011-09-18T12:50:41  <mcstar> i dont really understand why is the timeout soo long?
+2011-09-18T12:50:45  <mcstar> 3 minutes?
+2011-09-18T12:51:17  <mcstar> it happened many times, that i typed up quite some in 3 minutes, just for my friend to timout than of course when he reconnects al is gone
+2011-09-18T12:51:18  <mleise> That strikes me sometimes as well. The internet is so fast nowadays that you don't need that.
+2011-09-18T12:51:28  <mcstar> cause my private channel is not logged :)
+2011-09-18T12:53:16  <mcstar> mleise: do you communicate with friends through irc? or you use some other IM?
+2011-09-18T12:53:35  <mleise> others: ICQ and MSN networks
+2011-09-18T12:53:53  <mleise> logged of course ;)
+2011-09-18T12:54:07  <mcstar> i tried pidgin with google-talk
+2011-09-18T12:54:16  <mcstar> the channel was always noise
+2011-09-18T12:54:23  <mcstar> so we only use irc atm
+2011-09-18T12:54:34  <mcstar> noisy*
+2011-09-18T12:55:13  <mcstar> (i dont mean the "channel" was noisy, of course our equipment was a cheapshit noisy thing)
+2011-09-18T13:02:53  *** xathis <xathis!~Mathis@g224150255.adsl.alicedsl.de> has quit IRC ()
+2011-09-18T13:12:37  *** eashoka <eashoka!708752b8@gateway/web/freenode/ip.112.135.82.184> has quit IRC (Quit: Page closed)
+2011-09-18T13:19:06  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-09-18T13:22:58  *** cody__ <cody__!b4972a70@gateway/web/freenode/ip.180.151.42.112> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T13:29:54  *** Hammerok <Hammerok!551aba1b@gateway/web/freenode/ip.85.26.186.27> has joined #aichallenge
+2011-09-18T13:31:42  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-18T13:32:41  <antimatroid> what's a fun random name for a  mathematical object?
+2011-09-18T13:32:48  <antimatroid> i need to stick a name on something and it seems there isn't one
+2011-09-18T13:33:02  <amstan> antimatroid: lemur?
+2011-09-18T13:33:08  <antimatroid> in the case that i have the Cartesian product of two sets my object is a bijection
+2011-09-18T13:33:56  <mcstar> i think THAT is an antimatroid
+2011-09-18T13:34:17  <mcstar> so, lets just call it nick, for short
+2011-09-18T13:34:46  <antimatroid> say what? :P
+2011-09-18T13:36:27  <antimatroid> oh, you might be right aha
+2011-09-18T13:36:36  <mcstar> :D
+2011-09-18T13:37:02  <antimatroid> it's a lot like it otherwise
+2011-09-18T13:37:33  <antimatroid> L is just one set right? I sort of have to take the alphabet as different for each place in the word
+2011-09-18T13:37:45  <antimatroid> and the words are fixed length
+2011-09-18T13:39:13  <amstan> matroid?
+2011-09-18T13:39:24  <mcstar> there are too many unknows so that i really cant be more contructive
+2011-09-18T13:39:37  <amstan> antimatroid: problem with naming stuff after yourself is.. you might need to name something else after yourself later
+2011-09-18T13:39:47  <amstan> it gets weird when a lot of things are named after you
+2011-09-18T13:39:53  <antimatroid> amstan: i would never name something after myself
+2011-09-18T13:39:59  <amstan> so you'll have to make a wikipedia disambiguation page
+2011-09-18T13:40:14  <amstan> \o/
+2011-09-18T13:40:28  <antimatroid> matroids and antimatroids are mathematical objects
+2011-09-18T13:40:34  *** sir_macelon <sir_macelon!4e08f863@gateway/web/freenode/ip.78.8.248.99> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T13:40:42  <antimatroid> i named myself after something rather than vice versa :P
+2011-09-18T13:46:50  <mcstar> haha
+2011-09-18T13:46:53  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Read error: Connection reset by peer)
+2011-09-18T13:46:56  <mcstar> just what i was talking about
+2011-09-18T13:47:08  <mcstar> i wrote 5 lines, and he timed out
+2011-09-18T13:47:57  <mcstar> its kind of funny that my slow adsl is more stable here on the countryside, than my friend's cable-net in the capital city
+2011-09-18T13:51:13  *** arlequ1 <arlequ1!58aff739@gateway/web/freenode/ip.88.175.247.57> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T13:53:07  <antimatroid> should a fair game be considered symmetric?
+2011-09-18T13:53:29  <antimatroid> or should a game be symmetric if each player is playing every other player symmetrically?
+2011-09-18T13:54:24  <mcstar> deja vu
+2011-09-18T13:54:35  <antimatroid> i know
+2011-09-18T13:54:43  <antimatroid> i still don't have a clear answer :P
+2011-09-18T13:54:48  <mcstar> :)
+2011-09-18T13:54:53  <antimatroid> http://pastebin.com/4tLWiM78
+2011-09-18T13:55:02  <mcstar> did you talk to that physics professor you told me you will?
+2011-09-18T13:55:04  <antimatroid> that's an example of a fair game that i'm not sure of whether to call symmetric
+2011-09-18T13:55:17  <antimatroid> not sure what about?
+2011-09-18T13:55:36  <antimatroid> 1 is the row player, 2 is the col player and 3 is the matrix player
+2011-09-18T13:55:36  <mcstar> these things, mainly symmetry
+2011-09-18T13:55:42  <mcstar> as far aas i can remember
+2011-09-18T13:55:48  <mcstar> though, it was couple months ago
+2011-09-18T13:55:55  <mcstar> but you never told me what happened
+2011-09-18T13:56:12  <antimatroid> you can find a symmetry of the game with (123) as the permutation of the players, but not for a transposition (12),(13),(23) of the players
+2011-09-18T13:56:38  <antimatroid> oh, i've solved most of my maths problems, i'm just caught on what to call thigns etc. now
+2011-09-18T13:58:20  <mcstar> ill take a look at that, but i cant give advices and think about game theory at once
+2011-09-18T13:58:36  <mcstar> "/onhold #aichannel
+2011-09-18T14:03:01  <antimatroid> i don't need it verified, i've checked :P
+2011-09-18T14:03:47  <antimatroid> wikipedia says " If the symmetry group of x is the trivial group then x is said to be asymmetric, otherwise symmetric.", but that would have a game be symmetric even if you could only swap 2 players and not all of them
+2011-09-18T14:04:17  <mcstar> antimatroid: i didnt mean that, i would like to think thatover, but i cant atm
+2011-09-18T14:04:52  <antimatroid> :) fair enough
+2011-09-18T14:07:44  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-09-18T14:10:38  *** jako <jako!5b2cbce4@gateway/web/freenode/ip.91.44.188.228> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T14:19:36  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 258 seconds)
+2011-09-18T14:32:33  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-09-18T14:34:52  <delt0r_> mcstar: openjdk and sun JDK are not the same
+2011-09-18T14:35:08  <mcstar> delt0r_: the jvm?
+2011-09-18T14:35:24  <mcstar> also called hotspot if im correct
+2011-09-18T14:35:26  <delt0r_> openjdk is a little behind and there are still some things that can't be OS
+2011-09-18T14:35:43  <delt0r_> yea JVM+standard libs
+2011-09-18T14:36:08  <delt0r_> for the most part openJDK works well and is only a little slower
+2011-09-18T14:36:26  <mcstar> im just wondering what would be better for clojure, since it mostly uses the jvm, and some other code
+2011-09-18T14:36:26  <delt0r_> but there are some areas where it dies a horrible death
+2011-09-18T14:36:44  <delt0r_> I would always recommend the sun JVM
+2011-09-18T14:37:23  <mcstar> you know recently happened that distros can no longer distribute it
+2011-09-18T14:38:03  <delt0r_> oh god not more RS bs?
+2011-09-18T14:38:21  <delt0r_> you know outside the US it is perfectly legal
+2011-09-18T14:38:23  <mcstar> bs i know, whats rs?
+2011-09-18T14:38:32  <delt0r_> Richard Stallman
+2011-09-18T14:38:36  <mcstar> no
+2011-09-18T14:38:44  <mcstar> java changed the licence
+2011-09-18T14:38:59  <delt0r_> openjdk
+2011-09-18T14:39:00  <delt0r_> or sun
+2011-09-18T14:39:01  <mcstar> sun jre jdk disappeared from arch's repositories
+2011-09-18T14:39:16  <mcstar> sry, i mean sun of course
+2011-09-18T14:39:22  <mcstar> not java
+2011-09-18T14:39:23  <delt0r_> since the sun jre has never been distributed in any of the linuxs i am exposed
+2011-09-18T14:39:24  <delt0r_> to
+2011-09-18T14:39:25  <mcstar> :)
+2011-09-18T14:39:33  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-09-18T14:40:08  <delt0r_> ok... non story... most already didn't --apple are going to stop too
+2011-09-18T14:40:36  <delt0r_> but then its like they have a lisp VM or anything either... installing one is not so hard.
+2011-09-18T14:40:46  <delt0r_> not like
+2011-09-18T14:41:16  <mcstar> i know its not hard, thats not the point
+2011-09-18T14:41:30  <mcstar> the point is that you have to update it manually
+2011-09-18T14:41:46  <delt0r_> at anyrate I think you could easily use openjdk for ants.
+2011-09-18T14:41:47  <mcstar> fortunately, its available from AUR, a user maintaned repo
+2011-09-18T14:42:11  <mcstar> i wasnt talking about ants, in particular
+2011-09-18T14:42:20  <mcstar> but i think they already use the openjdk thing
+2011-09-18T14:42:21  <delt0r_> but it would be more painless to use the sun one
+2011-09-18T14:43:45  <delt0r_> also i install a jre with my programs to solve the "what jvm are you running"
+2011-09-18T14:44:05  <delt0r_> so my install does not look like a java app
+2011-09-18T14:47:44  <delt0r_> mcstar: also java is stupid easy to install --user space or global install..even without sacrificing to the package management gods
+2011-09-18T14:48:08  <delt0r_> (IMO package management is a joke, on all OSes )
+2011-09-18T14:48:51  <mcstar> not really
+2011-09-18T14:49:03  <delt0r_> note the IMO part ;)
+2011-09-18T14:49:07  <mcstar> at least my fixpoint in package-manager space was Arch's pacman
+2011-09-18T14:49:11  <delt0r_> you won't convince me otherwise :D
+2011-09-18T14:49:12  <mcstar> yeah
+2011-09-18T14:49:15  <mcstar> noted
+2011-09-18T14:49:19  <mcstar> prefix mine with imho too
+2011-09-18T14:49:35  <delt0r_> I don't bother with humble
+2011-09-18T14:49:47  <mcstar> oh, just a typo
+2011-09-18T14:49:51  <delt0r_> lol
+2011-09-18T14:50:16  <delt0r_> so whats the word... will ants go live this week? next week?
+2011-09-18T14:50:20  <delt0r_> what is outstanding
+2011-09-18T14:50:38  <mcstar> of course tha packaga manage ris not everything, you need people who can sort the packages and dependencies sensibly
+2011-09-18T14:51:08  <mcstar> it is outstanding how many people are still asking this question
+2011-09-18T14:51:24  <mcstar> i guess next week it gonna be ...
+2011-09-18T14:51:27  <mcstar> wait for it...
+2011-09-18T14:51:37  <mcstar> what was a saying?
+2011-09-18T14:51:41  <mcstar> i*
+2011-09-18T14:52:19  <mcstar> soon this channel will leak from the pressure of my humor
+2011-09-18T14:57:02  <janzert> contestbot: later tell McLeopold where or how are the temporary files being deleted?
+2011-09-18T14:57:02  <contestbot> janzert: Yes master!
+2011-09-18T14:58:58  <janzert> contestbot: later tell McLeopold or are these files not created within the bots directory but live in /tmp or something? I can understand those not be preserved
+2011-09-18T14:58:58  <contestbot> janzert: I come to serve.
+2011-09-18T15:03:39  *** boegel <boegel!~boegel@91.182.39.212> has joined #aichallenge
+2011-09-18T15:12:54  *** xathis <xathis!1f102a0e@gateway/web/freenode/ip.31.16.42.14> has joined #aichallenge
+2011-09-18T15:13:20  *** Hammerok <Hammerok!551aba1b@gateway/web/freenode/ip.85.26.186.27> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T15:19:52  *** xerus <xerus!6d5047c2@gateway/web/freenode/ip.109.80.71.194> has joined #aichallenge
+2011-09-18T15:21:19  *** trololo <trololo!c3133040@gateway/web/freenode/ip.195.19.48.64> has joined #aichallenge
+2011-09-18T15:22:48  *** xerus <xerus!6d5047c2@gateway/web/freenode/ip.109.80.71.194> has quit IRC (Client Quit)
+2011-09-18T15:22:51  *** boegel <boegel!~boegel@91.182.39.212> has quit IRC (Quit: Leaving)
+2011-09-18T15:24:58  *** delt0r_ <delt0r_!~bob@178-190-67-232.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T15:30:59  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-18T15:31:57  *** TTE <TTE!5d0b0fe2@gateway/web/freenode/ip.93.11.15.226> has joined #aichallenge
+2011-09-18T15:33:11  <McLeopold> janzert: it may be that they are created in the wrong dir, or my check for the files is done in the wrong dir
+2011-09-18T15:33:42  *** TTE <TTE!5d0b0fe2@gateway/web/freenode/ip.93.11.15.226> has quit IRC (Client Quit)
+2011-09-18T15:35:12  <CIA-24> aichallenge: Scott Hamilton epsilon * r2a423a4 / (website/api_compile_result.php website/sql.php): remove worker id requirement from compile status posting - http://git.io/sskMqg
+2011-09-18T15:38:38  *** delt0r_ <delt0r_!~bob@93-82-83-38.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-18T15:43:01  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-09-18T15:43:11  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has quit IRC (Quit: Page closed)
+2011-09-18T15:48:12  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Read error: Connection reset by peer)
+2011-09-18T15:51:26  <janzert> McLeopold: the distribution of games played per map seems quite odd. For example since the turn limit has been set to 255 map 42 (symmetric_36) has had 2 games played on it, map 21 (symmetric 10) has had 215 games and map 53 (symmetric_26) has had 225 games
+2011-09-18T15:51:38  <janzert> all three maps are at priority 5
+2011-09-18T15:52:53  <janzert> oops, map 21 is symmetric 14
+2011-09-18T15:55:46  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-18T15:59:40  *** gobang <gobang!~gobang@89.204.153.229> has quit IRC (Read error: Connection reset by peer)
+2011-09-18T16:00:52  *** testing <testing!0e8b800f@gateway/web/freenode/ip.14.139.128.15> has joined #aichallenge
+2011-09-18T16:01:03  <testing> hey
+2011-09-18T16:01:46  <testing> any idea on when the actual event might begin ??
+2011-09-18T16:03:21  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-09-18T16:03:56  <amstan> testing: sometime
+2011-09-18T16:04:21  <janzert> now >50% likely within the next month
+2011-09-18T16:04:29  <janzert> I think ;)
+2011-09-18T16:04:52  <testing> nice to hear that .... looking forward to it
+2011-09-18T16:05:27  <mcstar> maan, i posted on the interplanetary bulletin board, the IBB, that it starts tomorrow
+2011-09-18T16:05:46  <amstan> mcstar: why would you do that?
+2011-09-18T16:06:07  <mcstar> to notify mars, and other planets
+2011-09-18T16:06:08  <amstan> mcstar: like.. we had false alarms like that a few times during the summer
+2011-09-18T16:06:18  <mcstar> they need time for the signal to reach them
+2011-09-18T16:06:20  <amstan> man.. the martians are going to be so pissed
+2011-09-18T16:06:40  <mcstar> :)
+2011-09-18T16:06:46  <mcstar> obviously i didnt post anything
+2011-09-18T16:11:48  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 260 seconds)
+2011-09-18T16:12:34  <mcstar> amstan: when did you have false alarms?
+2011-09-18T16:12:39  <mcstar> i think i missed that
+2011-09-18T16:12:52  <mcstar> did somewhere appear that the contest is srtating?
+2011-09-18T16:13:13  <mcstar> starting*
+2011-09-18T16:20:08  <amstan> mcstar: yeah, well, we were having pre launch meetings in july
+2011-09-18T16:21:05  <McLeopold> janzert: I'm still working on a fix for the matchmaking to even out the player games, I can look at the map selection after that
+2011-09-18T16:22:41  <McLeopold> janzert: also, I believe I'm ignoring priority now
+2011-09-18T16:23:52  <janzert> just having priority as a binary setting (>0 are used) should be fine
+2011-09-18T16:24:55  <janzert> McLeopold: also could you add a field to the map table to record the last time the turn limit was adjusted for the map (something like max_turns_adjusted maybe)
+2011-09-18T16:25:05  <McLeopold> yes, I'm checking for >= 0
+2011-09-18T16:25:24  <McLeopold> janzert: you can get that info from the game table
+2011-09-18T16:25:36  <McLeopold> kinda
+2011-09-18T16:25:37  <janzert> I don't think so
+2011-09-18T16:25:55  <janzert> I'm limiting it to games with the same turn limit right now
+2011-09-18T16:26:10  <janzert> but that doesn't cover if the turn limit is set back to a previous value
+2011-09-18T16:26:17  <janzert> which I kind of want to do
+2011-09-18T16:26:33  <McLeopold> nope, that wouldn't work then
+2011-09-18T16:28:50  <CIA-24> aichallenge: McLeopold epsilon * r2a3cf95 / sql/0_schema.sql : add timestamp field to map table - http://git.io/ICxG0Q
+2011-09-18T16:29:00  *** nplus <nplus!~chatzilla@unaffiliated/simont> has quit IRC (Read error: Connection reset by peer)
+2011-09-18T16:29:56  *** nplus <nplus!~chatzilla@S010600259c415685.no.shawcable.net> has joined #aichallenge
+2011-09-18T16:30:00  *** nplus <nplus!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-09-18T16:30:48  <McLeopold> janzert: done
+2011-09-18T16:32:02  <janzert> Thanks. I knew the changes needed to the schema but I'm not sure how to apply that to the live database.
+2011-09-18T16:32:32  <McLeopold> I just issue alter table commands
+2011-09-18T16:32:57  <McLeopold> so far I haven't blown up anything
+2011-09-18T16:33:01  <McLeopold> too much
+2011-09-18T16:33:05  <janzert> ok, so there isn't an automatic process
+2011-09-18T16:33:10  <janzert> hehe
+2011-09-18T16:33:15  <McLeopold> no
+2011-09-18T16:33:27  <McLeopold> I could do it the right way, but that is so much more work :)
+2011-09-18T16:33:33  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-09-18T16:33:37  <janzert> :)
+2011-09-18T16:33:55  <McLeopold> Once we launch, I'll check in proper alter table statements and version the database.
+2011-09-18T16:35:25  <McLeopold> janzert: was your map stats for all time?
+2011-09-18T16:35:38  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Client Quit)
+2011-09-18T16:35:41  <janzert> limited to games with max_turns of 255
+2011-09-18T16:35:47  <McLeopold> okay
+2011-09-18T16:35:59  <McLeopold> that is bad :(
+2011-09-18T16:36:14  <McLeopold> oh, my logic doesn't though
+2011-09-18T16:37:31  <janzert> yeah, there are half a dozen maps with single digit games and 3 with over 200 :(
+2011-09-18T16:41:50  <mleise> Add some fun maps while you are at it. Mazes, pictograms, etc... where is the map editor *sigh*
+2011-09-18T16:42:58  <mleise> They aren't good gameplay wise, but a themed map now and then would be a real highlight.
+2011-09-18T16:48:52  <McLeopold> janzert: it looks like for all time the matchmaker is doing a good job and keeping them even, given the fact that for 2 months it was out of wack
+2011-09-18T16:49:28  <janzert> ok
+2011-09-18T16:49:44  <McLeopold> we just need a way to reset the game count to a point in time
+2011-09-18T16:49:47  <janzert> but then the question is why are they so out of whack for the last week(?)
+2011-09-18T16:50:10  <janzert> ahh, the matchmaker is still looking at all time numbers?
+2011-09-18T16:50:13  <McLeopold> because the algo is trying to keep stuff even, and a bunch a maps where played too much before
+2011-09-18T16:50:16  <McLeopold> yes
+2011-09-18T16:50:21  <janzert> ok
+2011-09-18T16:50:41  <McLeopold> how did you do finals last year?
+2011-09-18T16:50:48  <McLeopold> did you wipe the database?
+2011-09-18T16:50:48  <janzert> yeah, we need a way to limit it to look at things only after a certain point
+2011-09-18T16:51:14  <janzert> I moved all the game information from before the finals into archive tables
+2011-09-18T16:51:27  <janzert> so basically from the point of view of the matchmaking system, yes
+2011-09-18T16:51:27  <McLeopold> maybe a stored procedure to do that would be nice...
+2011-09-18T16:52:14  <janzert> adding a timelimit may be less disruptive?
+2011-09-18T16:52:22  <janzert> whichever is easier I suppose
+2011-09-18T16:56:14  <McLeopold> well, I would want something that works for the finals
+2011-09-18T16:56:45  <McLeopold> archiving makes queries faster, so I'll go with that
+2011-09-18T16:56:59  <McLeopold> but it disrupts looking and old games...
+2011-09-18T16:57:03  <janzert> yes, I was imagining the timelimit would be set to the start of the finals
+2011-09-18T16:57:36  <janzert> right, any pages that refer to games need to be modified to query the archive table if they don't find the game in the primary table
+2011-09-18T16:57:55  <janzert> which is why I thought the timelimit might be less disruptive
+2011-09-18T16:58:12  <janzert> so whichever way you want to do it :)
+2011-09-18T16:58:38  <McLeopold> this would only affect matchmaking?
+2011-09-18T16:59:02  <janzert> I can't think of anything else offhand it should effect
+2011-09-18T16:59:37  <janzert> I guess leaderboard generation but that is completely incremental so shouldn't need it
+2011-09-18T16:59:52  <McLeopold> right, submissions can be reset if we want
+2011-09-18T17:00:17  <McLeopold> just game counts in the rankings table
+2011-09-18T17:00:23  <janzert> yep, I believe reseting mu and sigma should be all that is needed there
+2011-09-18T17:00:57  <janzert> hmm, yeah
+2011-09-18T17:01:18  <McLeopold> I'm storing those in the submission table right now, so that the rankings are faster
+2011-09-18T17:01:25  <janzert> although I think I'd like for the rate field to go away at least in the default view before we go live
+2011-09-18T17:01:33  <McLeopold> it's duplicate data, but it allows us to reset the tally
+2011-09-18T17:01:40  <janzert> ahh
+2011-09-18T17:01:53  <McLeopold> not at all?
+2011-09-18T17:02:05  <McLeopold> I mean, you don't want to display that info?
+2011-09-18T17:02:23  <janzert> the rate information would be nice to still have for admins or those interested to view, but I think it's bad for the normal view
+2011-09-18T17:02:42  <McLeopold> ok
+2011-09-18T17:04:31  *** testing <testing!0e8b800f@gateway/web/freenode/ip.14.139.128.15> has quit IRC (Quit: Page closed)
+2011-09-18T17:05:10  *** trololo <trololo!c3133040@gateway/web/freenode/ip.195.19.48.64> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T17:07:46  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Quit: Leaving)
+2011-09-18T17:09:34  *** xathis <xathis!1f102a0e@gateway/web/freenode/ip.31.16.42.14> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T17:17:12  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has joined #aichallenge
+2011-09-18T17:17:43  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Read error: Connection reset by peer)
+2011-09-18T17:17:50  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-09-18T17:18:33  *** mcstar <mcstar!~mcstar@adsl-89-134-9-218.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-09-18T17:38:06  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-09-18T17:42:28  *** mathis <mathis!1f102a0e@gateway/web/freenode/ip.31.16.42.14> has joined #aichallenge
+2011-09-18T17:47:25  <McLeopold> janzert: I have an idea for a new matchup generator
+2011-09-18T17:49:26  <janzert> hmm, do I want to hear it... ;)
+2011-09-18T17:49:31  <McLeopold> ok...
+2011-09-18T17:49:41  <McLeopold> select a seed, last to have played
+2011-09-18T17:50:06  <McLeopold> select 10% of the other bots with the best match quality, according to trueskill
+2011-09-18T17:50:21  <McLeopold> pick the player that has played the least with the seed
+2011-09-18T17:50:58  <McLeopold> for the 3rd player, again select 10%, but the match quality is calculated for all 3
+2011-09-18T17:51:23  <McLeopold> again, select the player that has played the least, but with both player 1 & 2
+2011-09-18T17:51:31  <McLeopold> repeat until you have enough
+2011-09-18T17:51:47  <McLeopold> I think this removes the need for my "no repeat" logic
+2011-09-18T17:52:08  <McLeopold> And this will solve the problem of match quality favoring those with low sigma/high game counts
+2011-09-18T17:52:46  <McLeopold> all based off user_id, so submitting new bots won't increase your chances of playing again
+2011-09-18T17:53:08  <janzert> hmm, let me think about it for a minute, initial is impression isn't bad though ;)
+2011-09-18T17:53:42  <McLeopold> if you suddenly submit a new bot that improves, putting you in a new percetile of the field, you'll start to get picked alot, which I think is good
+2011-09-18T17:54:12  <McLeopold> the older bots will want to play against the newer good bot right away
+2011-09-18T17:54:36  *** eashoka <eashoka!7087576f@gateway/web/freenode/ip.112.135.87.111> has joined #aichallenge
+2011-09-18T17:55:37  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-09-18T17:55:37  <janzert> am I write that increasing the selection percentage to 100% would bring cause this to be a round robin?
+2011-09-18T17:55:44  <janzert> (that's a good thing by the way)
+2011-09-18T17:55:48  <janzert> :)
+2011-09-18T17:55:52  <McLeopold> I believe so
+2011-09-18T17:56:00  <janzert> heh write->right
+2011-09-18T17:56:02  <McLeopold> for 2-player games, yes
+2011-09-18T17:56:08  * janzert nods
+2011-09-18T17:56:17  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: quit)
+2011-09-18T17:56:21  <McLeopold> 3 player might be skewed a little, but it would remain fairly even
+2011-09-18T17:57:10  <McLeopold> tweaking the percentage will be the trick
+2011-09-18T17:57:51  <McLeopold> we could even base it off your ranking
+2011-09-18T17:58:07  <McLeopold> top bots stay at 5%, bottom bots increase to 20% or something
+2011-09-18T17:58:13  <janzert> it's too bad the cutoff can't be more probababilistic
+2011-09-18T17:58:50  <McLeopold> how so?
+2011-09-18T17:59:25  <McLeopold> we could limit it to match quality within 5% of best match quality or something
+2011-09-18T17:59:33  <janzert> i.e. the closest in skill bots would be included for consideration 100% of the time and the chances would go down in a pareto distribution as they got further away
+2011-09-18T17:59:53  <McLeopold> we can do that
+2011-09-18T18:00:31  <janzert> ahh, I thought that would be quite difficult to do in sql
+2011-09-18T18:00:35  <McLeopold> so
+2011-09-18T18:00:37  <McLeopold> no
+2011-09-18T18:00:54  <McLeopold> I just need a way to calc the pareto
+2011-09-18T18:03:13  <janzert> hmm, it was encoded in the last contest code at one point
+2011-09-18T18:03:23  <McLeopold> really?
+2011-09-18T18:03:37  <janzert> but I see the final version just used the one built into python :}
+2011-09-18T18:03:48  <janzert> pretty sure it was anyway
+2011-09-18T18:07:29  <McLeopold> percent of highest match quality would probably be good enough
+2011-09-18T18:07:40  <McLeopold> 10% of total field might be good enough now
+2011-09-18T18:08:01  <janzert> yeah, it just misses out on the occasional outlier game
+2011-09-18T18:08:10  <janzert> but probably works out ok in practice
+2011-09-18T18:08:19  <McLeopold> where a really good bot plays a bad bot?
+2011-09-18T18:08:31  <janzert> right
+2011-09-18T18:08:40  <McLeopold> so, I'm okay with that not happening
+2011-09-18T18:09:05  <janzert> they should ideally happen very occasionally
+2011-09-18T18:09:26  <McLeopold> well, I could muliply match quality by a random number and sort?
+2011-09-18T18:10:12  <McLeopold> I still need to take a top % and do the least played logic to avoid the game counts not being even
+2011-09-18T18:11:10  <janzert> really pairings outside of the 10% range should be less than 1 in a couple hundred anyway so is probably fine not to worry about them
+2011-09-18T18:11:27  <McLeopold> I'll just to the multiply anyway
+2011-09-18T18:12:19  <janzert> isn't your method just making the border 'fuzzier' not actually occasionally pulling in an opponent from far beyond the nominal cutoff?
+2011-09-18T18:12:39  <McLeopold> it would be giving them some chance
+2011-09-18T18:12:55  <McLeopold> hmm, mayby not
+2011-09-18T18:13:14  <janzert> I guess what is the range and distribution of your random numbers?
+2011-09-18T18:13:20  <McLeopold> 0-1
+2011-09-18T18:13:29  <McLeopold> uniform
+2011-09-18T18:13:41  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-09-18T18:14:26  <janzert> hmm, seems like it would be too strong and dominate the actual quality measure
+2011-09-18T18:14:53  <McLeopold> I'm thinking it wouldn't be strong enough now
+2011-09-18T18:15:55  <McLeopold> take the numbers 1-100 and multiply by a random 0-1 and see how often 1 is chosen, probably not much
+2011-09-18T18:16:21  <McLeopold> chosen being 1*rand() is greater than all the others numbers times their own rand
+2011-09-18T18:21:07  <janzert> the average of the result will half of the original average of course
+2011-09-18T18:23:03  <janzert> but the range covered will decrease in size much less and my math ability to reason about random uniform distributions isn't quite good enough to say how much on average ;)
+2011-09-18T18:23:32  <McLeopold> I'm writing a python test right now ;)
+2011-09-18T18:23:39  <janzert> i.e. the mean will change less than the median
+2011-09-18T18:23:47  <janzert> err more
+2011-09-18T18:24:22  <janzert> or not
+2011-09-18T18:24:30  <janzert> hehe
+2011-09-18T18:26:41  <janzert> in any case I don't see how it would form any sort of a power law distribution for the opponents selected
+2011-09-18T18:26:49  <janzert> which is what I'm really after
+2011-09-18T18:30:55  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-09-18T18:35:35  <McLeopold> janzert: how's this? http://pastebin.com/u7xXXbJS
+2011-09-18T18:35:56  <janzert> gives me unknown paste ID
+2011-09-18T18:36:04  <McLeopold> http://pastebin.com/xAg5TLyQ
+2011-09-18T18:36:07  <McLeopold> weird
+2011-09-18T18:36:12  <McLeopold> wierd
+2011-09-18T18:36:22  <McLeopold> the oatmeal is going to get me...
+2011-09-18T18:39:58  <janzert> the top end looks rather linear but the tail looks good
+2011-09-18T18:40:27  <McLeopold> so, I think it would work
+2011-09-18T18:40:44  <McLeopold> sort by match quality * random number
+2011-09-18T18:42:01  <McLeopold> you still have a 1 in 20 chance if your match quality is 20% lower than the best quality to be considered at the top
+2011-09-18T18:42:26  <janzert> I almost think 10% might be too large but yeah this will probably work
+2011-09-18T18:42:38  <janzert> let me replot my graph in percentages
+2011-09-18T18:42:41  <McLeopold> I get that from the 80 line having 49 picks
+2011-09-18T18:42:45  <McLeopold> oops, 1/200
+2011-09-18T18:43:48  <McLeopold> with limiting the field, then choosing the least played, if a low quality happened to get in the top X, then it will probably be chosen
+2011-09-18T18:46:51  <janzert> ok, I guess 10% looks fine
+2011-09-18T18:46:54  <McLeopold> given 4000 submissions, in 1000 games you would probably only play within 100 ranks up or down
+2011-09-18T18:47:59  <janzert> hmm, really?
+2011-09-18T18:48:10  <antimatroid> don't forget the surprise some people had with planet wars when they had to play some lower ranked players
+2011-09-18T18:48:10  <McLeopold> well, no...
+2011-09-18T18:48:23  <McLeopold> it's match quality, it's not linear
+2011-09-18T18:48:34  *** mathis <mathis!1f102a0e@gateway/web/freenode/ip.31.16.42.14> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T18:48:35  <antimatroid> although i don't imagine we'll have the same problems with ants, it's harder to go too hard
+2011-09-18T18:48:36  <janzert> it seems to me 95% of games will have the first opponent with 15% of match quality
+2011-09-18T18:48:43  <janzert> if I'm looking at this right
+2011-09-18T18:48:46  <McLeopold> antimatroid: that's why were discussing this, to include a small percent of those games
+2011-09-18T18:49:17  <McLeopold> yes, but that may be 25% of the field
+2011-09-18T18:49:40  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: FireFly)
+2011-09-18T18:50:01  <McLeopold> I think match quality falls off quite fast
+2011-09-18T18:50:31  <janzert> anyway I'd say go ahead and give it a try and see how it looks
+2011-09-18T18:50:59  <McLeopold> ok
+2011-09-18T18:51:08  <janzert> my feeling is that 10% may be too large but we can look at it
+2011-09-18T18:52:52  <janzert> also, to see if it's actually working well I think we need to increase turn limits again so that games are actually giving reasonable results
+2011-09-18T18:53:49  <McLeopold> I don't think that matters for matchmaking, does it?
+2011-09-18T18:53:54  <janzert> and to do that I've got the automatic adjuster almost ready :)
+2011-09-18T18:53:58  <McLeopold> are you thinking the mu's should be more spread out?
+2011-09-18T18:55:02  <janzert> well the ranking system doesn't really have anything to work with when the results aren't very good indicators of skill
+2011-09-18T18:55:16  <McLeopold> btw, run the opponent sp on the server to see picking to X percent and sorting by least played
+2011-09-18T18:55:23  <McLeopold> call opponent();
+2011-09-18T18:55:34  <janzert> and we can't look at the game quality the matchmaker is giving us when the rankings it is using aren't any good
+2011-09-18T18:55:41  <McLeopold> 255 is enough to know who can gather well
+2011-09-18T18:56:25  <McLeopold> but, it is fast enought, so 500 may still give us enough results
+2011-09-18T18:56:40  <McLeopold> 6.8 gpm
+2011-09-18T18:57:02  <janzert> don't adjust it manually yet
+2011-09-18T18:57:47  <janzert> I need to test my auto adjuster ;)
+2011-09-18T19:05:57  <CIA-24> aichallenge: janzert epsilon * redb69de / manager/adjust_turnlimits.py : Add script to adjust map turn limits - http://git.io/xProuw
+2011-09-18T19:09:15  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-18T19:09:15  *** ChanServ sets mode: +o amstan
+2011-09-18T19:25:53  <ChrisH> McLeopold: I have several hours of free time right now that I could use to help resolve the Go compile problem. Let me know how I can help.
+2011-09-18T19:35:16  <ChrisH> janzert: I have several hours of free time right now that I could use to help resolve the Go compile problem. Let me know how I can help.
+2011-09-18T19:35:22  *** eashoka <eashoka!7087576f@gateway/web/freenode/ip.112.135.87.111> has quit IRC (Quit: Page closed)
+2011-09-18T19:52:30  *** olexs <olexs!~Leviathan@drms-590c44f0.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-09-18T20:07:26  <McLeopold> ChrisH: do you use ubuntu?
+2011-09-18T20:07:51  <ChrisH> Yes, in a VM, I'm running 10.10 currently.
+2011-09-18T20:08:11  <McLeopold> okay, if you get the repo you can use worker.py to compile in a directory
+2011-09-18T20:08:16  <ChrisH> I've been looking at compiler.py more and I think I see the problem you found.
+2011-09-18T20:08:22  <McLeopold> but, I think the issue is with our jail users
+2011-09-18T20:08:27  <ChrisH> I agree.
+2011-09-18T20:08:51  <McLeopold> Is it possible we can setup ExternalCompiler with 2 commands separated by a semicolon?
+2011-09-18T20:09:07  <ChrisH> I think the calls to check_path(vglob, cmd_errors) are looking in bot_dir instead of in the jail dir
+2011-09-18T20:09:08  <McLeopold> we are passing is a list of tokens to _run_cmd
+2011-09-18T20:09:15  <McLeopold> hmm...
+2011-09-18T20:09:25  <McLeopold> could be, but it works without the jail users
+2011-09-18T20:09:27  <ChrisH> before the call to box.retrieve
+2011-09-18T20:09:39  <McLeopold> or did it?
+2011-09-18T20:09:51  <ChrisH> yes, because House just does it's work in bot_dir directly
+2011-09-18T20:11:10  <McLeopold> so, the check_path could be with CD(bot_dir): check_path()
+2011-09-18T20:11:15  <ChrisH> it is touchy though, because if ExternalCompiler is running with separate=True, then it is doing multiple commands in a for loop and checking the vglob after each, and I don't think you want to do a box.retrieve after each call
+2011-09-18T20:11:57  <ChrisH> I think the check_path should be passed a directory to look in, and ExternalCompiler should get that directory from the sandbox root.
+2011-09-18T20:12:10  <McLeopold> go would not use the separate flag
+2011-09-18T20:12:30  <ChrisH> no it doesn't, so this only matters if another language starts using vglobs
+2011-09-18T20:12:49  <McLeopold> btw, it stands for verify globs
+2011-09-18T20:12:56  <ChrisH> ok,
+2011-09-18T20:13:18  <ChrisH> But do you really need to do that check?
+2011-09-18T20:13:39  <ChrisH> I mean, when the next call is made for the linker can't it just report a file not found error
+2011-09-18T20:14:04  <McLeopold> I would want the stdout of the first command to be reported
+2011-09-18T20:14:08  <ChrisH> so just take out the verify glob check and let the intermediate files get pulled back (if they exist) by box.retrieve
+2011-09-18T20:14:17  <McLeopold> it has the info we really want to send to the user
+2011-09-18T20:14:26  <ChrisH> fair enough
+2011-09-18T20:14:52  <McLeopold> the vglobs was to prevent stdout from being captured unless we really knew we wanted it
+2011-09-18T20:14:53  <ChrisH> in that case fix check_path to look in the jail root dir instead of the bot_dir
+2011-09-18T20:15:16  <ChrisH> because the compiler is working in the jail root dir
+2011-09-18T20:15:31  <McLeopold> that's what with CD() would do
+2011-09-18T20:17:10  <ChrisH> but ExternalCompiler calls CD(bot_dir) and then uses _run_cmd() to spawn a subprocess in the jail dir, the child process doesn't affect the PWD of the parent, so I would think ExternalCompiler is still in bot_dir when it makes the call to check_path()
+2011-09-18T20:18:58  <McLeopold> maybe sandbox could have a check_path?
+2011-09-18T20:19:05  <ChrisH> Yes.
+2011-09-18T20:19:10  <ChrisH> That should work.
+2011-09-18T20:19:45  <ChrisH> There is a member of sandbox holding its working dir
+2011-09-18T20:21:16  <ChrisH> Would it be easy for me to configure my Ubuntu to use the secure Jail implementation of sandbox to verify and fix this issue.
+2011-09-18T20:21:20  <ChrisH> ?
+2011-09-18T20:21:42  *** bhasker <bhasker!2a6d4c27@gateway/web/freenode/ip.42.109.76.39> has joined #aichallenge
+2011-09-18T20:21:53  <bhasker> morning
+2011-09-18T20:22:14  <ChrisH> It doesn't have to actually be secure, just emulate the behavior by using separate directories and subprocesses.
+2011-09-18T20:23:23  <McLeopold> ChrisH: if you can get a fix, I'll test it
+2011-09-18T20:23:39  <McLeopold> janzert does the sandboxing, so he has to approve
+2011-09-18T20:23:54  <ChrisH> I'm willing to do that, but I don't know what I would need to do to set up a proper test enivonment.
+2011-09-18T20:24:08  <ChrisH> Oh, I see, I give you the code and you test.
+2011-09-18T20:24:09  <ChrisH> ?
+2011-09-18T20:24:50  <ChrisH> I could probably send you a patch file, would that work?
+2011-09-18T20:25:28  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has quit IRC ()
+2011-09-18T20:38:47  <McLeopold> ChrisH: we are on github, so you can fork and issue a pull request
+2011-09-18T20:39:04  <McLeopold> to set up an environment, you can setup another ubuntu vm and run setup_worker
+2011-09-18T20:39:12  <McLeopold> we are on 11.x
+2011-09-18T20:39:32  <bhasker> mcleopold are we closer to launching the contest?
+2011-09-18T20:39:39  <ChrisH> McLeopold: Ok, I may need some hand holding on the git stuff, I'm mostly a subversion guy.
+2011-09-18T20:39:39  <McLeopold> bhasker: yes, very close
+2011-09-18T20:39:49  <amstan> McLeopold: how's the death star plans going?
+2011-09-18T20:40:19  <amstan> ChrisH: i can do git handholding
+2011-09-18T20:40:31  <McLeopold> well, there's this small hole directly into the core, but it's probably not noticable, and we've gone out to bid for a contractor to fix it
+2011-09-18T20:40:32  <ChrisH> @amstan: Great!
+2011-09-18T20:40:33  <contestbot> ChrisH: User error, it's not my fault.
+2011-09-18T20:40:50  <amstan> btw, @ stuff is commands for the bot, just call me amstan
+2011-09-18T20:41:11  <ChrisH> amstan: ok, that's confusing
+2011-09-18T20:41:40  <McLeopold> I agree, I would prefer ~
+2011-09-18T20:42:22  <ChrisH> amstan: don't know if you are up to date, but I think McLeopold and I have a fix for the Go compiler problem, but we want to test it before submitting a change request to janzert
+2011-09-18T20:43:25  <ChrisH> So, I have an edit to two python source files that I need to hand off to McLeopold.
+2011-09-18T20:45:04  <ChrisH> McLeopold: it's going to take me some time to set up an Ubuntu 11 VM, do you think that is required, or would giving you my code changes be faster?
+2011-09-18T20:45:17  <McLeopold> I can setup one up to test
+2011-09-18T20:45:50  <amstan> McLeopold: so you want ~?
+2011-09-18T20:45:55  <amstan> for @config reply.whenAddressedBy.chars
+2011-09-18T20:46:03  <McLeopold> yep
+2011-09-18T20:46:15  <McLeopold> some people like doing @amstan stuff
+2011-09-18T20:46:16  <ChrisH> McLeopold: Ok, so what is the best way to get you the code?
+2011-09-18T20:46:20  <McLeopold> it's happened more than once
+2011-09-18T20:46:26  <amstan> what about other ppl who are used to @later tell?
+2011-09-18T20:46:42  <amstan> McLeopold: i could also solve it by deopping myself
+2011-09-18T20:46:48  <McLeopold> ChrisH: fork the repo on github, then clone locally
+2011-09-18T20:47:02  <ChrisH> McLeopold: Ok, sounds easy.
+2011-09-18T20:47:04  <McLeopold> amstan: probably not worth changing now
+2011-09-18T20:47:25  <McLeopold> or, setup contest bot to respond with "use ~" for a time
+2011-09-18T20:47:42  <amstan> yeah, that's hard
+2011-09-18T20:49:05  <McLeopold> amstan: are the ec2 instances 32 or 64?
+2011-09-18T20:49:20  <amstan> McLeopold: 64
+2011-09-18T20:49:21  <amstan> McLeopold: why?
+2011-09-18T20:49:28  <McLeopold> I'm setting up a test worker
+2011-09-18T20:49:44  <McLeopold> 11.04?
+2011-09-18T20:49:48  <amstan> yes
+2011-09-18T20:50:25  <McLeopold> I've become fond of arch lately
+2011-09-18T20:57:16  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-09-18T20:58:52  <bhasker> thats cool mcleopold looking forward to it
+2011-09-18T21:04:34  <ChrisH> amstan: I need a little git help.  I've forked on github, cloned my fork on my machine, and done the required code changes.
+2011-09-18T21:04:53  <ChrisH> amstan: now I think I need to do an add or commit or something, but not sure
+2011-09-18T21:04:53  <amstan> ChrisH: ok?
+2011-09-18T21:05:09  <amstan> ChrisH: git status gives you the changes
+2011-09-18T21:05:15  <amstan> you do git add"
+2011-09-18T21:05:17  <jbroman> ChrisH: "git add [files]", then "git commit", then "git push"
+2011-09-18T21:05:17  <ChrisH> amstan: yes
+2011-09-18T21:05:21  <amstan> git add for each file
+2011-09-18T21:05:21  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-18T21:05:23  <amstan> then git commit
+2011-09-18T21:05:24  <amstan> and git push
+2011-09-18T21:05:43  <amstan> do git status just before you commit to make sure you don't commit things you don't want to
+2011-09-18T21:09:46  <ChrisH> amstan: ok git push completed.
+2011-09-18T21:09:52  <McLeopold> janzert: you around?
+2011-09-18T21:09:52  <amstan> link?
+2011-09-18T21:10:05  <janzert> McLeopold: just got back
+2011-09-18T21:10:15  <McLeopold> I'm setting up a new ubuntu worker locally
+2011-09-18T21:10:21  <jbroman> ChrisH: Once you git-push to GitHub, you can issue a pull request to the original project.
+2011-09-18T21:10:28  <McLeopold> should I create a contest user, or does the script do that?
+2011-09-18T21:10:58  <janzert> which script? ;)
+2011-09-18T21:11:02  <McLeopold> I'm in the setup portion of ubuntu
+2011-09-18T21:11:08  <janzert> worker_setup.py does not
+2011-09-18T21:11:09  <amstan> McLeopold: i think you do, then sudo from inside the user when you start the install
+2011-09-18T21:11:10  <McLeopold> setup_worker
+2011-09-18T21:11:13  <ChrisH> So, I browse back to the main aichallenge project on github and do a pull request?
+2011-09-18T21:11:29  <amstan> ChrisH: yes, something like that
+2011-09-18T21:11:50  <amstan> ChrisH: i think you can do it from your repo actually
+2011-09-18T21:11:57  <amstan> on top there should be a pull request button
+2011-09-18T21:12:05  <ChrisH> yes, it looks like I have to
+2011-09-18T21:12:34  <ChrisH> Ok, pull request submitted.
+2011-09-18T21:12:47  <janzert> worker_setup.py expects to be run as root, but the contest user and the contest files should already be in place
+2011-09-18T21:13:05  <McLeopold> contest files? you mean just cloning the repo?
+2011-09-18T21:13:14  <McLeopold> or pulling the tarball
+2011-09-18T21:13:15  <ChrisH> Now, let's hope it works.  :)
+2011-09-18T21:13:41  <janzert> McLeopold: either would work
+2011-09-18T21:14:00  <janzert> the actual workers pull and unpack the tarball
+2011-09-18T21:14:10  <janzert> but that is just an exported repository
+2011-09-18T21:14:15  <McLeopold> how do you setup a blank password?
+2011-09-18T21:14:39  <janzert> adduser --disabled-password --gecos "" contest
+2011-09-18T21:14:40  <McLeopold> is the tarball the whole thing, or just a piece?
+2011-09-18T21:14:53  <janzert> the tarball is the whole repository
+2011-09-18T21:15:24  <janzert> website/worker_init.py is the script that sets up the worker to the point of handing it over to setup/worker_setup.py
+2011-09-18T21:15:50  <McLeopold> so I can curl | sh that?
+2011-09-18T21:15:56  <janzert> basically all it does is create the contest user and grab and unpack the tarball
+2011-09-18T21:16:04  <janzert> yes, you could
+2011-09-18T21:16:15  <McLeopold> so, on ec2, you have the initial user called ubuntu?
+2011-09-18T21:16:36  <janzert> that's the way the ubuntu images are setup, yes
+2011-09-18T21:16:54  <amstan> janzert: hmm, is there no way to have common code for the 2 classes(House and Jail) merged? maybe make them inheret another class?
+2011-09-18T21:16:55  <janzert> i.e. it's not something I configure
+2011-09-18T21:17:19  <janzert> amstan: they used to but it was more of a mess
+2011-09-18T21:17:36  <janzert> there isn't much duplicated code, just a common api
+2011-09-18T21:19:04  <janzert> McLeopold: oh, worker_init.py expects the worker_api_key as an argument
+2011-09-18T21:19:24  <McLeopold> amstan: how a about a base class that has a bunch of raise "Not Implemented" that they both inherited?
+2011-09-18T21:19:38  <amstan> McLeopold: well, it's kinda late now, but i'm pondering
+2011-09-18T21:19:41  <McLeopold> aka, python does not do abstract
+2011-09-18T21:19:45  <janzert> McLeopold: why bother?
+2011-09-18T21:19:56  <McLeopold> janzert: exactly
+2011-09-18T21:20:05  <janzert> think of it as an example of duck typing
+2011-09-18T21:20:40  <amstan> jbroman: to what extent does your zeta worker code cover what's done with the new epsilon worker?
+2011-09-18T21:20:56  <McLeopold> is zeta been touched?
+2011-09-18T21:20:59  <McLeopold> at all?
+2011-09-18T21:21:10  <janzert> not since march
+2011-09-18T21:21:23  <McLeopold> epsilon is the new beta
+2011-09-18T21:21:24  <amstan> jbroman did some worker code on it
+2011-09-18T21:21:25  <McLeopold> zeta
+2011-09-18T21:21:30  <janzert> and really not since february
+2011-09-18T21:21:49  <McLeopold> I think zeta should be an epsilon to django port, the worker stuff is solid
+2011-09-18T21:22:25  <amstan> McLeopold: he seems to have documented it nicely too: https://github.com/aichallenge/aichallenge/tree/zeta/worker
+2011-09-18T21:24:09  <janzert> looks like what was used for planetwars?
+2011-09-18T21:25:15  <janzert> i.e. it doesn't use a chroot root environment, just uses locked down users on the system
+2011-09-18T21:25:41  <McLeopold> the s3 stuff might be nice
+2011-09-18T21:25:49  <janzert> err, chroot sandbox environment
+2011-09-18T21:26:13  <McLeopold> but then we don't need amazon if we don't want
+2011-09-18T21:27:05  <amstan> McLeopold: how's your worker going? is it for testing Chris's stuff?
+2011-09-18T21:27:10  <McLeopold> yes
+2011-09-18T21:27:11  <McLeopold> close
+2011-09-18T21:28:02  <amstan> McLeopold: link if you need it: https://github.com/aichallenge/aichallenge/pull/254
+2011-09-18T21:31:35  <janzert> how does the check_path(vglob stuff in ExternalCompiler ever work?
+2011-09-18T21:32:12  <ChrisH> janzert: I believe never, but since it is only used by Go lang.... never means not for Go
+2011-09-18T21:32:13  <janzert> it looks like it's checking for the vglobs in whatever directory the compiler is run from
+2011-09-18T21:32:29  <jbroman> amstan: Haven't tried to integrate anything with epsilon.
+2011-09-18T21:32:41  <McLeopold> somehow I got it to report the stdout errors, maybe I was tired
+2011-09-18T21:32:42  <janzert> ChrisH: ahh, that would explain it
+2011-09-18T21:32:45  <amstan> jbroman: i was just wondering how it compares
+2011-09-18T21:32:59  <ChrisH> janzer: Well, it works in on a non-secured machine, because House works in the original directory
+2011-09-18T21:33:14  <McLeopold> janzert: do I just make up an api key from the worker?
+2011-09-18T21:33:20  <jbroman> Haven't touched zeta in quite a while, so it's state will be unchanged for some time, then may enter a state of rapid flux at some point.
+2011-09-18T21:33:39  <janzert> If you're not ever connecting it to the beta server
+2011-09-18T21:33:49  <McLeopold> but I am
+2011-09-18T21:34:26  <janzert> what stage is your worker vm at?
+2011-09-18T21:34:28  <McLeopold> pull the api_create_key from server_info.php?
+2011-09-18T21:34:44  <McLeopold> contest user create, cloned repo, writing the worker_setup cmd
+2011-09-18T21:34:49  <janzert> yes, that's the api_create_key though not the worker_api_key ;)
+2011-09-18T21:34:59  <amstan> McLeopold: yes, and then put that into a get request to one of the php files
+2011-09-18T21:35:18  <janzert> normally api_server_setup.php will create the worker api key
+2011-09-18T21:35:23  <amstan> yes! that ^
+2011-09-18T21:36:06  <janzert> so from the worker run curl 'http://aichallengebeta.hypertriangle.com/api_server_setup.php?api_create_key=<insert create key here>
+2011-09-18T21:36:22  <McLeopold> but that's not in  worker_init.py?
+2011-09-18T21:36:43  <janzert> that feeds you back worker_init.py with the api key
+2011-09-18T21:36:59  <McLeopold> ok
+2011-09-18T21:37:08  <McLeopold> but I already created the contest user
+2011-09-18T21:37:20  <janzert> specifically the ec2 instances start with "curl 'http://aichallengebeta.hypertriangle.com/api_server_setup.php?api_create_key=<create_key> | sh"
+2011-09-18T21:37:41  <McLeopold> from the ubuntu user?
+2011-09-18T21:37:48  <janzert> from root
+2011-09-18T21:37:54  <janzert> but just a sec
+2011-09-18T21:38:09  <janzert> since you already have the user and repository in place
+2011-09-18T21:38:26  <janzert> just manually copy down the api key given to you by the above call
+2011-09-18T21:40:12  <janzert> then from the setup directory run "./worker_setup.py -y --username contest --api-url http://aichallengebeta.hypertriangle.com --api-key <api key you got> --install-cronjob --start"
+2011-09-18T21:40:38  <janzert> oops that url needs a trailing slash I believe
+2011-09-18T21:43:17  <McLeopold> and perhaps a sudo
+2011-09-18T21:44:02  <janzert> sorry, thought I mentioned before it needed to be run as root
+2011-09-18T21:44:53  <janzert> you might want also leave --start off the end
+2011-09-18T21:45:07  <janzert> and may or may not want the --install-cronjob part as well
+2011-09-18T22:01:57  <janzert> btw, so long as ChrisH changes actually work ;) they look fine to me
+2011-09-18T22:02:53  <janzert> also ExternalCompiler.vglobs seems to be completely misnamed since I don't believe it can contain globs at all but must be actual file names
+2011-09-18T22:05:00  *** eashoka <eashoka!70875397@gateway/web/freenode/ip.112.135.83.151> has joined #aichallenge
+2011-09-18T22:11:20  *** bhasker <bhasker!2a6d4c27@gateway/web/freenode/ip.42.109.76.39> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T22:14:16  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T22:15:08  <CIA-24> aichallenge: janzert epsilon * rbd13abc / manager/adjust_turnlimits.py : Add option to run adjust_turnlimits without storing the results in the database - http://git.io/tmg0Rg
+2011-09-18T22:20:18  <McLeopold> janzert: what's a glob, then?
+2011-09-18T22:20:41  <ChrisH> a glob is a wildcard pattern, like *.go.
+2011-09-18T22:20:43  <janzert> *.jp
+2011-09-18T22:20:47  <janzert> yes
+2011-09-18T22:20:59  <janzert> http://en.wikipedia.org/wiki/Glob_%28programming%29
+2011-09-18T22:21:25  <McLeopold> well, I was close :)
+2011-09-18T22:21:53  <McLeopold> my worker is still installing...
+2011-09-18T22:22:14  <janzert> we support a lot of language :}
+2011-09-18T22:23:24  <McLeopold> ec2 probably has faster network than me
+2011-09-18T22:23:26  <ChrisH> yes, it's impressive
+2011-09-18T22:23:43  <ChrisH> (# of langs that is)
+2011-09-18T22:24:31  <janzert> McLeopold: yeah, ec2 sets up way faster than I can locally
+2011-09-18T22:26:14  <janzert> hmm, beta server time is about 14 hours off?
+2011-09-18T22:26:48  <janzert> suspiciously almost exactly 14 hours off
+2011-09-18T22:27:18  <janzert> oh I guess not
+2011-09-18T22:27:40  <janzert> it's just set to moscow daylight time?
+2011-09-18T22:27:51  *** McLeopold1 <McLeopold1!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-18T22:28:01  <janzert> which doesn't really make sense either though
+2011-09-18T22:28:08  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 260 seconds)
+2011-09-18T22:28:15  *** McLeopold1 is now known as McLeopold
+2011-09-18T22:29:02  <janzert> McLeopold: any idea how or why the beta server is set to moscow time?
+2011-09-18T22:29:17  <McLeopold> it's in moscow?
+2011-09-18T22:29:44  <McLeopold> where is demerzel from?
+2011-09-18T22:30:10  <janzert> looks like it's hosted in an he.net datacenter
+2011-09-18T22:30:28  <janzert> pretty sure they're chicago and maybe east coast
+2011-09-18T22:31:19  <janzert> I thought it used to be set to central time, but I may not be remembering correctly
+2011-09-18T22:38:16  <janzert> McLeopold: hmm, speaking of demerzel though any idea why he isn't getting any games since the ranking reset? other C# bots seem to be fine
+2011-09-18T22:41:32  <janzert> looks like he's the seed in a matchup that has a NULL max_turns;
+2011-09-18T22:44:30  <janzert> there are 5 matchups with null max_turns, guessing maybe they were stuck in the transition?
+2011-09-18T22:48:23  <janzert> going to just update all null max_turns to 300
+2011-09-18T22:51:31  <McLeopold> ok
+2011-09-18T22:54:35  <janzert> hmm, that doesn't seem to have unstuck them. What's the best way to just get rid of them?
+2011-09-18T22:54:52  <McLeopold> matchups?
+2011-09-18T22:54:58  <janzert> yes
+2011-09-18T22:55:04  <McLeopold> well, i'd rather keep them and solve the problem
+2011-09-18T22:55:45  <janzert> ok, 266777, 26670 and 266781 or just select * from matchup where worker_id = 0
+2011-09-18T22:57:27  <McLeopold> do you know what that utf-8 error is?
+2011-09-18T22:57:33  <janzert> looks like demerzel's the only seed of those three games that is still an active submisssion
+2011-09-18T22:57:38  <janzert> no
+2011-09-18T22:58:22  <McLeopold> i'll set the worker_id to null
+2011-09-18T22:58:59  <janzert> hard to tell on most of those errors without a traceback
+2011-09-18T22:59:17  <janzert> ahh, it needs a null worker_id to pick it up
+2011-09-18T22:59:18  <McLeopold> yeah, I need to send them back
+2011-09-18T22:59:21  <McLeopold> yes
+2011-09-18T22:59:30  <McLeopold> but it should not have set to zero...
+2011-09-18T23:07:09  <ChrisH> McLeopold: is the test environment still configuring?
+2011-09-18T23:09:24  <janzert> hmm, the worker shows that it got the matchup, ran it and reported the result but I don't see that on the server at all
+2011-09-18T23:10:04  <McLeopold> matchup has errors
+2011-09-18T23:10:19  <janzert> error is null
+2011-09-18T23:10:31  <McLeopold> I see some NoneType errors
+2011-09-18T23:10:33  <janzert> and no errors in the worker log
+2011-09-18T23:10:45  <janzert> for matchup 266777 I mean
+2011-09-18T23:11:12  <janzert> the other had the NoneType errors, I assume related to the seed no longer being an active submission
+2011-09-18T23:11:39  <McLeopold> maybe we should report than nicely?  in get submission?
+2011-09-18T23:11:57  <janzert> http://pastebin.com/CTSUtH88
+2011-09-18T23:12:02  <janzert> relevant section of the worker log
+2011-09-18T23:14:02  <janzert> that's just a guess on the NoneType error since there isn't anything in the worker log about it at all
+2011-09-18T23:15:54  <McLeopold> the php_api.log shows handing out the task, but nothing after that
+2011-09-18T23:16:00  <McLeopold> no response written
+2011-09-18T23:16:18  <McLeopold> if the worker got the hash back, then api_game_result must have crashed
+2011-09-18T23:16:52  <janzert> yeah, shows it as getting the hash back
+2011-09-18T23:18:26  <McLeopold> php did crash
+2011-09-18T23:18:37  <McLeopold> I must have another double $$
+2011-09-18T23:19:38  <janzert> grep doesn't see it ;)
+2011-09-18T23:20:57  <McLeopold> check ~/logs/error.log
+2011-09-18T23:21:15  <McLeopold> the php error is at the end, and the time corresponds with matchup 266777
+2011-09-18T23:21:33  <McLeopold> I should wrap phpshills in a try
+2011-09-18T23:21:36  <janzert> it must have crashed before before line 138 since the matchup didn't get deleted
+2011-09-18T23:21:38  <McLeopold> phpskills
+2011-09-18T23:21:40  <McLeopold> haha
+2011-09-18T23:21:52  <McLeopold> 113
+2011-09-18T23:23:57  <McLeopold> the player_id's in matchup_player are all -1
+2011-09-18T23:24:42  <janzert> weird
+2011-09-18T23:25:02  <janzert> and explains the crash
+2011-09-18T23:25:20  *** delt0r_ <delt0r_!~bob@93-82-83-38.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-09-18T23:25:26  <janzert> but not how it got to that
+2011-09-18T23:25:47  <McLeopold> those id's are set to -1 until the last part of the generate matchup sp
+2011-09-18T23:25:54  <McLeopold> so, the stored procedure crashed?
+2011-09-18T23:26:44  <janzert> maybe it was out of sync with the database schema for a little bit and couldn't handle the new max_turn fields?
+2011-09-18T23:27:05  <janzert> although I don't know what in it would have been effected by that
+2011-09-18T23:29:38  <McLeopold> so, let's ignore that one
+2011-09-18T23:29:48  <McLeopold> although we should have failed earlier
+2011-09-18T23:30:08  <janzert> ok :)
+2011-09-18T23:30:08  <McLeopold> get_task can check for that and delete the matchup?
+2011-09-18T23:30:21  <janzert> probably makes sense
+2011-09-18T23:30:24  <McLeopold> I really need to get transactions working...
+2011-09-18T23:30:31  <McLeopold> but php sucks
+2011-09-18T23:31:58  <McLeopold> user 22, submission_id 1170 is causing the utf8 issues
+2011-09-18T23:32:53  <McLeopold> the submission is active and playing games...
+2011-09-18T23:33:35  <janzert> yep, the log on worker 203 has several games with it that appear normal
+2011-09-18T23:34:56  <McLeopold> across 3 different maps, 3 different workers, that submission is the only constant
+2011-09-18T23:35:44  <janzert> we need the worker to log a more detailed error when it sends an error back to the server
+2011-09-18T23:37:21  *** delt0r_ <delt0r_!~bob@178-190-77-237.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-18T23:37:33  <McLeopold> the traceback is at the debug level
+2011-09-18T23:37:40  <McLeopold> I can bump that up to error :)
+2011-09-18T23:37:50  <janzert> sure
+2011-09-18T23:38:21  <janzert> verbose logs on errors are good ;)
+2011-09-18T23:38:49  <McLeopold> you want the trace back to the database too?
+2011-09-18T23:39:09  <janzert> doesn't matter so much to me
+2011-09-18T23:39:20  <janzert> pulling it out will be more painful
+2011-09-18T23:39:42  <McLeopold> of the database? at least we will see something
+2011-09-18T23:40:29  <janzert> I've looked at worker logs quite a bit, often have an ongoing tail of each one in the background
+2011-09-18T23:40:40  <janzert> this is the first time I've ever looked at the database
+2011-09-18T23:41:29  <CIA-24> aichallenge: McLeopold epsilon * rfa0ee5c / worker/worker.py : increase log level of game errors - http://git.io/UpWRug
+2011-09-18T23:41:29  <CIA-24> aichallenge: McLeopold epsilon * r8cf4e8f / (7 files in 3 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/zpiOTQ
+2011-09-18T23:41:44  <McLeopold> you'll need to recycle the workers now
+2011-09-18T23:41:51  <McLeopold> if you trust my code...
+2011-09-18T23:41:59  <McLeopold> I have a bad track record
+2011-09-18T23:42:03  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-18T23:42:13  <janzert> is that the only change that needs updating?
+2011-09-18T23:42:22  <McLeopold> yep
+2011-09-18T23:42:59  <McLeopold> crap, it is buggy :(
+2011-09-18T23:43:20  <janzert> :P
+2011-09-18T23:43:53  <CIA-24> aichallenge: McLeopold epsilon * r0aeafb9 / worker/worker.py : increase log level of game errors 2 - http://git.io/jHsVYg
+2011-09-18T23:44:02  <McLeopold> this is why I need that worker setup locally...
+2011-09-18T23:45:32  <janzert> ok, 203 update manually
+2011-09-18T23:45:34  *** eashoka <eashoka!70875397@gateway/web/freenode/ip.112.135.83.151> has quit IRC (Ping timeout: 252 seconds)
+2011-09-18T23:49:35  <McLeopold> whoa, my vm network is really slow, but I'm getting a task
+2011-09-18T23:50:23  <McLeopold> janzert: my worker reported, "Could not find an unloacked jail"
+2011-09-18T23:50:24  <janzert> both ec2 workers are updated btw
+2011-09-18T23:50:35  <janzert> :(
+2011-09-18T23:50:57  <McLeopold> but the traceback is in the database :)
+2011-09-18T23:50:58  <janzert> the setup seemed to complete without any errors?
+2011-09-18T23:51:19  <McLeopold> yea, it did
+2011-09-18T23:51:29  <McLeopold> I left off --setup and --install-cron
+2011-09-18T23:52:05  <McLeopold> I have 32 jail users
+2011-09-18T23:52:11  <McLeopold> do I run worker as root?
+2011-09-18T23:52:18  <janzert> nope
+2011-09-18T23:52:31  <McLeopold> do I add contest user to a group?
+2011-09-18T23:52:39  <janzert> you mean you left off --start right?
+2011-09-18T23:52:46  <McLeopold> yes
+2011-09-18T23:53:32  <McLeopold> contest is a member of: contest adm dialout cdrom plugdev lpadmin sambashare admin
+2011-09-18T23:54:02  <McLeopold> jailkeeper?
+2011-09-18T23:54:18  <janzert> under /srv/chroot should be a bunch of jailuser directories
+2011-09-18T23:54:19  <McLeopold> oh, log out, log in
+2011-09-18T23:54:41  <ChrisH> McLeopold: According to sandbox.py that error is produced if the results of os.listdir(jail_base) come back empty.
+2011-09-18T23:55:04  <ChrisH> jail_base is /srv/chroot
+2011-09-18T23:55:16  <McLeopold> yeah, contest didn't have jailkeeper rights because I needed to logout/login
+2011-09-18T23:55:25  <janzert> ChrisH: well or there is a "locked" directory within each jailuser directory
+2011-09-18T23:55:42  <ChrisH> janzer: yes
+2011-09-18T23:55:57  <McLeopold> much better
+2011-09-18T23:56:01  <ChrisH> janzert: I keep leaving the 't' off your handle for some reason.
+2011-09-18T23:56:08  <McLeopold> now I need to manufacture a go game
+2011-09-18T23:56:13  <janzert> heh
+2011-09-18T23:56:25  <ChrisH> I can send you something.
+2011-09-18T23:56:27  <McLeopold> ChrisH:  usually you can tab complete, depending on your chat client
+2011-09-18T23:56:40  <ChrisH> cool, didn't know that.
+2011-09-18T23:56:51  <McLeopold> ChrisH: no, I need a matchup for my worker, don't resubmit
+2011-09-18T23:57:08  <janzert> yep, and ChrisH keeps throwing me cause there is also Chris_... :}
+2011-09-18T23:57:10  <ChrisH> McLeopold: I know.
+2011-09-18T23:57:34  <ChrisH> McLeopold: just saying, I have a zip file on my machine I could send YOU for testing.
+2011-09-18T23:57:54  <janzert> McLeopold: you could run the compiler manually
+2011-09-18T23:57:58  <McLeopold> well, I want to run as a proper worker to test the new jail code you wrote
+2011-09-18T23:58:12  <janzert> so long as it is configured to use the sandbox
+2011-09-18T23:58:19  <McLeopold> janzert: I have my methods, it won't be an issue :)
+2011-09-18T23:58:44  <ChrisH> does this go code need to pass the bot validation, or just compile?
+2011-09-18T23:59:33  <janzert> he's just generating a matchup with your current submission
+2011-09-18T23:59:52  <ChrisH> oh, ok then, that's what I would have sent anyway. :)

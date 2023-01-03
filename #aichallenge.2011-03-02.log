@@ -1,0 +1,994 @@
+2011-03-02T00:00:30  <janzert> then you'll need to replace the 50 on line 228 with min(50, len(total_ranking))
+2011-03-02T00:00:35  <McLeopold> okay, now my maps list is empty :)
+2011-03-02T00:00:59  <janzert> err, min(50, len(total_ranking)-1) actually
+2011-03-02T00:01:16  <janzert> or is it -2 :P
+2011-03-02T00:01:51  <amstan> you guys working on https://github.com/aichallenge/aichallenge/issues#issue/7 ?
+2011-03-02T00:01:55  <janzert> yeah, min(50, len(total_ranking) - 2)
+2011-03-02T00:02:18  <janzert> I think we're just working on getting McLeopold a working setup
+2011-03-02T00:02:48  <amstan> website & db? or the cronjobs too?
+2011-03-02T00:03:11  <janzert> well, the end to end running of games
+2011-03-02T00:03:31  <janzert> no idea if he's sticking it in cronjobs eventually or just running the stuff manually
+2011-03-02T00:03:35  <McLeopold> woot, I got a match
+2011-03-02T00:03:41  <janzert> yay :)
+2011-03-02T00:03:53  <McLeopold> I'm playing so I understand everything.
+2011-03-02T00:04:12  <McLeopold> so, is the dispatch time used as a locking mechanism?
+2011-03-02T00:04:45  <amstan> ups, there's a problem with this
+2011-03-02T00:04:53  <janzert> more or less
+2011-03-02T00:05:23  <janzert> it will redispatch a game if it doesn't get turned in after a certain amount of time
+2011-03-02T00:05:33  <amstan> janzert: i'm just wondering about this: https://github.com/aichallenge/aichallenge/commit/234f0a6f3466f7355b4d119c499d46656e3c1d85
+2011-03-02T00:05:34  <janzert> on the assumption that the worker died
+2011-03-02T00:05:41  <amstan> janzert: what's the stuff at line 187
+2011-03-02T00:05:44  <McLeopold> I also had to put in a fake leaderboard number
+2011-03-02T00:07:10  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-02T00:07:33  <janzert> is there an easy way to see the commits to that file before and after?
+2011-03-02T00:07:44  <amstan> janzert: yes
+2011-03-02T00:07:55  <janzert> Oh I see
+2011-03-02T00:07:59  <amstan> janzert: https://github.com/aichallenge/aichallenge/commits/234f0a6f3466f7355b4d119c499d46656e3c1d85/planet_wars/www/profile.php
+2011-03-02T00:08:33  <janzert> for the last few hours of the finals we didn't display rank updates
+2011-03-02T00:09:02  <janzert> at first I just hid the rank in the users profile, this was a change to show the frozen rank instead of outright hiding it
+2011-03-02T00:09:55  <janzert> the leaderboards were actually still being generated in the background but we just displayed that particular one instead of the most recent one
+2011-03-02T00:10:26  <amstan> yeah, ok
+2011-03-02T00:10:50  <janzert> if you look at the previous commit you'll see that was when that line was commented out
+2011-03-02T00:11:09  <McLeopold> where is a list of submission status codes?
+2011-03-02T00:11:22  <janzert> one of the php files
+2011-03-02T00:11:22  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Ping timeout: 240 seconds)
+2011-03-02T00:11:42  <janzert> I think submission.php? (if that is actually a real file)
+2011-03-02T00:12:17  <janzert> yep, comment at the top of submission.php
+2011-03-02T00:13:30  <McLeopold> so, I've got status 70, error while compiling
+2011-03-02T00:13:30  <janzert> but it would be good if it was changed so all errors were strictly larger than all in progress codes
+2011-03-02T00:14:06  <janzert> having error 30 less than success 40 was an added complexity in several spots
+2011-03-02T00:15:39  <janzert> 70 would have been set by compile_daemon.py
+2011-03-02T00:16:00  <McLeopold> you'd think my matchup wouldn't have been created then...
+2011-03-02T00:16:28  <McLeopold> does compile_daemon log anywhere?
+2011-03-02T00:16:44  <janzert> yep, it should be in compile.log
+2011-03-02T00:17:17  <McLeopold> which would be where?
+2011-03-02T00:17:30  <janzert> the directory you ran it from I believe
+2011-03-02T00:17:50  <McLeopold> unable to locate submission directory
+2011-03-02T00:18:36  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-03-02T00:19:12  <janzert> that's from line 134, if it can't change directory to the submissions directory
+2011-03-02T00:19:24  <janzert> well, actually if it doesn't exist
+2011-03-02T00:19:58  <CIA-89> aichallenge: Alexandru Stan epsilon * r53f5016 / website/profile.php : reverted 234f0a6f3466f7355b4d - http://bit.ly/eLMAR1
+2011-03-02T00:19:58  <CIA-89> aichallenge: Alexandru Stan epsilon * r56e6cc8 / (website/profile.php website/rankings_widget.php): reverted 2a54d293acc553a89499 - http://bit.ly/ftHlIF
+2011-03-02T00:19:59  <CIA-89> aichallenge: Alexandru Stan epsilon * r7e9a11c / website/profile.php : Revert "Disable next game estimate in player profiles". This reverts commit 72bbf63df4e82a062820ea57aa6d414c39063066. - http://bit.ly/eARchY
+2011-03-02T00:20:00  <CIA-89> aichallenge: Alexandru Stan epsilon * r1814194 / (10 files in 2 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/h75OHp
+2011-03-02T00:20:06  <amstan> there we go, now i think the website is actually workable..
+2011-03-02T00:20:19  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-02T00:20:37  <janzert> os .path.join on line 129 might be better
+2011-03-02T00:20:38  <amstan> i defroze the leaderboards
+2011-03-02T00:20:59  <janzert> otherwise make sure your server_info["submissions_path"] has the trailing /
+2011-03-02T00:24:21  <antimatroid> yikes, talk much :P
+2011-03-02T00:25:47  <McLeopold> janzert: you got it, that was my problem
+2011-03-02T00:26:08  <McLeopold> plus a missing directory
+2011-03-02T00:27:17  <janzert> I don't understand why the submission was marked as latest in the database for the pairing script to pick up though
+2011-03-02T00:28:16  <McLeopold> I hacked it
+2011-03-02T00:28:33  <janzert> ahh :P
+2011-03-02T00:31:44  <McLeopold> okay, now we need to add unzip to the server install list
+2011-03-02T00:43:41  <McLeopold> and python-simplejson
+2011-03-02T00:44:54  <McLeopold> janzert: if my worker is setup, I just need to run tournament_manager.sh?
+2011-03-02T00:45:39  <janzert> for testing that should be fine yeah
+2011-03-02T00:45:45  <McLeopold> amstan: it looks like worker needed compile_anything?
+2011-03-02T00:45:58  <janzert> err, tournament_manager.py
+2011-03-02T00:46:05  <McLeopold> why not sh?
+2011-03-02T00:46:20  <McLeopold> oh...
+2011-03-02T00:46:22  <janzert> ahh, I guess tournament_manager.sh is fine as well
+2011-03-02T00:46:29  <McLeopold> that's why it took 45 seconds...
+2011-03-02T00:46:30  <janzert> but that should really be deleted
+2011-03-02T00:46:35  <janzert> I missed that in the cleanup
+2011-03-02T00:47:25  <McLeopold> should compile_anything only be in the worker, or both?
+2011-03-02T00:47:39  <janzert> just in the manager right now
+2011-03-02T00:47:48  <McLeopold> the worker errors out
+2011-03-02T00:47:53  <McLeopold> so it does need it
+2011-03-02T00:47:54  <janzert> oh shoot
+2011-03-02T00:47:57  <janzert> that's right it does
+2011-03-02T00:48:01  <antimatroid> McLeopold: can we not let people keep their old ranking on a resubmit, not even for their first pairing?
+2011-03-02T00:48:03  <McLeopold> so both?
+2011-03-02T00:48:08  <janzert> yes
+2011-03-02T00:48:22  <antimatroid> i think that worked badly last time, particularly for people who submitted a lot (aesvis and bix0r i think)
+2011-03-02T00:48:32  <McLeopold> antimatroid: yes, that's what will happen
+2011-03-02T00:48:49  <antimatroid> above it was said they might get paired near their old ranking?
+2011-03-02T00:48:51  <McLeopold> we will fix the leaderboard display, not the matching logic
+2011-03-02T00:49:45  <McLeopold> antimatroid: but remember, TrueSkill is very different from bayeselo.
+2011-03-02T00:50:42  <McLeopold> crap, now I need apikeys
+2011-03-02T00:50:44  <antimatroid> it still meant people near the top didn't really play bottom ranked bots until the final tournament
+2011-03-02T00:50:49  <antimatroid> where there were a few surprise
+2011-03-02T00:51:03  <McLeopold> oh, I see
+2011-03-02T00:51:27  <McLeopold> they had some bad losses against simple bots they weren't prepared for?
+2011-03-02T00:51:28  <antimatroid> i think it'd be better to make people climb back up every time they resubmit
+2011-03-02T00:51:32  <antimatroid> yeah
+2011-03-02T00:51:44  <antimatroid> while that is there own fault, i think it could be avoided
+2011-03-02T00:51:54  <McLeopold> you still won't get a match against the low guys if you beat the middle
+2011-03-02T00:52:11  <antimatroid> yeah that's fine, bix0r was resubmitting and just staying in the top 30 or so
+2011-03-02T00:52:34  <McLeopold> he was on tcp alot, he should have see something
+2011-03-02T00:52:47  <antimatroid> who was he on tcp?
+2011-03-02T00:52:56  <McLeopold> bix0r
+2011-03-02T00:53:05  <antimatroid> i don't remember seeing that :\
+2011-03-02T00:53:12  <McLeopold> Icould be wrong...
+2011-03-02T00:53:23  <antimatroid> so could i :)
+2011-03-02T00:53:24  *** me0w <me0w!~me0w@197.200.69.85> has joined #aichallenge
+2011-03-02T00:53:56  <antimatroid> me0w: i wish i had your username :(
+2011-03-02T00:54:00  <McLeopold> janzert: what should api_base_url be?
+2011-03-02T00:54:01  <janzert> anyone know if the go programming language has real release bundles we can download instead of pulling from their mercurial repository?
+2011-03-02T00:54:21  <janzert> pretty sure the url to the main server
+2011-03-02T00:54:45  <janzert> i.e. for the real thing http://ai-contest.com/
+2011-03-02T00:55:23  <janzert> basically where it should find the api_*.php pages at
+2011-03-02T01:00:16  <McLeopold> ok
+2011-03-02T01:02:07  <McLeopold> janzert: ensure_submission_is_local is failing on me
+2011-03-02T01:02:53  <antimatroid> i'm with janzert, i found self playing an awesome performance measure in pw
+2011-03-02T01:03:00  <antimatroid> a terrible*******
+2011-03-02T01:03:40  <janzert> McLeopold: remind me where that's found, then tell me what the error is :)
+2011-03-02T01:04:02  <janzert> I found it
+2011-03-02T01:04:07  <McLeopold> line 65
+2011-03-02T01:04:13  <McLeopold> no such file or directory
+2011-03-02T01:04:16  <McLeopold> permissions?
+2011-03-02T01:04:24  <McLeopold> do I need to run it from somewhere?
+2011-03-02T01:04:36  <antimatroid> i'm with jmcarthur about the tron graphs too, we need those back, and leaderboards for countries/organizations
+2011-03-02T01:05:00  <McLeopold> antimatroid: what about the terrible thing?  I didn't quite follow
+2011-03-02T01:05:05  <janzert> it expects the submissions directory to be in the parent of the worker directory and it needs write permission in that directory
+2011-03-02T01:05:18  <antimatroid> testing against your own bots was a terrible performance measure
+2011-03-02T01:05:28  <janzert> and needs to be run from the worker directory
+2011-03-02T01:05:52  <McLeopold> janzert: okay, I try and fix that...
+2011-03-02T01:06:00  <janzert> or you could change the dir="" to the server_info["..."]
+2011-03-02T01:06:06  <McLeopold> should just pull from server_info
+2011-03-02T01:06:25  <janzert> yep, it's just another spot that the path was hard coded before
+2011-03-02T01:07:32  <janzert> so is there a way to get git to download just the worker directory?
+2011-03-02T01:08:39  <McLeopold> line 86, an os.chdir to backend?
+2011-03-02T01:09:06  <McLeopold> janzert: I think the answer is no, I looked it up once
+2011-03-02T01:09:50  <janzert> oh, that should chdir back to the original directory
+2011-03-02T01:10:05  <janzert> which before was always ../../backend
+2011-03-02T01:10:09  <McLeopold> http://www.kernel.org/pub/software/scm/git/docs/git-read-tree.html#_sparse_checkout
+2011-03-02T01:10:47  <McLeopold> a submodule might be more appropriate?
+2011-03-02T01:10:53  <janzert> thanks
+2011-03-02T01:11:22  <janzert> actually I'm working on replacing the svn checkout of the worker code for the worker setup script
+2011-03-02T01:11:58  <janzert> seems like I'll need to do something a little different
+2011-03-02T01:13:28  <antimatroid> hmmm, if we did graphs, would the be your position over time or your relative level compared to hunter bot?
+2011-03-02T01:13:58  <McLeopold> antimatroid: I suggest 3 numbers: rank, skill, hunterbot index
+2011-03-02T01:14:00  <antimatroid> it would be nice to smooth it over relative to hunter bot (like average every day then interpret the linear line
+2011-03-02T01:14:01  <janzert> percentile over time
+2011-03-02T01:14:33  <antimatroid> smoothing would be to try and remove the jumps at resubmit time
+2011-03-02T01:14:43  <McLeopold> different people will want different numbers, so we will give what they want
+2011-03-02T01:14:53  <McLeopold> there's no use trying to jam all info into 1 number
+2011-03-02T01:14:55  <antimatroid> percentile over time would really point out danielVF's point
+2011-03-02T01:15:19  <antimatroid> actually, maybe not
+2011-03-02T01:15:24  <CIA-89> aichallenge: Marco Leise epsilon * r7c018c1 / (5 files in 4 dirs):
+2011-03-02T01:15:24  <CIA-89> aichallenge: - playback controls
+2011-03-02T01:15:24  <CIA-89> aichallenge: - cpu usage set to 50%
+2011-03-02T01:15:24  <CIA-89> aichallenge: - Internet Explorer 8 hack - http://bit.ly/eGMBh3
+2011-03-02T01:15:24  <antimatroid> no, that's fine
+2011-03-02T01:15:34  <antimatroid> his was for absolute positions
+2011-03-02T01:15:45  <McLeopold> also, the graph over time would have different lines for different submissions
+2011-03-02T01:16:01  <antimatroid> McLeopold: sure, or you could smooth it :P
+2011-03-02T01:16:17  <amstan> contestbot: seen amriedle
+2011-03-02T01:16:17  <contestbot> amstan: amriedle was last seen in #aichallenge 3 weeks, 3 days, 2 hours, 40 minutes, and 50 seconds ago: <amriedle> why would you use an iphone ...
+2011-03-02T01:16:19  <McLeopold> well make it a button
+2011-03-02T01:16:35  <amstan> you guys should contact that guy, ask him how he made the original one
+2011-03-02T01:16:49  <McLeopold> I need to remember to say something stupid just before I leave IRC from now on...
+2011-03-02T01:17:10  * antimatroid just doesn't leave
+2011-03-02T01:17:25  <amstan> McLeopold: yeah, you should get a server+ssh+screen+irssi going
+2011-03-02T01:17:26  <McLeopold> contestbot: seen antimatroid
+2011-03-02T01:17:26  <contestbot> McLeopold: antimatroid was last seen in #aichallenge 16 seconds ago: * antimatroid just doesn't leave
+2011-03-02T01:17:36  <McLeopold> lol
+2011-03-02T01:17:59  <McLeopold> irssi?
+2011-03-02T01:18:13  <amstan> http://en.wikipedia.org/wiki/Irssi
+2011-03-02T01:19:01  <amstan> but who am i kidding, i do the same as McLeopold
+2011-03-02T01:19:19  <jmcarthur> my favorite one of those:
+2011-03-02T01:19:21  <jmcarthur> "mmorrow was last seen on #ghc 1 year, 43 days, 3 hours, 21 minutes and 32 seconds ago, saying: * mmorrow is rtfm'ing"
+2011-03-02T01:19:43  <jmcarthur> it's a long manual
+2011-03-02T01:20:57  <DanielVF> lol
+2011-03-02T01:20:58  <jmcarthur> man, i just flipped my code on its head. made a major structural change, cleaned up type errors all over the place, and now it just works...
+2011-03-02T01:21:14  <jmcarthur> which always kind of worries me a little bit
+2011-03-02T01:21:23  <McLeopold> DanielVF!
+2011-03-02T01:21:31  <DanielVF> Greets!
+2011-03-02T01:21:54  <McLeopold> so, you gonna help out with the launch?
+2011-03-02T01:22:14  <DanielVF> No, too busy.
+2011-03-02T01:22:34  <McLeopold> too bad
+2011-03-02T01:22:36  <DanielVF> I'm just going to be on the sidelines and make comments about the way the rest of you should be doing things. :P
+2011-03-02T01:23:01  <janzert> hey, that's what I've been doing
+2011-03-02T01:23:06  <DanielVF> haha
+2011-03-02T01:23:09  <janzert> guess I can share space on the bench here
+2011-03-02T01:23:25  <amstan> janzert: i don't remember buying a bench
+2011-03-02T01:23:28  <McLeopold> so, this chdir-ing in the tournament manager makes me nervous
+2011-03-02T01:23:34  <DanielVF> I am just on the edge of getting sucked into writing code though.
+2011-03-02T01:23:44  <McLeopold> a starter bot?
+2011-03-02T01:23:48  <janzert> in what way?
+2011-03-02T01:24:03  <amstan> star!ter!bot! star!ter!bot!
+2011-03-02T01:24:23  <janzert> it's certainly not secure, but we are compiling submissions on the main server as the contest user too so...
+2011-03-02T01:25:03  <DanielVF> Ptrace works for everything but java right?
+2011-03-02T01:25:04  <janzert> that's something I hope can be fixed before the contest starts, move all compilation to the workers and make it sandboxed
+2011-03-02T01:25:35  <McLeopold> janzert: i don't think I need to chdir back to worker anymore?
+2011-03-02T01:25:44  <McLeopold> if I'm using server_info?
+2011-03-02T01:25:47  <DanielVF> Can't we just use ptrace sandboxing for non-java, and use java's built in security for java apps?
+2011-03-02T01:26:01  * Frontier wonders if there is any language in the world that can instruct the compiler to execute sql statements or delete files
+2011-03-02T01:26:15  <janzert> I think it would be best, so you're executing in a known directory
+2011-03-02T01:26:23  <antimatroid> DanielVF: it's good being able to ping you and janzert :)
+2011-03-02T01:26:33  <amstan> Frontier: i think haskell and cl do this
+2011-03-02T01:26:46  <amstan> jmcarthur: ^
+2011-03-02T01:26:49  <janzert> and if you somehow write a file it isn't written in some poor submissions directory
+2011-03-02T01:27:11  <McLeopold> like if the code throws a temper?
+2011-03-02T01:27:13  <amstan> DanielVF: idk, maybe we can
+2011-03-02T01:27:27  <janzert> just save the pwd directory before the first chdir and then chdir back to it afterwards
+2011-03-02T01:27:29  <amstan> DanielVF: jeff's pretty confident of the current sandbox though
+2011-03-02T01:28:38  <janzert> i.e. save os.getcwd() before and then os.chdir back to it
+2011-03-02T01:29:02  <jmcarthur> Frontier: i actually demoed that near the beginning of the planet wars contest
+2011-03-02T01:29:41  <jmcarthur> Frontier: had it create a new file in the directory with all the other bots
+2011-03-02T01:29:48  <McLeopold> crap, now maps is hard coded...
+2011-03-02T01:29:51  <jmcarthur> was fixable in that particular case
+2011-03-02T01:29:58  <jmcarthur> but i think there are other ways around it
+2011-03-02T01:29:59  <antimatroid> McLeopold: ?
+2011-03-02T01:30:13  <janzert> :) yes I suspect you'll keep running into hardcoded paths for a while yet
+2011-03-02T01:30:15  <McLeopold> antimaroid: the map dir in tournament_manager.py
+2011-03-02T01:31:19  <DanielVF> amstan: Ah. I didn't know there was a new one.
+2011-03-02T01:31:31  <DanielVF> will have to go see
+2011-03-02T01:31:44  <amstan> DanielVF: it's just chmodding and doing some other fun stuff
+2011-03-02T01:31:56  <DanielVF> ah.
+2011-03-02T01:32:26  <amstan> contestbot: later tell j3camero please update https://github.com/aichallenge/aichallenge/wiki/Sandboxing with our current sandbox
+2011-03-02T01:32:26  <contestbot> amstan: I come to serve.
+2011-03-02T01:33:20  <janzert> current sandbox could/should certainly be improved
+2011-03-02T01:34:06  <amstan> janzert: can you record some of the issues?
+2011-03-02T01:34:26  <pyro-> am i correct in assuming that ants owned by oneself are given as owned by 0?
+2011-03-02T01:34:37  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2011-03-02T01:35:18  <antimatroid> pyro-: yes
+2011-03-02T01:35:18  <pyro-> from the specification page "a row col owner                      # live ant square
+2011-03-02T01:35:23  <pyro-> antimatroid: ty
+2011-03-02T01:35:26  <antimatroid> and the first enemy you see will be 1 for the rest of the game, and so on
+2011-03-02T01:35:48  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 264 seconds)
+2011-03-02T01:37:33  <amstan> Frontier: i get script error. source line 0 in chrome: http://home.hypertriangle.com/~alex/aichallenge/ants/www/visualizer/offline.html
+2011-03-02T01:37:51  <janzert> amstan: the biggest first thing is that it leaves stuff in the jail user home directory from previous bot runs (any .dot files/directories), but overall it works on a blacklist principle of trying to block all the bad stuff instead of a whitelist of things the bot is allowed to access/do
+2011-03-02T01:40:24  <McLeopold> janzert: add_maps_to_database looks like a silly script
+2011-03-02T01:41:25  <McLeopold> did we delete the planetwars mapgen?
+2011-03-02T01:41:54  <janzert> it's in the manager
+2011-03-02T01:42:09  <amstan> McLeopold: maybe, it should be deleted though
+2011-03-02T01:42:15  <McLeopold> not yet
+2011-03-02T01:42:25  <McLeopold> it should be pulled into a planetwars folder
+2011-03-02T01:42:34  <janzert> also the manager add_maps_to_database.py is a little better
+2011-03-02T01:42:51  <McLeopold> I would assume we can delete the one in worker
+2011-03-02T01:42:58  <janzert> I'm not sure why the worker one didn't get updated
+2011-03-02T01:43:09  <janzert> well, you'll need one on the worker
+2011-03-02T01:43:25  <janzert> or do you
+2011-03-02T01:43:29  <McLeopold> why? does a worker have it's own database?
+2011-03-02T01:43:33  <janzert> yes
+2011-03-02T01:43:39  <McLeopold> O_o
+2011-03-02T01:43:47  <amstan> O_o
+2011-03-02T01:43:54  <McLeopold> what the hell for?
+2011-03-02T01:43:59  <janzert> it definitely uses the database to track what jail_users are in use
+2011-03-02T01:44:10  <janzert> I'm not sure if it uses it to look up maps or not
+2011-03-02T01:44:15  <McLeopold> I thought that was all api.php stuff?
+2011-03-02T01:44:53  <antimatroid> Frontier: when a player gets a positive score and an enemy has 0, thir colour completely disappears on the score line
+2011-03-02T01:45:05  <janzert> so it doesn't need the maps added to the database on the worker
+2011-03-02T01:45:19  <janzert> that would explain why the script is outdated there too
+2011-03-02T01:45:39  <McLeopold> I don't see sql code in tournement manager
+2011-03-02T01:45:42  <Frontier> antimatroid: what is bad about that? :)
+2011-03-02T01:45:52  <janzert> it's in user_sadbox.py
+2011-03-02T01:45:53  <antimatroid> you can no longer see their score of 0
+2011-03-02T01:46:05  <antimatroid> and the right one (yellow) seems to be broken in my chrome
+2011-03-02T01:46:06  <Frontier> amstan: What is the error? I have 5 browser windows open and cannot reproduce it
+2011-03-02T01:46:17  <antimatroid> it's not showing any score and takes half after red gets a point
+2011-03-02T01:46:41  <McLeopold> janzert: how about an api_get_jail_user.php?
+2011-03-02T01:46:48  <janzert> you can't
+2011-03-02T01:46:53  <janzert> it's worker specific
+2011-03-02T01:47:02  <antimatroid> same happens with blues number of ants actually
+2011-03-02T01:47:02  <DanielVF> We should nix all that choas
+2011-03-02T01:47:13  <janzert> it's locking the jail user on that worker
+2011-03-02T01:47:15  <Frontier> antimatroid: Ok, I should drop the bar ^^ - for the scores and just display them somewhere else
+2011-03-02T01:47:16  <McLeopold> okay, so, how about a pickle file?
+2011-03-02T01:47:22  <DanielVF> and just assign each tournament manager four jail users on startup
+2011-03-02T01:47:25  <amstan> Frontier: first thing when i load the page: http://home.hypertriangle.com/~alex/error.png
+2011-03-02T01:47:43  <antimatroid> Frontier: maybe put the scores next to the names at hte top?
+2011-03-02T01:48:02  <janzert> I don't think pickles are guaranteed to lock correctly if written to concurrently
+2011-03-02T01:48:04  <antimatroid> that went badly with pw when it went onto two lines
+2011-03-02T01:48:14  <McLeopold> if you just need simple locking, a database is overkill
+2011-03-02T01:48:21  <janzert> I would think it would actually just corrupt it
+2011-03-02T01:48:25  <Frontier> my lines wont go on two lines, they will scroll
+2011-03-02T01:48:30  <janzert> yeah
+2011-03-02T01:48:31  <amstan> Frontier: and after.. i click load text below, then i see a very short game happen, then i click rewind.. nothing happens
+2011-03-02T01:48:45  <DanielVF> You don't even need locking if you just give a tm the users to use on startup
+2011-03-02T01:48:50  <McLeopold> but, at least it isn't really doing much other than jail user management
+2011-03-02T01:49:15  <McLeopold> DanielVF: would that be a performance issue, creating users each time?
+2011-03-02T01:49:31  <DanielVF> No, you don't create them over and over
+2011-03-02T01:49:37  <janzert> don't create them each time, just remember which ones you've handed out
+2011-03-02T01:49:38  <DanielVF> just use them over and over
+2011-03-02T01:49:46  <Frontier> amstan, I can call the visualizer from your server. what is your chrome version?
+2011-03-02T01:49:53  <janzert> so long as you only have one process running tm's
+2011-03-02T01:49:59  <antimatroid> Frontier: http://img218.imageshack.us/i/viz.png/
+2011-03-02T01:50:08  <amstan> Frontier: cromium 11.0.677.0 (75483) Ubuntu 10.10
+2011-03-02T01:50:09  <DanielVF> last tournament we had two tm's running games on each server
+2011-03-02T01:50:11  <antimatroid> my "right most" bars don't display properly in chrome
+2011-03-02T01:50:30  <DanielVF> just give user1,user2,user3,and user4 to the first one
+2011-03-02T01:50:30  <McLeopold> for 575 seconds?
+2011-03-02T01:50:43  <DanielVF> and user5...etcs to the second one
+2011-03-02T01:50:51  <DanielVF> no need for locking or anything
+2011-03-02T01:50:53  <amstan> Frontier: just a note, http://ai-contest.com/visualizer.php?game_id=9559558 is really slow for me lately
+2011-03-02T01:51:07  * DanielVF heading to sleep again - new kid finished eating.
+2011-03-02T01:52:47  <Frontier> amstan: Chromium 11 ?? Why does mine say 9?
+2011-03-02T01:53:14  <Frontier> Ah probably because 11 is unstable :p
+2011-03-02T01:54:10  <amstan> apparently i have chromium-daily ppa
+2011-03-02T01:54:17  <amstan> updating..
+2011-03-02T01:54:26  <Frontier> downdate plz :)
+2011-03-02T01:54:39  <amstan> that would be harder, i think
+2011-03-02T01:54:45  <Frontier> I'm sure with a stable release it will work
+2011-03-02T01:55:04  <amstan> hold on, i haven't updated in a week or so, it might work now
+2011-03-02T01:55:04  <Frontier> 11 is hard masked in Gentoo
+2011-03-02T01:55:41  <amstan> yay! old visualizer is fast again
+2011-03-02T01:55:57  <McLeopold> sweet! a gentoo fan
+2011-03-02T01:56:30  <McLeopold> janzert/amstan: so is the sandbox stuff in the worker dir the current stuff?
+2011-03-02T01:56:32  <amstan> Frontier: still the same error on load of your script, but now everything seems to work
+2011-03-02T01:56:44  <janzert> McLeopold: yes
+2011-03-02T01:56:45  <amstan> McLeopold: yes, current as of  pw
+2011-03-02T01:57:05  <McLeopold> I thought jeff had a newer sadbox, than pw
+2011-03-02T01:57:40  <janzert> hmm, I remember he was playing with it at one time but I never saw a result
+2011-03-02T01:58:14  <amstan> McLeopold, janzert: he was playing with VMs, but they're too slow for our use
+2011-03-02T01:58:42  <janzert> heh, especially if we're going to stay on ec2
+2011-03-02T01:58:54  <janzert> a vm on top of a vm
+2011-03-02T02:00:59  <Frontier> amstan: You could remove the last lines in visualizer.js where it sets up the error handler and check again. Also look at the JavaScript error console. Any hint would help. Where is line 0 anyway?
+2011-03-02T02:01:20  <McLeopold> janzert: the map name comes through the api_get_matchup.php, so no map database entries on worker
+2011-03-02T02:01:29  <McLeopold> just the files
+2011-03-02T02:01:39  <McLeopold> And we can get rid of sql use on workers
+2011-03-02T02:01:43  <janzert> right, I thought I said I had found that
+2011-03-02T02:01:49  <McLeopold> I missed it
+2011-03-02T02:02:09  <McLeopold> amstan is spamming us with beta browser issues
+2011-03-02T02:02:13  <janzert> :)
+2011-03-02T02:02:28  <amstan> Frontier: can you remind me where i can find that?
+2011-03-02T02:02:38  <Frontier> Ctrl+Shift+J
+2011-03-02T02:02:57  <amstan> Frontier: that opens the downloads window..
+2011-03-02T02:03:00  <Frontier> the file is in ants/www/visualizer/js/visualizer.js
+2011-03-02T02:03:21  <Frontier> they changed the hotkeys? -.-
+2011-03-02T02:04:05  <Frontier> menu->tools->developer console?
+2011-03-02T02:04:07  <amstan> Frontier: anyway.. the last 3 lines seem to be the problem
+2011-03-02T02:04:18  <amstan> Frontier: commenting them makes the error dissapear
+2011-03-02T02:04:39  <Frontier> not really, they merely display an error that would have disapeared in the console
+2011-03-02T02:04:52  <Frontier> if the implementation has no bugs
+2011-03-02T02:05:44  <Frontier> But if there are no side effects, I'm fine with it, too... damn beta versions
+2011-03-02T02:06:52  <amstan> Frontier: ok.. i give up, i think dev console is broken..
+2011-03-02T02:07:24  <amstan> Frontier: so... idk why i'm running such a version, it was probably me in a hurry trying to get a ppa link for chromium when i installed
+2011-03-02T02:09:14  * Frontier hopes that IE 9 gets out of this state before the contest begins. excanvas is a crutch.
+2011-03-02T02:09:52  <pyro-> antimatroid can you explain to me from where comes rows−abs(a.row−b.row) when calculating distance
+2011-03-02T02:10:33  <McLeopold> tournament manager fails if there are no matchups...
+2011-03-02T02:11:00  <antimatroid> pyro-: it's because the edges of the grid are wrapped
+2011-03-02T02:11:43  <janzert> McLeopold: in the full setup that was fine because it would be restarted after 5 seconds
+2011-03-02T02:11:56  <pyro-> when computing it in C++ will you translate this formula directly or you know a faster method?
+2011-03-02T02:12:02  <antimatroid> you will notice getLocation is a bit rank too, depending on how the language deals with -x%n, you need to translate it too
+2011-03-02T02:12:19  <janzert> i.e. it was run from tournament_manager_runner.sh
+2011-03-02T02:12:31  <antimatroid> pyro-: what do you mean?
+2011-03-02T02:12:38  <McLeopold> janzert: maybe it should just wait a little and try again
+2011-03-02T02:12:55  <janzert> that would be fine too
+2011-03-02T02:13:11  <janzert> tjat's effectively what it did
+2011-03-02T02:13:13  <pyro-> i don't actually have any ideas but from looking at how complectaed it is i wonder if theres a faster method of computing the same result
+2011-03-02T02:13:20  <antimatroid> you could calculate abs(a.row-b.row) first, but it was more lines
+2011-03-02T02:13:24  <pyro-> than making calls to abs and min and stuff
+2011-03-02T02:13:41  <antimatroid> you need min once and abs once, i do abs twice
+2011-03-02T02:13:46  <McLeopold> you do need to calculate 2 values and compare
+2011-03-02T02:13:59  <pyro-> okay. ty
+2011-03-02T02:14:18  <antimatroid> np
+2011-03-02T02:15:29  <McLeopold> you could calc the distance, and if it was > half, then recalc?
+2011-03-02T02:15:47  <antimatroid> a bit messy
+2011-03-02T02:15:55  <McLeopold> yeah, but could be faster
+2011-03-02T02:16:43  <antimatroid> i'm going to try storing distances to just outside the field of view from each square later, but i have no idea if it'll be feasible
+2011-03-02T02:16:58  <antimatroid> and then just use the startup time to generate them
+2011-03-02T02:18:56  <McLeopold> janzert: I actually got a game to play on my server now
+2011-03-02T02:19:11  <McLeopold> but, I can't look at it.  "replay can't be parsed"
+2011-03-02T02:19:14  *** Palmik_ <Palmik_!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2011-03-02T02:19:25  <janzert> yay, you're getting close
+2011-03-02T02:19:30  <McLeopold> yeah
+2011-03-02T02:19:45  <McLeopold> I'm going to push various changes I made tonight
+2011-03-02T02:19:54  <McLeopold> mostly pushing vars to server_info
+2011-03-02T02:20:08  <McLeopold> I may break crap
+2011-03-02T02:21:45  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Ping timeout: 260 seconds)
+2011-03-02T02:21:46  <CIA-89> aichallenge: Marco Leise epsilon * r591048c / ants/www/visualizer/js/visualizer.js : removed onerror handler, corrected score display - http://bit.ly/gsDtjl
+2011-03-02T02:22:40  <Frontier> McLeopold: Would you be so kind to send the replay to the guy who waits for instead of complaining? :o)
+2011-03-02T02:23:18  <McLeopold> ?
+2011-03-02T02:23:21  <McLeopold> you need something?
+2011-03-02T02:23:23  <Frontier> oh wait.. it is an old replay , right?
+2011-03-02T02:24:09  <Frontier> McLeopold: If I had a good replay file I could check some things: the parser and the performance
+2011-03-02T02:24:31  <McLeopold> I actually haven't written the stuff to not send food each turn.
+2011-03-02T02:24:45  <Frontier> Ok, I'll wait for the changes.
+2011-03-02T02:24:48  <McLeopold> ok
+2011-03-02T02:25:09  <McLeopold> Put an issue in github for me.  I may forget all the little changes we need.
+2011-03-02T02:26:39  <McLeopold> janzert: so, did you only use tournament_manager_runner.sh?
+2011-03-02T02:31:31  <janzert> no, start_worker.sh is what is run at worker boot up
+2011-03-02T02:31:49  <janzert> it runs two tournament_manager_runners
+2011-03-02T02:31:50  <McLeopold> so, tournament_*_runner can be deleted?
+2011-03-02T02:31:59  <janzert> nope
+2011-03-02T02:32:01  <McLeopold> ok
+2011-03-02T02:32:11  <janzert> it's a three stage process :}
+2011-03-02T02:32:34  <janzert> start_worker -> tournament_manager_runner -> tournament_manager
+2011-03-02T02:32:50  *** me0w <me0w!~me0w@197.200.69.85> has quit IRC (Quit: Quitte)
+2011-03-02T02:33:50  <CIA-89> aichallenge: McLeopold epsilon * rcab6ff2 / (7 files in 2 dirs): Removed some hard coded paths and added values to server_info files. - http://bit.ly/eQ8utR
+2011-03-02T02:33:50  <McLeopold> multi-user is going to be a headache to code for...
+2011-03-02T02:33:51  <CIA-89> aichallenge: McLeopold epsilon * r8bb5529 / (20 files in 9 dirs): Merge branch 'epsilon' of https://github.com/aichallenge/aichallenge into epsilon - http://bit.ly/h2JttT
+2011-03-02T02:33:59  <McLeopold> lots of changes to tournament manager
+2011-03-02T02:34:48  <janzert> yeah, also maybe keep in mind that the match queue should be turned into a job queue and have compilation jobs added to it
+2011-03-02T02:34:55  <McLeopold> crap, can we use some exports instead of hard coded shell script paths?
+2011-03-02T02:35:26  <McLeopold> I'm not touching that change with a ten foot pole.
+2011-03-02T02:35:58  <janzert> but it should be easier than the multi-user change you're already doing :)
+2011-03-02T02:36:15  <janzert> and will be even easier if it's kept in mind while you're doing it
+2011-03-02T02:36:21  <McLeopold> actually, part of the matching data could be a flag that says "not compiled yet"?
+2011-03-02T02:36:42  <McLeopold> or do you want a compile verified outside of a match?
+2011-03-02T02:36:56  <janzert> yeah, I think they should be separate
+2011-03-02T02:37:22  <janzert> also prioritized so they are handed out ahead of matches
+2011-03-02T02:37:23  <McLeopold> so, a generic, "get_work" function
+2011-03-02T02:37:29  <janzert> yes
+2011-03-02T02:37:49  <McLeopold> does the compiled stuff need to be sent back to the main server then?
+2011-03-02T02:38:03  <janzert> no, just a report of success or error
+2011-03-02T02:38:17  <McLeopold> so, when a worker needs the compiled file?
+2011-03-02T02:38:47  <janzert> everything should just be compiled on the worker that needs it
+2011-03-02T02:39:06  <McLeopold> so each worker needs to compile the same submission for itself?
+2011-03-02T02:39:08  <janzert> handing around the compiled version doesn't really save much in the long run
+2011-03-02T02:39:16  <janzert> yes
+2011-03-02T02:39:53  <McLeopold> that might suck if different workers have different hardware
+2011-03-02T02:39:58  <janzert> after a worker has been up for an hour or so it had pretty much all the submissions local anyway and just had the new ones to add as they came in
+2011-03-02T02:40:05  <McLeopold> you'd have bots that run on some, but not others, maybe
+2011-03-02T02:40:15  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-02T02:40:28  <janzert> yeah, but that isn't any different if you compile everything locally or not
+2011-03-02T02:40:33  <McLeopold> ture
+2011-03-02T02:40:43  <janzert> all workers need to match
+2011-03-02T02:42:09  <McLeopold> okay, time for bed, thx for the help
+2011-03-02T02:42:32  <janzert> yeah, about time for me to go as well
+2011-03-02T02:42:46  <janzert> I've got about half the worker build script working again :/
+2011-03-02T02:53:16  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 260 seconds)
+2011-03-02T02:59:09  *** Meatkat <Meatkat!~bovard@217.113.66.228> has joined #aichallenge
+2011-03-02T03:29:36  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-02T03:45:56  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-02T03:47:45  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has joined #aichallenge
+2011-03-02T03:48:00  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-02T03:58:10  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-03-02T04:18:56  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-03-02T04:19:52  <antimatroid> hmmmm
+2011-03-02T04:19:53  <antimatroid> http://img263.imageshack.us/img263/4400/symmetric.png
+2011-03-02T04:20:21  <antimatroid> both of those games are symmertic, but only one of them has the payoff matrices as the transpose of each other
+2011-03-02T04:33:47  <antimatroid> game idea: tron on a graph, but edges are markes as visited, not nodes
+2011-03-02T04:44:53  *** amstan <amstan!~amstan@206-248-153-196.dsl.teksavvy.com> has quit IRC (Ping timeout: 246 seconds)
+2011-03-02T04:59:25  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-03-02T05:02:20  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has quit IRC (Remote host closed the connection)
+2011-03-02T05:03:22  *** antimatroid1 <antimatroid1!~Nick@13.129-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-02T05:05:40  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-03-02T05:05:56  *** antimatroid <antimatroid!~Nick@133.106-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 276 seconds)
+2011-03-02T05:53:36  *** Migi32 <Migi32!~migi@178-117-109-234.access.telenet.be> has joined #aichallenge
+2011-03-02T06:43:15  *** delt0r <delt0r!~delt0r@188-22-160-46.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-02T07:21:57  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Remote host closed the connection)
+2011-03-02T07:23:21  <aerique> from the spec it isn't quite clear to me when the map is sent to a bot
+2011-03-02T07:24:19  <antimatroid1> what do you mean?
+2011-03-02T07:25:09  <antimatroid1> have you looked at the sample input?
+2011-03-02T07:27:14  <antimatroid1> aerique: https://github.com/aichallenge/aichallenge/tree/epsilon/ants/bots/cpp my bot is there too if you want an example
+2011-03-02T07:27:26  <aerique> antimatroid1: yes, if you check https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification there's a chapter "Maps" and an example map.  is that never sent to a bot?  just the sample input?
+2011-03-02T07:27:43  <antimatroid1> aerique: a bot never receives a char map
+2011-03-02T07:27:55  <aerique> antimatroid1: alright, that's clear
+2011-03-02T07:28:00  <antimatroid1> only information each turn about squares one of their live ants can currently see
+2011-03-02T07:28:06  <aerique> thanks :)
+2011-03-02T07:28:18  <antimatroid1> and you only get water information once, so don't wipe that
+2011-03-02T07:28:31  <antimatroid1> you never get land information then everything else repeats
+2011-03-02T07:28:51  <antimatroid1> except dead ants just show up once if visible when they die, just treat those as land in the starter pack
+2011-03-02T07:30:15  <aerique> right, i got it now
+2011-03-02T07:35:21  *** Migi32 <Migi32!~migi@178-117-109-234.access.telenet.be> has quit IRC (Ping timeout: 246 seconds)
+2011-03-02T07:36:35  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-02T07:47:38  *** Migi32 <Migi32!~migi@178-117-109-234.access.telenet.be> has joined #aichallenge
+2011-03-02T08:21:07  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-02T08:25:39  *** emgallar <emgallar!a375a4ce@gateway/web/freenode/ip.163.117.164.206> has joined #aichallenge
+2011-03-02T08:37:52  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 264 seconds)
+2011-03-02T08:45:12  <antimatroid1> anyone stumbled upon the geese video on reddit yet?
+2011-03-02T08:45:20  <antimatroid1> i've been waiting for hours for them to finally submit it
+2011-03-02T08:45:37  *** delt0r_ <delt0r_!~delt0r@188-22-175-190.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-02T08:47:01  *** delt0r <delt0r!~delt0r@188-22-160-46.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-02T08:59:38  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Remote host closed the connection)
+2011-03-02T08:59:47  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-03-02T09:05:32  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-02T09:33:22  *** helo <helo!46593219@gateway/web/freenode/ip.70.89.50.25> has joined #aichallenge
+2011-03-02T09:53:45  *** helo <helo!46593219@gateway/web/freenode/ip.70.89.50.25> has quit IRC (Quit: Page closed)
+2011-03-02T10:13:14  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-02T10:19:58  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-02T10:26:49  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-02T10:33:27  <janzert> anyone familiar with scala?
+2011-03-02T10:36:42  <jmcarthur> i'm familiar with a few of its features, but i'm very inexperienced
+2011-03-02T10:36:43  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-02T10:37:08  <janzert> mostly I'm wondering if a scala user would consider 2.7.7 ancient :)
+2011-03-02T10:37:16  <janzert> I assume they probably would
+2011-03-02T10:38:55  <jmcarthur> oh i have no idea
+2011-03-02T10:39:10  <jmcarthur> have we nailed down what version of ubuntu we're using, btw?
+2011-03-02T10:40:20  <janzert> it seems everyone is using 10.10 right now at least
+2011-03-02T10:41:46  <jmcarthur> alright
+2011-03-02T10:43:25  <jmcarthur> sweet, looks like i'll be able to finally use a version of ghc released within the last two years
+2011-03-02T10:43:46  <jmcarthur> ghc is a fast moving project
+2011-03-02T10:43:48  <janzert> what's the package name?
+2011-03-02T10:44:00  <janzert> I'm working on the worker setup script right now
+2011-03-02T10:44:09  <jmcarthur> i think it's just ghc. if there is a haskell-platform package that would be better
+2011-03-02T10:44:13  <janzert> currently it's using ghc6
+2011-03-02T10:44:18  <jmcarthur> i'll just check
+2011-03-02T10:44:57  <janzert> I see ghc6 and haskell-utils that look haskell related
+2011-03-02T10:45:03  <jmcarthur> janzert: https://launchpad.net/~justinbogner/+archive/haskell-platform
+2011-03-02T10:45:47  <jmcarthur> janzert: eventually there will be an additional step, since the haskell starter package i'm making will rely on a library i'm making, but the library isn't on hackage yet
+2011-03-02T10:46:18  <janzert> I assume that version is only in the ppa not the main repository?
+2011-03-02T10:46:22  <jmcarthur> oh, hmm. lucid isn't 10.10
+2011-03-02T10:46:30  <jmcarthur> i was mixing ubuntus up
+2011-03-02T10:46:42  <janzert> maverick right?
+2011-03-02T10:46:47  <jmcarthur> yeah i guess
+2011-03-02T10:46:55  <jmcarthur> i don't know if there is a ppa for maverick
+2011-03-02T10:47:09  <jmcarthur> that ppa is for the haskell platform, which most haskell users are accustomed to having
+2011-03-02T10:47:18  <jmcarthur> it has the most frequently used libraries and stuff
+2011-03-02T10:47:32  <janzert> hmm, yeah looks like it only has a lucid version though
+2011-03-02T10:48:06  <jmcarthur> ah, haskell-platform is in maverick's universe repo
+2011-03-02T10:48:26  <janzert> great
+2011-03-02T10:52:39  <jmcarthur> great, it's ghc 6.12.1
+2011-03-02T10:52:50  <jmcarthur> kind of a buggy version. surprised they haven't made it 6.12.3
+2011-03-02T10:52:53  <jmcarthur> oh well
+2011-03-02T10:52:59  <jmcarthur> better than 6.6 or 6.8
+2011-03-02T11:20:04  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-02T11:34:48  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 272 seconds)
+2011-03-02T11:38:04  *** chris___0076 <chris___0076!~Chris_007@adsl-176-225-140.asm.bellsouth.net> has joined #aichallenge
+2011-03-02T11:39:56  *** Kingpin13 is now known as Kingpin13|shop
+2011-03-02T11:40:40  *** chris__0076 <chris__0076!~Chris_007@adsl-176-223-118.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-03-02T11:44:24  <McLeopold> janzert: support for python3 would be nice
+2011-03-02T11:44:47  <McLeopold> janzert: but then we need something besides filename extension to detect languages
+2011-03-02T11:44:53  <janzert> let me get what we have working first :)
+2011-03-02T11:45:00  <janzert> McLeopold: yeah
+2011-03-02T11:45:14  <McLeopold> it makes submission a bit harder for newbs
+2011-03-02T11:45:33  <janzert> or just let them all be marked as binary packages and use the hash bang
+2011-03-02T11:46:02  <McLeopold> hash bang would work
+2011-03-02T11:46:18  <DanielVF> mybot.py3 ?
+2011-03-02T11:46:20  <McLeopold> for detection
+2011-03-02T11:46:32  <McLeopold> that too
+2011-03-02T11:46:57  <McLeopold> .py assumes version 2, or you can use .py2 / .py3
+2011-03-02T11:47:55  <McLeopold> janzert: so, how much work do you plan to do right now?  what's your current goal?
+2011-03-02T11:49:15  <janzert> just get the worker setup stuff running, and if you don't get to it I may do the compilation on workers move
+2011-03-02T11:49:58  <janzert> but if you're currently working on adapting stuff for multiplayer I think we'd step on each other right now
+2011-03-02T11:50:21  <DanielVF> One problem with the old code is that two workers one the same server could try to compile the same bot simultaneously.
+2011-03-02T11:50:43  <janzert> DanielVF: that was already worked around
+2011-03-02T11:51:05  <janzert> compilation is done in a temporary directory and then moved into the final position
+2011-03-02T11:51:12  <DanielVF> great
+2011-03-02T11:51:25  <DanielVF> Sounds good
+2011-03-02T11:51:32  <DanielVF> enough
+2011-03-02T11:51:33  <janzert> the old method managed to cause some actual problems in the last contest
+2011-03-02T11:51:44  <DanielVF> *nods*
+2011-03-02T11:52:11  <DanielVF> I was gonna change it to the temp dir, but ran out of time
+2011-03-02T11:52:18  <McLeopold> why does a worker need to tourament managers?
+2011-03-02T11:52:21  <McLeopold> 2
+2011-03-02T11:52:48  <janzert> because it was the most efficient use of servers last time
+2011-03-02T11:52:52  <DanielVF> A better solution would be to prefetch the next game and bots while one round is playing
+2011-03-02T11:52:58  <DanielVF> then compile and play
+2011-03-02T11:53:10  * janzert nods
+2011-03-02T11:53:24  <DanielVF> and copy the bots into place during the prefetch
+2011-03-02T11:53:25  <McLeopold> janzert: I am going to work on worker communication next
+2011-03-02T11:53:41  <McLeopold> And, I already need to rewrite the manager
+2011-03-02T11:53:52  <janzert> great
+2011-03-02T11:53:53  <DanielVF> Because most games happened very quickly
+2011-03-02T11:54:06  <McLeopold> Maybe I could attempt to make the manager use processes or threads and keep it running always?
+2011-03-02T11:54:07  <DanielVF> the server spent almost as much time downloading as playing
+2011-03-02T11:54:25  <DanielVF> You could give that a shot
+2011-03-02T11:54:38  <janzert> DanielVF: that pattern changed once a worker was up for an hour or two
+2011-03-02T11:54:41  <McLeopold> The manager could do the downloads and create a compile or play process
+2011-03-02T11:54:46  <DanielVF> if it turns out too complicated, you could ditch it.
+2011-03-02T11:55:04  <DanielVF> Or have one play/compile process
+2011-03-02T11:55:16  <DanielVF> that get's handed games
+2011-03-02T11:55:26  <DanielVF> and one fetch process that gets them ready
+2011-03-02T11:55:39  <janzert> it's going to be pretty much impossible to use the servers as efficiently with n-player games
+2011-03-02T11:56:10  <McLeopold> well, once a worker has all submissions, it would be pretty fast
+2011-03-02T11:56:19  <DanielVF> *nods*
+2011-03-02T11:56:20  <jmcarthur> do we even have a plan for what to do with fewer cores than bots?
+2011-03-02T11:56:33  <McLeopold> no
+2011-03-02T11:56:56  <McLeopold> some signal stuff? wasn't jeff trying that?
+2011-03-02T11:57:00  <janzert> that's why I've been saying we can only go up to 8 player games
+2011-03-02T11:57:32  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Ping timeout: 240 seconds)
+2011-03-02T11:57:47  <DanielVF> after too many, you can sequentially hand bots moves
+2011-03-02T11:57:59  <DanielVF> and nice them out other times
+2011-03-02T11:58:14  <jmcarthur> the SIGSTOP idea sounds dirty, but maybe doable
+2011-03-02T11:58:30  <jmcarthur> it's uncatchable, right?
+2011-03-02T11:58:53  <jmcarthur> yup, it is
+2011-03-02T11:58:55  <jmcarthur> that would work
+2011-03-02T11:59:06  <jmcarthur> sequentially hand bots moves, SIGSTOP when they shouldn't be running
+2011-03-02T11:59:41  <jmcarthur> there goes my usual method of continuing to run my bot between sending orders and receiving the next update from the engine ;)
+2011-03-02T12:00:00  <McLeopold> I'll try it.
+2011-03-02T12:00:14  <McLeopold> Then we can have 1000 player games.
+2011-03-02T12:00:18  <jmcarthur> lol
+2011-03-02T12:00:21  <McLeopold> for the final
+2011-03-02T12:00:41  <jmcarthur> this also means we can have the rather simple arrangement of n games going going at a time on n cores
+2011-03-02T12:00:44  <McLeopold> jmcarthur: maybe a bots first submission need to be a game with lots of players?
+2011-03-02T12:00:54  <jmcarthur> McLeopold: i think so, yes
+2011-03-02T12:01:09  <McLeopold> I've been thinking of the match making algo.
+2011-03-02T12:01:30  <jmcarthur> not going with trueskill's?
+2011-03-02T12:01:38  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-02T12:01:48  <McLeopold> When a bot's number is called, the matcher will pick an n-player game that the bot hasn't played in awhile.  so the number of players always rotates.
+2011-03-02T12:01:59  <DanielVF> With many bots in one game, it's important to have some kind of individual score at the end of the game
+2011-03-02T12:02:14  <DanielVF> So that we can do
+2011-03-02T12:02:17  <McLeopold> TrueSkill doesn't really match players, it just tells you how good a match is predicted to be
+2011-03-02T12:02:18  <DanielVF> a > b > c> d
+2011-03-02T12:02:27  <jmcarthur> DanielVF: that is the case here
+2011-03-02T12:02:34  <DanielVF> Yup
+2011-03-02T12:02:49  <jmcarthur> McLeopold: right. so we could just have a pool of bots that haven't played in a while then, right?
+2011-03-02T12:03:05  <jmcarthur> and pick matches from it probabilitistically?
+2011-03-02T12:03:12  <jmcarthur> *probabilistically
+2011-03-02T12:04:02  <McLeopold> yes, but I would pick 1 at a time
+2011-03-02T12:04:21  <jmcarthur> well, pick one bot that needs to play *right now*, and then pick the other bots for it to play with in the next game
+2011-03-02T12:04:41  <janzert> does SIGSTOP stop all children as well?
+2011-03-02T12:04:45  <McLeopold> get the seed bot, pick the next that hasn't played it in awhile, pick the 3rd that hasn't played the other 2 in awhile...
+2011-03-02T12:04:46  <jmcarthur> janzert: i think so
+2011-03-02T12:04:48  <DanielVF> I think new submissions get extra games starts. Makes things more addictive, and keeps the scoreboard more accurate.
+2011-03-02T12:04:48  <DanielVF> *nods*
+2011-03-02T12:04:49  <janzert> ok
+2011-03-02T12:04:50  * DanielVF afk
+2011-03-02T12:05:18  <jmcarthur> McLeopold: well, surely we still want to take skill into consideration, too
+2011-03-02T12:06:00  <McLeopold> yes, but I want the "to tag backs" logic to constrain the pool that trueskill picks from
+2011-03-02T12:06:07  <McLeopold> *no tag backs*
+2011-03-02T12:06:13  <jmcarthur> okay
+2011-03-02T12:06:15  <jmcarthur> that's reasonable
+2011-03-02T12:06:30  <McLeopold> it's the same we did for planet wars
+2011-03-02T12:06:32  <jmcarthur> as long as it doesnt overconstrain it
+2011-03-02T12:06:50  <jmcarthur> it's rather play a few of the same bots than be forced to play significantly badly matched bots
+2011-03-02T12:06:52  <jmcarthur> *i'd
+2011-03-02T12:07:26  <McLeopold> but, antimatroid made a good point last night, that bots do need to play outside their skill level a few times
+2011-03-02T12:07:29  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Read error: Connection reset by peer)
+2011-03-02T12:07:34  <jmcarthur> *than be forced to play badly matched bots very frequently
+2011-03-02T12:07:49  <jmcarthur> i also agree with that
+2011-03-02T12:08:07  <jmcarthur> otherwise there is a risk of overfitting in your local area and not being able to move up or down properly
+2011-03-02T12:08:59  <janzert> I think planetwars distribution did fairly well but there are definitely improvements that could be made
+2011-03-02T12:09:08  <McLeopold> right, so if I'm playing halo, I want the game to be close so it is fun.  But in a tournament, we want the games to be informative of tactics.
+2011-03-02T12:09:29  <jmcarthur> that kind of happened to me in the tron contest. a few versions of my bot did better against top ranking bots than mid ranking bots. my attempts to fix that ended up hurting me against the top bots though
+2011-03-02T12:10:06  <McLeopold> I'd like to think my pw bot was the one that surprised the top bots. :)
+2011-03-02T12:10:12  <jmcarthur> heh
+2011-03-02T12:10:35  <McLeopold> If only I hadn't started on the timer code 1 hour before the deadline...
+2011-03-02T12:16:21  <McLeopold> janzert: can we support a bash bot?
+2011-03-02T12:16:30  <McLeopold> :)
+2011-03-02T12:16:36  <janzert> I think we should
+2011-03-02T12:16:38  <jmcarthur> lol
+2011-03-02T12:16:41  <jmcarthur> harccore
+2011-03-02T12:16:45  <jmcarthur> *hardcore
+2011-03-02T12:16:52  <janzert> it's basically the same as supporting binaries
+2011-03-02T12:16:59  <jmcarthur> i want somebody to win with a bash bpot
+2011-03-02T12:17:01  <jmcarthur> *bot
+2011-03-02T12:17:22  <jmcarthur> it's not quite the same. with binaries there's that argument about architecture dependency
+2011-03-02T12:17:45  <McLeopold> yes, but at least we can say, compile on ubuntuserver 10.10
+2011-03-02T12:17:56  <McLeopold> uhh..
+2011-03-02T12:18:01  <McLeopold> wait
+2011-03-02T12:18:04  <jmcarthur> at least with bash you aren't necessarily calling out to a precompiled binary without knowing the architecture
+2011-03-02T12:18:23  <jmcarthur> although you could
+2011-03-02T12:19:26  <janzert> jmcarthur: yeah, I just meant if we support bash it's trivial for people to use any arbitrary binary submission
+2011-03-02T12:19:33  <jmcarthur> could do that anyway
+2011-03-02T12:19:36  <jmcarthur> exec, etc.
+2011-03-02T12:21:29  <janzert> yeah, but "#!/bin/bash\n mybinarybot" is really trivial :)
+2011-03-02T12:22:38  <jmcarthur> that alone won't work
+2011-03-02T12:22:43  <jmcarthur> still need exec
+2011-03-02T12:22:57  <jmcarthur> but yeah
+2011-03-02T12:23:19  <jmcarthur> #!/bin/bash\n exec mybinarybot
+2011-03-02T12:23:28  <janzert> ahh, yeah
+2011-03-02T12:24:06  <jmcarthur> needs to be fancier if you want to have a choice between 32 or 64 bit based on architecture or something, but i digress
+2011-03-02T12:24:28  <McLeopold> ubuntu has the beef package!
+2011-03-02T12:24:35  <jmcarthur> beef?
+2011-03-02T12:24:37  <McLeopold> MyBot.bf
+2011-03-02T12:24:44  <DanielVF> lol
+2011-03-02T12:24:44  <jmcarthur> looks like brainfuck
+2011-03-02T12:24:54  <McLeopold> it is :D
+2011-03-02T12:24:54  <jmcarthur> .bf, i mean
+2011-03-02T12:24:56  <jmcarthur> ah
+2011-03-02T12:24:59  <jmcarthur> heh
+2011-03-02T12:25:11  <jmcarthur> you win the internet if you win this contest with brainfuck
+2011-03-02T12:25:30  <McLeopold> but no whitespace :(
+2011-03-02T12:26:05  <DanielVF> make a shell script to remove whitespacebefore you submit
+2011-03-02T12:26:46  *** amstan <amstan!~amstan@206-248-153-196.dsl.teksavvy.com> has joined #aichallenge
+2011-03-02T12:26:46  *** ChanServ sets mode: +o amstan
+2011-03-02T12:27:16  <jmcarthur> DanielVF: he means whitespace the language
+2011-03-02T12:27:22  <DanielVF> Ah
+2011-03-02T12:27:28  <DanielVF> lol
+2011-03-02T12:27:32  <jmcarthur> http://en.wikipedia.org/wiki/Whitespace_(programming_language)
+2011-03-02T12:27:51  <jmcarthur> the only way to read it is basically syntax highlighting, as that article shows :P
+2011-03-02T12:28:01  <jmcarthur> or an editor showing invisible chars in some way
+2011-03-02T12:28:56  <McLeopold> how about java2k?  we could force that language on everyone
+2011-03-02T12:30:51  <DanielVF> Flickr supported lolcat language for api's for a while
+2011-03-02T12:30:58  <DanielVF> They've still got it
+2011-03-02T12:31:08  <DanielVF> it's just not in their documentation anymore
+2011-03-02T12:31:26  <DanielVF> http://api.flickr.com/services/feeds/photos_public.gne?id=35034363287@N01&lang=en-us&format=lolcode
+2011-03-02T12:31:40  <DanielVF> Api response
+2011-03-02T12:32:57  <McLeopold> hey, there is brainfuck++
+2011-03-02T12:33:24  * DanielVF not afk, but hiding chat so that I can work. :D
+2011-03-02T12:33:37  <DanielVF> s/I can/He can/g
+2011-03-02T12:34:00  <amstan> so.. what's going on?
+2011-03-02T12:34:41  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Ping timeout: 240 seconds)
+2011-03-02T12:36:52  <McLeopold> amstan: were going to support bash and brainfuck bots now...
+2011-03-02T12:36:58  <amstan> McLeopold: ...
+2011-03-02T12:37:31  *** emgallar <emgallar!a375a4ce@gateway/web/freenode/ip.163.117.164.206> has quit IRC (Quit: Page closed)
+2011-03-02T12:38:38  <jmcarthur> :D
+2011-03-02T12:38:48  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-02T12:41:53  <McLeopold> Okay, sign me up for the lolcode bot.
+2011-03-02T12:43:26  <amstan> OHAI
+2011-03-02T12:45:11  <McLeopold> CAN HAZ STDIO
+2011-03-02T12:45:17  <McLeopold> KTHXBYE
+2011-03-02T12:45:26  <amstan> NOWAI
+2011-03-02T12:46:07  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-02T12:51:04  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.8/20100722155716])
+2011-03-02T13:07:08  *** smp_ <smp_!5531fb54@gateway/web/freenode/ip.85.49.251.84> has joined #aichallenge
+2011-03-02T13:07:18  <smp_> hi there
+2011-03-02T13:07:34  <smp_> a couple of quicke questions
+2011-03-02T13:07:55  <smp_> what version of mono will you target in epsilon?
+2011-03-02T13:08:13  <smp_> and is there a guesstimate as to when will the contest start?
+2011-03-02T13:10:41  <janzert> currently using this mono package http://packages.ubuntu.com/maverick/mono-2.0-devel
+2011-03-02T13:11:26  <smp_> ok
+2011-03-02T13:12:13  <janzert> I haven't heard anything about a start date yet
+2011-03-02T13:13:07  <smp_> ok, thx
+2011-03-02T14:12:35  *** boegel <boegel!~boegel@91.182.138.77> has joined #aichallenge
+2011-03-02T14:15:29  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 240 seconds)
+2011-03-02T14:17:12  *** Kingpin13|shop is now known as Kingpin13
+2011-03-02T14:23:32  *** bhasker <bhasker!~bhasker@nat/yahoo/x-qcvszrssmwlfmbbt> has joined #aichallenge
+2011-03-02T14:54:25  *** smp_ <smp_!5531fb54@gateway/web/freenode/ip.85.49.251.84> has quit IRC (Quit: Page closed)
+2011-03-02T15:01:34  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 250 seconds)
+2011-03-02T15:05:38  *** bhasker <bhasker!~bhasker@nat/yahoo/x-qcvszrssmwlfmbbt> has left #aichallenge
+2011-03-02T15:08:05  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-03-02T15:08:05  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-02T15:09:44  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-zdekavkdcadursri> has joined #aichallenge
+2011-03-02T15:16:54  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-02T15:21:08  *** boegel <boegel!~boegel@91.182.138.77> has quit IRC (Quit: This computer has gone to sleep)
+2011-03-02T15:24:17  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-02T15:36:58  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-02T15:44:39  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-02T15:56:37  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-02T16:20:48  <CIA-89> aichallenge: janzert epsilon * r35c4ef3 / worker/game_server_build.sh : First pass at updating worker build script - http://bit.ly/fuP6HE
+2011-03-02T16:27:26  <amstan> janzert: looks good
+2011-03-02T16:27:37  *** Palmik_ <Palmik_!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-03-02T16:32:52  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.13/20101203075014])
+2011-03-02T16:46:10  *** delt0r___ <delt0r___!~delt0r@188-22-165-230.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-02T16:47:45  *** delt0r_ <delt0r_!~delt0r@188-22-175-190.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-02T17:01:03  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-02T17:39:32  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has quit IRC (Ping timeout: 246 seconds)
+2011-03-02T17:50:34  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-02T18:16:59  <DanielVF> The more I think about it, the more I think asking the bots for their input serially would work great
+2011-03-02T18:17:16  <DanielVF> We actually get reliably give them a second of thinking
+2011-03-02T18:17:32  <DanielVF> Might reduce the CPU from hopping among threads
+2011-03-02T18:19:11  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-02T19:04:55  <DanielVF> We can also record how long they think
+2011-03-02T19:05:07  <DanielVF> Shouldn't affect overall thruput
+2011-03-02T19:05:18  <DanielVF> and would make the worker code simpler
+2011-03-02T19:11:53  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-02T19:18:29  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-03-02T19:26:35  *** Migi32 <Migi32!~migi@178-117-109-234.access.telenet.be> has quit IRC (Remote host closed the connection)
+2011-03-02T19:32:14  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 246 seconds)
+2011-03-02T19:37:11  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-03-02T19:37:11  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-02T19:52:06  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-03-02T20:02:31  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-03-02T20:04:49  *** antiuni <antiuni!83d90607@gateway/web/freenode/ip.131.217.6.7> has joined #aichallenge
+2011-03-02T20:07:43  *** Meatkat <Meatkat!~bovard@217.113.66.228> has joined #aichallenge
+2011-03-02T20:10:38  <Frontier> LOLCODE is somewhat inspirational :D. I like it better than the other joke languanges and it reminds me of how I started with QBasic which was similar :p
+2011-03-02T20:11:26  *** janzert1 <janzert1!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-03-02T20:11:51  <DanielVF> Heh
+2011-03-02T20:11:53  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-02T20:12:03  <DanielVF> My first program was
+2011-03-02T20:12:06  <DanielVF> 10 BEEP
+2011-03-02T20:15:13  <Frontier> I HAZ A dog ITZ NOOB <=> var dog = null;
+2011-03-02T20:17:29  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Quit: I've closed my client.)
+2011-03-02T20:29:18  <antiuni> my first language was the ultimate joke language
+2011-03-02T20:29:19  <antiuni> java
+2011-03-02T20:30:41  <jbroman> DanielVF: This is what zeta does right now (unless people decide to change it before the first contest to use it).
+2011-03-02T20:31:24  <antiuni> i'm glad other people are finally on board about sequentially allowing each bot to pick their moves
+2011-03-02T20:31:31  <jbroman> (I agree that giving each bot a full second is fair.)
+2011-03-02T20:31:50  <antiuni> they only got 0.5 previously
+2011-03-02T20:31:55  <antiuni> i would set it at 0.5
+2011-03-02T20:32:01  <antiuni> well, 0.5 in the worst case
+2011-03-02T20:33:07  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-02T20:34:03  <DanielVF> jbroman Ah. Cool
+2011-03-02T20:34:06  *** DanielVF <DanielVF!~DanielVF@67-197-160-234.dyn.comporium.net> has quit IRC (Quit: Leaving...)
+2011-03-02T20:35:12  *** DanielVF <DanielVF!~DanielVF@67-197-160-234.dyn.comporium.net> has joined #aichallenge
+2011-03-02T20:48:41  <Frontier> With all the LOLCODE inspiration I got an idea!
+2011-03-02T20:48:53  <McLeopold> Frontier: lolcode is missing some stuff
+2011-03-02T20:50:20  <Frontier> If IE cannot display the canvas, but it supports a Java plugin... then I could try and load my JavaScript into a JavaScript interpeter for Java and connect the canvas functions to Java2D drawing routines :D
+2011-03-02T20:50:36  <Frontier> great idea or wha?
+2011-03-02T20:50:47  <McLeopold> i can haz recursion?
+2011-03-02T20:51:06  <Frontier> lolcode has no recursion? orly?
+2011-03-02T20:51:14  <Frontier> kthxbye
+2011-03-02T20:52:06  <Frontier> McLeopold: http://blog.geeksphere.net/2010/08/26/recursive-fibonacci-in-lolcode/
+2011-03-02T20:52:52  <Frontier> I don't know if it compiles though
+2011-03-02T20:54:18  <Frontier> lol shit, now I have an irresistible urge to write comments like "i can not haz canvas? mkay, gonna try java" in my code
+2011-03-02T20:57:21  <McLeopold> http://pastebin.com/dKjWd9UH
+2011-03-02T20:57:37  <McLeopold> There's my ants hold bot in lolcode!
+2011-03-02T21:03:41  <jmcarthur> antiuni: huh? they got a second previously
+2011-03-02T21:04:57  <antiuni> i almost want to do my bot in lolcode now
+2011-03-02T21:05:34  <antiuni> jmcarthur: not if your opponent was also using their time
+2011-03-02T21:05:45  <antiuni> each server had 2 games playing at once, each server had but two cores
+2011-03-02T21:05:51  <antiuni> meaning two bots were playing on a core at a time
+2011-03-02T21:06:02  <jmcarthur> antiuni: multicore
+2011-03-02T21:06:06  <jmcarthur> oh
+2011-03-02T21:06:13  <jmcarthur> two games at once. didn't realize that
+2011-03-02T21:06:21  <antiuni> i wanted it changed, but it was too late
+2011-03-02T21:06:29  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has quit IRC (Read error: Connection reset by peer)
+2011-03-02T21:06:46  <jmcarthur> that's lame
+2011-03-02T21:07:28  <jmcarthur> i would go for one game per core where each bot executes sequentially
+2011-03-02T21:07:32  <jmcarthur> best throughput and fairness
+2011-03-02T21:07:42  <antiuni> that's what i wanted, but no one else seemed to think it was important
+2011-03-02T21:07:52  <antiuni> that's why i'm a little surprised people are talking about changing it again
+2011-03-02T21:08:05  <jmcarthur> well it's coming up now because there are >2 bots per game
+2011-03-02T21:08:31  <antiuni> yeah, it was just going to be set at a higher amount with varying amounts of time per turn per game
+2011-03-02T21:08:40  <antiuni> again, it wasn't what i liked, it
+2011-03-02T21:08:46  <antiuni> s what people seemed to decide on previously
+2011-03-02T21:12:52  <jmcarthur> i do still think that our idea about having a pool of time and stuff might be nice
+2011-03-02T21:24:32  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-03-02T21:24:53  <Todd200> Hello
+2011-03-02T21:25:02  <amstan> Todd200: hi
+2011-03-02T21:25:30  <Todd200> Hey amstan :)
+2011-03-02T21:26:01  <Todd200> The next contest looks like it's going to come out good
+2011-03-02T21:26:30  <amstan> Todd200: indeed, the future looks bright
+2011-03-02T21:26:36  <Todd200> Why can't you guys do something like BOINC for simulating battles? Then people could donate processing power
+2011-03-02T21:27:17  <amstan> Todd200: how secure is it though?
+2011-03-02T21:27:39  <Todd200> Not sure
+2011-03-02T21:27:51  <amstan> Todd200: what would stop contestants from joining the grid and making returning that their bot won all the time
+2011-03-02T21:28:29  <Todd200> True, but the 6 games per min was terrible last time :/
+2011-03-02T21:28:56  <amstan> that was the crappy days
+2011-03-02T21:29:00  <amstan> when we had difficulties
+2011-03-02T21:30:19  <Todd200> With Elo my bot lost vs a bot in the top 10, so Elo said "put him in rank 22" I was happy for a few hours
+2011-03-02T21:30:41  <amstan> we're using trueskill this time
+2011-03-02T21:30:58  <Todd200> Yep, looks like it will work well
+2011-03-02T21:31:37  <amstan> Todd200: "A credit management system helps to ensure that users are returning results which are both scientifically and statistically accurate." ~ BOINC
+2011-03-02T21:31:59  <amstan> Todd200: there's no point in cheating for BOINC
+2011-03-02T21:32:30  <Todd200> It's used for cancer research, among other things
+2011-03-02T21:32:45  *** antiuni <antiuni!83d90607@gateway/web/freenode/ip.131.217.6.7> has quit IRC (Quit: Page closed)
+2011-03-02T21:33:15  <Todd200> You guys should push that these contests are a good way to learn a language
+2011-03-02T21:33:46  <amstan> Todd200: yeah, feel free making suggestions for the content in the main site
+2011-03-02T21:34:16  <amstan> Todd200: antimatroid is working on some text for it on the wiki: https://github.com/aichallenge/aichallenge/wiki
+2011-03-02T21:34:21  <amstan> Todd200: see the ants pages
+2011-03-02T21:36:35  <Todd200> Are you guys using the same rules for a bot crashing as last time?
+2011-03-02T21:36:50  <amstan> probably
+2011-03-02T21:38:28  <Todd200> Why not have a bot just pass if it tries to do something invalid, Instead of stopping the game, just move no ants for that player
+2011-03-02T21:38:58  <amstan> Frontier: close the issue?
+2011-03-02T21:39:47  <amstan> Todd200: if the game can last a maximum of 200 turns.. and ignore any invalid move/timeout
+2011-03-02T21:39:52  <amstan> Todd200: then you'll waste 200 seconds
+2011-03-02T21:39:55  <Frontier> amstan: sorry? what issue?
+2011-03-02T21:40:06  <amstan> Frontier: the ie stuff with canvas, can i close it?
+2011-03-02T21:40:11  <amstan> Frontier: if we give up on it
+2011-03-02T21:40:20  <Todd200> Assuming that other bot lacks the ability to destroy it
+2011-03-02T21:40:29  <Frontier> no
+2011-03-02T21:40:37  <amstan> Todd200: they bots time out?
+2011-03-02T21:40:53  <Todd200> Then call the match
+2011-03-02T21:41:03  <Todd200> Or give each bot 3 strikes
+2011-03-02T21:41:13  <amstan> Todd200: maybe, but...
+2011-03-02T21:41:15  <Frontier> I'm trying a JavaScript<->JavaApplet bridge first when I get Java and IE to run on wine.
+2011-03-02T21:41:20  <amstan> Frontier: ok..
+2011-03-02T21:42:37  <amstan> Todd200: rather complicated
+2011-03-02T21:42:47  <Todd200> True
+2011-03-02T21:42:51  <Frontier> who was giving up on the canvas?
+2011-03-02T21:43:03  <_flag> Fronteir: have you tried looking into Google Chrome Frame? I don't think IE users are a significant enough portion of the userbase at only 5% to be worrying about tbh
+2011-03-02T21:43:11  <amstan> Frontier: wasn't it you? lol
+2011-03-02T21:43:15  <Frontier> it renders a frame every 4 seconds and looks like pre-90s, but hey! it works
+2011-03-02T21:43:37  <amstan> _flag: oh! that was you!
+2011-03-02T21:43:39  <Todd200> Because I know that my bot last time would crash if the strongest planet was being attacked and would be destroyed,
+2011-03-02T21:43:41  <amstan> darn, sorry
+2011-03-02T21:43:54  <_flag> amstan: what?
+2011-03-02T21:43:57  <amstan> Todd200: so.. fix your bot then, you have 3 months
+2011-03-02T21:44:08  <amstan> _flag: i tought the post that you made was made by frontier
+2011-03-02T21:44:17  <amstan> "I'm not sure people will agree with me on this, but it's probably not necessary to support a browser that a relatively small number of programmers actually use." ~ flagcapper
+2011-03-02T21:44:18  <_flag> I never said to give up on canvas
+2011-03-02T21:44:33  <amstan> _flag: canvas on ie
+2011-03-02T21:44:55  * Todd200 uses chrome 
+2011-03-02T21:44:57  <_flag> Canvas doesn't work on ie... D:
+2011-03-02T21:46:05  <amstan> Frontier: https://github.com/aichallenge/aichallenge/issues/labels/visualizer
+2011-03-02T21:46:15  <amstan> guys, please inform me if i'm going overboard with the labels
+2011-03-02T21:47:15  <_flag> If there's only a small number of issues it probably doesn't matter too much
+2011-03-02T21:47:29  <_flag> But it's always nice to keep things organized
+2011-03-02T21:47:42  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 246 seconds)
+2011-03-02T21:48:32  <Todd200> I wonder what strategy will be the dominate one this time, pathfinding will be limited because of fog of war
+2011-03-02T21:48:59  <amstan> Frontier: oh.. right.. any plans for fog of war on your visualizer?
+2011-03-02T21:50:10  <Frontier> yea i have a long todo at the top of visualizer.js. fog of war is on place 1
+2011-03-02T21:52:20  <Todd200> Anything I can help with?
+2011-03-02T21:54:22  <amstan> contestbot: learn contributing as https://github.com/aichallenge/aichallenge/wiki/How-to-Contribute
+2011-03-02T21:54:22  <contestbot> amstan: Ready to serve.
+2011-03-02T21:54:29  <amstan> #contributing
+2011-03-02T21:54:33  <amstan> @contributing
+2011-03-02T21:54:34  <contestbot> amstan: contributing = https://github.com/aichallenge/aichallenge/wiki/How-to-Contribute
+2011-03-02T21:54:48  <amstan> Todd200: there, it's a nice article explaining how you can help
+2011-03-02T21:54:50  <Todd200> Nice bot :)
+2011-03-02T21:55:54  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-03-02T21:55:55  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-02T21:59:22  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has left #aichallenge ("bbl")
+2011-03-02T22:06:36  <_flag> amstan: Can you program the bot to do logic?
+2011-03-02T22:06:50  <amstan> _flag: it's all python
+2011-03-02T22:06:55  <_flag> From irc that is
+2011-03-02T22:07:02  <amstan> contestbot: help if
+2011-03-02T22:07:02  <contestbot> amstan: Error: There is no command "if".
+2011-03-02T22:07:07  <amstan> contestbot: help cond
+2011-03-02T22:07:07  <contestbot> amstan: Error: There is no command "cond".
+2011-03-02T22:07:12  <amstan> contestbot: botdoc
+2011-03-02T22:07:13  <contestbot> amstan: botdoc = (#1) http://ubottu.com/stdin/supydocs/plugins/, or (#2) http://supybook.fealdia.org/devel/, or (#3) http://sourceforge.net/apps/mediawiki/gribble/index.php?title=Supybot_Resources
+2011-03-02T22:07:18  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-02T22:07:53  <amstan> _flag: i think you could..
+2011-03-02T22:08:02  <amstan> _flag: but i don't see the point
+2011-03-02T22:08:17  <_flag> amstan: It was more of a curiosity thing
+2011-03-02T22:12:02  *** github_bot <github_bot!cef899c4@gateway/web/freenode/ip.206.248.153.196> has joined #aichallenge
+2011-03-02T22:12:25  *** github_bot <github_bot!~github_bo@sh1-ext.rs.github.com> has joined #aichallenge
+2011-03-02T22:12:25  <github_bot> aichallenge: pw Alexandru Stan * 06a0128 (0 files in 0 dirs): imported the svn repo into git, authors file included
+2011-03-02T22:12:25  <github_bot> aichallenge: pw Alexandru Stan * a6d5fce (0 files in 0 dirs): renamed worker backend
+2011-03-02T22:12:25  <github_bot> aichallenge: pw Alexandru Stan * a825b82 (0 files in 0 dirs): copied worker folder from the other branch, hence merged them
+2011-03-02T22:12:25  <github_bot> aichallenge: pw commits 2301632...a825b82 - http://bit.ly/hbXed8
+2011-03-02T22:12:25  *** github_bot <github_bot!~github_bo@sh1-ext.rs.github.com> has left #aichallenge
+2011-03-02T22:12:50  <amstan> idk... i don't like this as much..
+2011-03-02T22:12:56  <amstan> cia stays in here all the time, less spam
+2011-03-02T22:25:13  *** bss03 <bss03!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has joined #aichallenge
+2011-03-02T22:25:53  <bss03> I hear work has started in earnet on ants for the next contest.
+2011-03-02T22:26:41  <bss03> I'll try to start pitching in this weekend; my DJ will take most of my time during the week.
+2011-03-02T22:40:27  <amstan> @contributing
+2011-03-02T22:40:29  <contestbot> amstan: contributing = https://github.com/aichallenge/aichallenge/wiki/How-to-Contribute
+2011-03-02T22:40:30  <amstan> bss03: ^
+2011-03-02T22:41:53  <bss03> Yeah, I have the link; I've been following the forum RSS feed.
+2011-03-02T22:42:08  <amstan> bss03: well.. what are you interested in?
+2011-03-02T22:42:29  <bss03> I'll definitely loom on the IRC channel when I'm looking for work.
+2011-03-02T22:42:40  <amstan> bss03: ok, cool, thanks
+2011-03-02T22:43:29  <bss03> Is the engine finished?  I was gonna work on that, first.  After that I figured I'd try my hand at the canvas visualizer.
+2011-03-02T22:43:47  <amstan> bss03: visualizer is being worked at by Frontier
+2011-03-02T22:43:58  <amstan> bss03: you could collaborate with him, if he needs help
+2011-03-02T22:44:20  <amstan> bss03: the engine... i think it's in good shape
+2011-03-02T22:45:12  <bss03> Well, when I have more time, I'll browse the issue list and see if I can fix anything there.
+2011-03-02T22:47:42  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has quit IRC (Read error: Connection reset by peer)
+2011-03-02T22:48:03  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has joined #aichallenge
+2011-03-02T22:51:52  <bss03> Right now, it's about 8h 10m before I have to get up for work.
+2011-03-02T22:52:11  <bss03> If nothing else, I can work on a Haskell starter kit. :P
+2011-03-02T22:53:18  *** acieroid` <acieroid`!~acieroid@wtf.awesom.eu> has joined #aichallenge
+2011-03-02T22:55:28  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has quit IRC (Ping timeout: 276 seconds)
+2011-03-02T23:01:23  <sigh> bss03: I think jmcarthur has one already: http://hpaste.org/paste/44377/ants_starter_annotation
+2011-03-02T23:02:45  *** helo <helo!62eb89b6@gateway/web/freenode/ip.98.235.137.182> has joined #aichallenge
+2011-03-02T23:06:27  <bss03> *shrug* Hopefully I can find something to do.
+2011-03-02T23:06:34  <bss03> G'night for now though.
+2011-03-02T23:06:38  *** bss03 <bss03!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has left #aichallenge ("Konversation terminated!")
+2011-03-02T23:06:54  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-02T23:22:15  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-02T23:27:30  <jmcarthur> i'm still working on that
+2011-03-02T23:27:42  <jmcarthur> the interface is already a little different
+2011-03-02T23:33:57  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-02T23:40:09  <antimatroid1> jmcarthur: i think "extra" time might be messy, i'd say give everyone an extra 0.05 seconds per turn or something
+2011-03-02T23:40:16  <antimatroid1> from what is actually passed to them that is
+2011-03-02T23:44:22  <antimatroid1> also, for future reference, the engine is now ignoring invalid moves and a crashed bot score gets frozen, but their ants remain on the board "not moving" each turn
+2011-03-02T23:44:49  <jmcarthur> cool
+2011-03-02T23:44:58  <sigh> why don't they lose immediately?
+2011-03-02T23:45:15  <jmcarthur> sigh: the >2 players thing makes it a tougher decision
+2011-03-02T23:45:27  <sigh> ah, makes sense
+2011-03-02T23:45:48  <antimatroid1> i almost think their score shouldn't be frozen
+2011-03-02T23:46:00  <antimatroid1> it is a competition testing ones ability to make ai over programming afterall
+2011-03-02T23:46:20  <sigh> code should be robust enough
+2011-03-02T23:46:52  <antimatroid1> i wouldn't be opposed to giving a submission "x crashes before being disabled"
+2011-03-02T23:47:07  <antimatroid1> but 1 crash -> disqualified was insnae
+2011-03-02T23:47:16  <jmcarthur> i don't see any reason to disqualify a crashing bot
+2011-03-02T23:47:21  <sigh> disqualified from the game, not the tournament
+2011-03-02T23:47:29  <jmcarthur> they get ranked low. big deal
+2011-03-02T23:47:31  <antimatroid1> if it's crashing lots it's wasting resources
+2011-03-02T23:47:40  <jmcarthur> it's not like a crashing bot really takes many resources
+2011-03-02T23:47:45  <jmcarthur> they crash. they're done
+2011-03-02T23:48:02  <antimatroid1> true, but isn't there meant to be a fair bit of overhead with running games too?
+2011-03-02T23:48:06  <jmcarthur> they get whatever score they deserve
+2011-03-02T23:48:15  <antimatroid1> okay, it's fine as is :)
+2011-03-02T23:49:56  <sigh> ok, I haven't read the specs in a while but... how do you score if the ants aren't moving?
+2011-03-02T23:50:09  *** antimatroid <antimatroid!~Nick@236.234-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-02T23:51:01  <antimatroid> sigh: have you read the scoring system?
+2011-03-02T23:51:12  <sigh> no :D
+2011-03-02T23:51:32  <antimatroid> if an ant dies, any enemy ants in range (currently dying or live) get an equal proportion of that ants points, which are then passed onto the owner if the owner hasn't crashed
+2011-03-02T23:51:52  <antimatroid> there is also a food bonus at the end, but that's not the main part of scoring
+2011-03-02T23:52:12  <jmcarthur> so if an ant dies while in range of two of A's ants and one of B's ants, A gets twice as many points as B?
+2011-03-02T23:52:21  <antimatroid> *currently dying from battle, ants are removed from collisions before that
+2011-03-02T23:52:21  *** antimatroid1 <antimatroid1!~Nick@13.129-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-03-02T23:52:27  <antimatroid> jmcarthur: yes
+2011-03-02T23:52:51  <jmcarthur> of course, depending on the combat resolution, both A's might die anyway
+2011-03-02T23:53:06  <antimatroid> yeah, i still can't believe that's even a question
+2011-03-02T23:53:09  <antimatroid> battle option 1 is so much better
+2011-03-02T23:53:17  <jmcarthur> hmm... would the scoring really even make a difference with option 2?
+2011-03-02T23:53:28  <jmcarthur> oh i guess it would still work
+2011-03-02T23:53:28  <antimatroid> not sure, i've not thought about option 2 in ages
+2011-03-02T23:53:34  <antimatroid> i still expect the better option to prevail
+2011-03-02T23:53:47  <jmcarthur> i don't. i expect whatever option j3camero likes to prevail
+2011-03-02T23:53:57  <jmcarthur> it may be the better. it may not
+2011-03-02T23:54:19  <antimatroid> meh, i'll fight that one to the end
+2011-03-02T23:54:35  <antimatroid> i'd prefer to play on a separate tcp server otherwise
+2011-03-02T23:55:08  <sigh> antimatroid forks contest
+2011-03-02T23:55:44  <Zannick> antimacontest
+2011-03-02T23:55:44  <antimatroid> :P
+2011-03-02T23:55:52  <antimatroid> anti-contest
+2011-03-02T23:55:56  <antimatroid> single competitor
+2011-03-02T23:55:59  <Zannick> ant-icontest
+2011-03-02T23:56:04  <sigh> everyone's a winner!
+2011-03-02T23:56:10  <antimatroid> and a loser!
+2011-03-02T23:56:19  <antimatroid> clopen, you just made that up didn't you?
+2011-03-02T23:56:26  <sigh> :P
+2011-03-02T23:56:26  <antimatroid> sigh: did you see the hitler learns maths video?
+2011-03-02T23:56:29  <sigh> yeah
+2011-03-02T23:56:32  <antimatroid> so good
+2011-03-02T23:56:57  <sigh> I only have a passing familiarity with topology
+2011-03-02T23:57:09  <jmcarthur> let's play antimatroid always wins
+2011-03-02T23:57:16  <jmcarthur> i'll start....
+2011-03-02T23:57:18  <antimatroid> yeah, i've not actually done it formally other than stuff in analysis, i have point set up next semester
+2011-03-02T23:57:20  <jmcarthur> antimatroid wins
+2011-03-02T23:57:26  <jmcarthur> darn. thought i had a chance that time
+2011-03-02T23:58:00  <antimatroid> did you guys see the juggling geese thing on reddit?
+2011-03-02T23:58:05  <sigh> no
+2011-03-02T23:58:12  <antimatroid> i'll start you where i started
+2011-03-02T23:58:20  <sigh> I saw jmcarthur applying for haskell job though
+2011-03-02T23:58:23  <antimatroid> http://www.reddit.com/r/australia/comments/fvkh8/pssst_hey_australia_come_over_here_for_a_sec/
+2011-03-02T23:58:47  <antimatroid> that links to /r/canada which links somewhere else in /r/canada, which resultedin a youtube video and a front page post on /r/vido
+2011-03-02T23:59:13  <antimatroid> http://www.reddit.com/r/videos/comments/fvpk6/street_vendor_in_paraguay_juggles_baby_geese/ that's where most of reddit started
+2011-03-02T23:59:35  <sigh> heh

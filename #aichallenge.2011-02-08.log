@@ -1,0 +1,1401 @@
+2011-02-08T00:12:53  <CIA-37> aichallenge: McLeopold epsilon * r033a33a / ants/ant_map.py : Added render text map. Added fog of war stuff. - http://bit.ly/gAfgHc
+2011-02-08T00:16:15  <antimatroid> jmcarthur: http://i.imgur.com/BNPo7.png
+2011-02-08T00:17:09  <antimatroid> i really like how you can make it hard for them to invase a slightly wider passage, but if they come in right, they'll get a better in ratio
+2011-02-08T00:17:24  <antimatroid> kill* ratio
+2011-02-08T00:26:17  <chris_0076> hmm, why are you using the euclidean distance metric when you move in a manhattan?
+2011-02-08T00:26:23  <chris_0076> or am I reading it wrong?
+2011-02-08T00:37:26  <antimatroid> mcleopold wanted that
+2011-02-08T00:37:51  <antimatroid> just think like attacks can go in any direction
+2011-02-08T00:38:07  <antimatroid> with a max dist of 2
+2011-02-08T00:38:41  <jmcarthur> antimatroid: still none where option 1 and the iterative version are different?
+2011-02-08T00:38:58  <chris_0076> hmm, then wouldn't the Chebyshev metric be better?
+2011-02-08T00:39:01  <chris_0076> http://en.wikipedia.org/wiki/Chebyshev_distance
+2011-02-08T00:39:18  <antimatroid> jmcarthur: 1 and 3?
+2011-02-08T00:39:20  <jmcarthur> yeah
+2011-02-08T00:39:22  <antimatroid> i'm just about to try and find one
+2011-02-08T00:39:31  <antimatroid> i found a cool other one, hang on
+2011-02-08T00:40:18  <chris_0076> dist = max(|x2 - x1|, |y2 - y1|)
+2011-02-08T00:40:50  <antimatroid> not with euclidean
+2011-02-08T00:40:57  <antimatroid> that's manhatten
+2011-02-08T00:41:06  <chris_0076> no it is Chebyshev
+2011-02-08T00:41:08  <chris_0076> ^^
+2011-02-08T00:41:19  <antimatroid> whatevs :P
+2011-02-08T00:41:22  <chris_0076> in manhatan you add delta x and delta y
+2011-02-08T00:41:32  <antimatroid> oh, i see
+2011-02-08T00:41:37  <chris_0076> in Chebyshev it is like moving the king on a chess board
+2011-02-08T00:41:40  <janzert> manhatten has a distance of 2 for the diagonals
+2011-02-08T00:41:44  <antimatroid> jmcarthur: http://i.imgur.com/RYUYS.png bottom left
+2011-02-08T00:42:14  <antimatroid> i quite like that distance metric for fights
+2011-02-08T00:42:23  <antimatroid> i still don't like option 2 though
+2011-02-08T00:42:28  <antimatroid> but i'll play around with that
+2011-02-08T00:43:06  <jmcarthur> i'm coding up options 1 and 3 so i can just brute force them to find a case where they are different
+2011-02-08T00:43:16  <jmcarthur> well, haven't started yet, but i'm about to
+2011-02-08T00:43:37  <antimatroid> with bottom left and option 2 it doesn't make sense for reds extra ant to cause him to lose both
+2011-02-08T00:44:13  <jmcarthur> yeah, that's like the ab.c..d...e....f situation
+2011-02-08T00:44:23  <antimatroid> yep, but with the 2 fight region
+2011-02-08T00:44:27  <antimatroid> i made it off that example
+2011-02-08T00:45:11  <jmcarthur> so you are using euclidean distance of 2 in these?
+2011-02-08T00:45:25  <antimatroid> yeah
+2011-02-08T00:45:27  <jmcarthur> k
+2011-02-08T00:45:32  <jmcarthur> making sure i use the right one
+2011-02-08T00:45:35  <antimatroid> i like what chris_0076 suggested
+2011-02-08T00:45:50  <antimatroid> diagonals = 1 away for fighting
+2011-02-08T00:45:56  <jmcarthur> so it forms a square?
+2011-02-08T00:46:29  <antimatroid> well, you have the same fighting squares, but for option 2, bottom left, the red at distance 2 from green would survive
+2011-02-08T00:46:29  <jmcarthur> i've suggested many times to do it that way :P
+2011-02-08T00:46:42  <jmcarthur> oh i see
+2011-02-08T00:46:44  <antimatroid> because green is then 1 from blue
+2011-02-08T00:46:48  <janzert> easiest way to think of it is probably as a chess kings move distance
+2011-02-08T00:46:59  <antimatroid> but green could still kill red if blue wasn't there
+2011-02-08T00:47:17  <jmcarthur> well i'll just run with euclidean for now
+2011-02-08T00:49:56  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-247-168.dsl.hstntx.swbell.net> has quit IRC (Read error: Connection reset by peer)
+2011-02-08T00:51:05  <antimatroid> if we had a working engine this would be a lot easier :P
+2011-02-08T00:51:14  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-247-168.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-02-08T00:51:51  <antimatroid> jmcarthur: check second bottom right
+2011-02-08T00:52:15  <antimatroid> if blue comes in with anything but that, i think red is safe, but if blue does that, they take out 4 of reds with 3 of theirs
+2011-02-08T00:52:17  <antimatroid> that's cool
+2011-02-08T00:52:51  <antimatroid> this is for option 1, with option 2 blue can just walts down the middle with 1 and destroy you
+2011-02-08T00:55:46  <antimatroid> jmcarthur: i'm not convinced dimkadimons isn't just option 1 atm
+2011-02-08T00:55:54  <jmcarthur> i think it's not the same
+2011-02-08T00:56:10  <jmcarthur> but we'll see
+2011-02-08T00:56:13  <antimatroid> i'm trying to come up with an example that comes out differently atm
+2011-02-08T00:56:25  <jmcarthur> so am i, once i get these actually implemented
+2011-02-08T00:56:38  <jmcarthur> if after brute forcing it i can't find anything, then we can safely declare them the same
+2011-02-08T00:56:47  <jmcarthur> but i kind of doubt it
+2011-02-08T00:57:57  <antimatroid> i might have one
+2011-02-08T00:58:00  <antimatroid> give me a minute
+2011-02-08T01:02:18  <antimatroid> yeah, i got one
+2011-02-08T01:03:04  <jmcarthur> well fine, make my work for nothing :P
+2011-02-08T01:03:22  <antimatroid> :P
+2011-02-08T01:03:47  <antimatroid> http://i.imgur.com/HkMmT.png
+2011-02-08T01:03:52  <antimatroid> bottom left
+2011-02-08T01:04:40  <jmcarthur> i see
+2011-02-08T01:04:40  <antimatroid> is his not more expensive computationally?
+2011-02-08T01:04:46  <jmcarthur> much more
+2011-02-08T01:04:48  <Zannick> i don't think we ever really supported scheme
+2011-02-08T01:04:57  <antimatroid> i think 1 or 2
+2011-02-08T01:05:04  <antimatroid> i think 2 with chris's distance metric
+2011-02-08T01:05:07  <antimatroid> i should play with that
+2011-02-08T01:05:07  <Zannick> i can find references to three different interpreters...
+2011-02-08T01:06:41  <jmcarthur> antimatroid: honestly, even if we were to go with this slower version, i bet option 1 would make a decent enough approximation for reasoning about most situations
+2011-02-08T01:07:01  <antimatroid> jmcarthur: yeah, or even if you just ran it on what you can see, i expect it to work most often
+2011-02-08T01:07:19  <antimatroid> but i don't see how it's any better? it's slower, almost always comes out the same, and does make it possible that you don't resolve correctly
+2011-02-08T01:07:25  <antimatroid> surely option 1 dominates option 3
+2011-02-08T01:07:29  <antimatroid> so then it's 1 or 2?
+2011-02-08T01:08:02  <jmcarthur> option 1 will tend to kill more ants than option 3 is the main difference i guess
+2011-02-08T01:08:26  <antimatroid> very rarely, but sure, i don't think option 3 can kill more
+2011-02-08T01:08:29  <jmcarthur> option 2 kills *way* more than either of them though
+2011-02-08T01:08:32  <janzert> Zannick: look at the languages.sql file to see a dump of the database table with the languages actually activated
+2011-02-08T01:08:34  <antimatroid> but isn't the point of option 2 that it kills more?
+2011-02-08T01:08:36  <janzert> http://code.google.com/p/ai-contest/source/browse/trunk/planet_wars/backend/languages.sql
+2011-02-08T01:08:38  <antimatroid> well, one of jeff's points
+2011-02-08T01:08:51  <Zannick> janzert: i know
+2011-02-08T01:09:02  <jmcarthur> i think the point of jeff liking option 2 is that it makes good micro less powerful
+2011-02-08T01:09:04  <Zannick> i wasn't sure how old that was, but it was what i was using
+2011-02-08T01:09:23  <janzert> any other languages in the compiler and such weren't actually being used
+2011-02-08T01:09:28  <jmcarthur> because jeff thinks that micro is somehow restricted to awesome programmers
+2011-02-08T01:09:28  <Zannick> yeah
+2011-02-08T01:09:34  <antimatroid> good micro being powerful is one of my biggest interests
+2011-02-08T01:09:38  <jmcarthur> me too
+2011-02-08T01:09:42  <antimatroid> he and i are conflicted there
+2011-02-08T01:10:03  *** dsockwell <dsockwell!~dsockwell@denhac.org> has joined #aichallenge
+2011-02-08T01:10:10  <jmcarthur> he doesn't care if it interested you because you're one of the elites rather than a newb
+2011-02-08T01:10:20  <jmcarthur> and that's going to be his approach to all of us
+2011-02-08T01:10:36  <antimatroid> i think the game should be attractive to the more experienced people
+2011-02-08T01:10:48  <jmcarthur> as do i
+2011-02-08T01:11:05  <jmcarthur> in fact, if i was a newb, i'm pretty sure i would be less attracted to something that doesn't attract the elite
+2011-02-08T01:11:15  <antimatroid> sure it needs to be simple enough for someone to get started, but the longer the path for improvement the better imo
+2011-02-08T01:11:38  <antimatroid> we're just circlejerking now :)
+2011-02-08T01:12:00  <jmcarthur> yeah, not very productive
+2011-02-08T01:13:43  <jmcarthur> are there are two-player cases where options 1 and 3 are different?
+2011-02-08T01:13:55  <jmcarthur> i might finish this code just to test that if we don't come up with something before i'm done
+2011-02-08T01:14:14  <jmcarthur> the two player cases are going to be the very common ones
+2011-02-08T01:14:20  <janzert> Zannick: that languages.sql is sligthly outdated it looks like the only one it's missing though is Scala
+2011-02-08T01:14:34  <Zannick> ah
+2011-02-08T01:14:56  <Zannick> is the command to run it "scala MyBot"? that's all i need
+2011-02-08T01:15:07  <janzert> yep
+2011-02-08T01:15:14  <Zannick> cool, that's what i have
+2011-02-08T01:17:01  <janzert> here's a current dump http://pastebin.ca/2044450
+2011-02-08T01:18:09  <jmcarthur> okay i got option1 implemented
+2011-02-08T01:18:24  <amstan_> jmcarthur: get it in the repo
+2011-02-08T01:18:31  <jmcarthur> amstan_: it's in haskell...
+2011-02-08T01:19:20  <Zannick> janzert: thanks
+2011-02-08T01:20:05  <antimatroid> i made another post in the ant kill thread
+2011-02-08T01:20:44  <antimatroid> jmcarthur: i'll try to work out a 2 player instance of it
+2011-02-08T01:21:08  <antimatroid> i think you might be able to just chante the green to red and blue
+2011-02-08T01:23:13  <antimatroid> jmcarthur: yeah that example can be turned into 2 player and still work,
+2011-02-08T01:23:20  <jmcarthur> ah okay
+2011-02-08T01:23:29  <jmcarthur> that might be better to include in the graphic then. less misleading
+2011-02-08T01:23:36  <antimatroid> i will put both
+2011-02-08T01:23:41  <jmcarthur> mmkay
+2011-02-08T01:25:38  <antimatroid> http://i.imgur.com/NQoRu.png
+2011-02-08T01:25:40  <antimatroid> there you go
+2011-02-08T01:27:39  <jmcarthur> okay cool
+2011-02-08T01:28:06  <jmcarthur> honestly, my intuition would say that that blue one is dead meat anyway
+2011-02-08T01:28:29  <jmcarthur> whereas with option 3 *none* of the blue ants die
+2011-02-08T01:29:03  <jmcarthur> then again... there actually appears to be more chances for micro with option 3 because of this sort of thing... assuming you can reason about it effectively
+2011-02-08T01:29:16  <jmcarthur> big assumption i guess
+2011-02-08T01:30:21  <antimatroid> i very  much think 3 is inferior to 1 with their closeness, i will play around with 2 with chebyshev, but i still love 1
+2011-02-08T01:32:34  <antimatroid> jmcarthur: i think i missed one that's different with 3 to 1
+2011-02-08T01:32:43  <antimatroid> you know the one you corrected me on yesterday?
+2011-02-08T01:32:46  <antimatroid> go take a look at that
+2011-02-08T01:33:01  <jmcarthur> the zig zaggy one?
+2011-02-08T01:33:05  <antimatroid> i think blue loses 2 more of its ants
+2011-02-08T01:33:06  <antimatroid> yeah
+2011-02-08T01:33:36  <jmcarthur> i think you are right
+2011-02-08T01:33:37  <antimatroid> which means it can kill more than option 1
+2011-02-08T01:33:57  <antimatroid> interesting
+2011-02-08T01:34:00  <jmcarthur> kind of weird. i guess my intution about it was wrong
+2011-02-08T01:34:47  <antimatroid> when implementing it, you'd just decrement a killed ants neighbours enemy count if it's not to die as well
+2011-02-08T01:35:01  <antimatroid> still expensive
+2011-02-08T01:35:15  <jmcarthur> well, the one i'm doing right now is going to be the naive, inefficient way
+2011-02-08T01:35:25  <jmcarthur> because i don't feel like tweaking it forever
+2011-02-08T01:35:29  <antimatroid> yep
+2011-02-08T01:36:10  <jmcarthur> it looks like the naive version of option 3 is roughly twice the code as a fairly naive implementation of option 1
+2011-02-08T01:36:57  <jmcarthur> at least based on my guess of how much more code it will take by the time i'm done
+2011-02-08T01:37:31  <antimatroid> yeah i would expect that
+2011-02-08T01:37:38  <antimatroid> i said in the forum post it's harder to deal with the algorithm
+2011-02-08T01:38:12  <jmcarthur> sometimes the more efficient version is actually shorter than the naive version, for some algorithms, though
+2011-02-08T01:38:20  <jmcarthur> i just don't want to bother, is all
+2011-02-08T01:40:28  <antimatroid> yeah, shorter isn't always easiest
+2011-02-08T01:40:40  <jmcarthur> well, looks like i got a bug in it
+2011-02-08T01:40:49  <jmcarthur> it's actually not quite twice as long
+2011-02-08T01:42:17  <jmcarthur> oh, haha. i implemented option2 by mistake
+2011-02-08T01:42:19  <antimatroid> amstan: have you looked at the new ant pics?
+2011-02-08T01:42:22  <antimatroid> hahaha
+2011-02-08T01:42:24  <jmcarthur> that's hilarious
+2011-02-08T01:42:37  <jmcarthur> okay, option3 next :P
+2011-02-08T01:42:43  <jmcarthur> i mean... i meant to do that!
+2011-02-08T01:47:46  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T01:48:01  *** McLeopold1 <McLeopold1!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-02-08T01:48:39  <McLeopold1> amstan_: I'm looking at the aichallenge code on github, and noticed that your name produces a link, but mine doesn't.
+2011-02-08T01:48:43  <McLeopold1> Any idea why?
+2011-02-08T01:49:21  <amstan_> McLeopold1: make sure you have your git config setup properly
+2011-02-08T01:49:35  <amstan_> there's an email address which you insert into git..
+2011-02-08T01:49:42  <amstan_> it has to match the one github has of you
+2011-02-08T01:50:02  <amstan_> has to be a valid email too
+2011-02-08T01:50:10  <amstan_> don't try to attach a non valid email to your account
+2011-02-08T01:50:10  <McLeopold1> that's the "git config --global user.name" stuff?
+2011-02-08T01:50:10  <antimatroid> McLeopold1: there are more sample images in the forum thread now, also with stuff for dimkadimons option
+2011-02-08T01:50:21  <amstan_> yes
+2011-02-08T01:50:26  <amstan_> and user.email? i think
+2011-02-08T01:50:47  <McLeopold1> antimatroid: I'm going to ignore the battle resolution discussions for a few days.  I want to focus on getting the engine done and a tcp server up.
+2011-02-08T01:50:56  <McLeopold1> Yeah, I've set both of those.
+2011-02-08T01:51:12  <McLeopold1> is the some other option?
+2011-02-08T01:51:24  <amstan_> McLeopold1: do they match the one on github?
+2011-02-08T01:51:46  <amstan_> McLeopold1: i see you're appearing both as scott hamilton and mcleopold
+2011-02-08T01:51:48  <jmcarthur> antimatroid: okay, option 3 actually took only slightly more code than option 1
+2011-02-08T01:51:52  <amstan_> and none of them use the right email
+2011-02-08T01:52:06  <jmcarthur> and i implemented it pretty poorly
+2011-02-08T01:52:43  <McLeopold1> My first commits were as "Scott Hamilton", but I changed it to try and get the links to work.
+2011-02-08T01:53:12  <McLeopold1> Right now i'm "McLeopold" and "mcleopold@..."
+2011-02-08T01:53:13  <amstan_> yes.. make sure you have mcl...@gmail.com in github's email addresses
+2011-02-08T01:53:19  <McLeopold1> I do
+2011-02-08T01:53:32  <amstan_> is it verified?
+2011-02-08T01:53:58  <amstan_> McLeopold1: if so.. idk then, try submitting to github support or ask in #github
+2011-02-08T01:54:12  <McLeopold1> whoops, I didn't...it was just for the ssh stuff
+2011-02-08T01:54:13  <McLeopold1> arg
+2011-02-08T01:55:26  <antimatroid> jmcarthur: another reason for me to prefer 1 to 2 :P
+2011-02-08T01:55:41  <amstan_> jbroman: python should be compiled as well, 2 reasons: speed at startup, sytax errors are emailed back to the user
+2011-02-08T01:55:59  <amstan_> there's a way to make pyc files from py, without actually executing them
+2011-02-08T01:58:01  <jmcarthur> antimatroid: option 2 has been the all around worst possible scenario in pretty much every way, so far
+2011-02-08T01:58:08  <jmcarthur> IMO
+2011-02-08T01:58:30  <antimatroid> i agree :\
+2011-02-08T01:58:35  <antimatroid> we just need to convince jeff of that
+2011-02-08T02:00:44  <McLeopold1> amstan_: what OS do you use?
+2011-02-08T02:00:51  <amstan_> ubuntu
+2011-02-08T02:01:07  <McLeopold1> I was thinking I might try that.
+2011-02-08T02:01:37  <McLeopold1> Just to get use to the environment we will run the servers on.
+2011-02-08T02:01:52  <McLeopold1> probably not much different from fedora or gentoo...
+2011-02-08T02:04:06  * antimatroid needs to switch to linux some time
+2011-02-08T02:07:43  <McLeopold1> antimatroid: what do you run?
+2011-02-08T02:08:04  <antimatroid> xp :P
+2011-02-08T02:08:12  <antimatroid> it's done me well
+2011-02-08T02:08:15  <McLeopold1> wow, at least i'm on win7
+2011-02-08T02:08:22  <antimatroid> i like xp
+2011-02-08T02:08:45  <McLeopold1> I do too, but I'm pleased with win7
+2011-02-08T02:09:09  <antimatroid> i prefer the extra performance
+2011-02-08T02:09:10  <McLeopold1> I just wish I could run make files and have real command line tools
+2011-02-08T02:09:18  <jmcarthur> as a sanity check i just verifed that there are no 1 vs 2 scenarios where options 1 and 3 are different. i'm now checking for two teams of two each. i doubt there will be any differences here either
+2011-02-08T02:09:29  <antimatroid> yeah, i'm sick of things being harder on windows
+2011-02-08T02:09:29  <jmcarthur> this is on a 10x10 grid
+2011-02-08T02:09:39  <jmcarthur> hmm, 11x11 actually, because i suck
+2011-02-08T02:09:54  <McLeopold1> -1 to 9?
+2011-02-08T02:09:56  <antimatroid> haha
+2011-02-08T02:09:58  <jmcarthur> 0..10
+2011-02-08T02:10:10  <antimatroid> um, what do you mean no 1vs2 scenarios?
+2011-02-08T02:10:18  <jmcarthur> A vs. B B
+2011-02-08T02:11:57  <jmcarthur> okay i shrunk it down because i got tired of waiting
+2011-02-08T02:12:26  <jmcarthur> on a 8x8 grid, there are no scenarios where A A vs. B B end up being different when comparing option 1 to option 3
+2011-02-08T02:12:53  <antimatroid> try aaaavbb?
+2011-02-08T02:13:00  <antimatroid> actually, there's lots of those
+2011-02-08T02:13:05  <antimatroid> because mine can be varied heaps
+2011-02-08T02:13:16  <jmcarthur> i'm trying to find the smallest case
+2011-02-08T02:13:25  <jmcarthur> i'll try aaa vs bb
+2011-02-08T02:14:15  <jmcarthur> okay, it found many differences for aaa vs. bb
+2011-02-08T02:14:25  <jmcarthur> let me pick one of these out and diagram it
+2011-02-08T02:15:01  <antimatroid> yeah i was about to say, 3x2 is easy
+2011-02-08T02:15:51  <jmcarthur> err, i made a mistake actually
+2011-02-08T02:16:21  <jmcarthur> yeah, this is an error in my test case generator
+2011-02-08T02:16:29  <jmcarthur> not filtering out an invalid scenario
+2011-02-08T02:16:33  <antimatroid> i'm less sure about my example
+2011-02-08T02:17:12  <antimatroid> a.b.a
+2011-02-08T02:17:12  <antimatroid> ..a.b?
+2011-02-08T02:17:23  <antimatroid> a . row between*
+2011-02-08T02:17:35  <antimatroid> might not be needed actually
+2011-02-08T02:18:03  <CIA-37> aichallenge: McLeopold epsilon * r47dbdf3 / ants/McMaps.py : Trival change to test username link. - http://bit.ly/g5eMjq
+2011-02-08T02:18:12  <antimatroid> i think that works
+2011-02-08T02:18:38  <antimatroid> you have
+2011-02-08T02:18:38  <antimatroid> 1.3.2
+2011-02-08T02:18:38  <antimatroid> ..2.2
+2011-02-08T02:18:46  <jmcarthur> i suck at life. i was generating only invalid scenarios instead of only valid ones
+2011-02-08T02:18:53  <antimatroid> hehehe
+2011-02-08T02:18:54  <jmcarthur> i'm gonna try 2v2 again
+2011-02-08T02:19:03  *** McLeopold1 <McLeopold1!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-02-08T02:19:07  <antimatroid> i don't think 2v2 will happen
+2011-02-08T02:19:21  <antimatroid> i think i just got one with the smallest possible set :P
+2011-02-08T02:20:50  <jmcarthur> okay, no 2v2
+2011-02-08T02:21:10  <jmcarthur> *tons* of 3v2
+2011-02-08T02:22:54  <antimatroid> http://i.imgur.com/UhJdw.png
+2011-02-08T02:22:57  <antimatroid> bottom left again
+2011-02-08T02:23:22  <jmcarthur> mine is much more compact ;)
+2011-02-08T02:23:34  <antimatroid> i could make that more compact
+2011-02-08T02:23:36  <jmcarthur> abba;a
+2011-02-08T02:23:45  <jmcarthur> that's with euclidean
+2011-02-08T02:23:48  <jmcarthur> 2
+2011-02-08T02:24:00  <jmcarthur> i haven't worked it out yet. it's just been reported to me
+2011-02-08T02:24:06  <antimatroid> yeah that looks right
+2011-02-08T02:24:18  <antimatroid> i'll draw it up for you
+2011-02-08T02:24:57  <jmcarthur> i can do even more compact
+2011-02-08T02:25:39  <antimatroid> that situtation above can happen too
+2011-02-08T02:25:54  <antimatroid> it'd possible to come up with situations that can't actually happen
+2011-02-08T02:26:15  <antimatroid> .a.
+2011-02-08T02:26:15  <antimatroid> .b.
+2011-02-08T02:26:15  <antimatroid> c.d
+2011-02-08T02:26:15  <antimatroid> is such an example
+2011-02-08T02:30:06  <antimatroid> http://i.imgur.com/6K7OC.png
+2011-02-08T02:30:10  <antimatroid> bottom right is your example
+2011-02-08T02:31:08  <jmcarthur> no 3 vs 1 examples, btw
+2011-02-08T02:31:16  <jmcarthur> duh
+2011-02-08T02:31:21  <jmcarthur> :)
+2011-02-08T02:31:28  *** delt0r_ <delt0r_!~delt0r@188-22-163-8.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-02-08T02:31:36  *** delt0r_ <delt0r_!~delt0r@188-22-175-47.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-08T02:34:20  <jmcarthur> just over half of all scenarios in a 2x3 grid with 3 vs. 2 are different between option 1 and option 3, but of course not all those scenarios can actually happen due to the range thing
+2011-02-08T02:34:40  <jmcarthur> still, that's interesting i think
+2011-02-08T02:34:54  <antimatroid> wait, waht about
+2011-02-08T02:34:54  <antimatroid> bab?
+2011-02-08T02:35:02  <jmcarthur> that proportion should shrink with larger grids
+2011-02-08T02:35:05  <jmcarthur> i think
+2011-02-08T02:35:12  <jmcarthur> about about bab?
+2011-02-08T02:35:21  <jmcarthur> *what about
+2011-02-08T02:35:36  <antimatroid> don't worry, i'm being silly
+2011-02-08T02:36:20  <jmcarthur> just trying to get a feel for *how* different they are, that's all
+2011-02-08T02:36:30  <jmcarthur> because until now we've felt they were very close to the same
+2011-02-08T02:36:37  <antimatroid> it's more different than i thought before
+2011-02-08T02:43:27  <antimatroid> i think the sample bots that come with the starter packages should have somewhat varying levels of difficulty this time
+2011-02-08T02:43:36  <antimatroid> so people have a local challenge to begin with as well
+2011-02-08T02:43:48  <antimatroid> not so difficult that a beginner putting in a decent effort can't exceed the quality though
+2011-02-08T02:44:02  <jmcarthur> yeah, a path to improvement that's easy to see without even uploading
+2011-02-08T02:44:09  <antimatroid> let's face it, more experienced people aren't going to really care about those anyway
+2011-02-08T02:44:48  <jmcarthur> downside to having a tough sample bot is that everybody will be uploading that one, so there will be a tougher curve at the lower end on the server
+2011-02-08T02:45:00  <antimatroid> no, you don't release the source for them?
+2011-02-08T02:45:03  <antimatroid> that was my intention
+2011-02-08T02:45:22  <jmcarthur> huh?
+2011-02-08T02:45:39  <antimatroid> just release binary files for some sample bots
+2011-02-08T02:45:49  <jmcarthur> of 6,375,600 valid positions on a 5x5 grid for 3 vs. 2, 335844 of them have different results between option 1 and option 3
+2011-02-08T02:46:16  <antimatroid> that's quite a lot
+2011-02-08T02:46:26  <jmcarthur> about 5%
+2011-02-08T02:46:31  <antimatroid> a lot
+2011-02-08T02:46:39  <jmcarthur> which is definitely a lot considering how many of those positions are probably not even fights
+2011-02-08T02:46:57  <jmcarthur> not big ones involving all players at least
+2011-02-08T02:47:07  <jmcarthur> s/players/ants/
+2011-02-08T02:47:08  <antimatroid> can you count what proportion had 1 kill more than 3?
+2011-02-08T02:47:11  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-08T02:47:31  <jmcarthur> would be some work
+2011-02-08T02:47:42  <antimatroid> not really important
+2011-02-08T02:47:43  <jmcarthur> you mean where 1 ant killed more than 3?
+2011-02-08T02:47:54  <antimatroid> i'm more interested in what behaviour each rule encourages than overall deaths
+2011-02-08T02:47:58  <jmcarthur> ah
+2011-02-08T02:48:08  <antimatroid> where option 1 killed more than option 3/vice versa
+2011-02-08T02:48:14  <jmcarthur> oh
+2011-02-08T02:48:24  <jmcarthur> i can do that pretty easily
+2011-02-08T02:48:51  <antimatroid> there are now 4 options :\
+2011-02-08T02:48:57  <jmcarthur> oh?
+2011-02-08T02:49:00  <antimatroid> if we count the two metrics for option 2
+2011-02-08T02:49:04  <jmcarthur> ah
+2011-02-08T02:49:27  <antimatroid> i think pick between 1 and 3 and each of the two's, then pick between those
+2011-02-08T02:49:32  <antimatroid> how to pick, bleh
+2011-02-08T02:50:09  <antimatroid> actually, i have no idea how the second 2 option workds yet
+2011-02-08T02:52:14  <jmcarthur> in 198576 of those scenarios, option 1 killed more than option 3
+2011-02-08T02:52:23  <jmcarthur> oh
+2011-02-08T02:52:25  <jmcarthur> wrong
+2011-02-08T02:52:28  <jmcarthur> backward
+2011-02-08T02:52:37  <jmcarthur> option 3 killed more than option 1 in that many
+2011-02-08T02:53:36  <jmcarthur> interesting
+2011-02-08T02:54:18  <antimatroid> yeah, didn't expect that
+2011-02-08T02:54:35  <jmcarthur> that means that option 3 actually killed more in about 60% of the cases where they were different
+2011-02-08T02:54:58  <jmcarthur> 137268 where option 1 killed more
+2011-02-08T02:55:43  <antimatroid> so option 3 can cause big changes in kill ratio?
+2011-02-08T02:55:51  <jmcarthur> that means there were no cases where option 1 killed ant A but not ant B but option 3 killed ant B but not ant A
+2011-02-08T02:56:12  <jmcarthur> their kills always overlapped, but one is still not a subset of the other in every case
+2011-02-08T02:56:48  <antimatroid> largest kill ratio!
+2011-02-08T02:56:50  <antimatroid> :P
+2011-02-08T02:56:51  <antimatroid> go
+2011-02-08T02:57:05  <antimatroid> maybe even save the example
+2011-02-08T02:57:07  <antimatroid> i'd be keen to see it
+2011-02-08T02:58:04  <jmcarthur> hmm
+2011-02-08T02:58:36  <jmcarthur> largest absolute kill ratio or largest difference between option 1 and option 3?
+2011-02-08T03:00:53  <antimatroid> both? :P
+2011-02-08T03:01:44  <antimatroid> i think i got another one wrong
+2011-02-08T03:02:12  <antimatroid> oh shit, i think you can block the 3 passage with 3
+2011-02-08T03:02:25  <jmcarthur> but not with 1?
+2011-02-08T03:02:40  <antimatroid> not with 1
+2011-02-08T03:02:48  <antimatroid> go to 3rd row from bottom, right side
+2011-02-08T03:02:51  <antimatroid> it's wrong atm
+2011-02-08T03:02:57  <antimatroid> i think red keeps all their ants with option 3?
+2011-02-08T03:03:08  <antimatroid> you remove the blue 4, then each red has 1 blue enemy?
+2011-02-08T03:03:34  <jmcarthur> which distance metric?
+2011-02-08T03:03:53  <antimatroid> what do you mean? it's the 2 diamond
+2011-02-08T03:03:54  <antimatroid> they all are
+2011-02-08T03:04:05  <jmcarthur> i thought you said you were using euclidean
+2011-02-08T03:04:10  <antimatroid> that's for option 2
+2011-02-08T03:04:13  <jmcarthur> oh
+2011-02-08T03:04:15  <antimatroid> hence the rt(2)'s
+2011-02-08T03:04:17  <jmcarthur> then i'm doing all these wrong
+2011-02-08T03:04:35  <antimatroid> there shouldn't be a difference with manhatten and euclidean for 1 and 3?
+2011-02-08T03:04:44  <jmcarthur> not sure
+2011-02-08T03:04:45  <antimatroid> the fight region is the same, and that's all it determines?
+2011-02-08T03:05:10  <jmcarthur> okay, none of these scenarios varied by more than 2 kills, and 137268 of them varies by exactly 2 kills
+2011-02-08T03:05:14  <jmcarthur> *varied
+2011-02-08T03:05:23  <jmcarthur> i guess so
+2011-02-08T03:05:31  <antimatroid> i think you're safe on that one
+2011-02-08T03:05:33  <jmcarthur> it's a diamond with 2 euclidean?
+2011-02-08T03:05:38  <antimatroid> yeah
+2011-02-08T03:05:38  <jmcarthur> i hadn't thought about it
+2011-02-08T03:05:40  <jmcarthur> okay
+2011-02-08T03:05:46  <antimatroid> i realised that with snowman game
+2011-02-08T03:05:52  <antimatroid> if you go larger it isn't
+2011-02-08T03:06:29  <antimatroid> but.. is that bad that they can block that passage?
+2011-02-08T03:06:49  <jmcarthur> okay, so the number of cases where the difference was exactly 2 kills is exactly the same as the number of cases where option 1 had more kills than option 3. i doubt that's a coincidence
+2011-02-08T03:07:20  <jmcarthur> that's a pretty big passage to be blocking
+2011-02-08T03:07:28  <jmcarthur> are you sure that would be impenetrable?
+2011-02-08T03:07:32  <antimatroid> look at it
+2011-02-08T03:07:37  <antimatroid> you can't send ants in there to break it
+2011-02-08T03:07:44  <antimatroid> any other variation and they all die straight up
+2011-02-08T03:07:52  <antimatroid> it would be an awesome trap with option 1
+2011-02-08T03:08:12  <jmcarthur> yeah i think you're right
+2011-02-08T03:08:49  <jmcarthur> with option 1 it's breakable and with option 3 it's not
+2011-02-08T03:10:07  <antimatroid> i think you can even flow your ants through that hole and remain stable
+2011-02-08T03:10:23  <antimatroid> it's like a one way portal
+2011-02-08T03:10:27  <antimatroid> that's actually kind of awesome
+2011-02-08T03:10:46  <antimatroid> 2 way if you're a friend
+2011-02-08T03:12:14  <jmcarthur> it's neat, but probably bad for the contest anyway :(
+2011-02-08T03:12:30  <jmcarthur> the existence of one that large hints that there may be an even larger one
+2011-02-08T03:12:40  <antimatroid> i don't think so
+2011-02-08T03:12:46  <antimatroid> i could be wrong
+2011-02-08T03:12:52  <antimatroid> i have been over and over again
+2011-02-08T03:16:15  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2011-02-08T03:17:31  <jmcarthur> simple case where option 3 kills more than option 1:   AB-AB;-----;-A---
+2011-02-08T03:17:50  <jmcarthur> option 1:   A---B;-----;-A---
+2011-02-08T03:18:00  <jmcarthur> option 3:   A----;-----;-A---
+2011-02-08T03:18:15  <antimatroid> acutally, i think they can block the 4 passage too
+2011-02-08T03:18:21  <antimatroid> rule 3 is definitely out
+2011-02-08T03:18:25  <jmcarthur> i guess we already had an even smaller case for that
+2011-02-08T03:18:36  <antimatroid> oh, maybe they can't, hang on
+2011-02-08T03:18:56  <jmcarthur> i'm not sure. i thought about the blocking a bit more and i don't think it should be possible to block any larger
+2011-02-08T03:19:30  <jmcarthur> ah, no we didn't have a simpler case already for option 3 killing more than option 1
+2011-02-08T03:19:57  <jmcarthur> so there's a simpler one than the one we had already (which was a 5v5)
+2011-02-08T03:20:24  <antimatroid> yeah, pretty sure they can block 4
+2011-02-08T03:20:28  <jmcarthur> i guess the corridor made a 3v4 one
+2011-02-08T03:20:31  <jmcarthur> dang
+2011-02-08T03:21:08  <jmcarthur> i should go to bed soon
+2011-02-08T03:21:11  <antimatroid> WWb..bWW
+2011-02-08T03:21:11  <antimatroid> Wa.bb.aW
+2011-02-08T03:21:11  <antimatroid> W.aaaa.W
+2011-02-08T03:21:18  <jmcarthur> i'm pretty convinced against option 3 now
+2011-02-08T03:21:53  <antimatroid> oh wait, they could take out some of your things there
+2011-02-08T03:21:57  <antimatroid> it's not trivial to block it
+2011-02-08T03:22:59  <antimatroid> bleh, i am going around in circles, move middle a squares down and it may be blocked
+2011-02-08T03:23:19  <Zannick> ugh
+2011-02-08T03:23:53  <janzert> even if it takes active moves to do it, I would guess if it can be done on a 4 wide corridor it can be done for any width corridor?
+2011-02-08T03:24:47  <antimatroid> http://i.imgur.com/5X6jq.png
+2011-02-08T03:24:50  <antimatroid> i think that's blocked
+2011-02-08T03:24:53  <janzert> or linear space, the only question to form an impenetrable fortress then is to find a way to turn a corner
+2011-02-08T03:25:11  <antimatroid> janzert: you might be right
+2011-02-08T03:26:18  <jmcarthur> antimatroid: stick one blue ant to the immediate right of the leftmost red ant and stick another blue ant above that one
+2011-02-08T03:26:40  <antimatroid> jmcarthur: an ant couldn't get that close
+2011-02-08T03:26:58  <jmcarthur> okay, get rid of the lower blue ant then
+2011-02-08T03:27:02  <jmcarthur> ah i see
+2011-02-08T03:27:04  <jmcarthur> nevermind
+2011-02-08T03:27:13  <jmcarthur> yeah, that's blocked
+2011-02-08T03:27:23  <antimatroid> i think you can do that for any size given space
+2011-02-08T03:27:32  <antimatroid> it could turn into a game of blocking off large regions
+2011-02-08T03:27:35  <antimatroid> option 3 is out
+2011-02-08T03:28:46  <jmcarthur> are we sure option 1 is fine for this one?
+2011-02-08T03:28:51  <antimatroid> although it would be fun to hole someone into a corridor from both ends
+2011-02-08T03:29:00  <jmcarthur> i might just be tired, but i'm not thinking of how to attackit
+2011-02-08T03:29:03  <jmcarthur> *attack it
+2011-02-08T03:29:07  <jmcarthur> i really should head to bead
+2011-02-08T03:29:09  <jmcarthur> *bed
+2011-02-08T03:29:11  <jmcarthur> gah
+2011-02-08T03:29:20  <antimatroid> hmm, i'll find something that breaks it
+2011-02-08T03:30:12  <antimatroid> jmcarthur: you can take out red's edge pieces
+2011-02-08T03:30:24  <antimatroid> put blue ones diagonally above each
+2011-02-08T03:30:42  <antimatroid> so they can block it pretty well, but it's breakable
+2011-02-08T03:30:51  <jmcarthur> i'm not seeing it
+2011-02-08T03:30:57  <antimatroid> hang on, i'll do the numbers
+2011-02-08T03:31:11  <jmcarthur> ah i see one
+2011-02-08T03:32:12  <jmcarthur> it takes two ants to kill each side ant
+2011-02-08T03:32:21  <jmcarthur> then you go in with more to take the rest
+2011-02-08T03:32:28  <antimatroid> oh, maybe
+2011-02-08T03:32:46  <antimatroid> i think that's blocked
+2011-02-08T03:32:48  <antimatroid> crud
+2011-02-08T03:32:51  <jmcarthur> no no
+2011-02-08T03:33:02  <jmcarthur> bah, i'll just run it through my algorithm and be sure :P
+2011-02-08T03:33:07  <CIA-37> aichallenge: Benjamin S Wolf zeta * rc2bcc70 / (worker/language.py worker/submission.py worker/compiler.py):
+2011-02-08T03:33:07  <CIA-37> aichallenge: Another overhaul of compilation system. Moved compiler.py into
+2011-02-08T03:33:07  <CIA-37> aichallenge: language.py and did a major refactor of the compilers dict
+2011-02-08T03:33:07  <CIA-37> aichallenge: into a languages dict.
+2011-02-08T03:33:07  <CIA-37> aichallenge: Now language maps to compiler rather than other way around,
+2011-02-08T03:33:07  <CIA-37> aichallenge: and the run commands are listed in the same place.
+2011-02-08T03:33:08  <CIA-37> aichallenge: Credit for the form of the languages dict goes to jbroman. - http://bit.ly/fvVQ7l
+2011-02-08T03:33:09  <CIA-37> aichallenge: Benjamin S Wolf zeta * re4acb86 / worker/README.md : Modify README to reflect the refactor. - http://bit.ly/hdZHBQ
+2011-02-08T03:33:12  <jmcarthur> omg
+2011-02-08T03:33:42  <Zannick> wow did that take too long
+2011-02-08T03:33:51  <antimatroid> yeah, okay, those red corners do die under 1
+2011-02-08T03:35:22  <antimatroid> http://i.imgur.com/0zBs2.png
+2011-02-08T03:35:23  <jmcarthur> i'm really going to bed now
+2011-02-08T03:35:25  <antimatroid> easy to break
+2011-02-08T03:35:46  <Zannick> yeah, i need to sleep
+2011-02-08T03:35:49  <antimatroid> night
+2011-02-08T03:35:51  <jmcarthur> wow, took out more than i thought it would
+2011-02-08T03:35:58  <jmcarthur> ah i see why
+2011-02-08T03:36:04  <jmcarthur> cool
+2011-02-08T03:36:20  <jmcarthur> okay, option 1 is still my definitive favorite of the bunch
+2011-02-08T03:36:24  <jmcarthur> gnite
+2011-02-08T03:36:33  <antimatroid> night
+2011-02-08T03:42:56  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2011-02-08T03:47:20  *** antimatroid <antimatroid!~Nick@202.106-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 265 seconds)
+2011-02-08T04:01:01  *** antimatroid <antimatroid!~Nick@44.236-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-08T04:04:05  <antimatroid> damnit mcleopold i have a question for him
+2011-02-08T04:04:17  <antimatroid> i need to make sure that if 3 friend ants walk into the same square, he kills all 3
+2011-02-08T04:10:45  <antimatroid> janzert: http://i.imgur.com/CMwVE.png
+2011-02-08T04:12:02  <antimatroid> with option 3, i think you basically want to attack with an inverse duck thing
+2011-02-08T04:20:36  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-02-08T04:33:41  *** p4p4p4 <p4p4p4!~chatzilla@82.113.121.51> has joined #aichallenge
+2011-02-08T04:42:44  *** amstan_ <amstan_!~amstan@206-248-153-79.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-02-08T04:57:51  *** boegel <boegel!~boegel@91.182.210.5> has joined #aichallenge
+2011-02-08T05:12:29  <janzert> there is a way to break through with 3 though?
+2011-02-08T05:14:11  <janzert> otherwise I think 3 is dead
+2011-02-08T05:15:13  *** boegel <boegel!~boegel@91.182.210.5> has quit IRC (Remote host closed the connection)
+2011-02-08T05:15:45  <antimatroid> janzert: with 3 what?
+2011-02-08T05:15:45  *** boegel <boegel!~boegel@91.182.210.5> has joined #aichallenge
+2011-02-08T05:15:48  <antimatroid> i think 3 is dead
+2011-02-08T05:15:52  <janzert> option 3
+2011-02-08T05:15:55  <janzert> yeah
+2011-02-08T05:16:13  <antimatroid> i still think 1 would be way cooler than 2
+2011-02-08T05:16:40  <antimatroid> either option is going to require caring about the micro side, but 1 makes it better for people who do it well
+2011-02-08T05:16:57  <antimatroid> as opposed to those that don't just suck
+2011-02-08T05:21:11  <janzert> did anyone take a serious look at one with distance just the 8 adjacent squares
+2011-02-08T05:21:19  <janzert> option 1 that is
+2011-02-08T05:23:16  <antimatroid> i liked the idea that enemy ants can never land in the same square
+2011-02-08T05:23:25  <antimatroid> i haven't really looked at it though
+2011-02-08T05:23:41  <janzert> the above wouldn't allow them to would it?
+2011-02-08T05:23:46  <antimatroid> i like chris_0076's idea to use chebyshev metric for option 2
+2011-02-08T05:24:01  <janzert> oops, I confused option 2 and 1
+2011-02-08T05:24:21  <antimatroid> if you do the 8, you can have a.b and them walk into each other
+2011-02-08T05:24:22  <janzert> I meant option 2 with chebyshev distance 1 above
+2011-02-08T05:24:30  <antimatroid> ah okay
+2011-02-08T05:24:31  <janzert> ahh, yeah
+2011-02-08T05:24:36  <antimatroid> i plan to play around with that
+2011-02-08T05:25:27  <janzert> hmm, so distance 1 is too small and distance 2 starts to seem rather large
+2011-02-08T05:25:58  <janzert> maybe it would still work out though
+2011-02-08T05:26:33  <antimatroid> i don't think it's too bad, if you consider manhatten metric with option 1
+2011-02-08T05:26:37  <antimatroid> it's all just the 2 circle
+2011-02-08T05:26:47  <antimatroid> it's the same with euclidean metric too
+2011-02-08T05:26:50  <janzert> right, I meant the chebyshev
+2011-02-08T05:27:07  <antimatroid> yeah, i wouldn't necessarily set d=2
+2011-02-08T05:27:17  <antimatroid> give the diamon, but use chebyshev as distance metric
+2011-02-08T05:27:39  <antimatroid> it just changes ajcant to d=1 instead of rt2
+2011-02-08T05:28:03  <janzert> ahh, so they only interact within the diamond but distance measurement is the chebyshev
+2011-02-08T05:28:09  <janzert> yeah, that might work nice
+2011-02-08T05:28:22  <antimatroid> that way you can fight around you or long range if necessary
+2011-02-08T05:28:31  <antimatroid> but only long range in your movement direction
+2011-02-08T05:28:37  <antimatroid> it sort of comes out alright explanation wise
+2011-02-08T05:28:45  <janzert> yeah
+2011-02-08T05:30:09  <antimatroid> i'm implementing an iterateState function in my simple bot now so i can just feed it a game state to iterate for me
+2011-02-08T05:30:20  <antimatroid> i'm doing option 1, but i will do 2 after
+2011-02-08T05:41:43  <antimatroid> janzert: another issue the extra fighting region presents is fighting through walls
+2011-02-08T05:41:56  <antimatroid> although diagonal also had the issue of fighting through a crack
+2011-02-08T05:42:22  <antimatroid> one "explanation" is to say walls aren't high enough to block fighting, only movement
+2011-02-08T05:42:25  <janzert> yeah, I thought of that but I don't think it'll be a big problem
+2011-02-08T05:42:36  <antimatroid> it might make it cool if you can fight through the walls
+2011-02-08T05:42:39  <janzert> or just say, hey it's a game :P
+2011-02-08T05:42:57  <antimatroid> that's what i would do, but i've been told an explanation is important
+2011-02-08T05:43:13  <antimatroid> i'd be happy saying it's a game on a graph with blah blah blah :P
+2011-02-08T05:43:35  <janzert> I guess I think the whole ants thing is pretty thin at this point anyway so...
+2011-02-08T05:43:55  <antimatroid> nah, ant colonies fighting for land area and resources for growing
+2011-02-08T05:44:04  <antimatroid> that makes perfect sense :\
+2011-02-08T05:44:26  <antimatroid> i especially like the idea of not knowing how many other colonies there are
+2011-02-08T05:44:33  <janzert> with no hole and a central brain and.. :P
+2011-02-08T05:44:35  <antimatroid> but that may be unavoidable
+2011-02-08T05:44:58  <antimatroid> well.. the starting square could be an ants hole, and if another ant lands on it, kills that plays ants, all of them
+2011-02-08T05:45:03  <antimatroid> but i don't think people will like that
+2011-02-08T05:45:20  <antimatroid> actually, manages to kill the hole with the same rules?
+2011-02-08T05:45:24  <antimatroid> and the hole can't move
+2011-02-08T05:45:34  <janzert> but what advantage does the hole give?
+2011-02-08T05:45:41  <antimatroid> your survival?
+2011-02-08T05:45:54  <antimatroid> ants could spawn there on a turn that you don't have an ant on it
+2011-02-08T05:46:07  <antimatroid> and you get a counter for amount of food squares you claimed
+2011-02-08T05:46:12  <antimatroid> but it's going back to my game then
+2011-02-08T05:46:22  <janzert> that would certainly change the nature of the game yeah
+2011-02-08T05:46:38  <antimatroid> i think this game as is could be quite cool
+2011-02-08T05:46:49  <antimatroid> i just think it needs option 1 to make the micro more awesome
+2011-02-08T05:46:51  <janzert> not that it would necessarily be bad, but it's a lot different than what people are looking at now
+2011-02-08T05:47:10  <antimatroid> and i've not seen so much agreement over the general game until now
+2011-02-08T05:47:17  <antimatroid> it might be best to go with where we're at
+2011-02-08T05:48:04  <janzert> probably
+2011-02-08T05:50:10  <antimatroid> i'm pretty iffy about the non-symmetric maps idea
+2011-02-08T05:50:41  <antimatroid> i like that at least with the maps i have, if two players come across each other at the start, it's not going to be on symmetrical terms
+2011-02-08T05:50:48  <antimatroid> well, very unlikely
+2011-02-08T05:50:48  <janzert> yeah, I really like the idea in theory. But I don't think it's going to work in practice like Jeff thinks it will
+2011-02-08T05:51:27  <janzert> if he can actually pull it off though then great
+2011-02-08T05:51:51  <antimatroid> i think both should be done initially and results compared
+2011-02-08T05:51:59  <antimatroid> and generally look at how it goes
+2011-02-08T05:52:01  <janzert> I think the noise and feedback between map rating and player rating is going to be too much though
+2011-02-08T05:52:11  <antimatroid> that and the number of games needed
+2011-02-08T05:52:18  <janzert> yep
+2011-02-08T05:52:36  <antimatroid> tcp could help the games thing maybe
+2011-02-08T05:53:23  <janzert> possibly, but you know even less about player strengths there
+2011-02-08T05:53:58  <janzert> although I don't think he was planning to try and take player strength into account in the calculation at all
+2011-02-08T05:54:12  <janzert> and just hope that it averaged out I guess
+2011-02-08T05:55:43  <antimatroid> i don't think it'd work
+2011-02-08T05:55:47  <antimatroid> but i'm happy to try
+2011-02-08T05:55:51  <antimatroid> oh well
+2011-02-08T05:56:25  * janzert nods
+2011-02-08T05:57:56  *** aerique <aerique!euqirea@xs3.xs4all.nl> has joined #aichallenge
+2011-02-08T06:09:23  <antimatroid> wtf dabino
+2011-02-08T06:09:29  <antimatroid> calculate kills before moves, that is stupid
+2011-02-08T06:10:18  <antimatroid> and no different, just makes you iterate the state yourself before making moves
+2011-02-08T06:24:01  *** boegel <boegel!~boegel@91.182.210.5> has quit IRC (Quit: This computer has gone to sleep)
+2011-02-08T06:29:40  *** RudyRain <RudyRain!~hakan@78.187.137.161> has joined #aichallenge
+2011-02-08T06:46:28  <antimatroid> I added possible visualiser input to etherpad if anyone wants to look
+2011-02-08T06:46:31  <antimatroid> http://ietherpad.com/TR0zbEqvx1
+2011-02-08T06:50:57  *** boegel <boegel!~boegel@91.182.210.5> has joined #aichallenge
+2011-02-08T07:14:31  *** chris_0076 <chris_0076!~Chris_007@adsl-66-255-50.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T07:14:39  *** p4p4p4 <p4p4p4!~chatzilla@82.113.121.51> has quit IRC (Read error: Connection timed out)
+2011-02-08T07:15:26  *** p4p4p4 <p4p4p4!~chatzilla@82.113.121.51> has joined #aichallenge
+2011-02-08T07:33:21  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-08T07:40:36  * antimatroid also made the mistake of killing off friend ants near each other
+2011-02-08T07:46:05  *** boegel <boegel!~boegel@91.182.210.5> has quit IRC (Quit: This computer has gone to sleep)
+2011-02-08T07:51:34  *** p4p4p4 <p4p4p4!~chatzilla@82.113.121.51> has quit IRC (Read error: Connection timed out)
+2011-02-08T07:57:50  *** boegel <boegel!~boegel@91.182.210.5> has joined #aichallenge
+2011-02-08T08:41:37  *** Error323 <Error323!~fhuizing@145.116.230.164> has joined #aichallenge
+2011-02-08T08:43:34  <antimatroid> Error323: morning
+2011-02-08T08:43:42  <antimatroid> http://www.ai-contest.com/forum/viewtopic.php?f=21&t=1313&start=10
+2011-02-08T08:43:47  <Error323> antimatroid: hooooooooowdy you tasmanian devil
+2011-02-08T08:43:50  <antimatroid> have you looked at the possible battle resolutions?
+2011-02-08T08:43:58  <Error323> I have not
+2011-02-08T08:44:40  <Error323> in fact I haven't looked in such a long time I need to read up massively
+2011-02-08T08:46:07  <Error323> But am not gonna do that now =)
+2011-02-08T08:46:13  <antimatroid> :)
+2011-02-08T08:46:30  <antimatroid> i've been implementing said battle resolutions methods
+2011-02-08T08:46:42  <antimatroid> i'm just doing it straight into some code for a bot
+2011-02-08T08:46:48  <antimatroid> then passing mock game states to that
+2011-02-08T08:48:31  <Error323> cool
+2011-02-08T08:48:54  <Error323> is it already certain that it will be the ant game
+2011-02-08T08:49:11  <antimatroid> i've not seen any more agreement than for the current form of this
+2011-02-08T08:49:25  <antimatroid> i would be very surprised if there is a completely different game used
+2011-02-08T08:49:36  <Error323> I see
+2011-02-08T08:49:41  <antimatroid> as in people are in the process of making official stuff for this
+2011-02-08T08:49:44  <Error323> would be a waste of a lot of work indeed.
+2011-02-08T08:52:35  <antimatroid> i hated the game until we moved away from 1:1 battle resolution
+2011-02-08T08:52:46  <antimatroid> now i think it will be quite cool
+2011-02-08T08:53:30  <Error323> is there already an engine and webbased visualizer?
+2011-02-08T08:54:03  <antimatroid> there's an old engine j3camero wrote (i think, maybe amstan), but mcleopold is working on one
+2011-02-08T08:54:12  <antimatroid> i think he plans to get a tcp server going soon for testing on
+2011-02-08T09:53:19  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-02-08T10:01:01  *** RudyRain <RudyRain!~hakan@78.187.137.161> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T10:05:54  <antimatroid> hmmm well i have very naive implementations of each battle resolution
+2011-02-08T10:05:57  <antimatroid> must be time for bed
+2011-02-08T10:32:08  *** delt0r___ <delt0r___!~delt0r@188-22-175-47.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-08T10:33:15  *** delt0r_ <delt0r_!~delt0r@188-22-175-47.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T11:21:48  *** aerique <aerique!euqirea@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-02-08T11:36:14  *** McLeopold <McLeopold!~Scott@67.139.105.186> has joined #aichallenge
+2011-02-08T11:38:55  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2011-02-08T12:01:42  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 276 seconds)
+2011-02-08T12:05:54  *** boegel <boegel!~boegel@91.182.210.5> has quit IRC (Quit: Leaving)
+2011-02-08T12:37:29  *** bhasker <bhasker!~bhasker@nat/yahoo/x-aefhigiaozsbjtni> has quit IRC (Quit: bhasker)
+2011-02-08T12:42:39  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has joined #aichallenge
+2011-02-08T12:42:39  *** ChanServ sets mode: +o amstan
+2011-02-08T12:59:00  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.8/20100722155716])
+2011-02-08T13:03:39  *** Meatkat <Meatkat!~bovard@217.113.66.228> has joined #aichallenge
+2011-02-08T13:09:50  *** bhasker <bhasker!~bhasker@nat/yahoo/x-tzutzloxcgzgqfuf> has joined #aichallenge
+2011-02-08T13:21:30  <amstan> i'll just leave this here: http://www.secretgeek.net/fuv_intro.asp
+2011-02-08T13:27:18  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T13:31:57  <jmcarthur> looks useful
+2011-02-08T13:48:56  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-02-08T14:05:42  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T14:23:37  *** boegel <boegel!~boegel@91.182.210.5> has joined #aichallenge
+2011-02-08T15:25:25  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-02-08T15:36:28  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-08T15:38:52  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-08T16:01:19  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T16:08:52  *** boegel <boegel!~boegel@91.182.210.5> has quit IRC (Quit: Leaving)
+2011-02-08T16:09:51  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-08T16:18:32  *** McLeopold1 <McLeopold1!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-02-08T16:19:01  <McLeopold1> janzert: I thought of something we could do for the scoring.
+2011-02-08T16:19:28  <McLeopold1> It would ensure the last bot standing gets the win, or a least make no incentive for keeping the game going.
+2011-02-08T16:20:02  <McLeopold1> If the amount of food to be spawned is known, then when there is 1 bot left, they get that amount added to their score.
+2011-02-08T16:20:36  <McLeopold1> At 1000 turns, if you win at turn 750, you get a 250 point bonus, assuming 1 food spawned per turn.
+2011-02-08T16:21:12  <McLeopold1> Letting someone live in a corner will only take away points if food spawns near them.
+2011-02-08T16:21:43  <McLeopold1> So there should be no incentive to not end the game for anyone.
+2011-02-08T16:22:11  <McLeopold1> And dumb bots with survival luck don't get credit.
+2011-02-08T16:28:41  *** Meatkat <Meatkat!~bovard@217.113.66.228> has joined #aichallenge
+2011-02-08T16:32:12  <McLeopold1> jmcarthur: another battle resolution idea: ants only die when they are on the same square as other ants (including self)
+2011-02-08T16:32:43  <jmcarthur> McLeopold1: so just require them to run into each other?
+2011-02-08T16:32:47  <McLeopold1> yep
+2011-02-08T16:32:53  <McLeopold1> a bot bot can ensure 1:1
+2011-02-08T16:32:58  <jmcarthur> what about overshooting?
+2011-02-08T16:33:06  <jmcarthur> ab, a moves right and b moves left
+2011-02-08T16:33:15  <McLeopold1> kill em
+2011-02-08T16:33:29  <jmcarthur> alright, so like my stratego rules
+2011-02-08T16:34:01  <jmcarthur> that would certainly be 1:1 and fair, but i can't say it sounds very... compelling :)
+2011-02-08T16:35:42  <jmcarthur> it makes blocking impossible too, obviously
+2011-02-08T16:36:05  <jmcarthur> there's pretty much no real micro there except for the occasional game of chase
+2011-02-08T16:36:12  <McLeopold1> yeah, now let's say an ant is really a 2x2 square
+2011-02-08T16:36:21  <McLeopold1> or, a 3x3
+2011-02-08T16:36:33  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 250 seconds)
+2011-02-08T16:36:52  <McLeopold1> then, we are back to, if in range, kill ant, and not trying to maintain 1:1 with shorter distance requirements
+2011-02-08T16:37:02  <McLeopold1> a player can still ensure 1:1
+2011-02-08T16:37:06  <jmcarthur> the shorter distance requirements were always silly
+2011-02-08T16:37:09  <McLeopold1> just keep yourself spaced
+2011-02-08T16:37:11  <jmcarthur> this is basically just kill all ants in range
+2011-02-08T16:37:23  <McLeopold1> yes, but without serial numbers
+2011-02-08T16:37:33  <jmcarthur> well right, because it's not actually 1:1
+2011-02-08T16:37:45  <McLeopold1> no, but a bot can ensure 1:1
+2011-02-08T16:37:53  <jmcarthur> given that they have the space to move about
+2011-02-08T16:37:56  <McLeopold1> without a "CS degree"
+2011-02-08T16:38:09  <jmcarthur> if they are cornered it's still not going to be 1:1 necessarily
+2011-02-08T16:38:31  <McLeopold1> no
+2011-02-08T16:38:40  <McLeopold1> locally deterministic
+2011-02-08T16:38:52  <McLeopold1> If jeff will accept it
+2011-02-08T16:39:05  <jmcarthur> i'm pretty sure we had mentioned it before
+2011-02-08T16:39:09  <jmcarthur> maybe not in front of jeff
+2011-02-08T16:39:29  <McLeopold1> he was against it at first
+2011-02-08T16:39:43  <jmcarthur> anyway, i'm not a fan just because i really want micro, but it beats the distance sorting thing
+2011-02-08T16:39:50  <McLeopold1> But, I think he made a statement where he thought it was a good idea.
+2011-02-08T16:40:08  <McLeopold1> You get some micro, just not formations
+2011-02-08T16:40:51  <jmcarthur> well, you get basically the same kind of micro as you get with the distance one: keep your ants spaced out, attack with one at a time, play chicken
+2011-02-08T16:40:52  <McLeopold1> He also wants range attacks to discourage chasing and breaking through behind lines.
+2011-02-08T16:41:48  <McLeopold1> But, I think those are actually fun *macro* strategies.
+2011-02-08T16:41:50  <jmcarthur> how do range attacks discourage those?
+2011-02-08T16:42:16  <jmcarthur> yes, i agree, but i don't want the game to be solely macro
+2011-02-08T16:42:16  <McLeopold1> you can't sneak past an ant in a corridor if he has a range 3 attack.
+2011-02-08T16:42:39  <McLeopold1> less ants to "block" a chokepoint
+2011-02-08T16:42:56  <jmcarthur> err
+2011-02-08T16:43:01  <McLeopold1> also, read above for my scoring idea
+2011-02-08T16:43:13  <McLeopold1> last bot standing gets food bonus
+2011-02-08T16:43:21  <jmcarthur> less ants to get *a* kill in a chokepoint, sure
+2011-02-08T16:44:05  <jmcarthur> the scoring idea sounds good at first glance
+2011-02-08T16:57:14  *** delt0r_ <delt0r_!~delt0r@188-22-162-83.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-08T16:58:36  *** delt0r___ <delt0r___!~delt0r@188-22-175-47.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T17:00:12  *** delt0r___ <delt0r___!~delt0r@188-22-162-83.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-08T17:01:34  *** delt0r_ <delt0r_!~delt0r@188-22-162-83.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-02-08T17:03:11  *** McLeopold1 <McLeopold1!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-02-08T17:10:18  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-02-08T17:11:22  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has joined #aichallenge
+2011-02-08T17:11:22  *** ChanServ sets mode: +o amstan
+2011-02-08T17:17:13  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-02-08T17:33:46  *** delt0r_ <delt0r_!~delt0r@188-22-162-83.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-08T17:35:25  *** delt0r___ <delt0r___!~delt0r@188-22-162-83.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-02-08T18:11:27  <McLeopold> I'm beginning to think that understanding the sample bot and game engine should be super-simple, not the rules...
+2011-02-08T18:11:44  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T18:12:05  <jmcarthur> yeah
+2011-02-08T18:12:22  <jmcarthur> the whole point of the rules, to me, is to create some emergent complexity anyway
+2011-02-08T18:12:33  <jmcarthur> otherwise it's not really an AI competition at all
+2011-02-08T18:12:38  <McLeopold> even with our "simple" ants, I can imagine a lot of questions that will be hard to answer.
+2011-02-08T18:14:15  <antimatroid> McLeopold: such as?
+2011-02-08T18:14:42  <antimatroid> i don't like that "colliding ants die" rule, i'm with jmcarthur, i want interesting micro, and i think formations would be awesome to watch
+2011-02-08T18:15:14  <antimatroid> i've got all 4 options implemented (fairly naively) in my bot code, so I can throw input at it and get the result of iterating the state
+2011-02-08T18:23:13  <McLeopold> antimatroid: I think it would be to hard to explain recursive collision resolution to the newbs.  It's easier to kill their ants and slap their hands.
+2011-02-08T18:23:47  <McLeopold> With range attacks, enemy ants can't collide.
+2011-02-08T18:23:53  <antimatroid> McLeopold: that's one of the reasons i like option 1 to 2
+2011-02-08T18:24:35  <antimatroid> i actually found each algorithm was pretty easy to do naively
+2011-02-08T18:24:42  <antimatroid> option 2 code might have even been the shortest
+2011-02-08T18:24:59  <McLeopold> honestly, I think we have "the one and only option" and "wish #1" and "wish #2"
+2011-02-08T18:25:22  <antimatroid> what's "the one and only option"?
+2011-02-08T18:25:41  <McLeopold> range attacks, attempt 1:1 ratio
+2011-02-08T18:25:51  <antimatroid> i think that's shit personally
+2011-02-08T18:26:14  <antimatroid> i only got interested in this game once we moved away from 1:1 and introduced "attack" in my ants version so it wasn't also
+2011-02-08T18:26:36  <antimatroid> without micro being interesting, it's boring and doesn't leave interesting battles
+2011-02-08T18:27:24  <McLeopold> If we can trivially break the game, then jeff will listen, but probably not until then
+2011-02-08T18:28:13  <McLeopold> so, write an unstoppable bot with range attacks
+2011-02-08T18:28:59  <antimatroid> the visualiser is easy as to make with ranged attacks
+2011-02-08T18:29:14  <antimatroid> did you see my very rough proposal for passing info to it?
+2011-02-08T18:30:08  <antimatroid> atm i'm imagining "pixels" sliding between squares each turn, then fading kills/spawns/food removal
+2011-02-08T18:30:22  <antimatroid> if ants are going into the same square, that gets trickier and less visually appealing
+2011-02-08T18:30:38  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T18:30:39  <antimatroid> and it's complicated for killing ants that are passing through the same edge
+2011-02-08T18:31:02  <antimatroid> ideally you'd want to visualise that as the two ants sliding off their square to die in a given direction
+2011-02-08T18:31:28  <McLeopold> I too want to see dead ants.
+2011-02-08T18:31:39  <antimatroid> on the visualiser?
+2011-02-08T18:31:49  <antimatroid> isn't it enough to see them fade?
+2011-02-08T18:31:55  <McLeopold> ?!%*.abcdefghijklmnopqrstuvwxyz
+2011-02-08T18:32:11  <antimatroid> and what if there's more than one ant landing in a square? then how do you show a "dead" ant? there's many
+2011-02-08T18:32:13  <McLeopold> That's my current set of characters for the map matrix
+2011-02-08T18:32:33  <McLeopold> ?=unseen, !=dead ant, %=wall/water, *=food, .=open land
+2011-02-08T18:32:40  <McLeopold> no more hills
+2011-02-08T18:32:45  <antimatroid> i think allowing attack range ==2 with manhatten makes it a lot easier, and blocking passageways etc. is more complicated
+2011-02-08T18:33:15  <McLeopold> So, as for sliding ants, that would be nice, but it is a lot of data to try and save for the visualizer.
+2011-02-08T18:33:39  <antimatroid> McLeopold: check the input i proposed, i don't think it is
+2011-02-08T18:33:41  <McLeopold> we'd have to echo all ant moves to every player
+2011-02-08T18:33:49  <McLeopold> where do I check?
+2011-02-08T18:33:52  <McLeopold> etherpad?
+2011-02-08T18:33:53  <antimatroid> etherpad
+2011-02-08T18:34:36  <antimatroid> you basically echo the moves to the visualiser, along with information at the end about spawning/killing squares, which is done with fading
+2011-02-08T18:35:45  <antimatroid> surely it'd be less info than sent for planet wars?
+2011-02-08T18:36:17  <antimatroid> McLeopold: can i replace the io at the top?
+2011-02-08T18:36:27  <antimatroid> i'll change X to %, i wanted to do something like that anyway
+2011-02-08T18:36:27  <McLeopold> I think it might be more
+2011-02-08T18:36:33  <McLeopold> yeah
+2011-02-08T18:36:35  <McLeopold> me too
+2011-02-08T18:36:41  <McLeopold> keep letters for players
+2011-02-08T18:36:45  <antimatroid> yep
+2011-02-08T18:36:51  <antimatroid> you can make a moved players value capital too
+2011-02-08T18:36:54  <antimatroid> etc. etc.
+2011-02-08T18:37:04  <McLeopold> you need to give info about revealed spots too
+2011-02-08T18:37:13  <antimatroid> not to the visualiser?
+2011-02-08T18:37:30  <antimatroid> wait, what?
+2011-02-08T18:37:33  <McLeopold> but, to the players
+2011-02-08T18:37:47  <McLeopold> fog of war
+2011-02-08T18:38:06  <j3camero> Just catching up on the IRC. I would support "kill all ants that are within range of an enemy ant" rule. It would produce some interesting micro where you try to kill two or three of their ants at a time using only one of your ants. It would be pretty hard to exploit that death rule to consistently get odds that are much better than 1:1.
+2011-02-08T18:38:30  <j3camero> I think that was a suggestion just above, not sure if I read that right.
+2011-02-08T18:38:49  <McLeopold> j3camero: I thought you were against micro that allowed 3:1 deaths?
+2011-02-08T18:38:52  <antimatroid> hmmm, it still encourages fighting with just 1 ant
+2011-02-08T18:39:03  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2011-02-08T18:39:10  <antimatroid> i think it's cooler if you have to try and coordinate a good fight with numerous ants to be effective
+2011-02-08T18:39:30  <antimatroid> j3camero: what's not awesome about watching ants try to move themselves into formations for offense?
+2011-02-08T18:39:34  <McLeopold> j3camero: so you are okay with offensive micro, but not defensive micro?
+2011-02-08T18:39:54  <antimatroid> it'd be a little bit like watching game of life
+2011-02-08T18:39:56  <j3camero> McLeopold: 3:1 deaths are technically possible with the suicide bomber death rule, but would be very rare. Especially with simultaneous moves, it would be pretty hard to do consistently. In any typical battle it would be hard to do much better than 1:1.
+2011-02-08T18:40:22  <antimatroid> j3camero: we're at complete odds about whether deviating from 1:1 is good i think
+2011-02-08T18:40:42  <McLeopold> j3camero: also, I'm in the middle of massive changes to the engine I wrote.
+2011-02-08T18:40:57  <antimatroid> McLeopold: just make yourself the official map gen person already :P
+2011-02-08T18:41:00  <McLeopold> I think I'm going to get a bot that processes stdin by today
+2011-02-08T18:41:28  *** Mathnerd314 <Mathnerd314!~mathnerd3@128.198.97.174> has joined #aichallenge
+2011-02-08T18:41:35  <McLeopold> antimatroid: I plan to compete with you for map gen guru.  You won the last round. ;)
+2011-02-08T18:41:44  <antimatroid> McLeopold: bring it :P
+2011-02-08T18:41:51  <j3camero> Sounds god guys.
+2011-02-08T18:41:57  <antimatroid> i'm hoping lots of people will play around with maps and early
+2011-02-08T18:42:02  <McLeopold> interesting typo...
+2011-02-08T18:42:08  <j3camero> I think there will be room for several map gens this time around. Why not?
+2011-02-08T18:42:08  *** Apophis <Apophis!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (Ping timeout: 240 seconds)
+2011-02-08T18:42:17  <antimatroid> j3camero: i'd say go with one at the end
+2011-02-08T18:42:28  <antimatroid> i think it's important to keeps things clear and simple at the end
+2011-02-08T18:42:33  <McLeopold> j3camero: I think your right.  Pure random will be too noisy.  There are so many options.
+2011-02-08T18:43:02  <antimatroid> i had an idea for a map gen, just send tron like snakes randomly around the map until you have filled enough walls?
+2011-02-08T18:43:16  <antimatroid> would encourage "walls" more i think?
+2011-02-08T18:43:34  <McLeopold> did you see my first draft at one?
+2011-02-08T18:43:40  <antimatroid> nope
+2011-02-08T18:44:07  <McLeopold> start with all walls, the carve out symmetric "rooms".  ensure a path to all starting ants
+2011-02-08T18:44:25  <antimatroid> j3camero: have you seen the pictures of resolutions in the forums?
+2011-02-08T18:44:31  <j3camero> I have seen some of antimatroid's maps. They are cool I think people will like them. They are very mazelike. Perhaps we can also generate some that are like islands joined by narrow land bridges.
+2011-02-08T18:44:32  <McLeopold> Although it crashes 50% of the time.
+2011-02-08T18:44:59  <antimatroid> my engine? was that just on codepad? that times out, otherwise it shouldn't
+2011-02-08T18:45:01  <McLeopold> j3camero: that's what my first attempt was trying to do
+2011-02-08T18:45:04  <antimatroid> but it was a very rough draft anyway
+2011-02-08T18:45:25  <antimatroid> j3camero: while mine are symmetric, coming across another player wont be on symmetrical terms, i like that and think you will?
+2011-02-08T18:45:55  <j3camero> You played much Starcraft? You know The Hunters? That's sort of my concept for maps. http://www.teamliquid.net/tlpd/images/maps/173_Hunters.jpg
+2011-02-08T18:46:02  <antimatroid> never played it
+2011-02-08T18:46:06  <McLeopold> I *hate* that map...
+2011-02-08T18:46:23  <McLeopold> but yeah
+2011-02-08T18:46:26  <j3camero> antimatroid: I think we should explore non-symmetric maps, but there's no reason why we should make a rule against them. Of course we should use your map gen.
+2011-02-08T18:46:36  <McLeopold> Actually, we could use the planet wars generator for this.
+2011-02-08T18:46:37  <antimatroid> i think it'd be better to focus on maps once an engine is running
+2011-02-08T18:47:02  <j3camero> Sorry, there is no reason we should make a rule against symmetric maps is what I meant.
+2011-02-08T18:47:09  <McLeopold> Just make the planets a little bigger, draw some paths if they are close enough, convert to png.
+2011-02-08T18:47:20  <antimatroid> j3camero: i'm happy to try the non-symmetric maps idea, it sounds cool, but i don't see it working
+2011-02-08T18:47:33  <Zannick> are we still using pngs as maps? :(
+2011-02-08T18:47:39  <antimatroid> Zannick: no
+2011-02-08T18:47:42  <antimatroid> i don't think anyway
+2011-02-08T18:47:42  <McLeopold> I'm supporting both right now.
+2011-02-08T18:47:46  <Zannick> ah
+2011-02-08T18:47:51  <Zannick> that's good
+2011-02-08T18:47:51  <j3camero> We will get lots of feedback from the contestants on maps once we launch, so there will be time to zero in on what people are finding most interesting.
+2011-02-08T18:48:00  <McLeopold> It's easier to "draw" a png just to test stuff out.
+2011-02-08T18:48:08  <antimatroid> i'm all about battle resolution atm
+2011-02-08T18:48:12  <McLeopold> I think the community would enjoy that functionality too.
+2011-02-08T18:48:19  <j3camero> Yeah PNGs are a terrible way to store maps. I just did that because I was lazy when I was writing a throw-away ants simulator.
+2011-02-08T18:48:21  <antimatroid> and i'm still very much in favour of option 1, but i'd prefer 2 to the new thing mcleopold mentione
+2011-02-08T18:48:28  <antimatroid> or what j3camero just mentioned
+2011-02-08T18:49:17  <antimatroid> someone needs to make an "ascii paint" program, where you can pick the character to draw with and make different shapes with it on a lattice canvas
+2011-02-08T18:49:22  <antimatroid> that'd be sweet for making maps in
+2011-02-08T18:49:45  <j3camero> Wow why doesn't that exist?
+2011-02-08T18:49:48  <j3camero> Or does it?
+2011-02-08T18:49:50  <McLeopold> ant_map can be used as a png2txt converter right now
+2011-02-08T18:49:50  <antimatroid> it probably does
+2011-02-08T18:50:01  <McLeopold> I can make it go the other way too.
+2011-02-08T18:50:08  <antimatroid> yeah, other way would be good
+2011-02-08T18:50:45  <j3camero> Okay I have to drill through some work that I promised I would do for people, so I am going into "ignore distracting IRC mode". I'll be back in a while to make some headway on engine stuff.
+2011-02-08T18:50:46  <McLeopold> http://asciipaint.com/
+2011-02-08T18:51:03  <j3camero> lol well there you go
+2011-02-08T18:51:17  <antimatroid> that's so cool
+2011-02-08T18:51:20  <antimatroid> i drew boobies
+2011-02-08T18:51:36  <antimatroid> yes i'm 2
+2011-02-08T18:51:38  <antimatroid> 1*
+2011-02-08T18:51:40  <antimatroid> 12**
+2011-02-08T18:51:46  <j3camero> 120**?
+2011-02-08T18:51:49  <j3camero> FTFY
+2011-02-08T18:52:34  <antimatroid> i love how it "fills" with an animation
+2011-02-08T18:52:38  <antimatroid> flood fill yay
+2011-02-08T18:52:59  <antimatroid> i broke it
+2011-02-08T18:53:29  <antimatroid> i was randomly filling a region with different characters and it ended up missing some
+2011-02-08T18:53:36  <antimatroid> now it's jumbled inside the rectangle
+2011-02-08T18:54:11  <janzert> McLeopold: so normal scoring is 1 point per food eaten with 1 food spawned per move and last player gets all remaining food in map + future spawns at end of game?
+2011-02-08T18:54:21  <McLeopold> yes
+2011-02-08T18:54:25  <janzert> on first blush, seems like it could work
+2011-02-08T18:54:30  <McLeopold> no incentive to make it last long
+2011-02-08T18:54:34  <antimatroid> with my maps you really ought to spawn n food squares per turn
+2011-02-08T18:54:50  <McLeopold> as long as the rate is known, we can give the bonus
+2011-02-08T18:55:07  <janzert> yeah, as long as there is a fixed rate it will work
+2011-02-08T18:55:43  <antimatroid> McLeopold: has your engine got fog of war?
+2011-02-08T18:55:46  <McLeopold> we could have any type of rate, diminishing or increasing, and we could still calc the bonus
+2011-02-08T18:55:49  <McLeopold> yes
+2011-02-08T18:56:01  <McLeopold> I can produce fogged maps.
+2011-02-08T18:56:15  <McLeopold> I just putting it all together so I can get a sample movie going.
+2011-02-08T18:56:24  <antimatroid> oh, do you want the visualiser to show squares that can't be seen by anyone as unseen?
+2011-02-08T18:56:27  <antimatroid> that could be cool
+2011-02-08T18:56:37  <McLeopold> yes, show all, or show perspective
+2011-02-08T18:56:37  <janzert> and spawn points need to be random not predetermined
+2011-02-08T18:56:47  <antimatroid> or just do that a darker "shade"
+2011-02-08T18:56:51  <McLeopold> that might depend on the map
+2011-02-08T18:56:59  * janzert has no idea how it is now
+2011-02-08T18:57:10  <antimatroid> janzert: but with the option of using a seed so you can test your bot on maps
+2011-02-08T18:57:11  <janzert> food spawn that is not player spawn
+2011-02-08T18:57:22  <McLeopold> oh, yeah
+2011-02-08T18:57:37  <janzert> antimatroid: yeah, that would be good too
+2011-02-08T18:57:44  <McLeopold> we could just blast the whole map every 40 turns
+2011-02-08T18:57:58  <McLeopold> ants would spawn like a wild fire
+2011-02-08T18:57:59  <antimatroid> McLeopold: i think it'd be easiest if you could just provide a bool parameter to the engine as to whether the seed should be set or not?
+2011-02-08T18:58:23  <janzert> if you don't supply a seed, then just generate one :)
+2011-02-08T18:58:26  <j3camero> What would happen if we spawned 1 food every time an ant dies? How about every time a food is eaten?
+2011-02-08T18:58:40  <antimatroid> McLeopold: that's another issue, should food squares ever be within range of other ones? and do you get to spawn them like rapid fire in the one move? or over a few turns?
+2011-02-08T18:58:48  <j3camero> These two schemes mean that the number of ants on the map stays more or less constant.
+2011-02-08T18:58:56  <antimatroid> j3camero: i like that
+2011-02-08T18:59:08  <janzert> j3camero: former gives constant population, latter constant food density
+2011-02-08T18:59:09  <McLeopold> but, there goes my bonus idea
+2011-02-08T18:59:29  <McLeopold> that would upset the scoring mechanism
+2011-02-08T18:59:30  <j3camero> Well I'm just thinking what incentive it would produce to prolong the game.
+2011-02-08T18:59:36  <janzert> yeah, and the McLeopold scoring system doesn't work anymore
+2011-02-08T18:59:46  <antimatroid> yeah, go with a known rate
+2011-02-08T19:00:04  <McLeopold> And I can't emphasize enough how *BAD* ranking bots by surviving turn is.
+2011-02-08T19:00:23  <j3camero> Yeah that would produce camping.
+2011-02-08T19:00:30  <janzert> no
+2011-02-08T19:00:34  <McLeopold> j3camero: we don't want prolonged games...
+2011-02-08T19:00:35  <antimatroid> McLeopold: what's the roadmap to a testing tcp server like?
+2011-02-08T19:00:46  <antimatroid> it's hard to tell too much about the resolutions until then i think
+2011-02-08T19:00:58  <McLeopold> step 1: finish engine, step 2: ?, step 3: TCP!
+2011-02-08T19:01:23  <antimatroid> yeah, step 2? is that lots of work? or just a bit of changing?
+2011-02-08T19:01:30  <McLeopold> work
+2011-02-08T19:01:44  <janzert> any camping bot will be wiped out by an expanding bot, so camping only works if everyone camps
+2011-02-08T19:01:56  <McLeopold> okay, got to ignore irc, must ...finish...engine...
+2011-02-08T19:01:57  <antimatroid> i don't think camping would work well in any case
+2011-02-08T19:02:01  <j3camero> Constant ants seems like it would encourage camping. Whenever you decide to fight you are giving away 1 ant in return for a 1/turf chance of getting a food back.
+2011-02-08T19:02:20  <McLeopold> janzert: my concern isn't camping or not as a strategy, my concert is proper ranking of bots
+2011-02-08T19:02:21  <janzert> yeah, I think constant ants is probably bad
+2011-02-08T19:03:24  <McLeopold> j3camero: with ranged attacks, it might be more like 30/turf
+2011-02-08T19:03:35  <janzert> I still think it would have some bad orderings but would work out fine overall
+2011-02-08T19:04:06  <janzert> i.e. a bad ant may end up higher than it should occasionally but won't consistently
+2011-02-08T19:04:10  <antimatroid> can we talk fight range actually?
+2011-02-08T19:04:16  <antimatroid> as that changes up each rule as well
+2011-02-08T19:04:32  <janzert> anyway like antimatroid said it will really need testing at this point to tell
+2011-02-08T19:04:50  *** rebelxt1 <rebelxt1!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2011-02-08T19:05:13  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has quit IRC (Read error: Connection reset by peer)
+2011-02-08T19:05:48  <antimatroid> the biggest problem i see with allowing ants to land in the same square is complicating the visualiser
+2011-02-08T19:06:11  <antimatroid> and i think the smaller region makes it easier to block/defend with option 1?
+2011-02-08T19:06:19  <McLeopold> if we do 1 food per spawn/death, then that would allow hoarding
+2011-02-08T19:06:51  <McLeopold> it no longer becomes necessary to hold onto land
+2011-02-08T19:07:01  <j3camero> Oh true.
+2011-02-08T19:07:06  <antimatroid> McLeopold: i think the other way is better anyway, if people camp, eventually they're all going to grow so large that they have to fight
+2011-02-08T19:07:42  <j3camero> Camping is a bad idea if you can't figure out whether other people are fighting.
+2011-02-08T19:08:11  <antimatroid> j3camero: exactly, it's tough to know if you should even take on a tough battle because of that
+2011-02-08T19:08:12  <McLeopold> if all bots camp, then the game will go long
+2011-02-08T19:08:30  <antimatroid> McLeopold: that will just be a max turn game, but i find it very unlikely
+2011-02-08T19:08:31  <McLeopold> If only one bot attempts to seek and destroy, they will take out the campers
+2011-02-08T19:08:58  <antimatroid> i don't think people will find it a very lucrative strategy to camp
+2011-02-08T19:09:14  <McLeopold> there really isn't "camping" in the sense of FPS games, since you can easily find others
+2011-02-08T19:09:19  <j3camero> Well and you can get away with demolishing one neighbor as long as you can feign continued strength to you other neighbors. There's an incentive to give it to your neighbor if you think you'll win.
+2011-02-08T19:09:58  <McLeopold> even if you can push a battle line back, you still should get a few more ants in return over time
+2011-02-08T19:10:19  <j3camero> What if score the games thus: when you kill a player's last ant, you get a point.
+2011-02-08T19:10:40  <j3camero> Produces an incentive to play interesting games and take risks.
+2011-02-08T19:10:40  <antimatroid> j3camero: it's not always clear who killed who i don't think
+2011-02-08T19:10:47  <McLeopold> so, I'm still for constant food, or at least something not geared off of deaths/births
+2011-02-08T19:11:02  <antimatroid> McLeopold: i think everyone here is in agreement on that
+2011-02-08T19:11:22  <j3camero> Yeah I would say having a steady flow of new food being spawned is a good idea.
+2011-02-08T19:11:29  <McLeopold> j3camero: that makes cherry picking lucrative, I don't like it
+2011-02-08T19:12:15  <j3camero> Cherry picking would be pretty tough I think, since you can't see your neighbors' other battle fronts.
+2011-02-08T19:12:50  <McLeopold> 2 stupid bots that kill each other off with the first ant?
+2011-02-08T19:12:58  <McLeopold> good strategy?
+2011-02-08T19:13:03  <j3camero> It encourages bots to sick on a neighbor that looks like he might be having trouble on another front, or may be generally weak. You'll get players that suddenly collapse, with their two neighbors sprinting inwards towards each other looking for the kill.
+2011-02-08T19:13:45  <McLeopold> or, you do an expert job taking out an opponent, then he runs his last ant over to someone else
+2011-02-08T19:14:05  <McLeopold> dying bots get to be king maker
+2011-02-08T19:14:44  <McLeopold> 1 point per kill (roughly) with food bonus for last bot is still best
+2011-02-08T19:15:03  <McLeopold> You still want to rush in and kill
+2011-02-08T19:15:19  <McLeopold> because you get the land
+2011-02-08T19:17:01  <McLeopold> basically, I don't think you can make a single few events in the game decide the winners.  The game should be a marathon and favor those that did well through the entire game.
+2011-02-08T19:17:58  <j3camero> Yeah I still don't know what to do about that. I'm afraid that the food bonuses may be so huge that they'll screw up the rankings.
+2011-02-08T19:18:04  <j3camero> But it's best I know so far.
+2011-02-08T19:18:17  <McLeopold> rankings are only a rank, score doesn't matter, for trueskill
+2011-02-08T19:18:32  <McLeopold> so, you get 1st, 2nd, 3rd and so on
+2011-02-08T19:18:44  <McLeopold> winning by 1 point is the same as winning by 1000
+2011-02-08T19:18:49  <j3camero> What if we score up until the last turn when the winning bot had less than 50% of the ants on the map?
+2011-02-08T19:18:51  <janzert> yeah, score from a game is just the ordering that is important
+2011-02-08T19:19:05  <McLeopold> so, the food bonus is just to ensure the last bot standing should be in 1st
+2011-02-08T19:19:18  <j3camero> I see.
+2011-02-08T19:19:54  <j3camero> Scoring by rank seems a bit bad to me. Would that not encourage camping? I know that poker players play ridiculously tight when there are six players left and 5 prizes left.
+2011-02-08T19:20:23  <j3camero> If a bot guesses that there are about 3 players left it might clam up and avoid conflict.
+2011-02-08T19:20:31  <McLeopold> that's why I want I want performance, not how long you survive
+2011-02-08T19:20:50  <McLeopold> the bot that avoids conflict does not score much
+2011-02-08T19:21:44  <McLeopold> so, even if you make it to the last 2, if you didn't do anything, you won't be ranked 2nd
+2011-02-08T19:23:02  <McLeopold> We could call the game when 1 bot owns 75% or more of the ants?
+2011-02-08T19:23:43  <McLeopold> no, that would encourage non-conflict
+2011-02-08T19:24:07  <McLeopold> although, the bot that stopped the game could still be last...
+2011-02-08T19:27:13  <j3camero> How about this. As the game runs, in the background, assign a color to each square on the map. They start off blank. When an ant moves around, you "paint" all the squares within a radius of 5 their color. As the ants move around, you repaint the squares. What we're going for here is some way to guess roughly who "controls" a piece of territory. We stop scoring after the last turn when every bot controlled less than 50% of the territory.
+2011-02-08T19:27:31  <j3camero> So there's no point prolonging the game to delay an inevitable win.
+2011-02-08T19:29:06  <McLeopold> so, the first bot that claims 50% wins?
+2011-02-08T19:29:11  <janzert> so you want to gain control of 51% of the map and then camp right?
+2011-02-08T19:29:19  <j3camero> If a bot is cocky and want to pump up its score it could just chill on 45% of the turf, but that would be risky.
+2011-02-08T19:29:55  <antimatroid> what about this: you get a point for every square you can access first?
+2011-02-08T19:29:56  <McLeopold> so, the painting is only for stoping the game, not scoring?
+2011-02-08T19:30:00  <j3camero> It's not first to 50% wins. It's stop scoring after a bot passes the 50% mark for the *last time*.
+2011-02-08T19:30:22  <antimatroid> including your currently occupied squares (so a point for every live ant)
+2011-02-08T19:30:57  <j3camero> You still want to win as fast and as strongly as possible, but there's no point delaying a certain win.
+2011-02-08T19:31:14  <janzert> any variation seems pretty complicated to calculate
+2011-02-08T19:31:15  <McLeopold> j3camero: that would encourage delaying the game if you came from behind
+2011-02-08T19:31:29  <j3camero> The only perverse incentive left is to chill at 49% for as long as possible. But even that is risky.
+2011-02-08T19:31:39  <Zannick> so hold 50% for a long time, then give up 50% to your opponent?
+2011-02-08T19:31:44  <McLeopold> the food bonus will get rid of any incentive to delay
+2011-02-08T19:32:10  <McLeopold> a lot less confusing for beginners to understand
+2011-02-08T19:32:20  <janzert> actually we  really want not just no incentive to delay, but an incentive to end early
+2011-02-08T19:32:27  <McLeopold> yes
+2011-02-08T19:32:34  <j3camero> Oh yeah you could still game the system by chilling at 90% for a while then retreating and letting the opponent demolish you.
+2011-02-08T19:33:16  <McLeopold> j3camero: remember, the score doesn't really matter except to rank bots
+2011-02-08T19:33:22  <j3camero> True yes.
+2011-02-08T19:33:36  <McLeopold> so, that wouldn't really be gaming anything, but the server resources
+2011-02-08T19:33:42  <j3camero> Yeah the food bonus is fine.
+2011-02-08T19:33:50  <McLeopold> consider it written
+2011-02-08T19:33:53  <McLeopold> ...
+2011-02-08T19:34:06  <antimatroid> what are you doing?
+2011-02-08T19:34:07  <j3camero> Now the issue that is shaky to me is having these really sharp discontinuities in the payoff function.
+2011-02-08T19:34:23  <McLeopold> ?
+2011-02-08T19:34:31  <antimatroid> "consider it written"
+2011-02-08T19:34:32  <antimatroid> which thing?
+2011-02-08T19:34:37  <McLeopold> food bonus
+2011-02-08T19:34:58  <j3camero> If you get the idea that there are only three bots left, you really just want to avoid conflict.
+2011-02-08T19:35:17  <janzert> maybe the end food bonus should better than the 1 point for 1 food during the game? say 1.5x or something
+2011-02-08T19:35:31  <McLeopold> Are you sure?  If you can wipe them out, you get the win.
+2011-02-08T19:35:51  <antimatroid> j3camero: i think it'll be hard to work that out
+2011-02-08T19:36:00  <McLeopold> plus, conflict gives you points
+2011-02-08T19:36:23  <janzert> yeah, an outright win will give you more in ranking than a 3 way tie
+2011-02-08T19:36:30  <McLeopold> if you are fighting 3 bots, and they are only fighting you, you should have about 3 times the score, which makes sense
+2011-02-08T19:37:21  <antimatroid> we're hiding players scores yes?
+2011-02-08T19:37:23  <McLeopold> the scoring system will ensure very few ties
+2011-02-08T19:37:25  <janzert> McLeopold: only if you're eating 3 times the food though right?
+2011-02-08T19:37:32  <antimatroid> otherwise you might work out who is dead
+2011-02-08T19:37:34  <janzert> yeah
+2011-02-08T19:37:39  <McLeopold> even if there are 3 bots left, they probably won't have the same score
+2011-02-08T19:37:47  <janzert> that's true
+2011-02-08T19:37:56  <antimatroid> but if a bots score isn't changing, it's most likely dead
+2011-02-08T19:38:07  <McLeopold> janzert: yes, I'm assuming if you can hold off 3 bots, you have roughly the same amount of food as them combined
+2011-02-08T19:38:11  <janzert> you'll want to expand your territory whenever you think you can
+2011-02-08T19:38:20  <janzert> ahh, ok
+2011-02-08T19:38:58  <janzert> antimatroid: I think giving the bots ongoing scores during a game is probably bad
+2011-02-08T19:39:16  <janzert> at least I don't see any real benefit and possible problems
+2011-02-08T19:39:18  <antimatroid> are we going to try and hide the number of starting players?
+2011-02-08T19:39:22  <McLeopold> if we are hiding player numbers, we can't give scores
+2011-02-08T19:39:34  <antimatroid> McLeopold: there are other issues with hiding player numbers
+2011-02-08T19:39:37  <antimatroid> like time limits
+2011-02-08T19:39:42  <antimatroid> if doing moves simultaneously
+2011-02-08T19:39:49  <janzert> I think hiding player numbers would be nice
+2011-02-08T19:39:51  <McLeopold> Players can try an guess at the total points given the map size and turn limit, so they can try for some type of goal.
+2011-02-08T19:40:03  <j3camero> I came up with a solution to that. Have the same time limit regardless of #players.
+2011-02-08T19:40:14  <antimatroid> j3camero: so like 5 seconds?
+2011-02-08T19:40:23  <j3camero> Something like that yeah.
+2011-02-08T19:40:27  <antimatroid> fyi, my bot will probably always use whatever you give it
+2011-02-08T19:40:33  <janzert> j3camero: yes, that's what I was trying to say the other day :)
+2011-02-08T19:40:39  <McLeopold> j3camero: can we have a time bank?  200 seconds for the game, use at your discretion?
+2011-02-08T19:40:55  <j3camero> That would work better than you expect, especially if the majority of games have between 5 and 8 players or something.
+2011-02-08T19:41:01  <antimatroid> McLeopold: hard to do when people aren't making their moves sequentially isn't it?
+2011-02-08T19:41:14  <j3camero> McLeopold: I thought a time bank would be nice, but how do you enforce that?
+2011-02-08T19:41:18  <antimatroid> j3camero: i was thinking 4-16?
+2011-02-08T19:41:24  <janzert> a time bank really needs to still have a per turn time as well
+2011-02-08T19:41:27  <McLeopold> That's your problem. :)
+2011-02-08T19:41:58  <janzert> e.g. the time bank can be enough to average out to 4 seconds per turn and the per turn limit is set at 10 seconds
+2011-02-08T19:41:59  <j3camero> You can stop a player's clock when they send back their move to the engine, but what's to stop them from pondering the next move after that?
+2011-02-08T19:42:08  <antimatroid> bank = 200 seconds, can use up to x of it per turn
+2011-02-08T19:42:08  <antimatroid> turn limit = normal + min(x, bank)
+2011-02-08T19:42:21  <antimatroid> j3camero: you "pause" processes
+2011-02-08T19:42:27  <janzert> j3camero: pondering is fine, they already committed to the current information they have
+2011-02-08T19:42:38  <janzert> let 'em ponder
+2011-02-08T19:42:43  <antimatroid> yeah, or that
+2011-02-08T19:43:01  <McLeopold> or go into "suck up server resources to crash other bots" mode
+2011-02-08T19:43:01  <antimatroid> with tron that would have been bad, but for this i don't think you could do that much
+2011-02-08T19:43:08  <antimatroid> other than waste other peoples time
+2011-02-08T19:43:14  <antimatroid> ^^ yeah that
+2011-02-08T19:43:20  <janzert> even with tron pondering didn't do much
+2011-02-08T19:43:34  <janzert> at least at 1 second per turn and the top bot's using pretty much all of it
+2011-02-08T19:43:36  <j3camero> Haha you get more food if you think faster.
+2011-02-08T19:43:45  <antimatroid> janzert: yes it did, we recycled our tree from the move they picked, we could have kept it growing
+2011-02-08T19:43:56  <janzert> yep, I did that
+2011-02-08T19:43:59  <antimatroid> you're growing stuff you don't want as well, but you'd also grow some of what you do want
+2011-02-08T19:44:13  <antimatroid> you can prune the move you made at least, that's a large chunk
+2011-02-08T19:44:16  <janzert> antimatroid: but there was very little pondering in practice
+2011-02-08T19:44:22  <McLeopold> 1 random ant dies per second of time you think
+2011-02-08T19:44:30  <McLeopold> no limits.
+2011-02-08T19:44:35  <antimatroid> janzert: it gave you extra time to grow the tree, that was our strategy
+2011-02-08T19:45:33  <janzert> because you thought for 0.95 seconds or whatever, even if the opponent thought for 0.99 seconds you only got about .05 seconds of pondering, about 1/3 of that was wasted
+2011-02-08T19:46:49  <antimatroid> yes, but if players got to make their decisions sequentially and your opponent barely used their time, you basically got double the time yeah?
+2011-02-08T19:47:33  <janzert> if it had been sequential it would have most likely have been useful yes
+2011-02-08T19:48:11  <janzert> way better than pondering in chess even :)
+2011-02-08T19:48:33  <antimatroid> yeah, extending the depths of the tree can be futile, but it's still better than not
+2011-02-08T19:48:48  <antimatroid> tree's will be the rage for this with fighting
+2011-02-08T19:50:15  <antimatroid> i just had an idea for a sample bot
+2011-02-08T19:50:19  <antimatroid> scardybot
+2011-02-08T19:50:23  <antimatroid> runs away from enemies
+2011-02-08T19:50:53  <McLeopold> passive agressive bot, it takes you food
+2011-02-08T19:51:02  <antimatroid> hehe
+2011-02-08T19:51:17  <antimatroid> actually, scaredybot would be a terrible example for quick games
+2011-02-08T19:51:36  <Zannick> it's too bad there's going to be fog of war
+2011-02-08T19:51:48  <Zannick> otherwise i would write a copybot for the starter packages
+2011-02-08T19:52:10  <janzert> it'd be a good test bot though, run away from any enemy else run toward any food else random move
+2011-02-08T19:52:30  <antimatroid> Zannick: while that'd be nice, fog of war is too much better :P
+2011-02-08T19:52:37  <Zannick> i agree
+2011-02-08T19:52:48  <antimatroid> janzert: you can do better than move randomly
+2011-02-08T19:53:05  <antimatroid> if you can't go towards a food square, move towards the closest unseen square or something
+2011-02-08T19:53:18  <antimatroid> or check how recently something was seen etc.
+2011-02-08T19:54:46  <janzert> it's suppose to be a simple test bot though :)
+2011-02-08T19:55:17  <janzert> for inclusion in the start package I meant
+2011-02-08T19:56:22  <antimatroid> "it'd be a good test bot though"
+2011-02-08T19:56:30  <antimatroid> i thought you meant as an actual test bot
+2011-02-08T19:56:34  <antimatroid> not a starter bot, :P
+2011-02-08T19:57:38  <antimatroid> McLeopold: what battle resolution are you currently using for the engine?
+2011-02-08T19:57:40  <janzert> hmm, to me starter bot means the bot for people to build off of in the starter package. The other bots in the starter package I think of as test bots for people to test against
+2011-02-08T19:58:06  <antimatroid> janzert: i am in favour of having a few harder bots included there
+2011-02-08T19:58:06  <Zannick> oh, yes.
+2011-02-08T19:58:16  <antimatroid> so people imediately have a range of difficulties to test with locally
+2011-02-08T19:58:26  <antimatroid> and just don't release the code for those bots
+2011-02-08T19:58:27  <Zannick> antimatroid: the problem is someone needs to come up with those ;)
+2011-02-08T19:58:35  <antimatroid> Zannick: I and I'm sure others will
+2011-02-08T19:58:35  <janzert> yeah, I wouldn't mind that. I would even include the code
+2011-02-08T19:58:46  <antimatroid> although.. I can't do that in c++ can i?
+2011-02-08T19:58:52  <antimatroid> as in my binary file wont run on any computer?
+2011-02-08T19:58:52  <j3camero> janzert: I am having a really stupid n00b problem. I just set up a new domain for someone but every time I visit their index.php with my browser, I download the .php file instead of displaying it. Do you know what is causing this? I remember having this problem at some point long ago but I forgot what the problem was.
+2011-02-08T19:59:01  <janzert> I was disappointed how closed off people were from sharing ideas in planetwars, tron was much better in that respect
+2011-02-08T19:59:03  <Zannick> binary files won't run on every computer
+2011-02-08T19:59:17  <antimatroid> janzert: i pretty much shared every idea i had
+2011-02-08T19:59:28  <Zannick> pw's test bots were in jars, but the source was given, too
+2011-02-08T19:59:44  <sigh> janzert: I was explaining a lot of stuff in the channel
+2011-02-08T19:59:52  <janzert> j3camero: sounds like apache isn't setup to server php correctly
+2011-02-08T19:59:59  <antimatroid> there weren't any good tutorials like with tron
+2011-02-08T20:00:05  <antimatroid> i had no idea where to start without those
+2011-02-08T20:00:23  <antimatroid> i'll do a forum tutorial at some point for this one with pretty .gifs
+2011-02-08T20:00:24  <sigh> some people made some good write ups in the forums
+2011-02-08T20:00:27  <janzert> I'm mostly thinking of the guy that posted his bot source and got soundly beat up for it
+2011-02-08T20:00:44  <antimatroid> i don't think it was beating him up, their points were very vali
+2011-02-08T20:00:46  <j3camero> janzert: that's the weird thing. It's the same server as the contest. I have set up like a dozen domains on there and never seen this problem. It's just a dummy hello world php file.
+2011-02-08T20:01:00  <antimatroid> it sort of invalidates the work of people below that level if anyone can then upload a bot of better quality
+2011-02-08T20:01:15  <janzert> hmm, it's been a long time since I've setup a new domain myself :}
+2011-02-08T20:01:27  <sigh> that's like saying that you shouldn't participate unless you expect to get #1
+2011-02-08T20:01:39  <janzert> I still think it's a great way for the people below to learn
+2011-02-08T20:01:44  <antimatroid> sigh: not really, but it gives you less of an idea about how you've gone relative to other people
+2011-02-08T20:01:54  <janzert> sure some of them will just copy and submit but...
+2011-02-08T20:01:56  <antimatroid> as there might be quite a few copies of a better bot
+2011-02-08T20:02:13  <antimatroid> janzert: they can particupate themselves and learn from shared source at the end
+2011-02-08T20:02:28  <antimatroid> like tackling any problem, i think it's best to do it yourself, then look at how others did it
+2011-02-08T20:02:38  <j3camero> When people sign up, they should choose from one of three options (1) never publish my code (2) publish my code after a delay of n days (3) publish my code after the submission deadline.
+2011-02-08T20:02:50  <antimatroid> j3camero: skip option 2
+2011-02-08T20:03:08  <antimatroid> and i would make it after results are released, just in case
+2011-02-08T20:03:12  <sigh> janzert: yeah but I remember having this conversation in the channel... in the end my opinion was that it would have a negative effect *because* people didn't like it
+2011-02-08T20:03:23  <sigh> not for any logical reason :)
+2011-02-08T20:03:29  <Zannick> (1) never (2) after deadline (3) after results
+2011-02-08T20:03:37  <antimatroid> i think their reasons are fine, even though i don't think it would affect me
+2011-02-08T20:03:48  <sigh> why distinguish 2 and 3?
+2011-02-08T20:04:00  * Zannick shrug
+2011-02-08T20:04:16  <janzert> yeah, I suppose. I just liked the much more open feel the tron contest community ended up with. not sure there is any way to encourage it and there is probably a limit in size for it to happen at all
+2011-02-08T20:04:22  <antimatroid> although unlikely, should something bad happen during the running of the contest and code is shared, it's ruined
+2011-02-08T20:04:30  <antimatroid> something bad as in a server loses all bot data
+2011-02-08T20:04:41  <sigh> janzert, I was't in tron but I like a more open atmosphere as well
+2011-02-08T20:04:53  <antimatroid> when there is months of work going into some bots, i think it's better to be safe than sorry
+2011-02-08T20:05:25  <antimatroid> i like general sharing of strategy/algorithms rather than actual raw code
+2011-02-08T20:05:30  <antimatroid> let them go and code it up themselves
+2011-02-08T20:05:51  <sigh> yeah, there was a fair bit of that though
+2011-02-08T20:06:05  <antimatroid> yeah, and i thought that was sufficient
+2011-02-08T20:06:21  <antimatroid> in fact i'd rather converse with people about their strategy rather than trudge through people's source
+2011-02-08T20:06:22  <sigh> but still could have been better :)
+2011-02-08T20:07:36  <antimatroid> what's the deal with google having MOVE_H_ instead of MOVE_H for #ifdef's etc.?
+2011-02-08T20:07:44  <antimatroid> it's a redundant character as far as i'm concerned
+2011-02-08T20:08:16  <sigh> makes it clear that it is a special variable *shrug*
+2011-02-08T20:08:51  <sigh> trailing/leading underscores are pretty standard for marking variables/whatever like that
+2011-02-08T20:09:18  <antimatroid> bleh, i can't think of a single situation where it'd be unclear
+2011-02-08T20:09:21  *** McLeopold <McLeopold!~Scott@67.139.105.186> has left #aichallenge
+2011-02-08T20:09:27  <antimatroid> i'm a minimalist
+2011-02-08T20:09:50  <antimatroid> provided it's clear
+2011-02-08T20:10:00  <antimatroid> i don't use 1 name variables for everything, that would be painful
+2011-02-08T20:10:02  <sigh> but you were against "ur" :P
+2011-02-08T20:10:09  <antimatroid> and not ugly
+2011-02-08T20:10:30  <sigh> bah, mathematicians love one letter variables
+2011-02-08T20:11:19  <jmcarthur> "Ur" is the name of a programming language i've been looking into today
+2011-02-08T20:12:10  <jmcarthur> i also think that it's better to share strategies and high level algorithms than to share straight up source code
+2011-02-08T20:12:10  <sigh> 'The signature of the standard library is such that well-typed Ur/Web programs "don't go wrong" '
+2011-02-08T20:12:11  <sigh> haha
+2011-02-08T20:12:33  <jmcarthur> sigh: that's actually a common thing to say about most statically typed, pure languages
+2011-02-08T20:12:54  <sigh> :P
+2011-02-08T20:12:54  <jmcarthur> but yeah, that's the gist
+2011-02-08T20:13:20  <jmcarthur> you can screw up, but it is guaranteed not to crash, error out, or become a security problem
+2011-02-08T20:13:32  <jmcarthur> and the compiler will catch most screwups anyway
+2011-02-08T20:14:05  <sigh> fair enough
+2011-02-08T20:14:35  <antimatroid> sigh: i use a lot of 1 letter variables, but not everything
+2011-02-08T20:14:55  <jmcarthur> the thing about 1-letter variables is that sometimes there's really just not anything better to use
+2011-02-08T20:15:06  <sigh> probably because you are forced to, I remember you complaining about being restricted to ascii
+2011-02-08T20:15:07  <jmcarthur> especially if you are writing very polymorphic code (no idea what the actual type is)
+2011-02-08T20:15:17  <antimatroid> usually just for iterators in for loops etc. a = ant, d = direction, r,c = row,col etc.
+2011-02-08T20:15:30  <jmcarthur> well, for example, generic list operations
+2011-02-08T20:15:37  <jmcarthur> no idea what to name the elements. x is fine
+2011-02-08T20:15:42  <sigh> yeah I know, usally in maths everything is very genral
+2011-02-08T20:15:47  <jmcarthur> exactly
+2011-02-08T20:15:51  *** Mathnerd314 <Mathnerd314!~mathnerd3@128.198.97.174> has quit IRC (Ping timeout: 250 seconds)
+2011-02-08T20:15:56  <antimatroid> i hope mcleopold has switched to using row col instead of x y
+2011-02-08T20:16:03  <antimatroid> i refuse to back down on that
+2011-02-08T20:16:08  <jmcarthur> somebody did i think
+2011-02-08T20:16:20  <jmcarthur> i saw a big commit message related to that somewhere
+2011-02-08T20:16:34  <antimatroid> i think everyone should mack row col and x y equivalent
+2011-02-08T20:16:42  <antimatroid> although it's tricky when drawing 3d graphs
+2011-02-08T20:17:02  <antimatroid> i have no idea how i got mack out of make
+2011-02-08T20:17:10  <jmcarthur> row col isn't *always* better
+2011-02-08T20:17:17  <antimatroid> when isn't it?
+2011-02-08T20:17:25  <jmcarthur> e.g. one of the operands in matrix multiplication
+2011-02-08T20:17:50  <antimatroid> what for traversing the right multipliees columns?
+2011-02-08T20:17:55  <jmcarthur> when you know that multiplication is coming up, might as well orient it ideally in the first place
+2011-02-08T20:18:24  <antimatroid> i've never cared to optimise that far
+2011-02-08T20:18:39  *** Frontier <Frontier!~marco@dslb-088-071-226-146.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-02-08T20:18:41  <jmcarthur> a decent language and library combination can do it on your behalf
+2011-02-08T20:19:04  <antimatroid> i'm a fan of writing my own tools when i don't need "the fastest", it's good learning
+2011-02-08T20:19:05  <jmcarthur> or at least make it very easy
+2011-02-08T20:19:52  <jmcarthur> well it's easier to write the actual multiplication that way too
+2011-02-08T20:20:05  <jmcarthur> you can make it a pretty simple parallel loop
+2011-02-08T20:20:17  <jmcarthur> it's just a matter of how hard/easy it is to arrange for that simplicity in the first place
+2011-02-08T20:21:30  <antimatroid> matrix multiplication algorithm is so easy i love it
+2011-02-08T20:21:31  <jmcarthur> i sure think about optimization a lot for somebody who doesn't code in Fortran...
+2011-02-08T20:21:43  <antimatroid> it's like 4-5 lines
+2011-02-08T20:21:56  <jmcarthur> 4-5 lines?
+2011-02-08T20:22:16  <jmcarthur> if dot product is defined it's like 1 line
+2011-02-08T20:22:25  <jmcarthur> and dot product is like one line, too
+2011-02-08T20:22:32  <antimatroid> yeah i just use for loops
+2011-02-08T20:34:54  <CIA-37> aichallenge: McLeopold epsilon * r5a4cab0 / (4 files in 2 dirs): Started switch to bots running on stdin. Added common functionality to ants that should exist for all games. - http://bit.ly/g0jiA5
+2011-02-08T20:34:55  <CIA-37> aichallenge: McLeopold epsilon * r3978692 / (ants/bots/MyBot.py ants/bots/ants.py ants/playgame.py): Beginning of python starter pack bot. - http://bit.ly/eTyQdw
+2011-02-08T20:37:59  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-02-08T20:52:06  *** bhasker <bhasker!~bhasker@nat/yahoo/x-tzutzloxcgzgqfuf> has quit IRC (Ping timeout: 255 seconds)
+2011-02-08T20:59:06  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has joined #aichallenge
+2011-02-08T20:59:06  *** ChanServ sets mode: +o amstan
+2011-02-08T21:05:55  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-226-191.asm.bellsouth.net> has joined #aichallenge
+2011-02-08T21:14:51  <j3camero> McLeopold is engine.py in epsilon yours?
+2011-02-08T21:15:59  <antimatroid> j3camero: he's not here
+2011-02-08T21:16:17  <jbroman> j3camero: git blame engine.py
+2011-02-08T21:17:00  <j3camero> Wait who is Scott Hamilton?
+2011-02-08T21:17:09  <antimatroid> mcleopold?
+2011-02-08T21:17:24  <j3camero> I see both names in the blame file.
+2011-02-08T21:17:30  <jbroman> McLeopold == Scott Hamilton
+2011-02-08T21:17:33  <j3camero> Just wondering if it's a dude I knew in high school.
+2011-02-08T21:17:42  <antimatroid> i think he's older than you
+2011-02-08T21:17:42  <j3camero> You know roughly where he lives?
+2011-02-08T21:17:50  <antimatroid> us somewhere
+2011-02-08T21:17:58  <j3camero> Hmm probably just a coincidence.
+2011-02-08T21:18:03  <antimatroid> he has a kid
+2011-02-08T21:18:09  <antimatroid> i imagine mcleopold in his thirties
+2011-02-08T21:18:18  <jbroman> whois says Olympia, WA
+2011-02-08T21:18:58  <jbroman> So probably a different Scott Hamilton.
+2011-02-08T21:22:14  *** janzert <janzert!~Brian@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2011-02-08T21:23:46  <sigh> stalking time: http://www.myspace.com/mcleopold
+2011-02-08T21:24:02  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-02-08T21:24:14  <jbroman> MySpace still exists?
+2011-02-08T21:24:23  <jbroman> (And doesn't look horribly ugly anymore, apparently?)
+2011-02-08T21:24:25  <sigh> no no... it's my_____
+2011-02-08T21:24:36  <jbroman> Oh dear, that's lame.
+2011-02-08T21:24:54  <sigh> :P
+2011-02-08T21:24:55  <sigh> yup
+2011-02-08T21:25:13  <antimatroid> it's still horrible
+2011-02-08T21:28:24  <antimatroid> ha, i can't delete my myspace page
+2011-02-08T21:28:31  <antimatroid> i don't have access to the email account
+2011-02-08T21:29:26  <sigh> hmm... now I need to find antimatroid's myspace page
+2011-02-08T21:29:43  <antimatroid> http://www.myspace.com/helloshittyass
+2011-02-08T21:30:16  <sigh> hmm... that's not your name
+2011-02-08T21:30:20  <antimatroid> nope :P
+2011-02-08T21:30:28  <sigh> :P
+2011-02-08T21:31:26  <antimatroid> mmm, that made my life easier
+2011-02-08T21:31:54  <antimatroid> i changed it to read input from an istream, so i can just give it a file stream rather than pasting stuff to the terminal when doing stuff
+2011-02-08T21:32:59  <jbroman> antimatroid: ./myapp <myfile
+2011-02-08T21:33:08  <jbroman> Any reason that wouldn't have worked?
+2011-02-08T21:33:14  <antimatroid> http://www.facebook.com/nick.ham
+2011-02-08T21:33:19  <antimatroid> you may be able to access that
+2011-02-08T21:33:22  <antimatroid> but i think it's private
+2011-02-08T21:33:24  <jbroman> (Not that istreams aren't ultimately better.)
+2011-02-08T21:34:44  <sigh> it's private :P, but if you are just going to paste these things it's not as fun :D
+2011-02-08T21:34:56  <antimatroid> haha, :P
+2011-02-08T22:06:32  <j3camero> Ugh just finished troubleshooting things for other people's websites. Now going to bed. Looks like I'm not working on the engine today. Sorry guys.
+2011-02-08T22:14:10  <j3camero> If somebody else wants to yank that task from me go right ahead. I recommend using the sadbox python module from the planet_wars/backend directory. You use it to launch a bot and then you send and receive strings to/from it.
+2011-02-08T22:21:39  <jmcarthur> wow, Ur rocks. we should just drop Django and use Ur for Zeta. :D
+2011-02-08T22:31:34  <antimatroid> j3camero: i'm hoping mcleopolds engine will be sufficient
+2011-02-08T22:37:38  <j3camero> antimatroid: I don't think he has been building it to talk to sandboxed clients. Doing that is a bit different than talking with a subclass of the Strategy class. I may be mistaken though.
+2011-02-08T22:38:56  <jmcarthur> okay, i kind of take that back. error messages are... cryptic, at best
+2011-02-08T22:39:44  <antimatroid> jmcarthur: i was going to say, that's a very early comment :P
+2011-02-08T22:40:01  <jmcarthur> antimatroid: it was a joke :P
+2011-02-08T22:40:02  <antimatroid> fair enough, i'm more interested in a working engine for testing out rules/scoring atm
+2011-02-08T22:52:12  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-08T22:52:22  <Prillicy> from the sounds of things, the competition is nearly ready to go, am I right?
+2011-02-08T22:53:32  <Prillicy> you all are quite talkative
+2011-02-08T22:53:42  <jbroman> Prillicy: That only means that we talk a lot.
+2011-02-08T22:54:01  <Prillicy> ?
+2011-02-08T22:54:24  <jbroman> That we're talkative doesn't mean we're nearly ready to go. Progress has been made, but there is still much progress yet to be made.
+2011-02-08T22:54:36  <Prillicy> you misunderstand
+2011-02-08T22:54:47  <Prillicy> those were two entirely different statements
+2011-02-08T22:55:00  <Prillicy> the first is based on my reading on the forums
+2011-02-08T22:55:10  <Prillicy> the second was a sarcastic observation
+2011-02-08T22:55:37  <jmcarthur> it's mostly a bunch of bikeshedding
+2011-02-08T22:55:42  <Prillicy> but I was more hoping it was close to being done more than anything
+2011-02-08T22:57:05  <jbroman> Prillicy: It's still probably a few weeks out, but this is unpredictable.
+2011-02-08T22:57:28  <jmcarthur> well, simplistic twitter clone in about 30 lines including html isn't too bad i guess
+2011-02-08T22:58:14  <jmcarthur> no ajax though
+2011-02-08T23:02:19  <antimatroid> jmcarthur: can we talk food for a second?
+2011-02-08T23:02:50  <jmcarthur> i had pizza tonight
+2011-02-08T23:03:41  <antimatroid> atm i think it's the case that any food square within range of more than 2 ants dies after killing ants? how about this idea:
+2011-02-08T23:03:42  <antimatroid> move ants, resolve spawning of new ants/killing food, kill ants/battle
+2011-02-08T23:03:42  <antimatroid> option 1: if you have more ants closer to it than anyone else, you get the square, otherwise it dies
+2011-02-08T23:03:42  <antimatroid> option 2: if you have the closest ant to the square, you get it, otherwise it dies
+2011-02-08T23:03:52  <antimatroid> if you do that after battle resolution, you have to resolve them yet again
+2011-02-08T23:04:44  <antimatroid> anyone else please comment :P
+2011-02-08T23:06:30  <Prillicy> i had pizza too
+2011-02-08T23:06:37  * antimatroid needs to get lunch
+2011-02-08T23:06:41  <antimatroid> i shall ride to subway soonish
+2011-02-08T23:06:41  <Prillicy> I don't like the 1 ant kills many
+2011-02-08T23:06:51  <antimatroid> Prillicy: what do you mean?
+2011-02-08T23:06:51  <Prillicy> but that's not food oriented
+2011-02-08T23:07:05  <antimatroid> it adds complexity to the game in a good way
+2011-02-08T23:07:11  <Prillicy> from the post
+2011-02-08T23:07:18  <jmcarthur> antimatroid: by option 1 do you mean if you have more ants *in range* of it than anyone else?
+2011-02-08T23:08:19  <Prillicy> one ant couldn't kill many
+2011-02-08T23:08:19  <Prillicy> besides, it takes away the benefit of keeping your ants grouped together
+2011-02-08T23:08:19  <Prillicy> in doing so, it encourages intentional separation and scavenging, removing strategy
+2011-02-08T23:08:42  <jmcarthur> Prillicy: you are talking about option 2 in the forum post?
+2011-02-08T23:08:43  <antimatroid> jmcarthur: yeah
+2011-02-08T23:09:07  <antimatroid> Prillicy: jmcarthur and i are very much in favour of option 1 over 2
+2011-02-08T23:09:07  <Prillicy> I am not sure where it was in the post
+2011-02-08T23:09:21  <jmcarthur> antimatroid: i'm not sure which i like better. the first one mimicks my favorite combat rule, but maybe food shouldn't be the same
+2011-02-08T23:09:22  <antimatroid> which encourages you to move around in packs to attack/defend better
+2011-02-08T23:09:31  <antimatroid> but you also need to separate out if you want any chance of winning
+2011-02-08T23:09:36  <jmcarthur> not only in packs, but in *formations* ^^ :)
+2011-02-08T23:09:52  <Prillicy> precisely, creating strategy
+2011-02-08T23:10:01  <jmcarthur> seems that we all agree then
+2011-02-08T23:10:04  <antimatroid> yes, that's what we want, but jeff thinks that will discourage beginners
+2011-02-08T23:10:30  <jmcarthur> and unfortunately jeff is the only one whose opinion matters because he is the benevolent dictator
+2011-02-08T23:10:44  <Prillicy> checking what option 1 was
+2011-02-08T23:10:57  <antimatroid> you need to have someone make the final choices, i'd pick jeff over a lot of other people
+2011-02-08T23:12:23  <antimatroid> can anyone work out what the hell dimkadimons last example is doing?
+2011-02-08T23:12:27  <antimatroid> .A. -> ...
+2011-02-08T23:12:27  <antimatroid> BaC    ...
+2011-02-08T23:12:46  * jmcarthur checks the forums for the first time all day
+2011-02-08T23:14:20  <Prillicy> just remind jeff that the option he creates removes all semblance of strategy and replaces it with, simply, if your bot unctions at all, you're equal
+2011-02-08T23:14:26  <jmcarthur> i think the capitals are one team and the lowercase is another, but what he says along with it is simply wrong, if he's talking about option 1
+2011-02-08T23:14:31  <antimatroid> i have another example for why i like 1 over 2, give me a minute
+2011-02-08T23:14:50  *** janzert1 <janzert1!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-02-08T23:14:50  <jmcarthur> if he's talking about option 2, then yeah, that's right
+2011-02-08T23:15:12  <antimatroid> a.b.c
+2011-02-08T23:15:12  <antimatroid> .....
+2011-02-08T23:15:12  <antimatroid> ..d..
+2011-02-08T23:15:14  <Prillicy> in fact, if you refer to the need for formations to counter that, then you're seriously discouraging beginners
+2011-02-08T23:15:22  <antimatroid> surely it's better to have just b die there?
+2011-02-08T23:15:51  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (Ping timeout: 276 seconds)
+2011-02-08T23:16:51  <antimatroid> i don't see why people think "ranged" attacks are hard to understand?
+2011-02-08T23:16:54  <antimatroid> it's pretty straight forward
+2011-02-08T23:18:42  <Prillicy> I guess I'm just preaching to the choir
+2011-02-08T23:18:51  <antimatroid> Prillicy: pretty much
+2011-02-08T23:18:54  <Prillicy> I'll go back to waiting patiently
+2011-02-08T23:19:00  <jmcarthur> i think they see complicated diagrams and go "ow my bwain!" without taking a moment to think
+2011-02-08T23:19:02  <antimatroid> most people seem to want option 1 imo
+2011-02-08T23:20:37  <Prillicy> I wouldn't even suspect option 2 to be a possibility, it was odd to me when I saw it.  If I had coded something like that, I'd call it a bug
+2011-02-08T23:23:15  <antimatroid> it's harder to calculate and less efficient
+2011-02-08T23:23:21  <antimatroid> ad requires full map information to ensure you get it right
+2011-02-08T23:24:15  <antimatroid> we haven't even really analysed situations where lots of players ants are in a region
+2011-02-08T23:24:30  <antimatroid> i think that would be awesome with option 1
+2011-02-08T23:24:43  <antimatroid> not fight region, a larger region working out where best to move
+2011-02-08T23:24:49  <Prillicy> it also sounds like it would greatly favor whoever goes first
+2011-02-08T23:24:56  <antimatroid> it's simultaneous
+2011-02-08T23:25:06  <Prillicy> oh, right, that was stated
+2011-02-08T23:25:23  <Prillicy> ants don't die until after
+2011-02-08T23:25:36  <antimatroid> yep, move ants, then "resolve state"
+2011-02-08T23:25:48  <antimatroid> it's got a very game of life appeal
+2011-02-08T23:28:00  <jmcarthur> well, option 2 and 3 don't
+2011-02-08T23:28:15  <antimatroid> i'm all about option 1:P
+2011-02-08T23:34:05  *** Error323 <Error323!~fhuizing@145.116.230.164> has quit IRC (*.net *.split)
+2011-02-08T23:34:05  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has quit IRC (*.net *.split)
+2011-02-08T23:34:07  *** BtbN <BtbN!btbn@btbn.de> has quit IRC (*.net *.split)
+2011-02-08T23:34:08  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (*.net *.split)
+2011-02-08T23:34:08  *** j3camero <j3camero!~jeff@207.219.39.71> has quit IRC (*.net *.split)
+2011-02-08T23:34:09  *** janzert1 <janzert1!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (*.net *.split)
+2011-02-08T23:34:09  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (*.net *.split)
+2011-02-08T23:34:09  *** delt0r_ <delt0r_!~delt0r@188-22-162-83.adsl.highway.telekom.at> has quit IRC (*.net *.split)
+2011-02-08T23:34:09  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (*.net *.split)
+2011-02-08T23:34:10  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (*.net *.split)
+2011-02-08T23:34:11  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-02-08T23:34:12  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-226-191.asm.bellsouth.net> has quit IRC (*.net *.split)
+2011-02-08T23:34:12  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has quit IRC (*.net *.split)
+2011-02-08T23:34:12  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (*.net *.split)
+2011-02-08T23:34:13  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-247-168.dsl.hstntx.swbell.net> has quit IRC (*.net *.split)
+2011-02-08T23:34:13  *** javagamer_ <javagamer_!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (*.net *.split)
+2011-02-08T23:34:14  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has quit IRC (*.net *.split)
+2011-02-08T23:34:14  *** nullkuhl <nullkuhl!~nullkuhl@196.221.8.204> has quit IRC (*.net *.split)
+2011-02-08T23:34:14  *** dr`away <dr`away!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has quit IRC (*.net *.split)
+2011-02-08T23:34:15  *** antimatroid <antimatroid!~Nick@44.236-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (*.net *.split)
+2011-02-08T23:34:16  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has quit IRC (*.net *.split)
+2011-02-08T23:34:16  *** politik <politik!~joel@pool-96-237-242-89.bstnma.fios.verizon.net> has quit IRC (*.net *.split)
+2011-02-08T23:37:50  *** janzert1 <janzert1!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-02-08T23:37:50  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-08T23:37:50  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-226-191.asm.bellsouth.net> has joined #aichallenge
+2011-02-08T23:37:50  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has joined #aichallenge
+2011-02-08T23:37:50  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-02-08T23:37:50  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2011-02-08T23:37:50  *** delt0r_ <delt0r_!~delt0r@188-22-162-83.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-08T23:37:50  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-08T23:37:50  *** Error323 <Error323!~fhuizing@145.116.230.164> has joined #aichallenge
+2011-02-08T23:37:50  *** antimatroid <antimatroid!~Nick@44.236-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-08T23:37:50  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-247-168.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-02-08T23:37:50  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-02-08T23:37:50  *** javagamer_ <javagamer_!~javagamer@ool-4356dfec.dyn.optonline.net> has joined #aichallenge
+2011-02-08T23:37:50  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has joined #aichallenge
+2011-02-08T23:37:50  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-02-08T23:37:50  *** j3camero <j3camero!~jeff@207.219.39.71> has joined #aichallenge
+2011-02-08T23:37:50  *** nullkuhl <nullkuhl!~nullkuhl@196.221.8.204> has joined #aichallenge
+2011-02-08T23:37:50  *** dr`away <dr`away!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-02-08T23:37:50  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has joined #aichallenge
+2011-02-08T23:37:50  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-02-08T23:37:50  *** BtbN <BtbN!btbn@btbn.de> has joined #aichallenge
+2011-02-08T23:37:50  *** politik <politik!~joel@pool-96-237-242-89.bstnma.fios.verizon.net> has joined #aichallenge
+2011-02-08T23:37:50  *** card.freenode.net sets mode: +o amstan
+2011-02-08T23:38:00  *** janzert1 <janzert1!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (*.net *.split)
+2011-02-08T23:38:00  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (*.net *.split)
+2011-02-08T23:38:01  *** delt0r_ <delt0r_!~delt0r@188-22-162-83.adsl.highway.telekom.at> has quit IRC (*.net *.split)
+2011-02-08T23:38:01  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (*.net *.split)
+2011-02-08T23:38:02  *** j3camero <j3camero!~jeff@207.219.39.71> has quit IRC (Read error: Connection reset by peer)
+2011-02-08T23:41:32  *** j3camero <j3camero!~jeff@207.219.39.71> has joined #aichallenge
+2011-02-08T23:41:32  *** janzert1 <janzert1!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-02-08T23:41:32  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2011-02-08T23:41:32  *** delt0r_ <delt0r_!~delt0r@188-22-162-83.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-08T23:41:32  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-02-08T23:43:25  <antimatroid> with option 2, you also want to end up attacking people from as far as possible don't you? least some idiot decided to attack from closer
+2011-02-08T23:43:45  <jmcarthur> yeah
+2011-02-08T23:43:51  <jmcarthur> i've described it as a game of chicken
+2011-02-08T23:44:02  <jmcarthur> you keep everybody spread out and attack with one ant at a time
+2011-02-08T23:44:41  <jmcarthur> there could be some micro in the sense that you can use "fear" to kind of herd an opponent's army around
+2011-02-08T23:44:48  <jmcarthur> but that's... kind of a macro thing
+2011-02-08T23:46:16  <antimatroid> damnit, we must have option 1
+2011-02-08T23:59:38  <nullkuhl> hello, is there anything confirmed yet regarding the start date of the next contest ? or even an estimate ?

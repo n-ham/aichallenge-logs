@@ -1,0 +1,315 @@
+2011-02-17T00:24:15  *** rebelxt <rebelxt!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2011-02-17T00:25:00  <rebelxt> antimatroid: ping
+2011-02-17T00:28:52  <antimatroid> rebelxt: polo
+2011-02-17T00:29:20  <rebelxt> antimatroid: were you at Strata a few weeks ago?
+2011-02-17T00:29:35  <antimatroid> nope why?
+2011-02-17T00:29:38  <antimatroid> what is strata?
+2011-02-17T00:30:19  <rebelxt> oops, did i confuse you with someone else? http://www.kaggle.com/anthony.goldbloom/
+2011-02-17T00:30:32  <antimatroid> that is not i :P
+2011-02-17T00:30:38  <antimatroid> my name is nick ham :P
+2011-02-17T00:30:54  <antimatroid> i only just finished undergrad last year
+2011-02-17T00:31:39  <rebelxt> cool. are you involved with kaggle? or just participating in some of the contests they run?
+2011-02-17T00:32:14  <antimatroid> i signed up there towards the end of pw, but haven't actually participated in anything there
+2011-02-17T00:32:34  <rebelxt> sorry, this is funny.. i recall seeing anthony's face in this channel and thought it was you haha..
+2011-02-17T00:32:50  <antimatroid> i wonder who he was in here :\
+2011-02-17T00:33:15  <rebelxt> there was a big data conference in California a few weeks ago.. where they announced upcoming heritage 3M$ contest
+2011-02-17T00:33:45  <rebelxt> http://www.heritagehealthprize.com/
+2011-02-17T00:35:38  <rebelxt> going to be more competitive than netflix i bet
+2011-02-17T00:38:59  <antimatroid> hmm, i'll take a look at it
+2011-02-17T00:41:00  <antimatroid> kaggle has the money, but they're mostly more data mining than ai
+2011-02-17T00:41:15  <antimatroid> fun little games are what really spark my interest :\
+2011-02-17T00:44:49  <rebelxt> ;-) yeah, netflix contest got ugly at the end ;-) there was too much money at stake
+2011-02-17T00:48:39  *** amstan_ <amstan_!~amstan@206.248.164.17> has quit IRC (Remote host closed the connection)
+2011-02-17T00:50:19  *** amstan <amstan!~amstan@206-248-164-17.dsl.teksavvy.com> has joined #aichallenge
+2011-02-17T00:50:19  *** ChanServ sets mode: +o amstan
+2011-02-17T00:50:28  *** rebelxt <rebelxt!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2011-02-17T01:03:18  <McLeopold> antimatroid: if maps have a variable number of players, and the tcp server ought to try an mix up player matchup and not repeat maps, how should the algorithm be implemented?
+2011-02-17T01:09:30  <antimatroid> McLeopold: I was thinking it'd just pick a map then wait for enough players to start the game
+2011-02-17T01:09:44  <antimatroid> hopefully if tcp is official, there will be lots of people on there
+2011-02-17T01:09:57  <antimatroid> it is only for testing afterall, it doesn't need to be perfect
+2011-02-17T01:10:51  <McLeopold> if I pick a map, then I might get people who just played it
+2011-02-17T01:11:03  <McLeopold> I want to create a good algo that we can use in the finals.
+2011-02-17T01:11:20  <antimatroid> generate a LARGE set of maps
+2011-02-17T01:11:36  <McLeopold> I always hated that answer.
+2011-02-17T01:11:40  <antimatroid> hmm
+2011-02-17T01:11:43  <antimatroid> i shall think about it
+2011-02-17T01:12:05  <McLeopold> I'm thinking wait for 30 seconds, see if there is a unique pairing, or get the most unique, then from that pairing pick the least picked map.
+2011-02-17T01:12:08  <antimatroid> would it be that bad if players played on the same map?
+2011-02-17T01:12:24  <antimatroid> i think it'd be cool to see how the two bots faired against each other with different mutual opponents
+2011-02-17T01:12:45  <McLeopold> I'm going to assume that map choice will have a larger affect on rank than we want, and try to account for it.
+2011-02-17T01:13:16  <antimatroid> it would be good to see some tests run mixing up players relative starting positions
+2011-02-17T01:13:21  <antimatroid> and seeing how wild the results are
+2011-02-17T01:13:26  <McLeopold> for tcp, I'd like a few options to be sent, like requesting a map or opponent.
+2011-02-17T01:14:01  <McLeopold> that could be another option, connect to tcp and run a round robin on a map with regard to positions
+2011-02-17T01:14:09  <McLeopold> then we can gather good fairness data
+2011-02-17T01:14:16  <antimatroid> that's presenting many optios
+2011-02-17T01:14:23  <antimatroid> some people would just be left hanging
+2011-02-17T01:14:28  <McLeopold> yep
+2011-02-17T01:14:48  <antimatroid> would "request opponent" need to be met by the enemy?
+2011-02-17T01:14:59  <McLeopold> But, we could report why you are left hanging, then the person can choose to pick options more compatable with the others?
+2011-02-17T01:15:01  <antimatroid> or you can literally just snag someone for a game on a first come first serve basis?
+2011-02-17T01:15:42  <McLeopold> if there was a mutual request, then tcp should respect it
+2011-02-17T01:15:54  <McLeopold> dmj111 and I kept trying to time it
+2011-02-17T01:15:59  <McLeopold> it was annoying
+2011-02-17T01:16:15  <antimatroid> that's what i'm saying, do you both need to put the request in for it to be filled? or both parties?
+2011-02-17T01:16:20  <antimatroid> i think both parties would be best
+2011-02-17T01:16:24  <McLeopold> yes
+2011-02-17T01:17:10  <McLeopold> a single request could try and place the requester in the same game, if the list of players was unique enough, but wouldn't guarantee.
+2011-02-17T01:17:26  <McLeopold> we could also have the concept of "rooms"
+2011-02-17T01:17:33  <McLeopold> like a request
+2011-02-17T01:17:39  <antimatroid> how about this for the map requesting: there is a queue of requested maps, each username can only have one request associated to it at a time and if the queue is non-empty the map is chosen from the queue?
+2011-02-17T01:17:53  <antimatroid> that might make it harder for people to be left hanging
+2011-02-17T01:18:20  <McLeopold> the room would be like a request, match me up with people that have the same tag, others may join in as well
+2011-02-17T01:18:21  <antimatroid> chosen from the front of the queue*
+2011-02-17T01:19:40  <McLeopold> I like the map request idea.
+2011-02-17T01:20:10  <antimatroid> i'm just trying to work out how to reduce the number of options whilst still allowing people to do stuff
+2011-02-17T01:20:14  <McLeopold> It is good to make people play random opponents on random maps, so you get good rankings and everyone gets a chance to play others.
+2011-02-17T01:20:16  <antimatroid> otherwise i think it might get a bit messy?
+2011-02-17T01:20:49  <McLeopold> But, I want to allow for some options, say if 2 people just want to test duking it out on a certain map.
+2011-02-17T01:21:21  <McLeopold> To start with, it will be all random.
+2011-02-17T01:21:30  <McLeopold> Cause we need to get this thing going.
+2011-02-17T01:22:22  <antimatroid> okay, how about one where people can request to fill info for a whole game, all players must list all their "friends" and the same map
+2011-02-17T01:22:33  <antimatroid> then the server will also oblige that request
+2011-02-17T01:23:13  <McLeopold> that would be the room concept
+2011-02-17T01:23:46  <McLeopold> all friend put the same tag name in, and all tags will participate in the map vote
+2011-02-17T01:23:51  <antimatroid> what if it was all public and private rooms?
+2011-02-17T01:23:58  <McLeopold> no private rooms
+2011-02-17T01:24:22  <McLeopold> and, it's not really a room, just a way to help match you up to people you want to test against.
+2011-02-17T01:24:45  <McLeopold> so, it won't be exclusive
+2011-02-17T01:24:57  <antimatroid> you have played multiplayed galcon yeah?
+2011-02-17T01:24:57  <McLeopold> you can't keep people out
+2011-02-17T01:25:01  <McLeopold> no
+2011-02-17T01:25:17  <McLeopold> I only played the free version on my iPhone so I could analyze the game.
+2011-02-17T01:25:31  <antimatroid> multiplayer is free Oo
+2011-02-17T01:25:43  <McLeopold> on the website?
+2011-02-17T01:25:46  <antimatroid> yeah
+2011-02-17T01:25:51  <McLeopold> hmm...
+2011-02-17T01:25:55  <antimatroid> i wouldn't pay to play a game
+2011-02-17T01:26:27  <antimatroid> (i don't pirate them either, i just don't play them)
+2011-02-17T01:26:52  <McLeopold> where's the link
+2011-02-17T01:26:59  <antimatroid> http://www.galcon.com/flash/
+2011-02-17T01:27:07  <antimatroid> check out that room structure
+2011-02-17T01:28:04  <antimatroid> there could be x amounts of public rooms people could go into, then people could create other rooms that lasted say x time after the last game in there, so people could create a room and fill it with friends as much as they liked
+2011-02-17T01:28:08  <McLeopold> so, 10 rooms only?
+2011-02-17T01:28:10  <antimatroid> then using the request idea, people can pick maps
+2011-02-17T01:28:35  <McLeopold> wait, that's servers...
+2011-02-17T01:28:40  <McLeopold> ?
+2011-02-17T01:28:44  <antimatroid> ?
+2011-02-17T01:28:53  <McLeopold> okay, we need to play against each other
+2011-02-17T01:28:58  <McLeopold> what server are you on
+2011-02-17T01:28:58  <antimatroid> room?
+2011-02-17T01:29:08  <antimatroid> i'm in the available servers page
+2011-02-17T01:29:18  <McLeopold> Nu-1?
+2011-02-17T01:29:24  <antimatroid> sure
+2011-02-17T01:29:51  <antimatroid> lag
+2011-02-17T01:30:18  <antimatroid> it normally works fine i swear
+2011-02-17T01:32:04  <antimatroid> i'm getting pantsed
+2011-02-17T01:39:23  <McLeopold> no, I'm getting pantsed
+2011-02-17T01:39:33  <antimatroid> it's harder when there's like 8 people
+2011-02-17T01:41:11  <McLeopold> dang, it is hard
+2011-02-17T01:45:37  <antimatroid> come on :P
+2011-02-17T01:47:26  <McLeopold> I'm doing better
+2011-02-17T01:47:29  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T01:54:56  <McLeopold> this is giving me ideas for ants
+2011-02-17T01:58:11  <antimatroid> what do you mean?
+2011-02-17T01:58:18  <antimatroid> i got my troll bot idea from here
+2011-02-17T01:58:27  <antimatroid> i often just kamakazee the strongest player
+2011-02-17T02:00:13  <McLeopold> what are you gonna do now?
+2011-02-17T02:01:29  <antimatroid> i've got almost 2000 on that small one
+2011-02-17T02:01:35  <antimatroid> ready?
+2011-02-17T02:01:39  <McLeopold> yes!
+2011-02-17T02:01:53  <McLeopold> let's hope yellow fell asleep
+2011-02-17T02:02:32  <McLeopold> there he goes
+2011-02-17T02:02:43  <McLeopold> that was a lose-lose-lose game
+2011-02-17T02:02:50  <McLeopold> or, lose-lose-win
+2011-02-17T02:02:59  <antimatroid> yeah, often it's most patient wins
+2011-02-17T02:40:47  *** delt0r___ <delt0r___!~delt0r@188-22-175-164.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-17T02:42:41  *** delt0r_ <delt0r_!~delt0r@188-22-172-102.adsl.highway.telekom.at> has quit IRC (Ping timeout: 264 seconds)
+2011-02-17T02:53:46  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Read error: Connection reset by peer)
+2011-02-17T02:54:20  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-17T02:57:05  *** amstan <amstan!~amstan@206-248-164-17.dsl.teksavvy.com> has quit IRC (Ping timeout: 264 seconds)
+2011-02-17T02:58:02  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-17T03:05:34  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-02-17T03:17:01  <antimatroid> McLeopold: well that was a good waste of time :P
+2011-02-17T03:17:10  <McLeopold> yea
+2011-02-17T03:17:16  <McLeopold> so much for the engine
+2011-02-17T03:17:59  <McLeopold> I've got my engine really fast now
+2011-02-17T03:18:17  <McLeopold> I figured out something that was slowing it down, and causing my bots to timeout
+2011-02-17T03:18:41  <McLeopold> I'm thinking the official servers had the same problem last contest.
+2011-02-17T03:21:16  <antimatroid> what was the issue?
+2011-02-17T03:22:15  <antimatroid> i could survive with your input (although i'd really love for it to be row,col), but i would be directly creating my own char map with the info upon reading to determine information from
+2011-02-17T03:23:18  <McLeopold> I'm running tests right now to compare inputs.
+2011-02-17T03:23:43  <McLeopold> The issue was, there was a while loop waiting for input, but it would only read 1 line at a time from a bot.
+2011-02-17T03:23:49  <antimatroid> sigh: you missed out on galcon fun
+2011-02-17T03:24:12  <McLeopold> so, if the bot had too many orders, it would timeout if close to the limit, even though it send it time.
+2011-02-17T03:24:27  <antimatroid> ah yeah fair enough
+2011-02-17T03:24:41  <antimatroid> i explicitly didn't send all my moves right at the end in case it caused my bot to take too long
+2011-02-17T03:25:23  <antimatroid> and i had to clear my game tree at the start of each turn, otherwise it was too variable how long it would take
+2011-02-17T03:25:38  <sigh> antimatroid: what happened?
+2011-02-17T03:28:41  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-02-17T03:28:44  <antimatroid> me and mcleopold playing multiplayer galcon against people
+2011-02-17T03:29:28  <sigh> sounds fun :)
+2011-02-17T03:29:49  <sigh> I've been busy lately though :(
+2011-02-17T03:30:29  <antimatroid> i'm going to be busy again as of monday
+2011-02-17T03:31:04  <sigh> uni doesn't really count as very busy :P
+2011-02-17T03:36:26  <antimatroid> yes it does :P
+2011-02-17T03:46:03  *** antimatroid1 <antimatroid1!~Nick@68.126-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-17T03:46:29  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-02-17T03:48:17  *** antimatroid <antimatroid!~Nick@212.117-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T03:52:11  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2011-02-17T04:15:18  *** Frontier <Frontier!~marco@dslb-088-071-226-146.pools.arcor-ip.net> has joined #aichallenge
+2011-02-17T04:18:14  *** chris___0076 <chris___0076!~Chris_007@adsl-190-55-203.asm.bellsouth.net> has joined #aichallenge
+2011-02-17T04:20:53  *** chris__0076 <chris__0076!~Chris_007@adsl-190-125-194.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T04:22:52  *** delt0r_ <delt0r_!~bob@kimura.cibiv.univie.ac.at> has joined #aichallenge
+2011-02-17T04:27:03  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has quit IRC (Ping timeout: 272 seconds)
+2011-02-17T04:31:13  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has quit IRC (Remote host closed the connection)
+2011-02-17T04:40:54  *** Cyndre <Cyndre!~Cyndre@2002:41ff:b54b::41ff:b54b> has quit IRC (Read error: Connection reset by peer)
+2011-02-17T04:42:06  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-02-17T04:44:21  *** delt0r <delt0r!~delt0r@188-22-175-164.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-17T04:46:16  *** delt0r___ <delt0r___!~delt0r@188-22-175-164.adsl.highway.telekom.at> has quit IRC (Remote host closed the connection)
+2011-02-17T05:49:28  *** aerique <aerique!euqirea@xs3.xs4all.nl> has joined #aichallenge
+2011-02-17T05:53:05  *** delt0r__ <delt0r__!~bob@kimura.cibiv.univie.ac.at> has joined #aichallenge
+2011-02-17T05:53:05  *** delt0r_ <delt0r_!~bob@kimura.cibiv.univie.ac.at> has quit IRC (Read error: Connection reset by peer)
+2011-02-17T06:15:35  *** Migi32 <Migi32!~migi@178-117-105-208.access.telenet.be> has joined #aichallenge
+2011-02-17T06:28:19  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T06:52:21  *** acieroid` is now known as acieroid
+2011-02-17T07:00:27  *** chris__0076 <chris__0076!~Chris_007@adsl-190-52-191.asm.bellsouth.net> has joined #aichallenge
+2011-02-17T07:03:07  *** chris___0076 <chris___0076!~Chris_007@adsl-190-55-203.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T07:42:41  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 276 seconds)
+2011-02-17T08:09:32  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-17T08:39:44  *** BaronTrozo <BaronTrozo!82755de1@gateway/web/freenode/ip.130.117.93.225> has joined #aichallenge
+2011-02-17T08:45:15  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-02-17T08:48:50  *** BaronTrozo <BaronTrozo!82755de1@gateway/web/freenode/ip.130.117.93.225> has quit IRC (Quit: Page closed)
+2011-02-17T08:58:45  *** amstan <amstan!~amstan@206-248-164-17.dsl.teksavvy.com> has joined #aichallenge
+2011-02-17T08:58:45  *** ChanServ sets mode: +o amstan
+2011-02-17T09:37:39  *** amstan <amstan!~amstan@206-248-164-17.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2011-02-17T09:49:30  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Quit: *poof!*)
+2011-02-17T10:07:46  *** antimatroid <antimatroid!~Nick@183.134-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-17T10:09:22  *** antimatroid1 <antimatroid1!~Nick@68.126-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T10:20:21  *** amstan_ <amstan_!~alex@142.222.21.222> has joined #aichallenge
+2011-02-17T10:20:21  *** ChanServ sets mode: +o amstan_
+2011-02-17T10:34:45  *** amstan_ <amstan_!~alex@142.222.21.222> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T10:41:22  *** delt0r_ <delt0r_!~delt0r@188-22-24-138.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-17T10:42:17  *** delt0r <delt0r!~delt0r@188-22-175-164.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-02-17T10:51:00  *** aerique <aerique!euqirea@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-02-17T10:51:46  *** boegel <boegel!~boegel@91.182.134.214> has joined #aichallenge
+2011-02-17T11:27:43  *** boegel <boegel!~boegel@91.182.134.214> has quit IRC (Quit: This computer has gone to sleep)
+2011-02-17T11:33:21  *** superflit <superflit!~superflit@140.226.49.148> has joined #aichallenge
+2011-02-17T11:53:00  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has quit IRC (Read error: Connection reset by peer)
+2011-02-17T11:53:31  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has joined #aichallenge
+2011-02-17T11:59:57  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-02-17T12:15:39  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has quit IRC (*.net *.split)
+2011-02-17T12:21:14  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-02-17T12:45:59  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has joined #aichallenge
+2011-02-17T12:49:48  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has quit IRC (*.net *.split)
+2011-02-17T12:50:14  *** amstan_ <amstan_!~alex@142.222.8.250> has joined #aichallenge
+2011-02-17T12:50:14  *** ChanServ sets mode: +o amstan_
+2011-02-17T13:10:18  *** amstan__ <amstan__!~alex@142.222.8.250> has joined #aichallenge
+2011-02-17T13:10:19  *** ChanServ sets mode: +o amstan__
+2011-02-17T13:10:50  *** amstan_ <amstan_!~alex@142.222.8.250> has quit IRC (Ping timeout: 276 seconds)
+2011-02-17T13:29:32  *** amstan <amstan!~alex@142.222.8.250> has joined #aichallenge
+2011-02-17T13:29:33  *** ChanServ sets mode: +o amstan
+2011-02-17T13:30:12  *** amstan__ <amstan__!~alex@142.222.8.250> has quit IRC (Read error: Connection reset by peer)
+2011-02-17T13:41:35  *** amstan <amstan!~alex@142.222.8.250> has quit IRC (Ping timeout: 264 seconds)
+2011-02-17T13:48:40  *** amstan <amstan!~alex@142.222.25.52> has joined #aichallenge
+2011-02-17T13:48:40  *** ChanServ sets mode: +o amstan
+2011-02-17T13:48:52  *** boegel <boegel!~boegel@91.182.134.214> has joined #aichallenge
+2011-02-17T13:53:45  *** amstan <amstan!~alex@142.222.25.52> has quit IRC (Ping timeout: 276 seconds)
+2011-02-17T14:15:17  *** amstan <amstan!~alex@142.222.25.52> has joined #aichallenge
+2011-02-17T14:15:17  *** ChanServ sets mode: +o amstan
+2011-02-17T14:24:23  *** delt0r___ <delt0r___!~delt0r@188-22-24-138.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-17T14:25:04  *** delt0r_ <delt0r_!~delt0r@188-22-24-138.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-02-17T14:28:23  *** amstan <amstan!~alex@142.222.25.52> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T14:36:43  *** amstan <amstan!~alex@142.222.25.52> has joined #aichallenge
+2011-02-17T14:36:43  *** ChanServ sets mode: +o amstan
+2011-02-17T14:45:19  *** amstan <amstan!~alex@142.222.25.52> has quit IRC (Quit: Konversation terminated!)
+2011-02-17T14:45:30  *** amstan <amstan!~alex@142.222.25.52> has joined #aichallenge
+2011-02-17T14:45:30  *** ChanServ sets mode: +o amstan
+2011-02-17T14:55:30  *** amstan <amstan!~alex@142.222.25.52> has quit IRC (Quit: Konversation terminated!)
+2011-02-17T14:56:14  *** amstan <amstan!~alex@142.222.25.52> has joined #aichallenge
+2011-02-17T14:56:15  *** ChanServ sets mode: +o amstan
+2011-02-17T15:02:38  *** amstan <amstan!~alex@142.222.25.52> has quit IRC (Ping timeout: 260 seconds)
+2011-02-17T15:07:59  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-17T15:20:49  *** amstan <amstan!~alex@142.222.5.0> has joined #aichallenge
+2011-02-17T15:20:49  *** ChanServ sets mode: +o amstan
+2011-02-17T15:23:25  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-02-17T15:28:43  *** flag <flag!~root@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-02-17T15:34:54  *** delt0r_ <delt0r_!~delt0r@188-22-161-62.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-17T15:36:36  *** delt0r___ <delt0r___!~delt0r@188-22-24-138.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-02-17T16:07:23  *** amstan <amstan!~alex@142.222.5.0> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T16:07:54  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-17T16:07:54  *** delt0r___ <delt0r___!~delt0r@188-22-161-62.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-17T16:08:48  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-17T16:09:04  *** delt0r_ <delt0r_!~delt0r@188-22-161-62.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T16:11:53  *** superflit <superflit!~superflit@140.226.49.148> has quit IRC (Quit: superflit)
+2011-02-17T16:31:58  <flag> Have we made a decision on the protocol for communicating with the tourney engine? I noticed java bots have been added
+2011-02-17T16:46:12  *** boegel <boegel!~boegel@91.182.134.214> has quit IRC (Quit: Leaving)
+2011-02-17T17:19:57  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-02-17T17:22:42  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-02-17T17:52:25  *** Migi32 <Migi32!~migi@178-117-105-208.access.telenet.be> has quit IRC (Ping timeout: 264 seconds)
+2011-02-17T18:05:35  *** Migi32 <Migi32!~migi@vpne031.ugent.be> has joined #aichallenge
+2011-02-17T18:30:58  *** Migi32 <Migi32!~migi@vpne031.ugent.be> has quit IRC (Remote host closed the connection)
+2011-02-17T18:37:55  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-02-17T20:18:17  *** Whaeth <Whaeth!bc242077@gateway/web/freenode/ip.188.36.32.119> has joined #aichallenge
+2011-02-17T20:30:31  <Whaeth> Hey. Anyone knows of a similar challange running on now, or starting in the near future?
+2011-02-17T20:32:32  <antimatroid> Whaeth another one just ended
+2011-02-17T20:32:40  <antimatroid> there'll hopefully be another one here in a month or two
+2011-02-17T20:32:59  <Whaeth> could you give me a link to that
+2011-02-17T20:33:04  <Whaeth> the one that just ended
+2011-02-17T20:33:14  <antimatroid> http://queue.acm.org/icpc/
+2011-02-17T20:33:43  *** chris__0076 <chris__0076!~Chris_007@adsl-190-52-191.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-02-17T20:33:46  <antimatroid> i was not a fan of their collision system
+2011-02-17T20:33:50  <antimatroid> it was intuitively retarded
+2011-02-17T20:34:34  <Whaeth> thank you
+2011-02-17T20:34:37  <Whaeth> hehe
+2011-02-17T20:35:16  <Whaeth> yeah i'd prefer to compete in "simpler" environments
+2011-02-17T20:35:32  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-52-191.asm.bellsouth.net> has joined #aichallenge
+2011-02-17T20:35:37  <Whaeth> the waterloo competitions looked awesome
+2011-02-17T20:36:25  <Whaeth> oh it's simple enough
+2011-02-17T20:36:45  <Whaeth> i thought you meant they messed up the collision detection
+2011-02-17T20:37:08  <Whaeth> but this game isn't like that :)
+2011-02-17T20:37:51  <McLeopold> antimatroid: I've decided.  Bot communication will be changes only.
+2011-02-17T20:37:58  <McLeopold> It's smaller anyway you slice it.
+2011-02-17T20:38:12  <McLeopold> I've tried maps of 256x256 and 27x27.
+2011-02-17T20:38:54  <McLeopold> I haven't found a case there sending the map is smaller.  And it is always around a 10x factor.
+2011-02-17T20:39:11  <McLeopold> Zipping the text, changes are around 2x smaller.
+2011-02-17T20:39:39  <McLeopold> Now, I just need to switch row/col/row...
+2011-02-17T20:45:33  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-17T20:46:30  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-17T20:49:45  *** SheV0_ <SheV0_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-17T20:49:49  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-17T20:51:23  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 272 seconds)
+2011-02-17T20:51:23  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 272 seconds)
+2011-02-17T20:51:34  *** Prillicy_ is now known as Prillicy
+2011-02-17T20:51:35  *** SheV0_ is now known as SheV0
+2011-02-17T20:53:42  <antimatroid> McLeopold: okay sure
+2011-02-17T20:53:56  <antimatroid> thanks for switching to row,col, it makes my life that much easier
+2011-02-17T20:54:23  <antimatroid> Whaeth: their collision resolution works, but it's extremely retarded
+2011-02-17T21:04:46  <flag> Also, please update the wiki with the new protocol
+2011-02-17T21:04:59  <flag> If you get the chance
+2011-02-17T21:05:02  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 264 seconds)
+2011-02-17T21:08:04  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 255 seconds)
+2011-02-17T21:08:31  <antimatroid> i'll do that later on
+2011-02-17T21:08:36  <antimatroid> i need to go out for a bit soon though
+2011-02-17T21:28:32  <McLeopold> flag: I can give you sample output
+2011-02-17T21:30:20  <flag> McLeopold: Sure that should be enough
+2011-02-17T21:52:54  <McLeopold> flag: http://pastebin.com/tfh2W0mK <-- sample replay file
+2011-02-17T21:53:28  <McLeopold> Frontier: ^^ you should look at it too
+2011-02-17T21:54:33  *** Whaeth <Whaeth!bc242077@gateway/web/freenode/ip.188.36.32.119> has quit IRC (Ping timeout: 245 seconds)
+2011-02-17T22:08:44  *** nullkuhl <nullkuhl!~nullkuhl@196.221.110.111> has joined #aichallenge
+2011-02-17T22:08:44  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has joined #aichallenge
+2011-02-17T22:16:57  <flag> McLeopold: Thanks
+2011-02-17T22:17:57  *** amstan <amstan!~amstan@206-248-164-17.dsl.teksavvy.com> has joined #aichallenge
+2011-02-17T22:17:57  *** ChanServ sets mode: +o amstan
+2011-02-17T22:32:38  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-02-17T22:47:24  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Quit: Leaving)
+2011-02-17T22:48:28  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has quit IRC (Ping timeout: 240 seconds)
+2011-02-17T22:48:46  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has joined #aichallenge
+2011-02-17T22:52:49  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-52-191.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-02-17T22:53:24  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-02-17T22:56:27  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-52-191.asm.bellsouth.net> has joined #aichallenge
+2011-02-17T22:57:09  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-52-191.asm.bellsouth.net> has quit IRC (Client Quit)
+2011-02-17T23:00:29  <McLeopold> antimatroid: I know it's a small nitpick, but could we go with attackradius2 instead of battleradius2?
+2011-02-17T23:15:17  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-52-191.asm.bellsouth.net> has joined #aichallenge
+2011-02-17T23:37:02  *** delt0r_ <delt0r_!~delt0r@188-22-160-160.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-17T23:38:27  *** delt0r___ <delt0r___!~delt0r@188-22-161-62.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)

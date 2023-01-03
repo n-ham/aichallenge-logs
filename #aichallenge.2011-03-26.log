@@ -1,0 +1,1151 @@
+2011-03-26T00:00:04  <antimatroid> McLeopold: others agreed, i don't mind
+2011-03-26T00:00:40  <janzert> McLeopold: if we're going to go that route it would probably be better for a map to declare its "type" then the engine can decide if a particular food spawning methods fits with that map type
+2011-03-26T00:00:40  <antimatroid> i think we should just add a parameter to maps indicating what type it is
+2011-03-26T00:00:42  <McLeopold> they are very much separate concerns, although some combos do fit together nicely
+2011-03-26T00:01:11  <amstan> McLeopold: food generation seems to be closely related to map gen, because of symmetry types, so every different type of symmetry has another kind of food spawn system
+2011-03-26T00:01:33  <janzert> total random works with them all :)
+2011-03-26T00:01:48  <amstan> janzert: but total random is not fair
+2011-03-26T00:02:03  <amstan> especially if we decide we have to move toward symmetric everything
+2011-03-26T00:02:25  <sigh> I think map should pass its type
+2011-03-26T00:02:28  <janzert> but is it unfair in a way that actually ends up mattering in the long run? I know a lot of people here think so, I don't think it's really been determined
+2011-03-26T00:02:52  <janzert> at the same time I don't think the other methods are necessarily worse
+2011-03-26T00:03:00  <janzert> so I'm fine with them too
+2011-03-26T00:03:05  <sigh> janzert: I think later in the game it is not such an issue, but at the start it is
+2011-03-26T00:03:05  <amstan> janzert: depends on what people think
+2011-03-26T00:03:20  <amstan> sigh: start is pretty important
+2011-03-26T00:03:34  <sigh> amstan: wasn't saying otherwise
+2011-03-26T00:04:17  <janzert> and the latest method I've heard for spawning food should work on any map
+2011-03-26T00:04:27  <janzert> any symmetry or asymmetry
+2011-03-26T00:04:31  <sigh> the one antimatroid proposed?
+2011-03-26T00:04:39  <sigh> for asymettric?
+2011-03-26T00:04:39  <janzert> yes, I believe so
+2011-03-26T00:04:54  <amstan> janzert: which one? antimatroid: ping
+2011-03-26T00:05:02  * sigh hates spelling symmetry or any variant thereof
+2011-03-26T00:05:15  <amstan> sigh: self-similar?
+2011-03-26T00:05:52  <sigh> variant was the wrong word, hate spelling words that use symmetry as the stem :P
+2011-03-26T00:06:13  <antimatroid> amstan: the one i came up with when you were here earlier
+2011-03-26T00:06:17  <janzert> amstan: take all the squares a player can reach first and check how long it takes to reach them from the starting position, then randomly pick a "same distance" square for each player to spawn food in
+2011-03-26T00:07:14  <sigh> janzert: how is the distribution chosen?
+2011-03-26T00:07:32  <antimatroid> i would do just random
+2011-03-26T00:07:35  <janzert> uniform I presume
+2011-03-26T00:07:40  <antimatroid> it's still not "symmetric" after the first turn
+2011-03-26T00:07:44  <sigh> uniform over what is the question :P
+2011-03-26T00:08:01  <sigh> eg. uniform over distances is not uniform over squares
+2011-03-26T00:08:04  <janzert> over distances and set of squares within the distance would be good enough
+2011-03-26T00:08:10  <janzert> I believe
+2011-03-26T00:08:22  <sigh> that gives preference to squares close to home
+2011-03-26T00:08:23  <antimatroid> yeah, i don't think that matters too much
+2011-03-26T00:08:43  <janzert> I think that's a nice side benefit ;)
+2011-03-26T00:08:47  <sigh> ok :)
+2011-03-26T00:08:49  <janzert> gives a "base"
+2011-03-26T00:08:57  <janzert> but shh don't tell jeff
+2011-03-26T00:09:03  <janzert> :P
+2011-03-26T00:09:15  <janzert> there is one other corner problem
+2011-03-26T00:09:33  <janzert> that I haven't seen mentioned so far
+2011-03-26T00:10:01  <antimatroid> ...
+2011-03-26T00:10:09  <janzert> in an asymmetric map one player is likely to have squares it can reach first but are farther than any other player has
+2011-03-26T00:10:28  <janzert> in a naive implementation presumably these squares will never spawn food
+2011-03-26T00:11:00  <antimatroid> we could get the map analyzer to try and minimise that, but yeah, good point
+2011-03-26T00:11:00  <janzert> there are ways it could be worked around but none very pretty that I've thought of so far
+2011-03-26T00:11:04  <sigh> there are multiple other things that can cause unfairness, but yes
+2011-03-26T00:11:31  <sigh> related to the same sort of issues
+2011-03-26T00:11:51  <sigh> just because the squares are the same distance, doesn't mean they are just as easy to control
+2011-03-26T00:11:52  <antimatroid> sigh: i don't know what you're going to do about squares that players can reach equally
+2011-03-26T00:11:57  <antimatroid> i'll let you worry about that :P
+2011-03-26T00:12:07  <sigh> :(
+2011-03-26T00:12:32  <janzert> sigh: probably but it seems I'm less concerned about "fairness" by trying to exactly equalize all game conditions than anyone else
+2011-03-26T00:12:37  <sigh> imo, trying too hard to make asymmetric maps completely fair
+2011-03-26T00:12:45  <sigh> and we should just go with the sections method
+2011-03-26T00:12:52  <janzert> so long as the unequal conditions aren't systematically biased toward any player
+2011-03-26T00:12:55  <sigh> trying too hard to make asymmetric maps completely fair is impossible
+2011-03-26T00:13:14  <antimatroid> erm?
+2011-03-26T00:13:39  <antimatroid> that sentence kind of implies there is nothing you could do that is too much in order to make asymmetric maps fair
+2011-03-26T00:14:06  <sigh> I think we are getting too complicated for little benefit
+2011-03-26T00:14:29  <sigh> and sweeping the edge cases under the rug for who ever implements it to clean up :P
+2011-03-26T00:16:14  <sigh> McLeopold: when you have the time it would be great if you had a look at parse_orders, because it has changed what is being communicated to the engine: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/ants.py#L313
+2011-03-26T00:53:43  <sigh> antimatroid: I think I found a case where the vision algorithm depends on the order of the initial ants
+2011-03-26T00:53:52  <McLeopold> sigh: personally, I'm against using exceptions unless you are building a library for distribution.
+2011-03-26T00:54:43  <antimatroid> sigh: ?
+2011-03-26T00:54:47  <sigh> McLeopold: in this case the exceptions made the code a lot shorter, and let me specify the format of the invalid line in one place
+2011-03-26T00:54:56  <sigh> but I'm more concerned about the functionality
+2011-03-26T00:57:06  <sigh> antimatroid: just investigating the cause of my non-determinism in the engine... it seems that get_vision returns a slightly different result depending on what order you add ants to the initial queue... currently investigating
+2011-03-26T00:57:48  <antimatroid> where is get_vision?
+2011-03-26T00:58:06  <sigh> in ants.py
+2011-03-26T00:58:09  <antimatroid> it will be if you give a square to an ant the first time it's seen, and don't check the distance to a marked square you hit
+2011-03-26T00:58:36  <antimatroid> so say you have a...b, you will hit the middle square with one of them first, you need to count the second because it's at the same distance
+2011-03-26T00:59:24  <sigh> the vision algorithm only looks at the ants of one player at a time
+2011-03-26T00:59:34  <sigh> did you mean a...a?
+2011-03-26T01:00:08  <antimatroid> ah, then it shouldn't matter :\
+2011-03-26T01:01:00  <McLeopold> sigh: you're using the exceptions as a structured way to shortcut the parsing and return a value
+2011-03-26T01:01:37  <McLeopold> It works, and would be fine, but I think there are better more semantic ways to accomplish that.  It's just a matter of style.
+2011-03-26T01:02:12  <sigh> what do you think is better?
+2011-03-26T01:02:24  <McLeopold> perhaps a function that takes a single line and returns an error
+2011-03-26T01:02:27  <antimatroid> sigh: can you pastebin the example that comes out differently?
+2011-03-26T01:02:32  <McLeopold> you can have function in functions
+2011-03-26T01:02:47  <sigh> antimatroid: working on a reproducible case
+2011-03-26T01:02:55  <McLeopold> technically, these are not exceptions in the sense that you don't know what to do
+2011-03-26T01:03:15  <sigh> McLeopold: ok I'll do that... I don't mind either way, just didn't want to repeat code
+2011-03-26T01:03:17  <McLeopold> nor should you worry about which level is going to catch them
+2011-03-26T01:03:53  <McLeopold> yeah, the code looks nice :), just use a more semantic structure
+2011-03-26T01:03:59  <sigh> McLeopold: but more importantly, do you agree with moving all the validation into parse_orders?
+2011-03-26T01:05:31  <McLeopold> oh....um....
+2011-03-26T01:05:49  <McLeopold> no
+2011-03-26T01:06:02  <McLeopold> parse should parse into tokens and numbers
+2011-03-26T01:06:09  <McLeopold> something else should check game logic
+2011-03-26T01:06:32  <McLeopold> I want to hook test bots in at different levels so I don't have to deal with strings
+2011-03-26T01:07:55  <sigh> ok, then move it up a level... should do_moves care about validation
+2011-03-26T01:08:17  <sigh> because currently that function is the only way to communicate to the engine about invalid orders
+2011-03-26T01:08:48  <McLeopold> the engine should only get strings that it logs or prints, nothing that it could intepret
+2011-03-26T01:09:09  <McLeopold> the engine will check is_alive if it needs to know if a player is kicked
+2011-03-26T01:09:22  <sigh> what is the point of invalid_orders return value then?
+2011-03-26T01:09:28  <McLeopold> so the game class makes the decision to kick a player, not the engine
+2011-03-26T01:09:35  <McLeopold> for logging
+2011-03-26T01:10:55  <McLeopold> bedtime, night
+2011-03-26T01:11:01  <sigh> ok, night
+2011-03-26T01:15:38  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has quit IRC (Ping timeout: 276 seconds)
+2011-03-26T01:15:44  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has joined #aichallenge
+2011-03-26T01:20:30  <sigh> antimatroid: you there
+2011-03-26T01:20:32  <sigh> ?
+2011-03-26T01:20:34  <antimatroid> yeah
+2011-03-26T01:21:10  <sigh> map random4.txt
+2011-03-26T01:21:40  <sigh> viewradius2 96
+2011-03-26T01:21:43  <sigh> ants at: [(15, 12), (18, 13), (22, 20), (21, 23), (16, 11), (23, 23), (14, 12), (22, 22), (20, 19), (21, 18)]
+2011-03-26T01:22:00  <antimatroid> can you paste bin?
+2011-03-26T01:22:04  <antimatroid> i've got a friend here watching movies
+2011-03-26T01:22:04  <sigh> get a different result for ants at: [(15, 12), (16, 11), (22, 22), (21, 23), (23, 23), (14, 12), (20, 19), (18, 13), (21, 18), (22, 20)]
+2011-03-26T01:22:15  <antimatroid> or is it just a number?
+2011-03-26T01:22:32  <antimatroid> you should try getting it to fill in your squares and output the result
+2011-03-26T01:22:45  <sigh> it's slightly different viewable area
+2011-03-26T01:22:53  <sigh> printing it out is not very enlightening :P
+2011-03-26T01:25:11  <sigh> I will pastebin it the two outputs
+2011-03-26T01:28:06  <sigh> http://pastebin.com/VRm3qcMv and http://pastebin.com/mrrXSEJ0
+2011-03-26T01:28:37  <sigh> ^^ antimatroid
+2011-03-26T01:29:09  <sigh> a dot from line 24 moves to line 27
+2011-03-26T01:29:12  <sigh> :D
+2011-03-26T01:29:12  <antimatroid> so there's two that swap bottom left
+2011-03-26T01:29:17  <sigh> yes
+2011-03-26T01:29:50  <sigh> the only difference between the ant lists is the order
+2011-03-26T01:31:00  <antimatroid> yeah, i think the algorithm must be wrong
+2011-03-26T01:31:23  <antimatroid> actually, i can break it
+2011-03-26T01:31:27  <antimatroid> i'll paste bin you a broken example
+2011-03-26T01:31:28  <sigh> the implementation is wrong?
+2011-03-26T01:31:33  <antimatroid> no, the algorithm
+2011-03-26T01:31:36  <sigh> ah :(
+2011-03-26T01:31:41  <antimatroid> yeah i know :P
+2011-03-26T01:31:46  <sigh> yeah, I was afraid of that
+2011-03-26T01:32:26  <antimatroid> http://pastebin.com/P0TWwFcU
+2011-03-26T01:32:41  <antimatroid> it's going to go through that water from one of the positions
+2011-03-26T01:32:55  <antimatroid> one is going to need to store multiple locations to check if there is a collision
+2011-03-26T01:32:58  <sigh> the algorithm doesn't care about water
+2011-03-26T01:33:05  <antimatroid> hmmm, good point
+2011-03-26T01:33:07  <sigh> this is just vision
+2011-03-26T01:33:19  <antimatroid> can that type of situation happen without water?
+2011-03-26T01:33:35  <sigh> given that water is not looked at at all, yes
+2011-03-26T01:33:36  <antimatroid> i don't think it can
+2011-03-26T01:33:48  <sigh> I will do some more testing, and make some more robust tests
+2011-03-26T01:33:56  <antimatroid> i'll keep thinking
+2011-03-26T01:34:05  <sigh> hopefully get a smaller test case :)
+2011-03-26T01:35:41  <sigh> antimatroid: this is what was causing the engine to be non-deterministic, btw :(
+2011-03-26T01:36:46  <antimatroid>  sigh: at least we know what's causing it
+2011-03-26T01:37:09  <sigh> yeah... well this was an important bug to catch
+2011-03-26T01:43:52  <antimatroid> i think i found the problem
+2011-03-26T01:44:12  <antimatroid> consider
+2011-03-26T01:44:12  <antimatroid> a.
+2011-03-26T01:44:12  <antimatroid> .b
+2011-03-26T01:44:24  <sigh> aha... just output a case: bad_vision [(25, 46), (26, 45)]
+2011-03-26T01:44:42  <sigh> ran a check of vision output against brute force just now
+2011-03-26T01:44:57  <sigh> so yeah
+2011-03-26T01:45:08  <antimatroid> if you're checking the distance to a square in the same row as a on the right, then dependent on who goes to that square first it'll be different
+2011-03-26T01:45:16  <sigh> gtg, will be back in an hour or so
+2011-03-26T01:45:23  <antimatroid> okay sure
+2011-03-26T01:45:58  <antimatroid> sigh: update the ant to the one with the closest distance each turn
+2011-03-26T01:46:05  <antimatroid> that should fix it i think
+2011-03-26T01:46:25  * janzert will stop working on his diagram to show the problem now :)
+2011-03-26T01:46:32  <antimatroid> :)
+2011-03-26T01:46:35  <janzert> since everyone else has also figured it ouy
+2011-03-26T01:46:37  <janzert> out
+2011-03-26T01:46:39  <sigh> :)
+2011-03-26T01:46:47  <sigh> janzert: you knew and didn't tell us? :P
+2011-03-26T01:47:05  <antimatroid> janzert is all knowing
+2011-03-26T01:47:06  <janzert> well, I wasn't sure I could explain it in words so was making a diagram to illustrate
+2011-03-26T01:47:16  <janzert> :}
+2011-03-26T01:47:53  <antimatroid> ergh, my fix isn't helpful
+2011-03-26T01:47:54  <sigh> if either of you can fix it while I'm out that would be great :)
+2011-03-26T01:47:59  <sigh> cya
+2011-03-26T01:48:02  <antimatroid> cya
+2011-03-26T01:48:08  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-26T01:48:18  <janzert> btw, once your algorithm is truly order independent you should be able to get rid of the deque
+2011-03-26T01:48:22  <antimatroid> janzert: any idea of how to fix that without scanning out from every ant separately
+2011-03-26T01:49:00  <antimatroid> you can for this, but people would need it for say voronoi diagrams
+2011-03-26T01:49:29  <janzert> well, you could always add the square to be checked even if it's already marked as visible
+2011-03-26T01:49:39  <antimatroid> it might be a matter of adding all joint ants to the list to check
+2011-03-26T01:49:45  <janzert> but that will mean it incurs the same work as scanning out from each ant
+2011-03-26T01:49:53  <antimatroid> nah, you can do better
+2011-03-26T01:50:13  <janzert> sure it's just the simple fix
+2011-03-26T01:50:14  <antimatroid> you just have a list of ant locations, and add ants that draw to get to that square first
+2011-03-26T01:51:15  <janzert> the question is how do you tell if it is a draw without testing against every ant
+2011-03-26T01:51:27  <janzert> since if you do that you're back to the same workload again
+2011-03-26T01:51:36  <janzert> or more
+2011-03-26T01:51:49  <antimatroid> you make visibility an int map rather than bool
+2011-03-26T01:51:54  <antimatroid> and store the distance you hit it at
+2011-03-26T01:52:19  <antimatroid> if you do that with voronois, you can use those numbers to back track shortest paths
+2011-03-26T01:53:57  <janzert> sure, and if you hit a visible square that is a tie for distance retroactively add the current ant to the list of ants for that square
+2011-03-26T01:54:11  <antimatroid> we could always change the distance metric :P
+2011-03-26T01:54:23  <janzert> so store the ants to check as in the vision map instead of the square queue
+2011-03-26T01:54:29  <antimatroid> yep
+2011-03-26T01:54:39  <antimatroid> then just need a stack of locations to check from
+2011-03-26T01:54:45  <antimatroid> no, needs to be queue
+2011-03-26T01:55:16  <antimatroid> because we need to wait to add all draw ants before moving on from that square
+2011-03-26T01:55:17  <janzert> I think it can get away with a stack
+2011-03-26T01:55:22  <antimatroid> nah
+2011-03-26T01:55:25  <janzert> nah
+2011-03-26T01:55:33  <janzert> we'll just double check some squares
+2011-03-26T01:55:45  <antimatroid> or you could just wait with a queue :P
+2011-03-26T01:57:07  <janzert> I'm worried the queue could still have cases it breaks with, although I can't see that it would
+2011-03-26T01:57:45  <janzert> I guess it shouldn't
+2011-03-26T01:58:39  <janzert> yeah, I think that should work
+2011-03-26T01:58:42  <antimatroid> i think we're good after that, similarly when blocking with water
+2011-03-26T01:58:57  <janzert> water blocks vision?
+2011-03-26T01:59:07  <antimatroid> no never
+2011-03-26T01:59:21  <antimatroid> but people will need something like this for their bots
+2011-03-26T01:59:26  <antimatroid> and they will want to be blocked by water
+2011-03-26T02:00:09  <janzert> for a reachable in x moves map I suppose?
+2011-03-26T02:01:12  <antimatroid> i don't think that matters then
+2011-03-26T02:01:39  <antimatroid> because your metric is manhatten based in a way
+2011-03-26T02:01:44  <janzert> ok, for closest ant to square
+2011-03-26T02:01:51  <janzert> eh, even then
+2011-03-26T02:02:05  <janzert> ok, when does it matter? :P
+2011-03-26T02:02:21  <antimatroid> i'm going to fix it..
+2011-03-26T02:02:23  <antimatroid> unless you already are?
+2011-03-26T02:02:29  <janzert> no, go ahead
+2011-03-26T02:03:15  <antimatroid> it only matters when you're using euclidean metric
+2011-03-26T02:03:26  <antimatroid> people will need to worry about if for their own vision funtions
+2011-03-26T02:03:39  <janzert> yes, I mean when in the game do you care about euclidean and water blocking it?
+2011-03-26T02:11:09  <janzert> btw, the distances in the map should be the true euclidean distance not the manhatten integer distance, I think either actually gives a correct outcome but the euclidean will weed out extra ants much quicker
+2011-03-26T02:12:35  <janzert> only mentioning it because you initially were going to change the distances to an int map which won't work with euclidean distances well ;)
+2011-03-26T02:13:20  *** chris__0076 <chris__0076!~Chris_007@adsl-176-226-252.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T02:13:42  <antimatroid> well yeah, i can use doubles
+2011-03-26T02:13:53  <antimatroid> one could just use the metric squares and have integers, but meh
+2011-03-26T02:13:56  <antimatroid> it's less clear
+2011-03-26T02:14:11  <janzert> yep, just use exactly whatever the distance function hands to you :)
+2011-03-26T02:15:51  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-252-164.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T02:17:08  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-196-187.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T02:19:18  *** chris__0076 <chris__0076!~Chris_007@adsl-176-226-252.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T02:30:36  <antimatroid> janzert: how do i append a list to another list?
+2011-03-26T02:30:50  <antimatroid> l1 += l2?
+2011-03-26T02:35:12  <janzert> yes
+2011-03-26T02:35:36  <janzert> although you probably figured that out by now :)
+2011-03-26T02:36:10  <antimatroid> i was waiting anyway, i have a pastebin for you
+2011-03-26T02:36:26  <janzert> running an interactive python interpreter is really handy for checking things like that btw
+2011-03-26T02:36:53  <janzert> I do it semi frequently when writing python code
+2011-03-26T02:37:32  <antimatroid> http://pastebin.com/wc8C4FHx
+2011-03-26T02:38:02  <antimatroid> a game runs
+2011-03-26T02:38:09  <antimatroid> the ant count at the end is now different :\
+2011-03-26T02:38:22  <janzert> I imagine
+2011-03-26T02:39:04  <antimatroid> why?
+2011-03-26T02:39:11  <antimatroid> it's like a hardly broken change to vision
+2011-03-26T02:39:29  <antimatroid> turns out it varied before :
+2011-03-26T02:39:29  <janzert> but I think not a too uncommon one
+2011-03-26T02:39:34  <antimatroid> that would be food spawning
+2011-03-26T02:39:57  <janzert> ahh, so not a deterministic run
+2011-03-26T02:40:50  <antimatroid> i'm pretty sure that's right, i'm going to push, sigh can yell at me later if it's not
+2011-03-26T02:41:13  <janzert> the inner loop doesn't ever weed out ants
+2011-03-26T02:41:46  <janzert> not sure if it actually makes a noticeable difference though
+2011-03-26T02:42:19  <antimatroid> weed out ants?
+2011-03-26T02:42:25  <antimatroid> oh, i thought about that
+2011-03-26T02:42:31  <antimatroid> but then it's very edge cases that it will miss
+2011-03-26T02:42:44  <antimatroid> this way you break the loop earlier, although i'm not adding them all, that's a point
+2011-03-26T02:42:48  <antimatroid> i might just weed them all
+2011-03-26T02:43:11  <antimatroid> oh i was adding them all, that was my += question :P
+2011-03-26T02:43:28  <antimatroid> i think it'd be faster to add them all and keep moving, cause usually you will match on the first ant location?
+2011-03-26T02:44:31  <janzert> the thing is with the case where the problem was found a..|.b.
+2011-03-26T02:44:55  <janzert> the distance is only tied at the first square, the next square out breaks the tie and would eliminate the correct ant
+2011-03-26T02:45:09  <janzert> so you never have to test against that ant again if you weed it out
+2011-03-26T02:45:18  <CIA-33> aichallenge: Nick Ham epsilon * rc2b92d7 / ants/ants.py : fixed get_vision - http://bit.ly/dQOjEW
+2011-03-26T02:45:43  <antimatroid> janzert: but does that always work?
+2011-03-26T02:46:09  <antimatroid> this will work for the moment
+2011-03-26T02:46:31  <janzert> but yeah I guess it doesn't matter cause even if it's first in the list it will only test negative on one square where the other tests positive
+2011-03-26T02:46:57  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-26T02:47:00  <janzert> yeah, it does at least look like it should return the correct result
+2011-03-26T02:47:04  <antimatroid> sigh: i fixed it for you :)
+2011-03-26T02:47:12  <janzert> umm actually
+2011-03-26T02:47:16  <antimatroid> :(
+2011-03-26T02:47:28  <janzert> you're now returning a different data structure than before
+2011-03-26T02:47:43  <sigh> heh
+2011-03-26T02:47:49  <antimatroid> crap i am
+2011-03-26T02:47:52  <janzert> you need to collapse the vision map back down
+2011-03-26T02:47:56  <antimatroid> yep
+2011-03-26T02:48:04  <antimatroid> sigh: you could probably do that neater than i?
+2011-03-26T02:48:11  <antimatroid> it shouldn't be more than a line or two
+2011-03-26T02:48:16  <sigh> where is code?
+2011-03-26T02:48:24  <antimatroid> get_vision in ants.py
+2011-03-26T02:48:38  <janzert> vision = [[v for v, a in col] for row in vision]
+2011-03-26T02:48:41  <antimatroid> vision is now a matrix of [bool,list] instead of [b]
+2011-03-26T02:48:52  <antimatroid> dw, i've got it :)
+2011-03-26T02:49:27  <janzert> oops
+2011-03-26T02:49:33  *** closedbracket <closedbracket!~closedbra@rrcs-70-60-109-13.midsouth.biz.rr.com> has quit IRC (Remote host closed the connection)
+2011-03-26T02:49:41  <sigh> what does it mean?
+2011-03-26T02:49:46  <antimatroid> yeah
+2011-03-26T02:49:51  <antimatroid> you wanted col == row yeah?
+2011-03-26T02:50:04  <janzert> yes, I think so
+2011-03-26T02:50:12  <janzert> although now I want to test it before say so :)
+2011-03-26T02:50:49  <sigh> antimatroid: what is the meaning of the [bool, list] ?
+2011-03-26T02:51:10  <antimatroid> bool is the square has been painted outwards from already, list is the ants that need to paint outwards
+2011-03-26T02:51:55  <sigh> hmmm... so you are treating each ant independently, then?
+2011-03-26T02:52:23  <sigh> they don't get in each other's ways, so to speak?
+2011-03-26T02:52:24  <janzert> yes, vision = [[v for v, a in row] for row in vision] should do what you need
+2011-03-26T02:52:46  <sigh> in this case, there is no point doing a bfs
+2011-03-26T02:52:58  <sigh> should just use the same thing that nearby ants does
+2011-03-26T02:53:01  <sigh> it's much faster
+2011-03-26T02:53:19  <CIA-33> aichallenge: Nick Ham epsilon * r971f736 / ants/ants.py : corrected get_vision to return the right type - http://bit.ly/fY4jLh
+2011-03-26T02:53:25  <antimatroid> sigh: you need bfs
+2011-03-26T02:53:28  <janzert> sigh: not quite independently only when there are "draws" in the distance between ants
+2011-03-26T02:53:43  <sigh> janzert: ah
+2011-03-26T02:53:52  <antimatroid> anyway, i need to go get some beer, some friends joint 21sts tonight
+2011-03-26T02:53:56  <sigh> :)
+2011-03-26T02:54:37  <janzert> umm, hate to say this
+2011-03-26T02:55:03  <antimatroid> :P
+2011-03-26T02:55:08  <janzert> antimatroid did you check the output of this?
+2011-03-26T02:55:09  <antimatroid> i broke it again?
+2011-03-26T02:55:22  <antimatroid> i checked that a game ran
+2011-03-26T02:56:01  <janzert> nevermind I thought the test "if not vision[n_row][n_col]:" could never be satisfied but I was reading it wrong
+2011-03-26T02:56:01  <antimatroid> i was hoping sigh would now check, he seemed to have it set up to, i have no idea how to easily :P
+2011-03-26T02:56:08  <antimatroid> phew :P
+2011-03-26T02:56:24  <sigh> yeah, hang on
+2011-03-26T02:56:24  <antimatroid> sigh: please check anyway, i did say before i was gambling that you could shout at me later if it's wrong :)
+2011-03-26T02:56:39  <janzert> I do worry that it may not be correct though
+2011-03-26T02:56:48  <antimatroid> why?
+2011-03-26T02:56:49  <janzert> just not completely broken ;)
+2011-03-26T02:56:50  <sigh> antimatroid: next time if you are trying experimental stuff do it in a new branch
+2011-03-26T02:57:04  <antimatroid> sigh: okay sure, i was expecting you back though
+2011-03-26T02:57:32  <sigh> yeah, sure... but the main branch is not the place for untested code :P
+2011-03-26T02:58:00  <antimatroid> yeah :P
+2011-03-26T02:59:41  <janzert> I hadn't satisfied myself that vision[c_row][c_col] = True won't ever happen before a "drawing" ant makes it there, but at least with 3am thinking I do now think it is fine.
+2011-03-26T02:59:59  <janzert> of course the 2:50am thinking is what got me worried about it :P
+2011-03-26T03:00:47  * janzert should really stop trying to inspect code for logic errors after 1am
+2011-03-26T03:00:50  <sigh> hmm... it's throwing up differences with my naive vision calculation
+2011-03-26T03:01:14  <sigh> lemme check
+2011-03-26T03:01:23  <antimatroid> erm crap, anyway, back in like 10
+2011-03-26T03:03:22  <janzert> sigh: does it work if you take out the "if not vision[n_row][n_col]:" check? ;)
+2011-03-26T03:04:13  <sigh> well, now it throws errors
+2011-03-26T03:04:24  <sigh> foo.append += bar will tend to do that though
+2011-03-26T03:04:33  <janzert> heh
+2011-03-26T03:04:36  <janzert> hmm
+2011-03-26T03:06:40  <janzert> ok, yeah I'm back to thinking that a vision square can and will be set to true before all the drawing ants get there
+2011-03-26T03:06:55  <sigh> ok, here's what I'm going to do... I'm going to replace get_vision with a brute force version until we get an implementation that works
+2011-03-26T03:07:07  <janzert> :)
+2011-03-26T03:07:09  <sigh> I don't want to keep the repo in a broken state
+2011-03-26T03:08:30  <janzert> for various definitions of broken
+2011-03-26T03:08:41  <janzert> well at least it will be less broken
+2011-03-26T03:15:04  <sigh> hmm... brute force is way too slow for me to want to check in... it takes a 10 sec game to 2 minutes
+2011-03-26T03:15:50  <sigh> I'd rather have the slightly broken old version
+2011-03-26T03:16:06  <janzert> did you have a script to brute force check for differences against the naive implementation?
+2011-03-26T03:16:47  <sigh> janzert: not yet, atm I'm just comparing them inside the game
+2011-03-26T03:16:53  <janzert> ok
+2011-03-26T03:17:40  <sigh> janzert: I'm think of creating a branch for the current version of the repo, then reverting antimatroid's changes in the main repo to back to how it was
+2011-03-26T03:17:47  <sigh> does that sound reasonable
+2011-03-26T03:18:03  <sigh> as it is, the code in aichallenge/epsilon will not run
+2011-03-26T03:18:28  <sigh> ok it will, but it claims each ant can only see itself
+2011-03-26T03:18:56  <janzert> if you want, I think just dropping the extra check and removing .append may be all that's needed
+2011-03-26T03:19:13  <sigh> no, there were more errors
+2011-03-26T03:19:57  <janzert> if I knew how to test it, I might give fixing it a go :)
+2011-03-26T03:20:28  <janzert> but reverting it is fine with me
+2011-03-26T03:20:35  <antimatroid> i'm back
+2011-03-26T03:20:46  <janzert> or see if antimatroid shows back up soon....
+2011-03-26T03:20:51  <antimatroid> ^^
+2011-03-26T03:20:57  <janzert> :)
+2011-03-26T03:21:08  <antimatroid> i don't mind if you revert it, but we could spend 5 minutes trying to work out why it's broken
+2011-03-26T03:21:40  <antimatroid> would it have a problem with renaming vision?
+2011-03-26T03:22:22  <sigh> I'm trying to figure out why it is broken
+2011-03-26T03:22:43  <sigh> now it is stuck in an infinite loop and my computer is slow
+2011-03-26T03:22:54  <antimatroid> sgh: line 180
+2011-03-26T03:22:59  <antimatroid> get rid of .append
+2011-03-26T03:23:12  <antimatroid> that is a rather silly mistake :\
+2011-03-26T03:23:43  <antimatroid> sigh ^*
+2011-03-26T03:23:56  <sigh> that's what I did, but now I have an infinite loop
+2011-03-26T03:24:38  <sigh> which is being kind enough to eat up all my ram and my laptop swap like crazy
+2011-03-26T03:25:17  <antimatroid> is that for running a game or your other stuff?
+2011-03-26T03:25:37  <antimatroid> it just ran a game for me
+2011-03-26T03:27:12  <janzert> antimatroid: as an aside here's how I would have probably done it without the deque
+2011-03-26T03:27:16  <sigh> I bet you just played a game where each any can only see itself
+2011-03-26T03:27:41  <janzert> completely untested of course
+2011-03-26T03:28:26  <sigh> ok, I'm sorry... but how does this thing know when to stop?
+2011-03-26T03:29:02  <janzert> heh, yes I just realized that is why the 'if not vision..." check has to be there
+2011-03-26T03:30:06  <antimatroid> sigh: when there's no squares left to check
+2011-03-26T03:30:27  <sigh> antimatroid: there's always squares to check
+2011-03-26T03:30:34  <antimatroid> no there's not
+2011-03-26T03:30:41  <antimatroid> i mark them as visited once i check them
+2011-03-26T03:30:55  <antimatroid> oh wait
+2011-03-26T03:31:00  <sigh> haha
+2011-03-26T03:31:03  <antimatroid> i completely misinterpreted vision
+2011-03-26T03:31:09  *** closedbracket <closedbracket!~closedbra@cpe-174-108-003-185.carolina.res.rr.com> has joined #aichallenge
+2011-03-26T03:32:03  <antimatroid> give me 5 and i'll have a pastebin replacement for you
+2011-03-26T03:32:12  <antimatroid> (sorry :P)
+2011-03-26T03:32:53  <janzert> and I just realized I didn't paste the pastebin link of my non-deque using version :P
+2011-03-26T03:32:56  <janzert> http://pastebin.com/Q6zij8ZD
+2011-03-26T03:33:59  <sigh> firefox is still swapping back in :(
+2011-03-26T03:34:53  <antimatroid> sigh: i'm not convinced that isn't what i wanted to do
+2011-03-26T03:35:14  <sigh> what did you want to do?
+2011-03-26T03:35:34  <antimatroid> return you vision squares
+2011-03-26T03:35:58  <antimatroid> and it should terminate, because it only adds non-checked visible squares to the deque
+2011-03-26T03:36:21  <sigh> it doesn't do that
+2011-03-26T03:36:49  <antimatroid> it does, it marks a location as valid when it takes it off the deque
+2011-03-26T03:36:53  <janzert> doesn't the "if not vision[n_row][n_col]:" do that?
+2011-03-26T03:36:58  <antimatroid> yeah
+2011-03-26T03:37:08  <sigh> that will always evaluate to True
+2011-03-26T03:37:21  <antimatroid> put a [0] there :P
+2011-03-26T03:37:33  <antimatroid> vision[n_row][n_col][0]
+2011-03-26T03:37:41  <antimatroid> so many bugs, it'd hard to pick
+2011-03-26T03:38:48  <sigh> you run it first
+2011-03-26T03:39:31  <sigh> If I have to debug infinite loops, let me turn on my desktop where they run faster
+2011-03-26T03:39:33  <janzert> also is that check really in the right spot to not erroneously weed out draws? or should it be moved down like http://pastebin.com/zb2jKTks
+2011-03-26T03:41:10  <janzert> I'm now back to thinking it needs to be moved, of course I've changed my mind on that every 5 minutes or so for the last half hour
+2011-03-26T03:44:20  *** antimatroid1 <antimatroid1!~nick@123.079.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-26T03:44:24  *** antimatroid <antimatroid!~nick@123.079.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-03-26T03:44:25  <antimatroid1> don't run that :P
+2011-03-26T03:44:34  <antimatroid1> maybe late
+2011-03-26T03:44:37  <antimatroid1> i froze my computer
+2011-03-26T03:44:53  <CIA-33> aichallenge: sigh epsilon * rf9d3632 / ants/ants.py : Undo antimatroid's get_vision changes - http://bit.ly/h8pfq5
+2011-03-26T03:45:05  <janzert> heh
+2011-03-26T03:45:27  <sigh> antimatroid1: that's why I told you to run it
+2011-03-26T03:45:30  <antimatroid1> :)
+2011-03-26T03:45:44  <antimatroid1> i'll keep playing for a little bit and get back to you
+2011-03-26T03:45:50  <sigh> hang on a sec
+2011-03-26T03:45:58  <janzert> so which one froze your computer?
+2011-03-26T03:46:43  <antimatroid1> when i added the [0]
+2011-03-26T03:47:29  <antimatroid1> for the record, i have never frozen my computer with c++
+2011-03-26T03:47:34  <janzert> one other thing while you're working on it, did you see? (3:34:53 AM) janzert: also is that check really in the right spot to not erroneously weed out draws? or should it be moved down like http://pastebin.com/zb2jKTks
+2011-03-26T03:47:57  <janzert> you must not have tried very hard ;)
+2011-03-26T03:48:02  <CIA-33> aichallenge: sigh fix-vision * r5994da9 / ants/ants.py : Quick and dirty verification of get_vision - http://bit.ly/hUY2om
+2011-03-26T03:48:36  <sigh> antimatroid1: feel free to mess with the fix-vision branch as much as you like
+2011-03-26T03:48:57  <sigh> I added my very simple in game check of vision in there to help
+2011-03-26T03:50:16  <antimatroid1> oh, it might be my issue with multiply adding a location to check vision with
+2011-03-26T03:51:24  *** delt0r___ <delt0r___!~delt0r@188-22-162-86.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-26T03:52:26  <antimatroid1> it's running but slowly
+2011-03-26T03:53:13  *** delt0r_ <delt0r_!~delt0r@188-22-162-104.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-03-26T03:53:14  <janzert> with the verification?
+2011-03-26T03:53:18  <sigh> if you are running the fix-vision version, then yes... it compares with the brute force version
+2011-03-26T03:53:57  <sigh> if you are getting no output, then that's good
+2011-03-26T03:54:19  <sigh> unless you are in an inifinite loops, which is also consistent with a slow program which does not output anything
+2011-03-26T03:54:41  <janzert> in which case he froze up again and is now gone :/
+2011-03-26T03:55:09  <antimatroid1> i haven't pulled again
+2011-03-26T03:55:22  <antimatroid1> but the game finished
+2011-03-26T03:55:28  <antimatroid1> i'll pull your new stuff, hang on
+2011-03-26T03:58:24  <antimatroid1> it just sped through a game
+2011-03-26T03:58:38  <antimatroid1> wait, my bad again :P
+2011-03-26T03:58:43  <janzert> you need to pull the branch
+2011-03-26T03:59:08  <sigh> git pull origin fix-vision
+2011-03-26T03:59:14  <sigh> git checkout fix-vision
+2011-03-26T04:01:38  *** silenthunter <silenthunter!~silentirc@72.54.66.157> has quit IRC ()
+2011-03-26T04:01:43  *** silenthunter <silenthunter!~silentirc@72.54.66.157> has joined #aichallenge
+2011-03-26T04:02:14  <antimatroid1> http://pastebin.com/H2SH8kMV
+2011-03-26T04:02:18  <antimatroid1> i'm pretty sure that works
+2011-03-26T04:02:20  <antimatroid1> but it ain't fast
+2011-03-26T04:02:28  <sigh> hmm... r !curl http://pastebin.com/raw.php?i=zb2jKTks didn't work as well as I had hoped
+2011-03-26T04:03:27  <antimatroid1> actually wait
+2011-03-26T04:03:59  <sigh> janzert: I think your code infinite loops as well
+2011-03-26T04:04:01  <antimatroid1> yeah it works
+2011-03-26T04:04:13  <antimatroid1> i returned vision early, but it's not outputting all the stuff when it runs now
+2011-03-26T04:04:52  <sigh> if you think it works can you push it to fix-vision
+2011-03-26T04:05:13  <antimatroid1> do i just push like normal? or?
+2011-03-26T04:05:17  <sigh> yup
+2011-03-26T04:05:20  <sigh> push like normal
+2011-03-26T04:06:27  <CIA-33> aichallenge: sigh epsilon * r5994da9 / ants/ants.py : Quick and dirty verification of get_vision - http://bit.ly/hUY2om
+2011-03-26T04:06:28  <CIA-33> aichallenge: Nick Ham fix-vision * rabdf74c / ants/ants.py : updated get_vision - http://bit.ly/fUlCWW
+2011-03-26T04:06:46  <sigh> wtf... sigh epsilon?
+2011-03-26T04:06:52  <antimatroid1> :p
+2011-03-26T04:06:56  <antimatroid1> glad that wasn't me
+2011-03-26T04:07:39  <sigh> no, that was you :P
+2011-03-26T04:07:55  <antimatroid1> mine says Nick Ham fix-vision?
+2011-03-26T04:08:04  <antimatroid1> line above says sigh epsilon
+2011-03-26T04:08:44  <sigh> I didn't check that commit into epsilon
+2011-03-26T04:09:17  <sigh> you merged from fix-vision, didn't you
+2011-03-26T04:09:28  <antimatroid1> i don't even know how to merge :P
+2011-03-26T04:09:51  *** closedbracket <closedbracket!~closedbra@cpe-174-108-003-185.carolina.res.rr.com> has quit IRC (Remote host closed the connection)
+2011-03-26T04:09:54  <antimatroid1> is -m merge?
+2011-03-26T04:10:00  <sigh> usually
+2011-03-26T04:10:17  <antimatroid1> my push routine is "git add ..., git commit -m "message", git push"
+2011-03-26T04:10:25  <sigh> oh, that's just commit message
+2011-03-26T04:10:30  <antimatroid1> that's all i did
+2011-03-26T04:10:42  <sigh> meh, I don't know
+2011-03-26T04:11:34  <antimatroid1> it doesn't even seem to be on the site :\
+2011-03-26T04:11:36  <CIA-33> aichallenge: sigh epsilon * rdc75d44 / ants/ants.py :
+2011-03-26T04:11:36  <CIA-33> aichallenge: Revert "Quick and dirty verification of get_vision"
+2011-03-26T04:11:36  <CIA-33> aichallenge: This reverts commit 5994da9fe1d617835ab113bcf2fa9bd55fdcf02f. - http://bit.ly/gFdMUn
+2011-03-26T04:11:54  <janzert> antimatroid1: why are you testing for any previous ants reaching the cell rather than the celling being set to true, isn't it always the same?
+2011-03-26T04:12:15  <janzert> and if it is the len() call is going to be quite a bit slower
+2011-03-26T04:12:31  <janzert> s/celling/cell
+2011-03-26T04:12:50  <antimatroid1> janzert: if the location has already been reached, i don't need to check it, so the check is fine where it is
+2011-03-26T04:13:42  <antimatroid1> not reached
+2011-03-26T04:13:45  <antimatroid1> looked out from
+2011-03-26T04:13:58  <antimatroid1> i mark a square as "seeable" once i have picked it out for painting from
+2011-03-26T04:14:17  <sigh> aha... ok, I think I gave antimatroid1 the wrong instructions
+2011-03-26T04:14:35  <janzert> ok. that's the previous version not the latest push right?
+2011-03-26T04:14:57  <sigh> "git pull origin fix-vision" merges fix-vision into the current branch
+2011-03-26T04:16:21  *** chris__0076 <chris__0076!~Chris_007@adsl-176-223-69.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T04:19:01  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-196-187.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T04:21:42  <janzert> antimatroid1: if I'm correctly understanding you're saying the logic in this version is correct? http://pastebin.com/wc8C4FHx it just needs the obvious bugs corrected
+2011-03-26T04:24:22  <janzert> if so doesn't that break on a.|.b still? since at the first check of * in a*|.b, 'a' will mark * as being checked/seen and 'b' won't get added to the list ants to check the distance against
+2011-03-26T04:24:39  <antimatroid1> janzert: what?
+2011-03-26T04:24:50  <antimatroid1> can you look at this link http://pastebin.com/H2SH8kMV
+2011-03-26T04:25:31  <antimatroid1> you can't add that n_loc to squares_to_check more than once
+2011-03-26T04:25:43  <janzert> that's what you pushed to the repo right?
+2011-03-26T04:25:45  <janzert> right
+2011-03-26T04:26:09  <antimatroid1> the link you gave?
+2011-03-26T04:26:22  <antimatroid1> the one i gave is the one i tried to push
+2011-03-26T04:26:25  <janzert> I think the check for that as "if not vision[n_row][n_col][0]:" does the same thing though (and will be quite a bit faster)
+2011-03-26T04:26:51  <janzert> ok, I thought you had decided to revert the logic back to the previous version
+2011-03-26T04:26:52  <antimatroid1> it's not
+2011-03-26T04:27:14  <antimatroid1> i don't mark vision..[0] until i take c_loc off squares_to_check
+2011-03-26T04:28:43  <antimatroid1> what i could do is add it, but if visited[cloc][0] then don't do anything
+2011-03-26T04:28:47  <antimatroid1> i'll see how fast that is
+2011-03-26T04:31:00  <antimatroid1> still pretty slow
+2011-03-26T04:31:31  <janzert> is it giving the correct result though?
+2011-03-26T04:32:24  <antimatroid1> no
+2011-03-26T04:32:34  <antimatroid1> it just gave me messy output at like turn 34 :\
+2011-03-26T04:32:48  <antimatroid1> 31*
+2011-03-26T04:33:03  <janzert> I think the check at line 177 has to go away
+2011-03-26T04:34:02  <janzert> btw, you've got a whole passel full of extra whitespace at the end of line 180 :}
+2011-03-26T04:35:39  <antimatroid1> it broke when i removed that line but later :\
+2011-03-26T04:35:40  <antimatroid1> hmmm
+2011-03-26T04:35:43  <CIA-33> aichallenge: sigh epsilon * r4b14542 / ants/ants.py : Fixed get_vision for real (and fast) - http://bit.ly/hjsWgl
+2011-03-26T04:36:09  <antimatroid1> sigh?
+2011-03-26T04:36:12  <sigh> yes?
+2011-03-26T04:36:24  <sigh> it works, and it's about as fast as before
+2011-03-26T04:36:37  <sigh> I can make it faster yet, with some precalculation
+2011-03-26T04:37:53  <antimatroid1> ... should we be including this function in the starter bots?
+2011-03-26T04:38:06  *** boegel <boegel!~boegel@91.182.216.157> has joined #aichallenge
+2011-03-26T04:38:13  <sigh> antimatroid1: if you want them to be correct
+2011-03-26T04:39:03  *** choas <choas!~lars@p578F6EF7.dip.t-dialin.net> has joined #aichallenge
+2011-03-26T04:39:16  <sigh> the starterbot shouldn't precalculate anything... even precalculating sqrt is pretty silly
+2011-03-26T04:39:29  <sigh> I just copied from nearby_ants :P
+2011-03-26T04:39:34  *** chris___0076 <chris___0076!~Chris_007@adsl-66-252-194.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T04:41:28  *** chris__0076 <chris__0076!~Chris_007@adsl-176-223-69.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T04:41:32  <janzert> that algorithm should be slower if the view radius is large enough and the ants are dense enough, but we probably don't reach that threshold with this game :)
+2011-03-26T04:42:25  <antimatroid1> :)
+2011-03-26T04:42:36  <antimatroid1> i don't want to flood maps anyway
+2011-03-26T04:46:11  <sigh> janzert: when you guys come up with something faster we'll put it in :)
+2011-03-26T04:47:30  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-03-26T04:47:53  *** chris__0076 <chris__0076!~Chris_007@adsl-190-122-16.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T04:49:52  *** chris___0076 <chris___0076!~Chris_007@adsl-66-252-194.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T04:52:03  <CIA-33> aichallenge: sigh epsilon * r394471a / ants/ants.py : Made get_vision more efficient - http://bit.ly/igDBsw
+2011-03-26T04:52:15  <sigh> janzert, antimatroid1: now the thing runs faster than before
+2011-03-26T04:52:25  <sigh> at least for the games I was testing
+2011-03-26T04:53:19  <janzert> great
+2011-03-26T04:53:49  <antimatroid1> :)
+2011-03-26T04:54:11  <sigh> anyway, this without the caching is what should go into the starter packs
+2011-03-26T04:54:33  <sigh> even if we find something faster, this is fast enough and simple to understand
+2011-03-26T04:55:30  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-03-26T04:56:01  <janzert> hmm, either line 177 or line 179 should change
+2011-03-26T04:56:09  *** chris__0076 <chris__0076!~Chris_007@adsl-190-122-16.asm.bellsouth.net> has quit IRC (Ping timeout: 252 seconds)
+2011-03-26T04:56:58  <janzert> 179 to take advantage of the caching 177 is setting up
+2011-03-26T05:01:13  <sigh> janzert: yeah, forgot about that
+2011-03-26T05:04:23  <boegel> yo peepz
+2011-03-26T05:04:28  <boegel> any ETA for the next contest?
+2011-03-26T05:09:29  *** chris__0076 <chris__0076!~Chris_007@adsl-190-121-38.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T05:17:05  <CIA-33> aichallenge: sigh epsilon * r4325ee5 / ants/ants.py : Minor tweaks (remove redundancies in code) - http://bit.ly/e6G1xm
+2011-03-26T05:19:47  *** chris__0076 <chris__0076!~Chris_007@adsl-190-121-38.asm.bellsouth.net> has quit IRC (Read error: Operation timed out)
+2011-03-26T05:22:38  *** dwchandler <dwchandler!~dwc@tuppy.intrepidhosting.net> has quit IRC (*.net *.split)
+2011-03-26T05:22:48  *** dwchandler <dwchandler!~dwc@tuppy.intrepidhosting.net> has joined #aichallenge
+2011-03-26T05:31:08  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-03-26T05:32:35  *** chris__0076 <chris__0076!~Chris_007@adsl-190-124-15.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T05:36:25  *** antimatroid1 <antimatroid1!~nick@123.079.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-03-26T05:47:53  *** chris__0076 <chris__0076!~Chris_007@adsl-190-124-15.asm.bellsouth.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-26T05:54:17  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-26T06:00:51  <boegel> jmcarthur: do you need help with the Haskell starter package?
+2011-03-26T06:01:11  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-251-121.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T06:14:11  *** boegel <boegel!~boegel@91.182.216.157> has quit IRC (Quit: This computer has gone to sleep)
+2011-03-26T06:16:48  *** chris__0076 <chris__0076!~Chris_007@adsl-176-220-162.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T06:18:06  <CIA-33> aichallenge: sigh epsilon * r7496cd0 / ants/ants.py : Ensure that the same state results in the same output to facilitate deterministic games - http://bit.ly/dS4Q99
+2011-03-26T06:18:21  <Stocha> @java
+2011-03-26T06:18:22  <contestbot> Stocha: I have no idea what you mean.
+2011-03-26T06:18:37  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-251-121.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T06:18:49  <Stocha> @ serve me a cup of tea. Would you please ?
+2011-03-26T06:18:50  <contestbot> Stocha: Run as fast as you can and don't look back.
+2011-03-26T06:19:03  <Stocha> @serve me a cup of tea. Would you please ?
+2011-03-26T06:19:04  <contestbot> Stocha: User error, it's not my fault.
+2011-03-26T06:20:10  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-26T06:23:46  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-26T06:25:58  *** chris__0076 <chris__0076!~Chris_007@adsl-176-220-162.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T06:39:36  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-225-238.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T06:45:33  *** chris__0076 <chris__0076!~Chris_007@adsl-176-223-250.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T06:48:01  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-225-238.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T06:53:01  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-54-14.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T06:53:58  *** chris__0076 <chris__0076!~Chris_007@adsl-176-223-250.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T06:55:13  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-03-26T07:02:48  *** chris__0076 <chris__0076!~Chris_007@adsl-190-123-250.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T07:04:49  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-54-14.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T07:06:34  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-26T07:19:10  *** chris__0076 <chris__0076!~Chris_007@adsl-190-123-250.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T07:32:47  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-188-182.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T07:41:58  <CIA-33> aichallenge: sigh epsilon * r30ef61b / ants/dist/starter_bots/python/ants.py : Use a correct algorithm for vision in the starter packs - http://bit.ly/gaIyWD
+2011-03-26T07:43:20  *** phirenz <phirenz!~phire@142.248.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-26T07:47:53  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-188-182.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T08:00:43  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-121-233.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T08:06:28  <CIA-33> aichallenge: sigh epsilon * rc6032d4 / ants/ants.py : Seperate validation and parsing (for orders) - http://bit.ly/hSjVo2
+2011-03-26T08:15:35  *** chris__0076 <chris__0076!~Chris_007@adsl-66-252-239.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T08:17:38  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-121-233.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T08:21:13  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-03-26T08:32:27  *** boegel <boegel!~boegel@91.182.216.157> has joined #aichallenge
+2011-03-26T08:35:08  *** chris__0076 <chris__0076!~Chris_007@adsl-66-252-239.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T08:39:37  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.51> has joined #aichallenge
+2011-03-26T08:49:50  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-131-28.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T08:52:03  *** chris__0076 <chris__0076!~Chris_007@adsl-176-220-218.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T08:54:23  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-131-28.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T08:58:45  *** chris___0076 <chris___0076!~Chris_007@adsl-190-55-118.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T09:00:20  *** chris__0076 <chris__0076!~Chris_007@adsl-176-220-218.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T09:02:07  <CIA-33> aichallenge: sigh epsilon * r4429f8e / ants/ants.py : Making nearby_ants a normal function makes it much faster - http://bit.ly/fMxN9c
+2011-03-26T09:03:50  *** chris___0076 <chris___0076!~Chris_007@adsl-190-55-118.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T09:05:02  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has quit IRC (Ping timeout: 250 seconds)
+2011-03-26T09:05:07  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has joined #aichallenge
+2011-03-26T09:05:38  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-26T09:07:19  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-26T09:13:30  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.51> has quit IRC (Read error: Connection timed out)
+2011-03-26T09:15:29  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.51> has joined #aichallenge
+2011-03-26T09:17:16  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-248-125.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T09:18:33  *** boegel <boegel!~boegel@91.182.216.157> has quit IRC (Quit: Leaving)
+2011-03-26T09:24:50  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-248-125.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T09:38:56  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-54-175.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T09:41:42  *** chris__0076 <chris__0076!~Chris_007@adsl-176-227-191.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T09:44:39  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-54-175.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-03-26T09:46:33  *** chris__0076 <chris__0076!~Chris_007@adsl-176-227-191.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T09:50:25  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-26T10:07:37  *** Chris_0076 <Chris_0076!~Chris_007@adsl-88-202-236.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T10:10:54  *** chris__0076 <chris__0076!~Chris_007@adsl-88-201-7.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T10:13:09  *** Chris_0076 <Chris_0076!~Chris_007@adsl-88-202-236.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T10:20:31  *** chris___0076 <chris___0076!~Chris_007@adsl-88-204-148.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T10:22:57  *** chris__0076 <chris__0076!~Chris_007@adsl-88-201-7.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T10:32:03  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-26T10:32:21  *** chris__0076 <chris__0076!~Chris_007@adsl-176-215-72.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T10:34:50  *** chris___0076 <chris___0076!~Chris_007@adsl-88-204-148.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-03-26T10:43:30  *** boegel <boegel!~boegel@91.182.216.157> has joined #aichallenge
+2011-03-26T10:44:59  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-194-106.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T10:47:50  *** chris__0076 <chris__0076!~Chris_007@adsl-176-215-72.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-03-26T10:49:33  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-194-106.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T10:55:58  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-26T10:57:34  *** _flag <_flag!~flag@69.165.173.172> has joined #aichallenge
+2011-03-26T11:02:36  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-251-209.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T11:07:21  *** chris__0076 <chris__0076!~Chris_007@adsl-190-127-251.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T11:09:18  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-251-209.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-03-26T11:20:25  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.51> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-03-26T11:25:24  *** chris__0076 <chris__0076!~Chris_007@adsl-190-127-251.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-03-26T11:51:26  *** delt0r_ <delt0r_!~delt0r@188-22-27-196.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-26T11:52:51  *** delt0r___ <delt0r___!~delt0r@188-22-162-86.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-03-26T12:09:10  <McLeopold> @later tell sigh it looks like ants is going through some regression, that was my original algorithm for vision and i was too slow
+2011-03-26T12:09:10  <contestbot> McLeopold: Ready to serve, my lord.
+2011-03-26T12:13:46  *** antimatroid <antimatroid!~nick@27.308.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-26T12:14:24  <McLeopold> antimatroid: it seems ant algorithms have taken a turn for the worse?
+2011-03-26T12:14:37  <antimatroid> ?
+2011-03-26T12:14:43  <antimatroid> sorry, i;m rather drunk atm
+2011-03-26T12:15:38  <McLeopold> beer or liquor?
+2011-03-26T12:15:42  <antimatroid> beer
+2011-03-26T12:15:48  <antimatroid> i hate liqupur
+2011-03-26T12:16:00  <McLeopold> maybe janzert could explain what happened last night...
+2011-03-26T12:16:32  <McLeopold> there's lots of talk on irc, then suddenly sigh commits stuff we had ruled out as too slow 2 month ago?
+2011-03-26T12:30:16  <janzert> the algorithm that was checked in was buggy, while antimatroid was working on fixing it sigh tried this one out and found it to be faster anyway. Certainly this one is O(n_squares_an_ant_sees * number_of_ants) and the other would be O(n_squares_visible_to_ants), but for our game I'm not sure the constant overhead of the second ever gets it below the first.
+2011-03-26T12:31:31  <janzert> of course pathological case favoring the latter is with a solid block of ants
+2011-03-26T12:31:56  <McLeopold> janzert: that is the same algo I started with, before the painting one, and it was much slower in my tests
+2011-03-26T12:32:18  <janzert> ok, I'm just going by what sigh reported last night
+2011-03-26T12:44:47  <_flag> Question: if you're concerned about performance why choose python?
+2011-03-26T12:45:46  <antimatroid> what flag said :P
+2011-03-26T12:45:58  <antimatroid> c++ or c would be much faster
+2011-03-26T12:46:09  <_flag> Or even java
+2011-03-26T12:47:12  <_flag> Any compiled language would would work really (yes I know java is compiled to bytecode)
+2011-03-26T12:48:04  <janzert> I think we're only worried about performance of the constant overhead from using python but the possible really bad degradation from algorithmic complexity
+2011-03-26T12:48:05  <_flag> But I would prefer C or C++
+2011-03-26T12:48:56  <janzert> i.e. we can live with 20 or even 100 times slower but not having it blow up in a 2**n time algorithm
+2011-03-26T12:49:27  <janzert> or n**n ;)
+2011-03-26T12:49:51  <_flag> By all means, do both (if it's not too late to change now that is)
+2011-03-26T12:50:09  <janzert> and that part doesn't matter what language you're using
+2011-03-26T12:50:54  <_flag> Sure, but sometimes you need computationally expensive algorithmns
+2011-03-26T12:51:28  <janzert> and they'll be expensive everywhere
+2011-03-26T12:51:46  <janzert> err, s/only/not in my first statement
+2011-03-26T12:52:28  <_flag> Yes, but up to a few hundred times less expensive with a compiled language
+2011-03-26T12:52:51  <_flag> At the end of the day, that's more servers and less games, fancy algorithmns or not
+2011-03-26T12:53:13  <janzert> is the engine really adding that much overhead now?
+2011-03-26T12:54:08  <jbroman> If the system to run the game is so slow that it adds significant overhead compared to multiple bots, then something is wrong. But that's more of a "what is it doing?" issue than a language issue.
+2011-03-26T12:54:27  *** UncleVasya <UncleVasya!kvirc@46.133.209.4> has joined #aichallenge
+2011-03-26T12:54:27  <jbroman> You could of course argue that we'd like everything to be as fast as possible and therefore should write everything in C.
+2011-03-26T12:54:44  <jbroman> While raw performance is a concern, it is not the only concern.
+2011-03-26T12:56:20  <CIA-33> aichallenge: McLeopold epsilon * r4cd5c2f / ants/dist/starter_bots/python/ants.py :
+2011-03-26T12:56:20  <CIA-33> aichallenge: Revert "Use a correct algorithm for vision in the starter packs"
+2011-03-26T12:56:20  <CIA-33> aichallenge: This reverts commit 30ef61b17dfbc81201ae29a3ea21ed346bc9f094. - http://bit.ly/f6Y31e
+2011-03-26T12:56:23  <CIA-33> aichallenge: McLeopold epsilon * r7f79955 / ants/dist/starter_bots/python/ants.py : Fixed vision bug to use euclidean instead of manhatten distance - http://bit.ly/ebLOIP
+2011-03-26T12:56:53  <amstan> we could potentially use C code for the vision
+2011-03-26T12:58:26  <McLeopold> amstan: for zeta, if we have an engine that runs the game like a bot, with stdin/out communication, then the game can be written in any language
+2011-03-26T12:59:30  <McLeopold> And yes, I'd like to see a compiled game class for this contest if possible.  I was hoping to make a clisp version :)
+2011-03-26T13:00:10  <McLeopold> Of course it would be easier to use a c game class with python extensions...
+2011-03-26T13:02:20  <McLeopold> @later tell sigh: I've reverted to the painting algo in the starter bot, but not the engine.  I think we could come up with a hybrid algo for vision if we really need it.
+2011-03-26T13:02:20  <contestbot> McLeopold: Job's done.
+2011-03-26T13:02:26  <Frontier> And in a "we have to attack Cartago" fashion, I would like to express my concern about full pipe buffers in the communication between engine and bots again. Does the engine kick a bot that doesn't read its input when the data is > 4KB?
+2011-03-26T13:03:24  <McLeopold> Frontier: I wrote the engine to start reading the bot's input if time allowed and to try and get as much as possible before checking the time again.
+2011-03-26T13:03:45  <McLeopold> But we can't let a bot that sends infinite info break the engine, so we need a sane cutoff
+2011-03-26T13:04:26  <janzert> eek, all the radius variables in Ants are actually radius**2
+2011-03-26T13:04:26  <McLeopold> We might be talking about different things...
+2011-03-26T13:04:37  <Frontier> I think about the other extreme: The engine sends 6KB of data to the bot, but the bot lets the pipe run full and stalls the engine-.
+2011-03-26T13:04:48  <McLeopold> janert: yes, so it's integers all the way down
+2011-03-26T13:05:29  <janzert> those are pretty misleadingly named then
+2011-03-26T13:05:44  <McLeopold> Frontier: I'm not sure how we would fix that in python.
+2011-03-26T13:06:15  <McLeopold> janzert: %s/viewradius/viewradius2/g ?
+2011-03-26T13:06:35  <janzert> youuse a separate thread to do the write so it doesn't actually stall the whole engine right?
+2011-03-26T13:06:52  <janzert> that would save confusion I think
+2011-03-26T13:06:56  <McLeopold> I used sandbox and trusted whoever wrote it did a good job.
+2011-03-26T13:07:09  <janzert> the s/viewradius/viewradius2/g I mean
+2011-03-26T13:07:14  <McLeopold> ok
+2011-03-26T13:09:14  <CIA-33> aichallenge: McLeopold epsilon * raebc309 / ants/dist/starter_bots/python/ants.py : Made radius more obviously squared - http://bit.ly/dQHDn0
+2011-03-26T13:09:25  <janzert> I'm sure you're probably aware and I'm not sure of the lineage of the current sandbox.py but it's not doing any actual sandboxing
+2011-03-26T13:09:40  <McLeopold> I know, it's on the todo
+2011-03-26T13:09:58  <McLeopold> No one has volunteered yet.
+2011-03-26T13:10:23  <McLeopold> It's out of my expertise
+2011-03-26T13:12:52  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-03-26T13:19:43  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-26T13:20:18  <janzert> hmm, it looks like that last change to visible has errors
+2011-03-26T13:20:31  <janzert> not the substitution the addition of vision_distance
+2011-03-26T13:21:01  <McLeopold> janzert: what's the error?
+2011-03-26T13:21:42  <janzert> vision distance is defined with self like it is a method but its defined as an inner function of the visible method
+2011-03-26T13:21:58  <janzert> if I'm reading it all correctly
+2011-03-26T13:22:30  <McLeopold> oh crap, i mixed spaces and tabs :O
+2011-03-26T13:22:44  <jmcarthur> boegel: yes! i don't have as much time to work on it as i had originally hoped for. it is in desparate need of documentation, examples, more functionality, and a lot of testing. i think bss has some patches with documentation that he hasn't sent me yet, so if you decide to tackle that aspect then you might want to as him about that first so you don't end up doing redundant work
+2011-03-26T13:23:17  <janzert> well your call to it on line 230 is like its a function not a method
+2011-03-26T13:23:47  <jmcarthur> the interface is also not yet easy to understand. i'm planning to make an all-in-one module that provides all the functionality in one monad so that if you don't care to compose your own you don't have to
+2011-03-26T13:24:39  <McLeopold> janzert: it is a function local to the method, so that should be correct
+2011-03-26T13:25:45  <janzert> ok, it either shouldn't take a self argument or you need to explicitly pass it in right?
+2011-03-26T13:25:58  <McLeopold> oops, yes, remove self from the argument list
+2011-03-26T13:26:43  <McLeopold> it should still get a reference to self
+2011-03-26T13:27:30  <janzert> yep, it will pick it up from the outer scope
+2011-03-26T13:27:43  <McLeopold> I would have test it, but the engine is broken.
+2011-03-26T13:28:24  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 276 seconds)
+2011-03-26T13:34:34  *** closedbracket <closedbracket!~closedbra@rrcs-98-101-79-206.midsouth.biz.rr.com> has joined #aichallenge
+2011-03-26T13:40:48  <janzert> not something you just changed, but I think line 226 of starter_bots ants.py needs to be changed to "for d in AIM.values():"
+2011-03-26T13:45:47  <CIA-33> aichallenge: McLeopold epsilon * r2f08f09 / (4 files in 2 dirs): Fixed issue with test_bot.sh - http://bit.ly/fOgOOL
+2011-03-26T13:45:48  <CIA-33> aichallenge: McLeopold epsilon * r93a9942 / ants/dist/starter_bots/python/ants.py : Fixed vision_distance arguments - http://bit.ly/i7lp5j
+2011-03-26T13:46:03  *** UncleVasya <UncleVasya!kvirc@46.133.209.4> has quit IRC (Ping timeout: 260 seconds)
+2011-03-26T13:47:02  <McLeopold> janzert: AIM.keys() maybe
+2011-03-26T13:47:52  <janzert> well, "for d in AIM:" is the same as "for d in AIM.keys():" so if you're really wanting to iterate on the keys then it is correct
+2011-03-26T13:48:23  <janzert> I just thought the keys were ("n", "e", "w", "s")
+2011-03-26T13:48:40  <McLeopold> they are
+2011-03-26T13:48:54  <McLeopold> and d is passed to destination() , which takes a char
+2011-03-26T13:49:15  <janzert> ahh, I see I thought it took an offset
+2011-03-26T13:49:33  <McLeopold> this is only a starter pack :)
+2011-03-26T13:55:45  *** Chris_0076 <Chris_0076!~Chris_007@adsl-88-203-106.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T14:00:02  *** UncleVasya <UncleVasya!kvirc@88-214-65-111.dialup.umc.net.ua> has joined #aichallenge
+2011-03-26T14:00:13  *** phirenz <phirenz!~phire@142.248.69.111.dynamic.snap.net.nz> has quit IRC (Ping timeout: 250 seconds)
+2011-03-26T14:07:13  *** boegel_ <boegel_!~boegel@91.182.216.157> has joined #aichallenge
+2011-03-26T14:10:09  *** boegel <boegel!~boegel@91.182.216.157> has quit IRC (Ping timeout: 250 seconds)
+2011-03-26T14:12:55  <amstan> yes! found the bug
+2011-03-26T14:12:58  <amstan> freaking maze
+2011-03-26T14:13:40  <McLeopold> go on...
+2011-03-26T14:17:27  <amstan> McLeopold: for my maze solver
+2011-03-26T14:17:28  <amstan> http://www.youtube.com/watch?v=dfwzjtjndks
+2011-03-26T14:17:31  <amstan> 0:23
+2011-03-26T14:17:53  <amstan> see how it comes back from the passage, then goes up?
+2011-03-26T14:18:08  <amstan> it doesn't mark the intersection as twice visited yet
+2011-03-26T14:18:17  <amstan> and this annoys me
+2011-03-26T14:18:23  <amstan> i don't see how this is possible
+2011-03-26T14:29:20  <boegel_> jmcarthur: ok, I'll see what I can do (my Haskell-fu is kinda low, but I'm hoping to improve it)
+2011-03-26T14:29:28  <boegel_> jmcarthur: where can I find your code?
+2011-03-26T14:30:59  *** UncleVasya <UncleVasya!kvirc@88-214-65-111.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-26T14:31:48  *** choas <choas!~lars@p578F6EF7.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-26T14:31:54  <jmcarthur> boegel_: it's hanging around here http://darcsden.com/jmcarthur/ants-bot . just so you are aware, this is a library. the intent is for it to be put up on hackage and installed on the server. the starter itself would just depend on it
+2011-03-26T14:41:03  <boegel_> jmcarthur: right, so there's no Haskell starterbot yet?
+2011-03-26T14:41:38  <jmcarthur> boegel_: bss has one i think
+2011-03-26T14:42:09  <boegel_> jmcarthur: hmmk, no clue who that is, but fine :)
+2011-03-26T14:42:24  <jmcarthur> there are some numbers at the end of his nick too, but i don't remember them :\
+2011-03-26T14:42:42  <boegel_> jmcarthur: heh, k, I'll check for him later
+2011-03-26T14:43:22  <boegel_> jmcarthur: gotta run now, I'll keep you posted if I can come up with something
+2011-03-26T14:46:39  *** boegel_ <boegel_!~boegel@91.182.216.157> has quit IRC (Quit: Leaving)
+2011-03-26T15:08:23  <genericbob> so
+2011-03-26T15:08:27  *** chris__0076 <chris__0076!~Chris_007@adsl-190-127-53.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T15:08:37  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has quit IRC (Quit: leaving)
+2011-03-26T15:08:42  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has joined #aichallenge
+2011-03-26T15:09:26  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has joined #aichallenge
+2011-03-26T15:09:59  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has quit IRC (Client Quit)
+2011-03-26T15:09:59  *** Chris_0076 <Chris_0076!~Chris_007@adsl-88-203-106.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T15:26:06  *** UncleVasya <UncleVasya!kvirc@46.133.151.17> has joined #aichallenge
+2011-03-26T15:36:14  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-03-26T15:51:58  <Frontier> bss003 was his nick i think. he volunteered for the visualizer some days ago :)
+2011-03-26T15:54:12  *** chris__0076 <chris__0076!~Chris_007@adsl-190-127-53.asm.bellsouth.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-26T16:02:33  *** silenthunter <silenthunter!~silentirc@72.54.66.157> has quit IRC ()
+2011-03-26T16:02:38  *** silenthunter <silenthunter!~silentirc@72.54.66.157> has joined #aichallenge
+2011-03-26T16:05:02  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-26T16:05:39  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has joined #aichallenge
+2011-03-26T16:14:07  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-26T16:19:27  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-26T16:22:30  *** closedbracket <closedbracket!~closedbra@rrcs-98-101-79-206.midsouth.biz.rr.com> has quit IRC (Remote host closed the connection)
+2011-03-26T16:25:45  *** UncleVasya <UncleVasya!kvirc@46.133.151.17> has quit IRC (Read error: Connection reset by peer)
+2011-03-26T16:35:53  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Ping timeout: 252 seconds)
+2011-03-26T16:38:30  *** closedbracket <closedbracket!~closedbra@rrcs-70-60-109-13.midsouth.biz.rr.com> has joined #aichallenge
+2011-03-26T16:47:04  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-03-26T16:56:55  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-26T16:58:09  *** antimatroid <antimatroid!~nick@27.308.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T17:08:03  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-03-26T17:27:21  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-26T17:46:16  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-26T17:47:13  <Stocha> @stocha
+2011-03-26T17:47:14  <contestbot> Stocha: I have no idea what you mean.
+2011-03-26T17:49:38  <Stocha> how many games were played in the scoring of the two previous contests ?
+2011-03-26T17:53:28  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-26T18:05:45  <janzert> He's gone but here is the data anyway. The finals of planetwars had a total of 702112 games played. They were not evenly distributed across all opponents, the least anyone played was in 92 games and the most 525.
+2011-03-26T18:24:32  *** namin <namin!59f127b3@gateway/web/freenode/ip.89.241.39.179> has joined #aichallenge
+2011-03-26T18:58:19  <jmcarthur> janzert: what about if you consider how long their bots were actually available for play?
+2011-03-26T19:02:12  <janzert> hmm?
+2011-03-26T19:02:37  <janzert> those numbers are for the finals after submissions were closed
+2011-03-26T19:04:26  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-26T19:06:35  <jmcarthur> oh!
+2011-03-26T19:06:40  <jmcarthur> wow that's a wide spread then
+2011-03-26T19:07:02  <jmcarthur> was more focus put on the top bots or something?
+2011-03-26T19:07:15  <McLeopold> yeah, the cutoff kept moving
+2011-03-26T19:07:25  <janzert> yes, remember the cutoff that went up throughout the finals for pairing
+2011-03-26T19:07:38  <McLeopold> even then, I'm not sure how fair the matchmaking was
+2011-03-26T19:07:41  <janzert> also the ones with the least number of games are the crash bots
+2011-03-26T19:07:46  <McLeopold> it's really hard to do well
+2011-03-26T19:08:11  <janzert> and they were weeded out fairly quickly
+2011-03-26T19:18:32  *** skynetz <skynetz!~none@unaffiliated/skynetz> has joined #aichallenge
+2011-03-26T19:21:17  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-26T19:22:37  <sigh> ping McLeopold
+2011-03-26T19:22:42  <McLeopold> hi
+2011-03-26T19:23:05  <janzert> so I put together a little script to do some timing tests between the two vision algorithms. with viewradius2 set to 6, once any space starts getting added between ants it's really hard for the "by_square"/painting algorithm to be faster than the brute force "by_ant" algorithm
+2011-03-26T19:23:07  <sigh> the painting algorithm doesn't work
+2011-03-26T19:23:26  <sigh> or did you guys figure something else out?
+2011-03-26T19:23:31  <janzert> sigh: McLeopold fixed it
+2011-03-26T19:23:53  <janzert> at least so far as I've found it works now
+2011-03-26T19:24:27  <janzert> just pretty much always slower unless you're dealing with a solid block of ants larger than 15x15
+2011-03-26T19:25:18  <McLeopold> janzert: viewradius is 96
+2011-03-26T19:25:32  <sigh> how did he fix it?
+2011-03-26T19:25:42  <janzert> http://pastebin.com/wvD15Q6u is the script I've been testing with
+2011-03-26T19:25:43  <McLeopold> sigh: it was using manhatten distance
+2011-03-26T19:26:02  <janzert> McLeopold: argh, ok. I'll check with that
+2011-03-26T19:26:11  <sigh> McLeopold: ok, sure... but it's still using the painting algorithm
+2011-03-26T19:26:18  <sigh> now it is the same as the engine was before
+2011-03-26T19:26:41  <McLeopold> did you find another bug besides the distance check?
+2011-03-26T19:27:02  <sigh> yes, the painting algo gives the wrong result for
+2011-03-26T19:27:03  <sigh> .a
+2011-03-26T19:27:04  <sigh> a.
+2011-03-26T19:27:57  <McLeopold> what kind of results are you expecting?
+2011-03-26T19:28:13  <janzert> sigh: I tried that with McLeopold's version and it works, I'm still not sure why :}
+2011-03-26T19:28:31  <sigh> janzert: in the starter pack?
+2011-03-26T19:28:33  <janzert> actually I brute forced every combination of 2 ants
+2011-03-26T19:28:35  <janzert> yes
+2011-03-26T19:28:46  <sigh> hmmm
+2011-03-26T19:29:18  <McLeopold> if we are painting vision, and it's a 2x2 map, then all 4 squares should return as visible
+2011-03-26T19:29:33  <McLeopold> but I think you are talking about some other type of result?
+2011-03-26T19:30:12  <janzert> McLeopold: I tried placing one ant at the center of a 20x20 map and one ant on every other square and checked that the results of the two algorithms match
+2011-03-26T19:30:22  <janzert> with viewradius2 at 6 anyway
+2011-03-26T19:30:35  <janzert> but I don't think changing that should make a difference
+2011-03-26T19:31:13  <sigh> it will
+2011-03-26T19:31:18  <sigh> put it to 96
+2011-03-26T19:31:25  <McLeopold> I don't see how it could fail.  If the distance check is the same, squares are either turned on or off.  The difference which squares get checked and how often.
+2011-03-26T19:31:48  <janzert> ok, but I'll have to rewrite that check since I threw it out already
+2011-03-26T19:32:19  <McLeopold> sigh: did you guys produce any text pictures or anything showing the problem?
+2011-03-26T19:33:24  <sigh> I showed you the example
+2011-03-26T19:33:36  <janzert> btw, with viewradius2 at 96 the crossover solid block of ants is 4x4 for the two algorithms
+2011-03-26T19:34:35  <janzert> and the by_square algorithm stays ahead for reasonable sizes with spacing between the ants as well
+2011-03-26T19:35:00  <McLeopold> can I get the link again?
+2011-03-26T19:35:29  <janzert> the test script I'm using? http://pastebin.com/wvD15Q6u
+2011-03-26T19:35:52  <McLeopold> no, I mean sigh's results
+2011-03-26T19:36:48  <sigh> McLeopold: hang on, I'll show the picture when I first saw the problem, but it's not very instructive
+2011-03-26T19:37:28  <janzert> for a 10x10 block(grid) of ants the crossover is at 4 spaces in between ants, so I'm still not sure that the by_ant algorithm might end up faster in most games :/
+2011-03-26T19:37:48  <McLeopold> does this relate to the test_bot issue I've been having where both bots get the same input?
+2011-03-26T19:38:09  <McLeopold> janzert: we could put both in and switch at a specific density :)
+2011-03-26T19:38:28  <McLeopold> But I think we could make a hybrid as well :)
+2011-03-26T19:38:30  <sigh> This is my original example where I noticed the problem
+2011-03-26T19:38:31  <sigh> http://pastebin.com/VRm3qcMv and http://pastebin.com/mrrXSEJ0
+2011-03-26T19:38:49  <sigh> first line is ant positions, both are the same list of ants but in different order
+2011-03-26T19:38:57  <sigh> giving different vision
+2011-03-26T19:39:11  <sigh> but then we narrowed it down to ants in the following configuration:
+2011-03-26T19:39:12  <sigh> a.
+2011-03-26T19:39:13  <sigh> .a
+2011-03-26T19:40:12  <McLeopold> oh, so not in a 2x2 map, just relative to each other
+2011-03-26T19:41:35  <sigh> yes
+2011-03-26T19:41:55  <sigh> assume wrapping is not a concern :)
+2011-03-26T19:43:03  <McLeopold> my gut says we should paint all 8 squares around the ant
+2011-03-26T19:43:08  <McLeopold> not just 4
+2011-03-26T19:43:09  <janzert> sigh: you're right it has a problem with viewradius2 = 96
+2011-03-26T19:43:17  <sigh> told you :)
+2011-03-26T19:44:26  <McLeopold> janzert: what is the distance and offsets of the square not being painted?
+2011-03-26T19:44:54  <janzert> just a sec, all I've got is that the output of the algorithms don't match right now
+2011-03-26T19:46:37  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-03-26T19:47:34  <sigh> this bug too me the better part of yesterday to track down :(
+2011-03-26T19:48:09  <sigh> originally symptom was that the engine was not behaving deterministically
+2011-03-26T19:49:08  <sigh> (when it random had a seed)
+2011-03-26T19:49:09  <janzert> here's the first discrepancy the check finds http://pastebin.com/8eirH0vZ
+2011-03-26T19:49:37  <sigh> line 81 and 85
+2011-03-26T19:49:44  <sigh> start of the lines
+2011-03-26T19:50:25  <janzert> actually I think it is end of line 72 and start of line 85
+2011-03-26T19:50:55  <sigh> oh ok :)
+2011-03-26T19:51:07  <janzert> here's the complete list of positions that don't match http://pastebin.com/kpHVAxAP
+2011-03-26T19:51:08  <sigh> I was just going off memory, didn't actually check :P
+2011-03-26T19:52:00  *** delt0r___ <delt0r___!~delt0r@188-22-173-7.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-26T19:52:44  <sigh> janzert: can you commit the script into a ants/t directory or something, I have a feeling that other people will try to "optimise" the vision algorithm
+2011-03-26T19:53:05  <sigh> (even though by_ants seems to run faster anyway)
+2011-03-26T19:53:11  *** delt0r_ <delt0r_!~delt0r@188-22-27-196.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T19:53:49  <janzert> well the current script is really a one off that isn't very applicable generally
+2011-03-26T19:54:37  <janzert> http://pastebin.com/WXC70qPu is it if you want to do something with it
+2011-03-26T19:54:55  <janzert> and is a blend of the speed test and validation checker right now
+2011-03-26T19:55:32  <sigh> better than nothing... it at least proves a case which is annoying to reproduce
+2011-03-26T19:55:45  <sigh> and other vision algorithms can be put in there to test
+2011-03-26T20:01:06  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-122-99.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T20:01:30  <janzert> so you want it in ants/tests ?
+2011-03-26T20:01:55  <sigh> McLeopold: what should the tests directory be called?
+2011-03-26T20:02:32  <janzert> and this isn't really a unit or functional test
+2011-03-26T20:03:35  <sigh> yeah... well, I just don't want to lose the code is all, and I want something quick to run to prove why we are using the current method
+2011-03-26T20:03:49  <janzert> yep
+2011-03-26T20:04:11  <janzert> maybe a utilities directory or..? I'm not really sure what to call it :P
+2011-03-26T20:04:39  <sigh> sure, making a util directory might be right, battle_sim.py could live there too
+2011-03-26T20:07:26  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has quit IRC (Remote host closed the connection)
+2011-03-26T20:09:52  <CIA-33> aichallenge: janzert epsilon * r59c8ac1 / ants/util/vision_compare.py : Add utility script to check alternate vision algorithms - http://bit.ly/ftA8CV
+2011-03-26T20:11:26  <sigh> cool
+2011-03-26T20:15:44  <sigh> janzert: vr2 = 9 is the smallest case which screws up
+2011-03-26T20:21:29  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-03-26T20:21:33  <janzert> so it looks like it needs a difference in vision "width" from one row to the next to be 2 or larger to trigger it
+2011-03-26T20:21:51  <janzert> which makes sense
+2011-03-26T20:23:03  <janzert> otherwise the blocking ant fills in all the squares that would have been anyway
+2011-03-26T20:28:16  <janzert> here's the minimal viewradius=9 case http://pastebin.com/rQ4hYyVK
+2011-03-26T20:38:42  <sigh> janzert: can do one better: http://pastebin.com/P72Qax6M
+2011-03-26T20:39:06  <janzert> :)
+2011-03-26T20:40:16  <sigh> * unmarked _but_ visible squares
+2011-03-26T20:47:29  <sigh> there we go, this version can be pasted for anyone to get a quick summary: http://pastebin.com/ZVprxQqX
+2011-03-26T20:47:39  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has joined #aichallenge
+2011-03-26T20:48:25  <sigh> oops, fixed: http://pastebin.com/gscdvw3u
+2011-03-26T20:48:50  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-122-99.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T20:54:01  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-121-163.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T21:04:56  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-121-163.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T21:31:05  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-26T22:01:48  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-26T22:04:32  *** skynetz <skynetz!~none@unaffiliated/skynetz> has quit IRC (Quit: ..)
+2011-03-26T22:31:53  <sigh> janzert: you still there?
+2011-03-26T22:37:48  <janzert> off and on
+2011-03-26T22:38:34  <sigh> I remember you had a different implementation which you were pasting last night, did that ever work?
+2011-03-26T22:41:52  *** namin <namin!59f127b3@gateway/web/freenode/ip.89.241.39.179> has quit IRC (Ping timeout: 252 seconds)
+2011-03-26T22:42:15  *** _flag <_flag!~flag@69.165.173.172> has quit IRC (Quit: Lost terminal)
+2011-03-26T22:42:19  <CIA-33> aichallenge: sigh epsilon * r61f06a5 / ants/util/vision_compare.py : Added a new vision algorithm proposal - http://bit.ly/eTqK74
+2011-03-26T22:43:40  <sigh> janzert: I implemented a vision algorithm that appears to work and faster than either by_ants or by_squares, please have a look if you have the chance ^^
+2011-03-26T22:44:22  <sigh> timings: by_ant: 10.26ms, by_square: 9.00ms, by_distance (new): 0.74ms
+2011-03-26T22:44:31  <sigh> *7.24ms
+2011-03-26T22:49:49  <Frontier> 0.74 sounded good
+2011-03-26T22:49:59  <sigh> :)
+2011-03-26T22:50:26  <Frontier> can i use this algorithm for the visualizer?
+2011-03-26T22:51:22  <Frontier> nah, maybe it is too heavy for javascript
+2011-03-26T22:51:25  <sigh> Frontier: have you been following what's been going on with the vision algorithm?
+2011-03-26T22:51:44  <Frontier> some of it.
+2011-03-26T22:51:56  <sigh> I recommend just using the by_ant one for now
+2011-03-26T22:52:11  <sigh> it's simple and it works
+2011-03-26T22:52:52  <Frontier> I'm currently checking all squares in a bounding box around each ant. if they are in radius, they are visible
+2011-03-26T22:53:20  *** antimatroid <antimatroid!~nick@81.198-26-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-26T22:53:52  <sigh> Frontier: yeah, that's essentially what by_ant does, but it is optimised a bit for how python does things
+2011-03-26T22:54:21  <Frontier> but javascript is nasty when you try to optimize it like c. especially nested array lookups are extremly slow. map[precalc_row[i]][precalc_col[i]] didn't gain me anything
+2011-03-26T22:54:33  <Frontier> *replace the second i with k
+2011-03-26T22:55:19  <Frontier> well... optimizing for script languages is always a source of joy :-/
+2011-03-26T22:56:02  <sigh> what is precalc_row?
+2011-03-26T22:56:07  <Frontier> It turns out to be: "just write the shortest code, don't try use lookup tables" for js
+2011-03-26T22:56:21  <Frontier> wait...
+2011-03-26T22:57:31  <Frontier> http://pastebin.com/U7n8XJFP
+2011-03-26T22:59:13  <Frontier> row and col is the ant location. this turned out to be slightly faster than my naive approach in all browsers. but it depends much on which js implementation you use
+2011-03-26T22:59:35  <Frontier> chrome currently leaves everything else behind by far
+2011-03-26T22:59:40  <sigh> :)
+2011-03-26T22:59:53  <sigh> have you tried firefox 4?
+2011-03-26T23:00:17  <Frontier> i would not need to optimize anything for chrome, but opera is rather slow. slower than even Rhino, the Java implementation
+2011-03-26T23:00:46  <antimatroid> .. have we considered interplayer communication?
+2011-03-26T23:01:01  <Frontier> antimatroid: long ago, sure
+2011-03-26T23:01:10  <antimatroid> that was interant wasn't it?
+2011-03-26T23:01:31  <Frontier> sigh: Firefox 4 hasn't been on the list, but ff 3 it is only 2x faster than Rhino
+2011-03-26T23:02:03  <sigh> ff4 is supposed to be a lot faster than ff3
+2011-03-26T23:02:45  <Frontier> 6 times faster??! can they keep their marketing promises?
+2011-03-26T23:03:43  <sigh> hehe
+2011-03-26T23:04:39  <Frontier> omg! it parses replays 4 times faster, wtf?
+2011-03-26T23:04:48  <sigh> faster than what?
+2011-03-26T23:04:58  <sigh> ff3?
+2011-03-26T23:05:00  <Frontier> than ff 3
+2011-03-26T23:05:03  <sigh> cool
+2011-03-26T23:05:06  <Frontier> it is on par with chrome now
+2011-03-26T23:05:11  <sigh> :)
+2011-03-26T23:05:25  <Frontier> Opera, come on. You lag behind
+2011-03-26T23:05:35  <antimatroid> chrome <3
+2011-03-26T23:05:50  <antimatroid> the only thing chrome lacks that the new firefox betas have is tabs of tabs
+2011-03-26T23:05:59  <antimatroid> i've been wanting those for years, and it looks like they're finally coming
+2011-03-26T23:06:08  <sigh> tab of tabs? is that tab groups?
+2011-03-26T23:06:14  <antimatroid> that way all broswers tabs can be in one window
+2011-03-26T23:06:14  <antimatroid> yeah
+2011-03-26T23:06:25  <Frontier> Well Opera is drinving the innovation pretty much. They introduced tabbed browsing and I think tabs of tabs
+2011-03-26T23:06:26  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-194-104.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T23:06:29  <sigh> I use tree-style tabs in firefox
+2011-03-26T23:06:45  <sigh> that let's me manage a ridiculous number of tabs
+2011-03-26T23:06:50  <antimatroid> yep
+2011-03-26T23:07:00  <Frontier> tree style? what is that?
+2011-03-26T23:07:18  <antimatroid> a friend had a way of doing it in old firefox, but you got an awful amount of extra "wasted space"
+2011-03-26T23:07:24  <sigh> Frontier: it's an addon, tabs are in a tree on the side
+2011-03-26T23:07:30  <jbroman> http://blog.thomporter.com/wp-content/uploads/2010/01/tree-style-tabs.png
+2011-03-26T23:08:16  <Frontier> so are they organized by server adress?
+2011-03-26T23:08:31  <Frontier> *address
+2011-03-26T23:08:37  <jbroman> Frontier: links opened from a tab are automatically children, and you can manually reorganize.
+2011-03-26T23:08:58  <jbroman> This means that it's roughly a directed graph of which links you clicked on.
+2011-03-26T23:09:03  <sigh> that's how I have it set up ^^, but you can get it to organise by domain
+2011-03-26T23:09:17  <Frontier> awesome plugin
+2011-03-26T23:09:40  <jbroman> I've used it for some time. I've had 150+ tabs open with it.
+2011-03-26T23:09:43  <sigh> it means, for example, all my reddit browsing is under the one branch
+2011-03-26T23:09:49  <jbroman> (And 2 GB of RAM used by Firefox to match that.)
+2011-03-26T23:10:18  <sigh> jbroman: yeah... I've reached over 200 at points, I think
+2011-03-26T23:11:13  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has quit IRC (Read error: Operation timed out)
+2011-03-26T23:11:18  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has joined #aichallenge
+2011-03-26T23:11:39  <sigh> it makes me very lazy about closing tabs, because for example all my reddit browsing is under one branch so even if I end up with 25 tabs there I can minimize the branch and make everything look cleaner :)
+2011-03-26T23:11:52  <sigh> and it is easy to close all the tabs in a branch at once
+2011-03-26T23:12:15  <sigh> either way, I can't use chrome until it gets something equivelent
+2011-03-26T23:12:42  *** closedbracket <closedbracket!~closedbra@rrcs-70-60-109-13.midsouth.biz.rr.com> has quit IRC (Remote host closed the connection)
+2011-03-26T23:13:39  <antimatroid> one thin i wish browsers did was only keep like the last "x" tabs closed in memory still
+2011-03-26T23:13:45  <antimatroid> or even info for them
+2011-03-26T23:14:10  <jbroman> Isn't there an extension to suspend inactive tabs
+2011-03-26T23:14:11  <antimatroid> browsers are such memory hogs these days
+2011-03-26T23:14:11  <jbroman> ?
+2011-03-26T23:14:15  <antimatroid> probably
+2011-03-26T23:14:32  <antimatroid> i don't like having to install 100 different extensions to get fairly nice functionality that should be default :P
+2011-03-26T23:14:48  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-194-104.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T23:15:07  <sigh> problem is that everyone disagrees about what should be default
+2011-03-26T23:15:43  <antimatroid> i know, but does anyone think it's worth keeping a history of all closed tabs so that you pretty much can't just indefinitely leave a browser running? :P
+2011-03-26T23:16:10  <sigh> it doesn't keep them in memory, does it?
+2011-03-26T23:16:28  <antimatroid> dunno, probably not, but something chews up a lot of memory with browsers these days
+2011-03-26T23:16:38  <antimatroid> and i noticed it around the time that came in, so i've always blamed that :)
+2011-03-26T23:17:01  <sigh> haha, post hoc ergo propter hoc
+2011-03-26T23:18:40  <sigh> does chrome eat up a lot of memory? I've never had it running for extended lengths of time
+2011-03-26T23:21:54  <antimatroid> it uses less than firefox did
+2011-03-26T23:21:57  <antimatroid> that's the main reason i use chrome
+2011-03-26T23:21:58  <Frontier> hmm, you could configure ram cache usage, but removing 'old' tabs from memory would be a good thing. of course you would have to trigger that manually if the page contained long running applications like browser games in flash with login.
+2011-03-26T23:22:26  <antimatroid> plus the tabs are right up the top, so you have more window space
+2011-03-26T23:23:10  <sigh> ff4 has squashed things down a it, although chrome still has more I think
+2011-03-26T23:23:16  <Frontier> opera has the tabs at the top, too. but they did not dare to suppress the window manager borders
+2011-03-26T23:23:41  <sigh> ff4 is very chromey :P
+2011-03-26T23:24:07  <Frontier> sure, it would suck for them if the good features in chrome made everyone switch ;)
+2011-03-26T23:24:16  <sigh> :)
+2011-03-26T23:24:27  <antimatroid> do the browsers hate each other copying like that?
+2011-03-26T23:24:29  <Frontier> fast javascript just beeing one key point
+2011-03-26T23:24:36  <antimatroid> i think it's good if they all sort of go with what people like most
+2011-03-26T23:24:43  <antimatroid> it'd push them all to do better as well
+2011-03-26T23:24:46  <sigh> antimatroid: if that was the case, then Opera are pissed
+2011-03-26T23:24:51  <sigh> :P
+2011-03-26T23:24:53  <antimatroid> sigh: yeah :P
+2011-03-26T23:25:07  <antimatroid> they introduced tabs first yeah?
+2011-03-26T23:25:10  <antimatroid> that changed everything
+2011-03-26T23:25:14  <sigh> yeah
+2011-03-26T23:25:26  <amstan> oh man.. finished my bot
+2011-03-26T23:25:31  <amstan> submitting before deadline
+2011-03-26T23:25:32  <antimatroid> amstan: how is it?
+2011-03-26T23:25:32  <amstan> like a boss..
+2011-03-26T23:25:37  <amstan> antimatroid: it's pretty good
+2011-03-26T23:25:39  <amstan> i think
+2011-03-26T23:25:40  <antimatroid> :)
+2011-03-26T23:25:43  <Frontier> well, there is always room for two parties. firefox was heavily extension based, while opera tried to include everything important in the base package
+2011-03-26T23:25:43  <amstan> i have no idea though
+2011-03-26T23:26:16  <sigh> Frontier: and chrome just tries to be minimal :)
+2011-03-26T23:26:26  <Frontier> right
+2011-03-26T23:26:37  * antimatroid is a big fan of minimal 
+2011-03-26T23:26:38  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-26T23:26:46  <antimatroid> says the c++ programmer
+2011-03-26T23:26:57  <Frontier> wasn't that ie? they had a very minimal html5 support for example :p
+2011-03-26T23:27:09  <sigh> haha
+2011-03-26T23:27:10  <antimatroid> it has to work :P
+2011-03-26T23:27:18  <antimatroid> i'll add that little note, then it works :P
+2011-03-26T23:27:32  <antimatroid> otherwise give me back ie1
+2011-03-26T23:27:39  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-121-101.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T23:27:44  <sigh> or lynx
+2011-03-26T23:28:07  <Frontier> UTF-8 characters in JavaScript identifiers: Opera: wtf is unicode? FF: ok, I'll grant you greek letters. Chrome: Sure, it is in the standard, isn't it?
+2011-03-26T23:28:32  <sigh> ah, so that's why antimatroid likes chrome
+2011-03-26T23:29:10  <antimatroid> sigh: except i didn't know that :P
+2011-03-26T23:29:29  <antimatroid> but it gives chrome brownie points
+2011-03-26T23:29:59  <sigh> antimatroid: btw, did you see my new vision algorithm?
+2011-03-26T23:30:12  <antimatroid> was it after i left yesterday? if so no
+2011-03-26T23:30:13  <Frontier> I like Opera for the look and feel and all-inclusiveness, I like Chrome for the speed, I like Firefox adding experimental web features that eventually become standard.
+2011-03-26T23:31:16  <sigh> antimatroid: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/util/vision_compare.py#L106
+2011-03-26T23:31:43  <sigh> the vision_by_distance method
+2011-03-26T23:31:57  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-121-101.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-26T23:33:00  <antimatroid> sigh: what's it doing? Oo
+2011-03-26T23:34:02  <sigh> it ensures that it goes to all distance2=1 squares before moving onto distance2=2 squares and so on
+2011-03-26T23:35:53  <antimatroid> what makes it get
+2011-03-26T23:35:53  <antimatroid> a.
+2011-03-26T23:35:54  <antimatroid> .a calculations right?
+2011-03-26T23:36:16  <sigh> yeah
+2011-03-26T23:37:09  <sigh> well, if two ants can reach a square at the same distance, then it doesn't matter which one goes forward
+2011-03-26T23:37:27  <antimatroid> sigh: it does
+2011-03-26T23:37:41  <sigh> where distance here is Euclidean distance
+2011-03-26T23:37:47  <antimatroid> consider:
+2011-03-26T23:37:47  <antimatroid> a.c
+2011-03-26T23:37:47  <antimatroid> .a.
+2011-03-26T23:37:55  <sigh> the problem before was that a queue sorted on manhatten distance
+2011-03-26T23:38:15  <antimatroid> they're at a different distance to c, but the first square painted is the same distance
+2011-03-26T23:38:42  <antimatroid> you can stretch c out as far as you like and get that proble
+2011-03-26T23:39:31  <antimatroid> i almost think we should consider changing to manhatten
+2011-03-26T23:39:37  <antimatroid> euclidean is quite messy
+2011-03-26T23:40:03  <sigh> that situation still works, I think
+2011-03-26T23:40:04  <antimatroid> or chebyshev if you want a square
+2011-03-26T23:40:16  <sigh> a.c
+2011-03-26T23:40:19  <sigh> .b.
+2011-03-26T23:40:23  <antimatroid> if you have vision = 1.5 and you paint from the top a first?
+2011-03-26T23:40:27  <sigh> b is closer to c than a, right?
+2011-03-26T23:40:28  <antimatroid> wont you say c is not visible?
+2011-03-26T23:40:58  <antimatroid> well, sqrt(2) anyway
+2011-03-26T23:41:06  <sigh> but b can get to c via the other route
+2011-03-26T23:41:10  <sigh> hmmm
+2011-03-26T23:41:14  <sigh> that can be blocked
+2011-03-26T23:41:23  <antimatroid> yeah okay, but can that break?
+2011-03-26T23:41:41  <antimatroid> that was what i thought was breaking the old method?
+2011-03-26T23:42:27  <sigh> nah, old method was broken because of the shape
+2011-03-26T23:42:29  <sigh> hang on
+2011-03-26T23:42:44  <sigh> http://pastebin.com/gscdvw3u
+2011-03-26T23:42:57  <sigh> that shows why the old method breaks
+2011-03-26T23:44:31  <antimatroid> why did the old method break there?
+2011-03-26T23:44:49  <antimatroid> oh, it depended on the order for checking *?
+2011-03-26T23:44:59  <sigh> yes
+2011-03-26T23:45:08  <sigh> see, the squares directly below 'a' are equal manhatten distance from 'b' but some of them are closer eucliean distance to 'b'
+2011-03-26T23:45:51  <antimatroid> so why does that not break now?
+2011-03-26T23:45:58  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-55-70.asm.bellsouth.net> has joined #aichallenge
+2011-03-26T23:46:13  <sigh> because it searches in order of euclidean distance
+2011-03-26T23:46:36  <sigh> although you've got me thinking it breaks for a different reason now
+2011-03-26T23:46:55  <antimatroid> :P
+2011-03-26T23:47:07  <sigh> a.c
+2011-03-26T23:47:10  <sigh> .b.
+2011-03-26T23:47:11  <sigh> ..a
+2011-03-26T23:47:59  <sigh> if both 'a's are before 'b', then the path to c is completely blocked
+2011-03-26T23:48:18  <sigh> and if the viewradius is only sqrt(2) then 'c' won't be marked as visible
+2011-03-26T23:48:22  <antimatroid> yep
+2011-03-26T23:48:42  <antimatroid> can we find a euclidean distance that doesn't break the old method?
+2011-03-26T23:49:09  <antimatroid> otherwise i think we need to seriously consider changing it
+2011-03-26T23:49:13  <sigh> what do you mean?
+2011-03-26T23:49:29  <antimatroid> make it so that such a * square isn't in the view radius
+2011-03-26T23:50:21  <antimatroid> i'll pull out the pacer and see where i get
+2011-03-26T23:50:33  <sigh> dunno, but I think you can fix the new method
+2011-03-26T23:51:19  *** spacebat <spacebat!~spacebat@ubermonkey.net> has joined #aichallenge
+2011-03-26T23:51:40  <antimatroid> by storing a list of people who can equally reach a square?
+2011-03-26T23:51:45  <antimatroid> that's what i did, it was SLOW
+2011-03-26T23:52:07  <sigh> no, not by doing that
+2011-03-26T23:52:32  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Remote host closed the connection)
+2011-03-26T23:52:54  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-03-26T23:52:54  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-26T23:53:02  <antimatroid> ideally the method shouldn't be too complicated to explain to people
+2011-03-26T23:53:20  <antimatroid> because it's a pretty obvious thing most people need to do
+2011-03-26T23:53:42  <sigh> oh, in any case I think the starter packs should have the naive working method
+2011-03-26T23:54:32  <antimatroid> i don't think we should give people functions that aren't correct
+2011-03-26T23:54:51  <antimatroid> or very naive paint from every ant sequentially?
+2011-03-26T23:54:54  <sigh> yes
+2011-03-26T23:55:01  <antimatroid> yeah okay
+2011-03-26T23:55:15  <antimatroid> it might be worth noting people should be careful if they try to make it more efficient
+2011-03-26T23:55:21  <antimatroid> and to go look at ants.py
+2011-03-26T23:55:21  <sigh> yes
+2011-03-26T23:55:30  <sigh> the advantage is that we KNOW it works
+2011-03-26T23:55:50  <spacebat> I just saw a post about the ants repo being up, so I cloned it but it seems its still in development - or is there something I'm missing?
+2011-03-26T23:56:03  <sigh> if we find a bug it is easy to fix the engine, harder to fix starter packs that others downloaded
+2011-03-26T23:56:04  <antimatroid> spacebat: it's still being made, but you can run games
+2011-03-26T23:56:17  <antimatroid> spacebat: try running the play_one_game.sh/bat files
+2011-03-26T23:56:27  <antimatroid> then inspect its contents and work stuff out from there
+2011-03-26T23:56:51  <spacebat> the README.md scared me off because it said that the setup procedure makes invasive changes to the system
+2011-03-26T23:57:03  <spacebat> but I assum that's just for contest servers
+2011-03-26T23:57:03  <sigh> spacebat: no, that's for setting up the CONTEST
+2011-03-26T23:57:08  <sigh> :)
+2011-03-26T23:57:16  <spacebat> ok
+2011-03-26T23:57:24  <Frontier> spacebat: at some point we might have a make file in the top level that generates the server image
+2011-03-26T23:57:31  <spacebat> yup
+2011-03-26T23:57:59  <sigh> spacebat: just look at the ants/ directory, that has the stuff that actually plays the game
+2011-03-26T23:58:11  <spacebat> running it now
+2011-03-26T23:58:13  <Frontier> but somehow i like the big red button thing that just takes control of your computer and turns it into a contest server.
+2011-03-26T23:58:22  <sigh> hehe :)
+2011-03-26T23:59:09  <antimatroid> sigh: you can't eliminate the issue with euclidean metric and the kinds of view radius we want
+2011-03-26T23:59:39  *** fmeyer <fmeyer!~fmeyer@189.100.226.227> has joined #aichallenge
+2011-03-26T23:59:40  <antimatroid> well, the only time you can is when it's small enough that the vision is equivalent to the manhatten
+2011-03-26T23:59:41  <Frontier> spacebat: there is also a visualizer directory with an offline.html that you can use to load .replay files into.

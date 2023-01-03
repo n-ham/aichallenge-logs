@@ -1,0 +1,909 @@
+2011-04-15T00:00:30  <antimatroid> sometimes i think it's nice to have like reset() and reset(value)
+2011-04-15T00:00:49  <jmcarthur> i don't miss things like that
+2011-04-15T00:00:59  <antimatroid> it's a bother to remember lots of function names to do almost the same thing
+2011-04-15T00:01:04  <jmcarthur> nah
+2011-04-15T00:01:36  <jmcarthur> in haskell, functions are small anyway. the very idea of reset() is that it's probably just reset(value) with a default value
+2011-04-15T00:01:59  <jmcarthur> so instead of having multiple versions of reset, you could generalize over values that have default values
+2011-04-15T00:02:05  <jmcarthur> *types that have default values
+2011-04-15T00:02:28  <jmcarthur> and then have a very generic reset function
+2011-04-15T00:02:47  <jmcarthur> i made some assumptions about the intent there, i guess
+2011-04-15T00:03:21  <antimatroid> yeah okay
+2011-04-15T00:04:52  <jmcarthur> i guess the point i'm trying to make is that in haskell your goal is to write small, composable functions. functions that are nothing more than other functions with default arguments might be a warning sign a lot of the time
+2011-04-15T00:06:14  <jmcarthur> a warning that its interface is too complicated and that some of the arguments could be inferred by type, perhaps
+2011-04-15T00:26:29  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-04-15T01:11:05  <antimatroid> wow, gedit is a pretty good latex editor anyway
+2011-04-15T01:14:56  <antimatroid> nevermind
+2011-04-15T01:15:04  <antimatroid> it was opening them in LaTeXilla :P
+2011-04-15T01:21:44  *** antimatroid <antimatroid!~nick@88.153.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-04-15T01:22:00  *** antimatroid <antimatroid!~nick@88.153.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-15T01:32:52  <jmcarthur> lol
+2011-04-15T01:55:24  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-04-15T02:00:10  *** delt0r_ <delt0r_!~delt0r@188-22-161-88.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-15T02:00:38  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has joined #aichallenge
+2011-04-15T02:00:43  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.101.99> has quit IRC (Read error: No route to host)
+2011-04-15T02:01:08  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.101.99> has joined #aichallenge
+2011-04-15T02:01:19  *** delt0r___ <delt0r___!~delt0r@188-22-164-215.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T02:20:08  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has quit IRC (Ping timeout: 250 seconds)
+2011-04-15T02:22:01  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-04-15T02:23:15  *** chris__0076 <chris__0076!~Chris_007@adsl-66-195-205.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T02:26:18  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-255-29.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-04-15T02:43:42  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Ping timeout: 252 seconds)
+2011-04-15T02:49:26  *** Ttech <Ttech!ttech@botters/staff/ttech> has quit IRC (Read error: Operation timed out)
+2011-04-15T02:53:46  <jaycobcoleman> I have a question about the damage battle option for anyone who can answer it
+2011-04-15T02:54:30  <jaycobcoleman> Will the damage of each ant be reset after the battle is resolved or is it permanent?
+2011-04-15T02:55:46  <antimatroid> reset
+2011-04-15T02:55:56  *** dr- is now known as lotus
+2011-04-15T02:55:57  <jaycobcoleman>  lovely, thank you
+2011-04-15T02:56:03  <antimatroid> we don't want to complicate it like that
+2011-04-15T02:56:03  *** lotus is now known as dr-
+2011-04-15T02:56:25  <jaycobcoleman> good, that would be quite a pain. Much more strategy involved this way
+2011-04-15T02:56:40  <antimatroid> yep, the rule has been chosen to be interesting strategy wise
+2011-04-15T02:56:58  <antimatroid> the power method was perhaps more interesting imo, but people didn't understand it easily enough, so this was a great compromise
+2011-04-15T02:57:16  <jaycobcoleman> I was rooting for either this or power. Really anything but itterative.
+2011-04-15T02:57:23  <jaycobcoleman> I really liked power
+2011-04-15T02:57:24  <antimatroid> yep :P
+2011-04-15T02:57:39  <antimatroid> power was my favourite, up until damage i was fighting fiercely for power
+2011-04-15T02:57:48  <antimatroid> i also fought fiercely to get row,col indexing
+2011-04-15T02:58:00  <antimatroid> i simply can't understand why anyone would do x,y indexing, it's inferior
+2011-04-15T02:58:28  <jaycobcoleman> why so inferior?
+2011-04-15T02:58:47  <antimatroid> because if you read a char map from file, or output it, you need to transpose the map
+2011-04-15T02:58:54  <antimatroid> with row,col indexing it's always the same
+2011-04-15T02:59:06  <znutar_> not if you turn the monitor sideways
+2011-04-15T02:59:12  <antimatroid> :P
+2011-04-15T02:59:15  <jaycobcoleman> haha good point
+2011-04-15T02:59:17  <antimatroid> it makes life more confusing imo
+2011-04-15T02:59:54  <jaycobcoleman> You make a compelling argument
+2011-04-15T03:00:19  <antimatroid> that's one of my more solid arguments over something pedantic :P
+2011-04-15T03:00:57  <jaycobcoleman> You can be as pedantic as you'd like as long as you can back it up
+2011-04-15T03:01:30  <antimatroid> i'm often clutching at straws i think :P
+2011-04-15T03:02:42  <jaycobcoleman> I think it's a tendency of sciency people to become overly-opinionated on every issue
+2011-04-15T03:03:51  *** Ttech <Ttech!ttech@botters/staff/ttech> has joined #aichallenge
+2011-04-15T03:04:11  <antimatroid> yep, i always say it comes from my lecturers tearing me to pieces with assignment flaws
+2011-04-15T03:04:32  <antimatroid> and i love every minute of it :)
+2011-04-15T03:05:03  <antimatroid> i lost marks in second year algebra for my grammar not being right
+2011-04-15T03:05:08  <jaycobcoleman> what is your role in the aichallenge? You seem to be fairly active.
+2011-04-15T03:05:21  <antimatroid> participant that helps out a bit
+2011-04-15T03:05:54  <jaycobcoleman> Didn't you write one of the starters?
+2011-04-15T03:06:00  <antimatroid> i wrote the c++ starter
+2011-04-15T03:06:07  <antimatroid> i also did the random walk symmetric maps
+2011-04-15T03:06:12  <antimatroid> and helped work out a lot of the rules
+2011-04-15T03:06:33  <jaycobcoleman> There we go, I've looked through the C++ starter quite thouroughly
+2011-04-15T03:06:43  <antimatroid> anything you hate?
+2011-04-15T03:06:50  <antimatroid> i use the communist approach to programming
+2011-04-15T03:06:53  <antimatroid> everything is public
+2011-04-15T03:07:15  <jaycobcoleman> Nope, everything looks pretty good to me
+2011-04-15T03:07:35  <jaycobcoleman> But honestly I'm not a beacon of experience
+2011-04-15T03:07:46  <antimatroid> i'm not a very experienced programmer
+2011-04-15T03:08:20  <antimatroid> depending on what one considers as experienced, i wouldn't consider myself experienced anyway
+2011-04-15T03:08:51  <jaycobcoleman> I find my efforts to learn programming constantly being thwarted by school
+2011-04-15T03:09:08  <jaycobcoleman> and sleeping
+2011-04-15T03:11:07  <antimatroid> i've learnt c++ mostly from these contests and writing my own game theory library
+2011-04-15T03:11:34  <antimatroid> i don't know anything else well, i can hack stuff together in python now
+2011-04-15T03:11:46  <antimatroid> (very) slowly trying to grasp haskell
+2011-04-15T03:12:51  <jaycobcoleman> yeah my knowledge base is mostly split between c++ and python
+2011-04-15T03:13:00  <jaycobcoleman> and bash
+2011-04-15T03:15:43  <jaycobcoleman> you're still allowed to compete, right?
+2011-04-15T03:17:47  <antimatroid> yep
+2011-04-15T03:17:56  <antimatroid> anyone that doesn't have access to the severs can compete
+2011-04-15T03:18:05  <antimatroid> it was pretty much allow that or have no one to work on the game
+2011-04-15T03:18:27  <antimatroid> everything we know/can access is public information/open source
+2011-04-15T03:19:21  <jaycobcoleman> I would imagine writing a game theory library would be pretty useful experience. Have you done much work on your own bot?
+2011-04-15T03:20:43  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-04-15T03:23:59  <antimatroid> it's not that relevant to these contests, i have played around a bit with food collection but not heaps
+2011-04-15T03:24:18  <antimatroid> i have been pretty busy at uni lately, and i may be doing gsoc which will render me quite busy
+2011-04-15T03:24:53  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-15T03:25:49  <jaycobcoleman> Oh man, I would love to do gsoc, but I don't think it's open to high school students
+2011-04-15T03:26:09  <antimatroid> how far off uni are you?
+2011-04-15T03:26:26  <antimatroid> where do you live?
+2011-04-15T03:26:56  <jaycobcoleman> Alaska
+2011-04-15T03:27:05  <jaycobcoleman> I'm a senior in high school
+2011-04-15T03:27:14  <antimatroid> what year is that?
+2011-04-15T03:27:25  <antimatroid> high school is years 7-10 where i live :P
+2011-04-15T03:27:27  <jaycobcoleman> 4th and final
+2011-04-15T03:27:45  <antimatroid> then college is year 11 and 12 (not uni), then uni
+2011-04-15T03:28:14  <jaycobcoleman> hmm. We've got middle school for 7 and 8, the 9-12 is high school
+2011-04-15T03:29:27  <antimatroid> we have elementary  = {kinder, prep, 1, 2}, primary = elementary or {3,...,6}, high = {7,..,10} and college = {11,12}
+2011-04-15T03:29:49  <antimatroid> tasmania <3
+2011-04-15T03:30:02  <jaycobcoleman> Ah, I was about to ask
+2011-04-15T03:30:53  <jaycobcoleman> That's very cool. I had no idea that's how school was down there
+2011-04-15T03:31:15  <antimatroid> it took me a while to work out college = uni in the us when i was younger
+2011-04-15T03:31:45  <jaycobcoleman> What are you doing for gsoc?
+2011-04-15T03:32:17  <antimatroid> if i get it, enumerating nash equilibria for 2 player extensive form games with imperfect information using the sequence form of the game with gambit
+2011-04-15T03:32:23  <sigh> antimatroid: you don't call 11-12 high school?
+2011-04-15T03:32:31  <antimatroid> sigh: no
+2011-04-15T03:32:38  <sigh> how odd
+2011-04-15T03:32:47  <antimatroid> it's nice not having the younger people around the 11-12 campus
+2011-04-15T03:32:52  <antimatroid> they can be more chilled with you
+2011-04-15T03:33:00  <jaycobcoleman> where are you from sigh?
+2011-04-15T03:33:04  <antimatroid> melbourne
+2011-04-15T03:33:10  <antimatroid> for a couple of days anyway :P
+2011-04-15T03:33:18  <antimatroid> a day*
+2011-04-15T03:33:20  <sigh> :)
+2011-04-15T03:33:41  <jaycobcoleman> why's this?
+2011-04-15T03:33:52  <sigh> why is what?
+2011-04-15T03:34:05  <antimatroid> he is moving to sydney
+2011-04-15T03:34:15  <sigh> oh, that, yes
+2011-04-15T03:34:43  <sigh> anyway, college doesn't have  a specific meaning here... some high schools are called colleges and the dorms that uni students stay in are called colleges
+2011-04-15T03:34:57  <antimatroid> yeah
+2011-04-15T03:35:14  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-15T03:35:20  <antimatroid> jaycobcoleman: what are you planning to do at uni?
+2011-04-15T03:35:30  *** aerique <aerique!310225@194.109.21.4> has joined #aichallenge
+2011-04-15T03:35:59  <jaycobcoleman> well there was the consideration of something relating to engineering, but now I'm starting to lean more toward something involving programminf
+2011-04-15T03:36:42  <sigh> doesn't have to be either/or there
+2011-04-15T03:36:52  <jaycobcoleman> indeed it doesn't
+2011-04-15T03:38:26  <jaycobcoleman> animatroid: To be entirely honest, I have no idea what your gsoc plan entails
+2011-04-15T03:40:27  *** antimatroid1 <antimatroid1!~nick@88.153.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-15T03:40:35  *** antimatroid <antimatroid!~nick@88.153.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-04-15T03:41:17  <jaycobcoleman> reincarnated?
+2011-04-15T03:41:19  <antimatroid1> an extensive form game is a tree representation of a game
+2011-04-15T03:41:58  <antimatroid1> then nash equilibria are strategies where no player can alter their strategy to increase their payoff, given what the other players are doing
+2011-04-15T03:42:03  <antimatroid1> do maths at uni :P
+2011-04-15T03:42:07  <antimatroid1> maths is awesome
+2011-04-15T03:43:07  <jaycobcoleman> agreed. I'm in my second year of calculus at the moment
+2011-04-15T03:43:32  <antimatroid1> it gets a lot more fun once you get to algebra and analysis ;)
+2011-04-15T03:44:17  <antimatroid1> although don't do just maths, do maths and (engineering/cs/physics/something)
+2011-04-15T03:45:35  <jaycobcoleman> I'm starting to put some heavy consideration on math + cs
+2011-04-15T03:46:02  <antimatroid1> it's a strong combination
+2011-04-15T03:46:19  <antimatroid1> i'm  heavily biased though :P
+2011-04-15T03:46:54  <sigh> yup, cs in particular is a strong combination with anything, because now everything involves a lot of computation
+2011-04-15T03:47:32  <jaycobcoleman> Not sure wether I want to go micro or macro when it comes to computers and programming though
+2011-04-15T03:47:46  <antimatroid1> what do you mean?
+2011-04-15T03:47:46  <sigh> micro or macro?
+2011-04-15T03:48:02  <antimatroid1> algorithms!
+2011-04-15T03:48:12  <antimatroid1> learn your algorithms well
+2011-04-15T03:48:25  <sigh> well, algorithms are the basis for any cs course
+2011-04-15T03:49:52  <sigh> and algorithms is usually the first "real" cs subject that students will encounter
+2011-04-15T03:50:23  <jaycobcoleman> I don't suppose any thought at all has gone into the next ai challenge, has it?
+2011-04-15T03:53:38  <antimatroid1> what do you mean?
+2011-04-15T03:53:46  <antimatroid1> i think we have a game for the following contest
+2011-04-15T03:54:01  <antimatroid1> specifically warlight
+2011-04-15T03:54:23  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 240 seconds)
+2011-04-15T03:54:52  <jaycobcoleman> that answers my question beautifully
+2011-04-15T03:56:08  *** amstan <amstan!~amstan@206.248.181.93> has quit IRC (Ping timeout: 260 seconds)
+2011-04-15T03:56:09  <jaycobcoleman> I ask because if I stay as interested in learning about programming in the future as I am now I think I'll want to and be very much able to help out with various aspects of the competition
+2011-04-15T03:59:42  <antimatroid1> feel free to play around with making maps for ants
+2011-04-15T03:59:51  <antimatroid1> we want as many types of maps as possible
+2011-04-15T04:00:15  <antimatroid1> if you want to do symmetric maps, take a look at how my symmetric map gen picks out the dimensions and tiles the maps
+2011-04-15T04:01:27  <antimatroid1> sigh: http://www.overclockers.com.au/pic.php?pic=images/newspics/15apr11/22.jpg :)
+2011-04-15T04:05:06  <sigh> antimatroid1: there is nothing logically impossible about the first two :P
+2011-04-15T04:05:07  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has quit IRC (Ping timeout: 252 seconds)
+2011-04-15T04:05:52  <antimatroid1> you say that like i understood any but the last :P
+2011-04-15T04:06:01  <sigh> you can have a more machine more powerful than a Turing machine that it can solve the halting problem for turing machines
+2011-04-15T04:06:40  <sigh> and qm is a scientific theory, which though very very well tested and verified, is not logically proven
+2011-04-15T04:08:19  <antimatroid1> lol "Were you in Australia on 30 April 2011?"
+2011-04-15T04:08:20  <sigh> antimatroid1: you should at least know the first one :P
+2011-04-15T04:08:27  <sigh> o_O
+2011-04-15T04:08:34  <sigh> well, were you?
+2011-04-15T04:08:50  <antimatroid1> i've never done any of that stuff, i have a few gaping holes that need to be filled
+2011-04-15T04:08:59  <antimatroid1> i'm going to do theory of computation at anu next year hopefully
+2011-04-15T04:09:09  <antimatroid1> it's on the graduate survey
+2011-04-15T04:09:29  <sigh> ah yeah, theory of computation is fun
+2011-04-15T04:09:45  <antimatroid1> 2: Would you describe yourself as having a disability?
+2011-04-15T04:09:46  <antimatroid1> ahaha
+2011-04-15T04:09:54  <antimatroid1> they chose some strange wording of things
+2011-04-15T04:10:00  <sigh> yeah...
+2011-04-15T04:10:19  <sigh> trying not to offend anyone?
+2011-04-15T04:12:01  <antimatroid1> yeah
+2011-04-15T04:14:05  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-15T04:14:33  <Stocha> sigh: what do you mean more powerfull than turing machine than can solve halting for turning machines ?
+2011-04-15T04:15:49  <sigh> there is nothing impossible about being able to solve the halting problem for Turing machines, it is impossible to solve the halting problem for turing machines *on a turing machine itself*
+2011-04-15T04:16:27  <Stocha> does it exists a machine that a machine turing can not emulate ?
+2011-04-15T04:16:55  <Stocha> Or any solver of halting system that a machine turing can not emulate.
+2011-04-15T04:16:57  <sigh> mathematically, of course... you can define such a machine into existance
+2011-04-15T04:17:11  <sigh> physically, dunno... maybe, maybe not
+2011-04-15T04:17:11  <Stocha> turing machin is pretty strong stuff already. With unlimited time and space.
+2011-04-15T04:17:23  <Stocha> how do you define it mathematically ?
+2011-04-15T04:18:41  <sigh> I define a an oracle X which takes as an input a turing machine program, and outputs 1 if it halts, and 0 if it doesn't
+2011-04-15T04:19:20  <Stocha> so X is function
+2011-04-15T04:19:27  <sigh> then if I combine that with a normal turing machine, I have a machine that is more powerful than a turing machine
+2011-04-15T04:19:47  <sigh> sure, only catch is that X cannot be computed on a turing machine
+2011-04-15T04:20:08  <sigh> but there's nothing stopping me from assuming one exists
+2011-04-15T04:20:15  <Stocha> is there not ?
+2011-04-15T04:20:34  <Stocha> there is nothing for stopping me assuming a set of all ordinal number exists.
+2011-04-15T04:20:45  <Stocha> except mathematicians i suppose :p
+2011-04-15T04:21:44  <sigh> I am not familiar with that, but as long as it is not logically inconsistent, then fine
+2011-04-15T04:22:00  <Stocha> it is said to be logically inconsistent :p
+2011-04-15T04:22:09  <sigh> ok, in which case then you can't
+2011-04-15T04:22:20  <Stocha> So the question is, how do we now that supposing X exists is not logically inconsistent
+2011-04-15T04:22:34  <sigh> there is nothing inconsistent about my oracle X, although the halting problem proves that it can't be implemented on a turing machine
+2011-04-15T04:22:53  <sigh> nothing inconsistent, it has a well-defined input and output
+2011-04-15T04:23:09  <Stocha> yeah so does the X function on a turing machine
+2011-04-15T04:23:19  <Stocha> yet mathematicians say it is inconsistent there
+2011-04-15T04:23:36  <Stocha> so having input and output is not enough to make it true.
+2011-04-15T04:23:53  <sigh> but I am not saying that X has to run on a turing machine
+2011-04-15T04:24:06  <Stocha> yeah
+2011-04-15T04:24:16  <sigh> I am saying that it exists, that's all... if I assume that it exists than I have created a more powerful machine
+2011-04-15T04:24:20  <delt0r_> Stocha: its a well known fact that oracles are not subject to turing machine limitations
+2011-04-15T04:24:22  <Stocha> but when you add that, you do not have immediatly the fact it is not possible
+2011-04-15T04:24:44  <sigh> which has it's own halting problem, but it's powerful enough to solve the problem for turing machines
+2011-04-15T04:25:11  <Stocha> what does halting problem mean with an oracle ?
+2011-04-15T04:25:20  <Stocha> it means it won't output anything ?
+2011-04-15T04:25:28  <Stocha> but you said it will output either 1 or 0
+2011-04-15T04:26:18  <Stocha> delt0r_: oracle are not well known to me yet.
+2011-04-15T04:26:53  <sigh> yes it will output 1 or 0 because it is a more powerful machine than a Turing machine
+2011-04-15T04:29:06  <sigh> the catch is that you can't feed oracle X a program which uses the oracle X as part of its program
+2011-04-15T04:29:47  <sigh> which is why the normal proof of the halting problem doesn't work for oracle X
+2011-04-15T04:31:11  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-04-15T04:33:43  <Stocha> is the oracle a turing machine ? :p
+2011-04-15T04:33:49  <Stocha> i didn't get that part in wikipedia
+2011-04-15T04:34:16  <Stocha> what does "finitely many" means ?
+2011-04-15T04:34:19  <sigh> Stocha: it cannot be implemented on a turing machine, the halting problem is proof of that
+2011-04-15T04:34:24  <Stocha> is that finite or infinite ?
+2011-04-15T04:35:01  <Stocha> Yeah, but i suddenly wonder about a turing machine using another one as an oracle.
+2011-04-15T04:35:07  <sigh> what context is "finitely many" is used in?
+2011-04-15T04:35:36  <sigh> if you combine a turing machine with such an oracle then you create a more powerful machine
+2011-04-15T04:35:50  <Stocha> e oracle machine is initialized with the work tape containing some input with finitely many 1's and the rest of the tape blank,
+2011-04-15T04:36:23  <sigh> yeah, the tape has a finite number of 1s
+2011-04-15T04:37:05  <Stocha> but they can be anywhere ?
+2011-04-15T04:37:16  <Stocha> i mean there is no bound to how deep they can be ?
+2011-04-15T04:37:36  <Stocha> so you can search forever the tape, and have no guartees that you found all ?
+2011-04-15T04:37:52  <Stocha> wich means you can't count them
+2011-04-15T04:38:22  <sigh> I'm not sure of the significance of that statement, so I can't really answer you
+2011-04-15T04:38:32  <Stocha> okay fair enough :)
+2011-04-15T04:38:47  <Stocha> the subject is time consuming though. and not very promising i suppose.
+2011-04-15T04:39:24  <Stocha> I was wondering about what a tape with a finite number of 1 looked like.
+2011-04-15T04:39:29  <antimatroid1> what's an oracle?
+2011-04-15T04:39:32  <Stocha> infinite tape.
+2011-04-15T04:40:11  <Stocha> then because i now there exists N that bound the number of 1 on the infinite tape, i wanted to find N.
+2011-04-15T04:40:25  <Stocha> so i went like : let's run along the tape and find what N is.
+2011-04-15T04:40:28  <Stocha> but i never found it :p
+2011-04-15T04:41:01  <antimatroid1> i did :p
+2011-04-15T04:41:20  <Stocha> how did you ?
+2011-04-15T04:41:25  <sigh> antimatroid1: an oracle is a black-box which computes a well-defined function
+2011-04-15T04:41:35  <antimatroid1> so it's a function?
+2011-04-15T04:42:00  <antimatroid1> oracle:dataSet->answerSet?
+2011-04-15T04:42:05  <antimatroid1> bloody smileys
+2011-04-15T04:42:19  <sigh> in some contexts it is the function, in other contexts it is a turing machine combined with the function
+2011-04-15T04:43:01  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-04-15T04:44:16  <sigh> Stocha: don't read so much into it... all it is saying that the the initial state can't have an infinite number of 1s
+2011-04-15T04:44:28  *** needsch <needsch!~Robert@s0622.dyn.hrz.tu-darmstadt.de> has joined #aichallenge
+2011-04-15T04:45:36  <Stocha> what's the difference between a tape than can have an infinite number of one, and one that can't have but still can have some 1
+2011-04-15T04:46:04  <Stocha> well i guess it is, if you run indefinetly you'll always find some 0 in a finite number of step
+2011-04-15T04:46:38  <sigh> if the tape is initialised with a finite number of 1s, then you can define it in a finite amount of space, for example
+2011-04-15T04:46:54  <sigh> the program obviously knows how many 1s there are
+2011-04-15T04:46:56  <Stocha> why ?
+2011-04-15T04:47:02  <Stocha> ah
+2011-04-15T04:47:04  <sigh> why what?
+2011-04-15T04:47:17  <Stocha> nothing :p
+2011-04-15T04:47:48  <Stocha> hum something puzle me there.
+2011-04-15T04:47:52  <sigh> hmm... actually
+2011-04-15T04:48:08  <sigh> Stocha: I was wrong
+2011-04-15T04:48:34  <Stocha> how do you proove yourself wrong on this one ?
+2011-04-15T04:48:38  <sigh> the program doesn't know... the finite number of 1s just guarantees that the thing halts :P
+2011-04-15T04:48:57  <sigh> I think... hmmm
+2011-04-15T04:49:19  <sigh> let me look at it more
+2011-04-15T04:50:08  <Stocha> That all tapes with a finite number of 1 can be defined in a finite amount of space.
+2011-04-15T04:50:17  <Stocha> that's the question right ?
+2011-04-15T04:50:19  <sigh> oh, that is true
+2011-04-15T04:50:54  <sigh> I'm just trying about what the program knows about the initial state... and what it does
+2011-04-15T04:50:57  <Stocha> Are those tapes even countables ?
+2011-04-15T04:51:38  <sigh> what tapes?
+2011-04-15T04:51:50  <Stocha> infinite tapes with finetly mana 1
+2011-04-15T04:53:39  <sigh> well, if you don't know how many 1s there are beforehand you can't count them... but I don't see why that is a problem
+2011-04-15T04:54:51  <Stocha> if there the set of infinite tapes with finetely many 1 as a cardinality > N, i doubt you will be able to show each tape can be defined in a finite amount of space :p
+2011-04-15T04:55:14  *** needsch <needsch!~Robert@s0622.dyn.hrz.tu-darmstadt.de> has quit IRC (Quit: Leaving.)
+2011-04-15T04:55:19  <Stocha> > card (Set of all integer)
+2011-04-15T04:56:25  <Stocha> i think there exists a bijection between the set of "infinite tapes with finetly many 1" and R the set of all real number.
+2011-04-15T04:56:54  <Stocha> in wich case i don't think you'll be able to define each tape in a finite amount of information.
+2011-04-15T04:56:58  <sigh> no, the bijection exists between them and the integerss
+2011-04-15T04:57:10  <Stocha>  ?
+2011-04-15T04:57:25  <Stocha> why isn't it obvious to me then :'(
+2011-04-15T04:58:09  <sigh> every tape with a finite number of ones encodes an integer (in binary), and an integer can be encoded on a tape with a finite number of ones.
+2011-04-15T04:58:54  <Stocha> yeah but i'm not sure i encodes an integer :p
+2011-04-15T04:58:58  <Stocha> it
+2011-04-15T04:59:23  <sigh> why aren't you sure?
+2011-04-15T04:59:25  <Stocha> the set of all binary integer.
+2011-04-15T04:59:40  <Stocha> well because. well.
+2011-04-15T04:59:45  <Stocha> mm gnn
+2011-04-15T05:00:09  <Stocha> each tape has P (the number of 1) as characteristic
+2011-04-15T05:00:25  <sigh> ok...
+2011-04-15T05:01:07  <Stocha> but the tape is infinite
+2011-04-15T05:01:23  <sigh> ok...
+2011-04-15T05:01:27  <Stocha> you have no garantee to go from first 1 to second one in a finite number of step do you ?
+2011-04-15T05:01:40  <Stocha> never was that stated at least.
+2011-04-15T05:01:56  <Stocha> that's why you can't count the number of 1.
+2011-04-15T05:02:04  <Stocha> i think.
+2011-04-15T05:02:16  <sigh> if the is a second 1, then you will reach it in a finite number of steps
+2011-04-15T05:02:46  <sigh> *if there is a second 1
+2011-04-15T05:02:48  <Stocha> but you can't decide if there is in a finite number of steps
+2011-04-15T05:03:04  <sigh> if you don't know the number of 1s beforehand, sure
+2011-04-15T05:03:32  <sigh> but you have the same problem with integers... if you encode an integer on a tape, you never know if it is finished
+2011-04-15T05:03:37  <Stocha> it's like let's say it's an integer (binary) with only 0 or 1 One
+2011-04-15T05:03:39  *** chris___0076 <chris___0076!~Chris_007@adsl-176-16-18.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T05:03:58  <Stocha> yeah but that's not an integer.
+2011-04-15T05:04:03  <Stocha> that's something else.
+2011-04-15T05:04:39  <sigh> why isn't it an integer?
+2011-04-15T05:05:03  <Stocha> let's say an integer is 1 or 0 for a finite number of step.
+2011-04-15T05:05:21  <Stocha> then tapes with 1 or 0 in every step do not define integers.
+2011-04-15T05:05:49  *** chris__0076 <chris__0076!~Chris_007@adsl-66-195-205.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T05:05:54  <sigh> they do if you constrain the number of 1s to be finite :)
+2011-04-15T05:06:23  <Stocha> i don't see why there can't be an infinite number of 0 then.
+2011-04-15T05:07:00  <sigh> imagine the integer written backwards
+2011-04-15T05:07:07  <Stocha> yeah.
+2011-04-15T05:07:16  <sigh> ...005 = 5
+2011-04-15T05:07:23  <Stocha> for low meaning to high meaning yes.
+2011-04-15T05:07:27  <Stocha> from
+2011-04-15T05:08:19  <sigh> having 0s (even an infinite number of 0s) in front of an integer does not change the value :P
+2011-04-15T05:08:20  <Stocha> integer have a finite number of characters to write them
+2011-04-15T05:08:40  <sigh> depends on your representation
+2011-04-15T05:09:00  <sigh> you can't represent integers in a finite number of characters in base pi, for example :P
+2011-04-15T05:09:23  <Stocha> integer are such that after a finite number of step, it is always the same caracter :p
+2011-04-15T05:09:46  <Stocha> ah you can't do that ?
+2011-04-15T05:09:54  <sigh> can't do what?
+2011-04-15T05:10:33  <Stocha> integer in base pi are not integers :p
+2011-04-15T05:10:41  <sigh> why not?
+2011-04-15T05:10:42  <Stocha> they are reals numbers :p
+2011-04-15T05:11:10  <Stocha> because they have infinite numbers of characters without them being all 1 or 0 after a finite number of step.
+2011-04-15T05:11:22  <sigh> you are confusing the objects with the representation
+2011-04-15T05:11:31  <Stocha> am i.
+2011-04-15T05:11:45  <sigh> yes
+2011-04-15T05:11:51  <Stocha> i have always used this system :p
+2011-04-15T05:12:06  <Stocha> How do you write 2 in base pi ?
+2011-04-15T05:12:37  <Stocha> i'm not familiar with those bases.
+2011-04-15T05:12:46  <Stocha> never encountered them yet.
+2011-04-15T05:12:52  <sigh> ok, 2 in base pi is just 2...
+2011-04-15T05:13:09  <Stocha> ?
+2011-04-15T05:13:14  <sigh> this is my favorite irrational base: http://en.wikipedia.org/wiki/Golden_ratio_base
+2011-04-15T05:13:27  <sigh> but integers have finite representation there :)
+2011-04-15T05:15:16  <Stocha> all non-negative integers have a unique representation as a terminating (finite) base-φ expansion
+2011-04-15T05:15:27  <Stocha> what does that phrase means ?
+2011-04-15T05:15:58  <sigh> what part don't you understand?
+2011-04-15T05:16:08  <Stocha> what's finite in there ?
+2011-04-15T05:16:23  <sigh> the length of the sting representing the number
+2011-04-15T05:16:27  <Stocha> what's a base phi expansion ?
+2011-04-15T05:16:41  <Stocha> so you are saying there a finite number of characters for representing integers ?
+2011-04-15T05:17:15  <Stocha> so my system hold to that base :p
+2011-04-15T05:17:16  <sigh> 9 in base phi is "10010.0101" which is 10 characters long which is finite
+2011-04-15T05:17:22  <sigh> sure
+2011-04-15T05:17:45  <sigh> but that's just a nice property of base phi
+2011-04-15T05:17:57  <Stocha> you wanted to show me there exists bases where integers cannot be represented with finite amount fo characters
+2011-04-15T05:18:57  <sigh> base pi is an example if your numbers are greater than 3
+2011-04-15T05:19:13  <Stocha> ah okay 2 was special case then :p
+2011-04-15T05:22:04  <sigh> 4 in base pi is approximately 10.2201...
+2011-04-15T05:22:11  <Stocha> http://www.dwheeler.com/essays/bases.html
+2011-04-15T05:22:22  <Stocha> i don't really get what irrationnal bases are yet :p
+2011-04-15T05:23:21  <sigh> 4 = 1*pi + 0*pi^0 + 2*pi^-1 + 2*pi^-2 + 0*pi^-3 + 1*pi^-4 + ....
+2011-04-15T05:23:57  <Stocha> what about 3 then ?
+2011-04-15T05:24:36  <antimatroid1> i saw a compelling argument the other day for defining tau  = 2pi
+2011-04-15T05:25:16  <sigh> Stocha: I am implicitly saying that the symbols we are using are 0,1,2,3 so 3 just equals 3 :)
+2011-04-15T05:25:26  <sigh> antimatroid1: sure let's re-write all the textbooks :P
+2011-04-15T05:25:36  <antimatroid1> sigh: don't need to
+2011-04-15T05:25:43  <antimatroid1> just start writing new ones using tau
+2011-04-15T05:26:38  <sigh> physicist wont be happy, they already use tau for a bunch of other stuff :P
+2011-04-15T05:27:06  <antimatroid1> i don't care for physicists :P
+2011-04-15T05:27:21  <Stocha> how many symbols are we using sigh ?
+2011-04-15T05:27:29  <antimatroid1> what i find annoying is some game theory texts using Sigma for the set of mixed strategies
+2011-04-15T05:27:56  <antimatroid1> imo Sigma should be reserved for summations
+2011-04-15T05:28:17  <sigh> for base pi? just 0,1,2,3 and the decimal point, so 5 I suppose
+2011-04-15T05:28:42  <sigh> antimatroid1: oh, you aren't going to like the definition of turing machines then :P
+2011-04-15T05:29:26  <antimatroid1> those muggles
+2011-04-15T05:29:45  <sigh> Sigma is used for the input alphabet of the tape
+2011-04-15T05:30:08  <antimatroid1> yeah i just checked the wiki page
+2011-04-15T05:30:14  <sigh> well, in theory of computation in general
+2011-04-15T05:30:30  <sigh> not just turing machines
+2011-04-15T05:30:44  <antimatroid1> yeah, i can live with it, but i wouldn't have personally made that choice
+2011-04-15T05:30:55  <sigh> :P
+2011-04-15T05:31:16  <antimatroid1> i would go so far as to say i would slap the person who did if given the change :P
+2011-04-15T05:31:23  <antimatroid1> chance**
+2011-04-15T05:31:30  <Stocha> in base Pi you should have Pi symbols don't you ?
+2011-04-15T05:31:49  <Stocha> or we go for two symbols.
+2011-04-15T05:31:51  <Stocha> why 5 ?
+2011-04-15T05:32:31  <sigh> well, 4 really... 5th was just decimal point for completeness :P
+2011-04-15T05:33:37  <sigh> Stocha: just by convention, we extend the concept of a positional number system by changing the base, but keeping the symbols as integers
+2011-04-15T05:34:10  <sigh> *non-negative integers
+2011-04-15T05:34:32  <sigh> of course, you can relax that constraint such as in systems like balanced ternary: http://en.wikipedia.org/wiki/Balanced_ternary
+2011-04-15T05:35:56  <sigh> if you like, I can specify that I was talking about base pi, using the digits {0,1,2,3}
+2011-04-15T05:39:50  <Stocha> okay
+2011-04-15T05:40:04  <sigh> in general, a positional number system has a set of digits S and a base B, any a number is represented as a string with a finite number of digits before the decimal point and a possibly infinite number after: eg "abc.def..." is equal to a*B^2+b*B^1+C*B^0+D*B^-1+E*B^-2+F*B^-3 ...
+2011-04-15T05:40:49  <sigh> in standard number systems, B is an integers and S is the set of non-negative integers less than B
+2011-04-15T05:41:05  <sigh> but there is nothing wrong with making either of those anything we like :)
+2011-04-15T05:41:46  <Stocha> So you take the set of real number in pi base, and a subset of them is in bijection with n. And the element of this subset have finite string writing in that base.
+2011-04-15T05:42:29  <sigh> yes
+2011-04-15T05:42:55  <sigh> if I understand you correctly
+2011-04-15T05:42:58  <Stocha> okay i think it's enough for today :)
+2011-04-15T05:43:05  <sigh> hehe :)
+2011-04-15T05:43:17  <Stocha> i'll ponder on it in the upcoming 10 years, and i ask you some more questions then.
+2011-04-15T05:43:22  <sigh> :P
+2011-04-15T05:43:32  <Stocha> hopefully you'll still be on the channel.
+2011-04-15T05:43:36  <sigh> at that point I'll hit you with 2-adic integers
+2011-04-15T05:43:42  <sigh> they are cool
+2011-04-15T05:43:55  <Stocha> at that point you'll have the field medal i hope :p
+2011-04-15T05:44:33  <sigh> haha
+2011-04-15T05:49:50  *** needsch <needsch!~Robert@s0622.dyn.hrz.tu-darmstadt.de> has joined #aichallenge
+2011-04-15T05:52:08  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-04-15T06:00:31  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-04-15T06:00:49  *** antimatroid1 <antimatroid1!~nick@88.153.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-04-15T06:02:17  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-04-15T06:20:52  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-04-15T06:26:23  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T06:31:26  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-254-95.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T06:32:12  *** chris___0076 <chris___0076!~Chris_007@adsl-176-16-18.asm.bellsouth.net> has quit IRC (Read error: Operation timed out)
+2011-04-15T06:48:06  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-15T06:58:26  *** chris__0076 <chris__0076!~Chris_007@adsl-176-221-122.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T07:00:17  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-254-95.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T07:08:09  *** chris___0076 <chris___0076!~Chris_007@adsl-190-127-167.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T07:09:56  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-15T07:10:05  *** chris__0076 <chris__0076!~Chris_007@adsl-176-221-122.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T07:41:40  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-15T07:52:56  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-15T07:53:35  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-15T08:05:25  *** zie1 <zie1!531bcd7e@gateway/web/freenode/ip.83.27.205.126> has joined #aichallenge
+2011-04-15T08:05:48  <zie1> hi
+2011-04-15T08:06:05  <delt0r_> zie1: hay
+2011-04-15T08:08:14  <zie1> Is this is a place where we will help each other to build AntAI ?
+2011-04-15T08:09:04  <Naktibalda> no, we don't help each other
+2011-04-15T08:11:01  <antimatroid> you are welcome to discuss strategies
+2011-04-15T08:11:11  <antimatroid> but generally people tend to agree it's better not to share code until the end
+2011-04-15T08:11:50  <jbroman> zie1: ai-contest.com/forum is probably the best place to discuss such things
+2011-04-15T08:14:08  <zie1> thanks
+2011-04-15T08:16:18  *** zie1 <zie1!531bcd7e@gateway/web/freenode/ip.83.27.205.126> has quit IRC (Quit: Page closed)
+2011-04-15T08:21:27  *** chris__0076 <chris__0076!~Chris_007@adsl-190-122-177.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T08:23:36  *** chris___0076 <chris___0076!~Chris_007@adsl-190-127-167.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T08:51:36  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T08:53:43  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T09:01:36  *** contestbot_ <contestbot_!~supybot@76-10-165-207.dsl.teksavvy.com> has joined #aichallenge
+2011-04-15T09:01:36  *** contestbot <contestbot!~supybot@206.248.181.93> has quit IRC (Disconnected by services)
+2011-04-15T09:03:30  *** contestbot_ is now known as contestbot
+2011-04-15T09:03:31  *** ChanServ sets mode: +o contestbot
+2011-04-15T09:21:55  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-04-15T09:22:16  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-04-15T09:22:31  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has quit IRC (Quit: Page closed)
+2011-04-15T09:24:31  *** chris___0076 <chris___0076!~Chris_007@adsl-66-194-184.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T09:26:16  *** chris__0076 <chris__0076!~Chris_007@adsl-190-122-177.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T09:26:49  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-253-247.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T09:27:01  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has joined #aichallenge
+2011-04-15T09:28:19  <jaycobcoleman> At the start of a match are bots going to passed the number of bots in the match?
+2011-04-15T09:28:33  *** chris___0076 <chris___0076!~Chris_007@adsl-66-194-184.asm.bellsouth.net> has quit IRC (Read error: Operation timed out)
+2011-04-15T09:28:53  <jaycobcoleman> *to be
+2011-04-15T09:29:25  <janzert> no, you can see https://github.com/aichallenge/aichallenge/wiki/Ant-bot-input-output for information on what is given to the bot
+2011-04-15T09:32:28  <jaycobcoleman> It shows "Players 2" being output, so assume this is being output only to the contestant then?
+2011-04-15T09:33:00  <jaycobcoleman> yes, got it
+2011-04-15T09:33:44  <janzert> just so it's clear, the player number is given after the game has ended
+2011-04-15T09:33:52  <janzert> along with the scores
+2011-04-15T09:38:16  <antimatroid> i requested the number of players at the end so my life was simpler :)
+2011-04-15T09:39:39  <jaycobcoleman> I think I'd like to add a function to some of the starter packs to determine the least number of players possible based on the different ant owners the bot has encountered. It's always going to be a power of two, correct?
+2011-04-15T09:40:18  * janzert still thinks it is misleading and basically useless to give that final state to the last bot but... *shrug*
+2011-04-15T09:41:22  <janzert> most likely number of players won't be limited to power of 2
+2011-04-15T09:41:28  <antimatroid> janzert: it's there for people to test with, you at least want the scores
+2011-04-15T09:41:44  <janzert> but only the last bot living even gets it
+2011-04-15T09:41:54  <janzert> you really should be handling it outside of the bot
+2011-04-15T09:42:05  <antimatroid> the number of players can be anything and still get symmetry
+2011-04-15T09:42:21  <antimatroid> it's very neat how well symmetry works on the torus
+2011-04-15T09:42:57  <jaycobcoleman> This is quite neat. I still haven't taken a good look at the map generator.
+2011-04-15T09:43:06  <jaycobcoleman> I thought it was simpler than that
+2011-04-15T09:43:21  <antimatroid> do you know what gcd and lcm are?
+2011-04-15T09:43:29  <jaycobcoleman> yes
+2011-04-15T09:44:23  <antimatroid> the idea of the symmetric maps is to pick noPlayers, rows, cols, row_translate, col_translate so that if you take a location, say (0,0) and translate it noPlayers times, you end up back on the same square (0,0)
+2011-04-15T09:44:58  <antimatroid> so then when you create a map, you just pick out a square that hasn't been filled yet, then tile the information noPlayer times
+2011-04-15T09:45:58  <jaycobcoleman> did you create the symmetric and the asymmetric?
+2011-04-15T09:46:04  <antimatroid> yes
+2011-04-15T09:46:19  <antimatroid> the asymmetric was fairly trivial compared to the symmetric, i just built it afterwards
+2011-04-15T09:46:22  *** chris__0076 <chris__0076!~Chris_007@adsl-176-225-101.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T09:46:30  <antimatroid> it does the same thing, except the random walks aren't repeated symmetrically
+2011-04-15T09:47:03  <antimatroid> stocha came up with the wonderful idea of random walk maps
+2011-04-15T09:47:05  <antimatroid> they work a treat
+2011-04-15T09:47:26  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-253-247.asm.bellsouth.net> has quit IRC (Read error: Operation timed out)
+2011-04-15T09:47:49  <jaycobcoleman> yes I though I heard him say something about that a couple days ago
+2011-04-15T09:50:07  <antimatroid> i tried making some with perlin noise but never had much success
+2011-04-15T09:50:11  <antimatroid> and pure random sucked
+2011-04-15T09:50:30  <jaycobcoleman> I should think so
+2011-04-15T09:50:55  <jaycobcoleman> I'll certainly gather some of my own ideas together and see if I can get something functional
+2011-04-15T09:51:44  <antimatroid> making maps is often one of the funnest and most overlooked problems imo
+2011-04-15T09:52:14  <jaycobcoleman> You have a lot of experience outside this competition?
+2011-04-15T09:52:27  <antimatroid> nope, had my first go at making maps for planet wars
+2011-04-15T09:53:03  <jaycobcoleman> Wish I could've done that one
+2011-04-15T09:53:14  <jaycobcoleman> But honestly I had no idea this existed then
+2011-04-15T09:53:21  <antimatroid> planet wars was annoyingly complicated
+2011-04-15T09:53:28  <antimatroid> i expect this to be simpler for people
+2011-04-15T09:53:33  <Naktibalda> oh really?
+2011-04-15T09:53:45  <Naktibalda> IMHO it's in opposite
+2011-04-15T09:53:51  <antimatroid> not necessarily to win, but do make a lot of noticable improvements
+2011-04-15T09:53:59  <Naktibalda> unless you are talking about TOP 10
+2011-04-15T09:54:00  <antimatroid> i think it will be easier with that respect
+2011-04-15T09:54:23  *** chris___0076 <chris___0076!~Chris_007@adsl-66-250-92.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T09:54:24  <antimatroid> there are a lot of clear things to work on and improve, which you should be able to observe watching games
+2011-04-15T09:54:31  <antimatroid> in planet wars that was very difficult
+2011-04-15T09:54:54  <antimatroid> my tron bot actually taught me a thing or two about perfect play
+2011-04-15T09:54:58  <antimatroid> i don't think my pw bot ever did that
+2011-04-15T09:55:12  <antimatroid> particularly with (I think) the keyhole map
+2011-04-15T09:56:22  *** chris__0076 <chris__0076!~Chris_007@adsl-176-225-101.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T09:56:26  <jaycobcoleman> are all the parameters in the mapgen official?
+2011-04-15T09:56:33  <antimatroid> no
+2011-04-15T09:56:48  <antimatroid> it is just an example
+2011-04-15T09:57:04  <jaycobcoleman> Oh I gotcha
+2011-04-15T09:57:21  <antimatroid> that is clearly stated in the specs
+2011-04-15T09:57:32  <antimatroid> but people will ignore it and assume those are official anyway :(
+2011-04-15T09:57:50  <antimatroid> i wrote the specs, i know exactly what's there :P
+2011-04-15T09:59:52  <jaycobcoleman> where are these specs of which you speak?
+2011-04-15T10:00:20  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-15T10:00:37  *** delt0r___ <delt0r___!~delt0r@188-22-163-29.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-15T10:00:54  <Stocha> Yeah i have a proposition for some maps. i call them the buble maps. I didn't try them yet. i guess i should. So many things i "should" do :p
+2011-04-15T10:01:08  *** delt0r_ <delt0r_!~delt0r@188-22-161-88.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-04-15T10:01:09  <Stocha> So (for assymetrical) the idea is : choose some points
+2011-04-15T10:01:31  <Stocha> grow a buble arround that point (can be any shape but let's say it's round)
+2011-04-15T10:01:43  <Stocha> Then you connect thoses bubles with corridors.
+2011-04-15T10:02:17  <Naktibalda> it could be like planet wars :)
+2011-04-15T10:02:25  <Stocha> yeah.
+2011-04-15T10:02:37  <Stocha> let's call that a planetwar with tunnels
+2011-04-15T10:03:14  <Stocha> it think it would be pretty different from most maps we have yet. but i don't know if i'd like to see them too often :p
+2011-04-15T10:03:45  <Stocha> The you could go for some kind of tree bubles also
+2011-04-15T10:04:19  <Stocha> rather than being conected randomly, the main buble forms a grid let's say. And then from there goes a node of bubles
+2011-04-15T10:04:43  <Stocha> You could try to use some factals also. Fractal buble maps.
+2011-04-15T10:04:53  <Stocha> Speaking of fractals.
+2011-04-15T10:05:58  <Stocha> Or maybe you just put the bubles, and grow them randomly until they touch oneanother.
+2011-04-15T10:06:12  <jaycobcoleman> do the corridors connect on the edges so it can wrap?
+2011-04-15T10:06:16  <Stocha> then you would have the reverse buble system. (water bubles)
+2011-04-15T10:06:27  <Stocha> jaycobcoleman: you have to
+2011-04-15T10:06:40  <Stocha> maps are supposed to wrap
+2011-04-15T10:06:46  <Stocha> you can't simple build a central stuff.
+2011-04-15T10:06:51  <Stocha> although maybe that is possible
+2011-04-15T10:07:00  <Stocha> like you do a single buble in the middle
+2011-04-15T10:07:43  <Stocha> Or a fractal tree that gros out
+2011-04-15T10:07:55  <Stocha> or spiral galactic shape
+2011-04-15T10:08:28  <Stocha> What about regular polygons in the middle. That is symetric. even if it doesn't wrap.
+2011-04-15T10:08:57  *** chris__0076 <chris__0076!~Chris_007@adsl-66-250-223.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T10:09:06  <Stocha> you can go for central symmetry suddenly
+2011-04-15T10:09:22  <Stocha> mm
+2011-04-15T10:09:30  <Stocha> maybe not :p
+2011-04-15T10:10:23  <jaycobcoleman> I was thinking about the idea of central symmetry
+2011-04-15T10:10:30  <jaycobcoleman> I think it's doable
+2011-04-15T10:11:46  *** chris___0076 <chris___0076!~Chris_007@adsl-66-250-92.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T10:12:47  <Stocha> you have only 4 directions
+2011-04-15T10:13:33  <Stocha> yeah maybe it's still doable.
+2011-04-15T10:13:53  <jaycobcoleman> meh. I'll come up with something wacky and ridiculous
+2011-04-15T10:22:22  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has quit IRC (Quit: Page closed)
+2011-04-15T10:43:01  *** chris__0076 <chris__0076!~Chris_007@adsl-66-250-223.asm.bellsouth.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-15T10:44:32  *** chris__0076 <chris__0076!~Chris_007@adsl-88-202-2.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T10:52:01  *** superflit <superflit!~superflit@140.226.49.148> has joined #aichallenge
+2011-04-15T11:01:06  *** aerique <aerique!310225@194.109.21.4> has quit IRC (Quit: ...)
+2011-04-15T11:07:31  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-15T11:10:31  <needsch> why not use manhattan distance? it's a grid anyway.
+2011-04-15T11:11:40  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-04-15T11:13:25  *** amstan <amstan!~amstan@76.10.165.207> has joined #aichallenge
+2011-04-15T11:13:25  *** ChanServ sets mode: +o amstan
+2011-04-15T11:14:33  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-04-15T11:15:03  <needsch> there's no point in calculating the euclidean distance if you can only travel from cell to cell.
+2011-04-15T11:16:47  <needsch> hmmm... but then there are no circles... hmmm
+2011-04-15T11:21:52  *** amstan <amstan!~amstan@76.10.165.207> has quit IRC (Ping timeout: 260 seconds)
+2011-04-15T11:32:51  <Stocha> squared circle are okay with me. But they are not going to change the rules now. People had to speak sooner :p
+2011-04-15T11:33:17  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-04-15T11:36:08  *** contestbot_ <contestbot_!~supybot@69-196-173-147.dsl.teksavvy.com> has joined #aichallenge
+2011-04-15T11:36:12  *** contestbot_ is now known as contestbot
+2011-04-15T11:36:14  *** ChanServ sets mode: +o contestbot
+2011-04-15T11:38:15  *** skynetz <skynetz!~none@unaffiliated/skynetz> has joined #aichallenge
+2011-04-15T11:41:51  *** contestbot_ <contestbot_!~supybot@75-119-241-144.dsl.teksavvy.com> has joined #aichallenge
+2011-04-15T11:41:51  *** contestbot <contestbot!~supybot@69-196-173-147.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-04-15T11:43:45  *** contestbot_ is now known as contestbot
+2011-04-15T11:43:46  *** ChanServ sets mode: +o contestbot
+2011-04-15T11:57:12  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has quit IRC ()
+2011-04-15T11:58:14  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-15T12:12:11  *** chris__0076 <chris__0076!~Chris_007@adsl-88-202-2.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T12:23:39  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T12:25:18  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-196-224.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T12:25:22  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T12:37:28  *** Gmind <Gmind!~Nevermind@113.190.172.242> has joined #aichallenge
+2011-04-15T12:37:38  *** Gmind <Gmind!~Nevermind@113.190.172.242> has left #aichallenge
+2011-04-15T12:46:28  *** chris__0076 <chris__0076!~Chris_007@adsl-176-223-211.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T12:48:14  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-196-224.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T12:53:06  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0/20110318052756])
+2011-04-15T12:56:00  *** chris___0076 <chris___0076!~Chris_007@adsl-190-123-247.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T12:57:42  *** chris__0076 <chris__0076!~Chris_007@adsl-176-223-211.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T12:58:15  *** Ice_Harley <Ice_Harley!b25e2d41@gateway/web/freenode/ip.178.94.45.65> has joined #aichallenge
+2011-04-15T13:13:30  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-04-15T13:13:30  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-04-15T13:14:08  *** chris__0076 <chris__0076!~Chris_007@adsl-66-197-51.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T13:16:14  *** chris___0076 <chris___0076!~Chris_007@adsl-190-123-247.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T13:20:40  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T13:21:24  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T13:22:11  *** amstan <amstan!~amstan@75.119.241.144> has joined #aichallenge
+2011-04-15T13:22:11  *** ChanServ sets mode: +o amstan
+2011-04-15T13:25:49  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-04-15T13:30:48  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Ping timeout: 264 seconds)
+2011-04-15T13:36:53  *** bhasker <bhasker!~bhasker@nat/yahoo/x-mddsbriolvavaqdu> has joined #aichallenge
+2011-04-15T13:46:09  *** Ice_Harley <Ice_Harley!b25e2d41@gateway/web/freenode/ip.178.94.45.65> has quit IRC (Quit: Page closed)
+2011-04-15T13:57:29  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Read error: Connection reset by peer)
+2011-04-15T13:58:15  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-15T14:06:34  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-04-15T14:12:43  *** choas <choas!~lars@87.146.205.217> has joined #aichallenge
+2011-04-15T14:22:10  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T14:35:41  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T14:48:13  *** delt0r_ <delt0r_!~delt0r@188-22-160-227.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-15T14:49:21  *** delt0r___ <delt0r___!~delt0r@188-22-163-29.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T14:50:39  *** boegel <boegel!~boegel@91.182.194.225> has joined #aichallenge
+2011-04-15T14:54:36  *** andy___ <andy___!4e48bcc4@gateway/web/freenode/ip.78.72.188.196> has joined #aichallenge
+2011-04-15T15:02:09  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T15:03:06  *** boegel <boegel!~boegel@91.182.194.225> has quit IRC (Quit: Leaving)
+2011-04-15T15:10:29  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T15:12:44  <bhasker> so which git branch should i pull down to play around with the ants code
+2011-04-15T15:12:57  <bhasker> mostly i want to run the a few bots to see how the game plays out etc
+2011-04-15T15:13:05  <bhasker> epsilon? or zeta?
+2011-04-15T15:18:04  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-04-15T15:23:52  <antimatroid> bhasker: epsilon
+2011-04-15T15:24:36  <bhasker> thanks :)
+2011-04-15T15:24:49  <bhasker> have to learn how to use git
+2011-04-15T15:30:39  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T15:31:26  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T15:32:15  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-04-15T15:39:55  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-04-15T15:40:32  *** andy___ <andy___!4e48bcc4@gateway/web/freenode/ip.78.72.188.196> has quit IRC (Quit: Page closed)
+2011-04-15T15:50:33  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-04-15T15:52:17  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-04-15T15:53:35  *** Eruonen <Eruonen!onensora@546BF933.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-15T16:05:18  <bhasker> antimatroid is there a 5 minute tutorial that i can look at how to setup the server to run a game with a few starter bots?
+2011-04-15T16:05:35  <antimatroid> bhasker: run one of the play_one_game scripts
+2011-04-15T16:05:45  <antimatroid> grab the output from the replay file in viewer
+2011-04-15T16:05:56  <antimatroid> then open copy_pate.html in visualiser and paste it in there
+2011-04-15T16:06:02  <antimatroid> we haven't simplified it yet sorry :P
+2011-04-15T16:06:04  <bhasker> ah k
+2011-04-15T16:06:44  <antimatroid> i use the following script
+2011-04-15T16:06:45  <antimatroid> #!/usr/bin/env sh
+2011-04-15T16:06:45  <antimatroid> ./playgame.py --seed 42 --verbose --output_dir viewer --turns 600 --food symmetric --map_file maps/symmetric_maps/symmetric_16.map "$@" "dist/sample_bots/python/antibot" "dist/sample_bots/python/antbot" "dist/sample_bots/python/antbot" "dist/sample_bots/python/antbot"
+2011-04-15T16:06:52  <bhasker> cool thanks
+2011-04-15T16:07:40  <antimatroid> those are actually c++ bots, i was lazy and just chucked them in that folder
+2011-04-15T16:10:07  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T16:11:34  <skynetz> would a vm image be appreciated?
+2011-04-15T16:11:56  <skynetz> once I manage to configure everything and automate it
+2011-04-15T16:12:03  <skynetz> I was thinking of making one
+2011-04-15T16:12:33  <antimatroid> ?
+2011-04-15T16:12:41  <bhasker> i wonder how much time i will have this time around, given that my wife is 4 days from her due date:)
+2011-04-15T16:15:15  *** boegel <boegel!~boegel@91.182.194.225> has joined #aichallenge
+2011-04-15T16:16:03  <skynetz> antimatroid, what wasn't clear?
+2011-04-15T16:16:26  <antimatroid> bhasker: congrats, enjoy the no sleep :)
+2011-04-15T16:16:34  <bhasker> :)
+2011-04-15T16:16:36  <antimatroid> skynetz: what's a vm image?
+2011-04-15T16:16:37  <bhasker> thanks
+2011-04-15T16:16:40  <bhasker> vmware
+2011-04-15T16:16:42  <bhasker> image
+2011-04-15T16:16:48  <skynetz> yes
+2011-04-15T16:16:57  <bhasker> basically something that you could download and run in vmplayer
+2011-04-15T16:16:58  <skynetz> not vmware specifically
+2011-04-15T16:17:01  <antimatroid> i have no idea what that is, i'm sure some people would like it
+2011-04-15T16:17:04  <bhasker> well yea can be xen or w/e
+2011-04-15T16:17:13  <bhasker> its basically a virtual machine
+2011-04-15T16:17:21  <bhasker> that comes with everything you need to run the code
+2011-04-15T16:17:27  <bhasker> and you just download and boot it up
+2011-04-15T16:17:34  <antimatroid> oh that might be cool
+2011-04-15T16:17:41  <antimatroid> McLeopold: ^^?
+2011-04-15T16:18:06  <antimatroid> although would it work on any os?
+2011-04-15T16:18:11  <skynetz> and because from the little i've seen it messes with various parts of configurations
+2011-04-15T16:18:20  <skynetz> yes
+2011-04-15T16:18:25  <antimatroid> :)
+2011-04-15T16:18:44  <bhasker> though vm's are notoriously slow
+2011-04-15T16:18:53  <bhasker> so..
+2011-04-15T16:18:58  <bhasker> not sure how useful it will be
+2011-04-15T16:19:05  <skynetz> hmm indeed
+2011-04-15T16:19:22  <bhasker> running vmware on my macbook makes me wanna pull my hair out
+2011-04-15T16:20:29  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T16:20:54  <antimatroid> i wouldn't run it, but it might be useful for people who don't have the tools and would struggle installing them all
+2011-04-15T16:21:03  <antimatroid> ie. beginners
+2011-04-15T16:24:42  <bhasker> probably
+2011-04-15T16:28:28  <bhasker> antimatroid the script you gave me
+2011-04-15T16:28:36  <bhasker> i modified it to run ants.py
+2011-04-15T16:28:43  <bhasker> instead of antbot as there is no such file in that directory
+2011-04-15T16:28:45  <antimatroid> i'm on ubuntu
+2011-04-15T16:28:52  <antimatroid> yeah, i told you that's what i use
+2011-04-15T16:29:00  <antimatroid> use the play_one_game scripts :P
+2011-04-15T16:29:03  <bhasker> hmm
+2011-04-15T16:29:11  <antimatroid> i was more pointing out how you can turn symmetric food spawning on
+2011-04-15T16:29:30  <bhasker> oh
+2011-04-15T16:29:34  <antimatroid> you should be able to run the play_one_game things from the command line
+2011-04-15T16:29:51  <antimatroid> cmd for windows, sh for linux/mac
+2011-04-15T16:30:11  <bhasker> ah i think i know what mistake i made
+2011-04-15T16:34:47  <skynetz> food/maps are going to be symmetric?
+2011-04-15T16:36:42  <bhasker> so how does this visualizer work i started up the httpserver
+2011-04-15T16:36:52  <bhasker> but the start/stop link just keeps blinking
+2011-04-15T16:36:56  <bhasker> clicking on it doesn't do anything
+2011-04-15T16:38:21  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110323143040])
+2011-04-15T16:42:13  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T16:43:03  <bhasker> hmm weird works now
+2011-04-15T16:43:38  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T16:49:04  <antimatroid> bhasker: open up copy_paste.html in the visualizer directory
+2011-04-15T16:49:20  <bhasker> hmm i just started up the http server works fine now
+2011-04-15T16:49:25  <antimatroid> then paste the contents of the replay file from the viewer directory onto that page and click load on the top
+2011-04-15T16:49:26  <bhasker> replays the last game played
+2011-04-15T16:49:34  <antimatroid> no, you're using the old shit viewer :P
+2011-04-15T16:49:36  <bhasker> this should be an interesting challenge
+2011-04-15T16:49:37  <bhasker> ooh
+2011-04-15T16:49:39  <antimatroid> there's a much better visualiser
+2011-04-15T16:49:46  <bhasker> hmm k
+2011-04-15T16:50:09  <antimatroid> skynetz: there's asymmetric and symmetric sample maps on the github page
+2011-04-15T16:50:20  <antimatroid> i expect asymmetric maps to be too unfair though
+2011-04-15T16:51:05  <bhasker> interesting visualizer
+2011-04-15T16:51:36  <antimatroid> frontier made it
+2011-04-15T16:51:47  <skynetz> Probably, so may I assume that it hasn't been finalised if it's going to be asymmetric and/or symmetric maps?
+2011-04-15T16:52:00  <antimatroid> yes, nothing has been finalised about maps
+2011-04-15T16:52:25  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification
+2011-04-15T16:52:28  <antimatroid> there's the specs page
+2011-04-15T16:52:43  <bhasker> its sweet, shows fog of war too
+2011-04-15T16:52:44  <bhasker> awesome
+2011-04-15T16:53:09  <bhasker> so will 4 be the max players per game?>
+2011-04-15T16:53:16  <bhasker> or can there be any number of players?
+2011-04-15T16:53:18  <bhasker> from 2-4?
+2011-04-15T16:53:36  <skynetz> I think i found a map where there can be 10
+2011-04-15T16:54:21  <bhasker> i wonder if it would be interesting to have a single player mode with a greedy bot, the bot to eat all food in the shorteest time wins
+2011-04-15T16:54:31  <antimatroid> atm 26 is the hard maximum
+2011-04-15T16:54:38  <antimatroid> but i expect it to be in the 4-6 range
+2011-04-15T16:55:16  <antimatroid> although i think the only thing left restricting it to 26 players is the map format
+2011-04-15T16:55:26  <antimatroid> for map files that is
+2011-04-15T16:56:21  *** skynetz <skynetz!~none@unaffiliated/skynetz> has quit IRC (Quit: .)
+2011-04-15T16:57:25  <janzert> I think there is a semi-decent chance we'll possibly make it up to the low teens
+2011-04-15T17:00:36  *** boegel <boegel!~boegel@91.182.194.225> has quit IRC (Quit: This computer has gone to sleep)
+2011-04-15T17:02:14  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T17:02:50  <antimatroid> janzert: by what?
+2011-04-15T17:03:02  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (Ping timeout: 260 seconds)
+2011-04-15T17:03:08  <antimatroid> memory limits? map sizes? non-random results?
+2011-04-15T17:05:29  <antimatroid> hmmm, rather annoying, if i try to edit the specs page, the formatting on the map file just goes out the window :\
+2011-04-15T17:05:43  <antimatroid> amstan: ^?
+2011-04-15T17:06:08  <antimatroid> like if i just click, edit page, then preview, the formatting just committed suicide or something :\
+2011-04-15T17:06:42  <amstan> did you change the markup type by mistake?
+2011-04-15T17:06:46  <amstan> make sure it's markdown
+2011-04-15T17:07:44  <antimatroid> it's on markdown
+2011-04-15T17:08:10  <antimatroid> i was trying to update the stuff about battle resolution etc :P
+2011-04-15T17:08:24  <antimatroid> but i don't want to save anything if i have to format stuff again, that's painful
+2011-04-15T17:09:05  *** superflit <superflit!~superflit@140.226.49.148> has quit IRC (Quit: superflit)
+2011-04-15T17:09:57  <antimatroid> same thing happens in ff as chrome :\
+2011-04-15T17:10:17  <antimatroid> the text in the textbox doesn't look like it would format like the page is currently displayed as? how would that happen?
+2011-04-15T17:10:29  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T17:10:40  <antimatroid> like, it's missing the extra spaces required for the formatting
+2011-04-15T17:13:21  <antimatroid> amstan: i have a feeling they changed the formatting for github wikis
+2011-04-15T17:13:29  <amstan> antimatroid: maybe
+2011-04-15T17:13:31  <antimatroid> i might have to suck it up and fix it up again
+2011-04-15T17:13:43  <antimatroid> if i add an empty line before it, it fixes itself
+2011-04-15T17:14:21  <antimatroid> so it wont be too hard to fix either
+2011-04-15T17:14:56  <antimatroid> hmmm or would that be a bug on their part?
+2011-04-15T17:15:09  <amstan> i think that's how it's supposed to be
+2011-04-15T17:15:27  <antimatroid> you used to be able to add two empty spaces to the end of a line as like a newline character
+2011-04-15T17:15:42  <antimatroid> well, clearly it worked before :P
+2011-04-15T17:16:16  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-04-15T17:19:36  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-15T17:26:53  *** chris__0076 <chris__0076!~Chris_007@adsl-66-197-51.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T17:29:23  <bhasker> so qq when does an ant take damage?
+2011-04-15T17:29:34  <bhasker> when there is an enemy ant adjacent to it?
+2011-04-15T17:31:10  *** amstan <amstan!~amstan@75.119.241.144> has quit IRC (Ping timeout: 260 seconds)
+2011-04-15T17:31:22  <antimatroid> the attack radius is sqrt(6)
+2011-04-15T17:31:34  <antimatroid> so any enemy ants within that radius get an equal share of the damage
+2011-04-15T17:31:53  <antimatroid> then any ants that sustain at least 1 damage on that turn (damage doesn't carry across turns) dies
+2011-04-15T17:32:34  <McLeopold> antimatroid: I'm thinking we should bring it down to sqrt(4)
+2011-04-15T17:33:09  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T17:35:36  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T17:36:22  <bhasker> so anytime ants come within sqrt(6) distance they will each do 1 point damage totally to all neighbouring ants?
+2011-04-15T17:37:35  <antimatroid> McLeopold: I don't mind what you do now that I have damage :)
+2011-04-15T17:37:46  <antimatroid> bhasker: yes
+2011-04-15T17:38:18  <bhasker> hmm k
+2011-04-15T17:38:20  <antimatroid> McLeopold: I would like spawn radius to be 1
+2011-04-15T17:39:15  <bhasker> and no diagonal movement is allowed right?
+2011-04-15T17:39:22  <antimatroid> no diagonal movement
+2011-04-15T17:39:32  <bhasker> k  i guess that makes pathfinding rather simple
+2011-04-15T17:39:34  <antimatroid> i don't like people being able to spawn ants across water, which is still possible with diagonal
+2011-04-15T17:39:46  <antimatroid> i would prefer people have to actually go around the water to the food
+2011-04-15T17:39:51  <bhasker> and i was reading the twiki, can ants/water spawn on water?
+2011-04-15T17:39:58  <antimatroid> no they can't
+2011-04-15T17:40:06  <bhasker> k
+2011-04-15T17:40:13  <antimatroid> i just updated the battle resolution and scoring parts of the wiki
+2011-04-15T17:43:34  *** amstan <amstan!~alex@216-58-42-50.cpe.distributel.net> has joined #aichallenge
+2011-04-15T17:43:34  *** ChanServ sets mode: +o amstan
+2011-04-15T17:43:49  <bhasker> ah k
+2011-04-15T17:44:15  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-127-34.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T17:55:26  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-127-34.asm.bellsouth.net> has quit IRC (Ping timeout: 252 seconds)
+2011-04-15T17:55:38  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Read error: Connection timed out)
+2011-04-15T17:59:19  *** berak <berak!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-15T18:00:33  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has quit IRC (Read error: No route to host)
+2011-04-15T18:00:39  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-15T18:01:31  *** berak <berak!~chatzilla@82.113.106.30> has quit IRC (Client Quit)
+2011-04-15T18:17:39  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-215-82.asm.bellsouth.net> has joined #aichallenge
+2011-04-15T18:23:24  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-04-15T18:27:01  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-04-15T18:34:56  <bhasker> hmm my bot gets the engine to fail:-\
+2011-04-15T18:35:46  <bhasker> http://pastebin.com/g0fsJn3B
+2011-04-15T18:37:03  <bhasker> found a bug i think
+2011-04-15T18:37:06  <bhasker> anyone around?
+2011-04-15T18:37:12  <bhasker> antimatroid?
+2011-04-15T18:39:02  <bhasker> McLeopold?
+2011-04-15T18:39:05  <bhasker> anyone?
+2011-04-15T18:47:12  <bhasker> filed an issue https://github.com/aichallenge/aichallenge/issues/69
+2011-04-15T18:48:53  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-04-15T18:50:32  <bhasker> hmm weird the issue doesn't come up on the list of issues
+2011-04-15T18:50:37  <bhasker> does someone have to approve the issue?
+2011-04-15T18:52:17  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-215-82.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-15T18:52:20  <jbroman> bhasker: Default view only shows issues that must be done by the beta milestone.
+2011-04-15T18:52:33  <jbroman> bhasker: If you clear the milestone selection in the left sidebar you'll see it.
+2011-04-15T18:52:38  <bhasker> hmm let me try that
+2011-04-15T18:52:58  <bhasker> ah i see it
+2011-04-15T18:53:09  <bhasker> doh
+2011-04-15T18:55:40  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-04-15T19:03:04  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-15T19:12:09  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-15T19:12:23  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-04-15T19:12:51  <CIA-33> aichallenge: sigh epsilon * r4780460 / ants/ants.py : Fix ZeroDivisionError when calculating score for colliding ants. - http://bit.ly/fpBCr3
+2011-04-15T19:14:48  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Read error: Connection reset by peer)
+2011-04-15T19:15:48  <bhasker> question
+2011-04-15T19:15:55  <bhasker> does the engine does drop a bot if it makes an invalid move
+2011-04-15T19:15:56  <antimatroid> answer
+2011-04-15T19:16:07  <bhasker> i am seeing my bot play till turn 20 and stops doing anything after that
+2011-04-15T19:16:11  <antimatroid> no, it ignores invalid movses
+2011-04-15T19:16:14  <bhasker> hmm weird
+2011-04-15T19:16:21  <bhasker> my bot just stops at a certain point
+2011-04-15T19:16:25  <bhasker> i don't see it doing anything
+2011-04-15T19:16:29  <antimatroid> it if crashes or times out it will stop participating
+2011-04-15T19:16:32  <antimatroid> and the ants will stop moving
+2011-04-15T19:16:59  <antimatroid> the ants are removed from the game so neighbouring enemies at least have to kill off what you had
+2011-04-15T19:17:09  <antimatroid> in an attempt and not unbalancing the game too much
+2011-04-15T19:17:12  <bhasker> ah but the engine doesn't seem to output anything:-\
+2011-04-15T19:17:15  <janzert> s/are/are not
+2011-04-15T19:17:20  <bhasker> telling me that i am being dropped
+2011-04-15T19:17:23  <bhasker> etc
+2011-04-15T19:17:35  <antimatroid> hmm, yeah that should really be done
+2011-04-15T19:17:35  <bhasker> and how much time does one have per turn?
+2011-04-15T19:17:47  <antimatroid> atm 1000 milliseconds
+2011-04-15T19:17:50  <antimatroid> but hopefully longer than hat
+2011-04-15T19:17:59  <bhasker> hmm maybe running 5 bots is probably killing that
+2011-04-15T19:17:59  <antimatroid> otherwise people wont be able to do anything cool
+2011-04-15T19:18:21  <bhasker> i really wonder with 5-6 bots playing
+2011-04-15T19:18:30  <bhasker> how will we insulate one bot from other bots aggresiveness
+2011-04-15T19:18:41  <bhasker> like if a couple of bots hog the cpu
+2011-04-15T19:18:42  <antimatroid> sigwait or whatever
+2011-04-15T19:18:45  <bhasker> and the other guy timesout
+2011-04-15T19:18:53  <janzert> sigstop
+2011-04-15T19:18:55  <antimatroid> not sure how we're going to ensure people get enough memory though
+2011-04-15T19:18:58  <bhasker> hmm
+2011-04-15T19:18:58  <bhasker> k
+2011-04-15T19:19:08  <bhasker> so you stop the bot let the other ones run
+2011-04-15T19:19:11  <bhasker> and do it in round robin?
+2011-04-15T19:19:18  <bhasker> giving each one a certain amount of time?
+2011-04-15T19:19:21  <janzert> pretty much
+2011-04-15T19:19:33  <bhasker> so games would last 6times longer if there are 6 bots?
+2011-04-15T19:19:56  <bhasker> oops i mean for each bot the turn time will go up by 1 seocnd?
+2011-04-15T19:20:22  <antimatroid> yep
+2011-04-15T19:20:22  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-04-15T19:20:25  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-04-15T19:20:33  <bhasker> ouch thats going to make for some really long games
+2011-04-15T19:20:40  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-15T19:21:31  <_flag> Anything of note happen in the last week?
+2011-04-15T19:33:33  <jmcarthur> bhasker: it's not so bad. rankings converge more quickly this way, at least
+2011-04-15T19:33:34  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-04-15T19:33:46  <jmcarthur> so that at least makes up for it a bit
+2011-04-15T19:35:54  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-15T19:36:41  *** choas <choas!~lars@87.146.205.217> has quit IRC (Quit: leaving)
+2011-04-15T19:46:16  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 276 seconds)
+2011-04-15T19:47:22  <janzert> _flag: see forums for notes on a meeting with jeff the other night
+2011-04-15T19:47:39  <janzert> main thing I guess is battle resolution is officially the damage optioin
+2011-04-15T20:05:04  <bhasker> another thing why does a map not accept less than max players?
+2011-04-15T20:07:30  <janzert> because it's not max players, it's number of players for the map ;)
+2011-04-15T20:07:50  <janzert> the engine just doesn't have any provision for not filling in every player spot
+2011-04-15T20:08:34  <bhasker> hmm
+2011-04-15T20:08:39  <bhasker> should be trivial change right?
+2011-04-15T20:08:46  <bhasker> to ignore certain start spots?
+2011-04-15T20:09:14  <bhasker> would make testing a lot easier if we could play every map with just 2 bots
+2011-04-15T20:09:15  <janzert> it probably would be, but don't expect the resulting game to be anything like fair
+2011-04-15T20:09:43  <janzert> just fill the slots with hunterbot :)
+2011-04-15T20:09:48  <bhasker> maybe we could modify the command to allow for exact start positions to be specified
+2011-04-15T20:09:50  <bhasker> for each player
+2011-04-15T20:09:59  <bhasker> holdbot is probably better
+2011-04-15T20:10:03  <bhasker> since it doesn't do anything
+2011-04-15T20:10:10  <janzert> that works too
+2011-04-15T20:10:10  <bhasker> so won't use up cpu
+2011-04-15T20:26:50  <bhasker> hmm
+2011-04-15T20:27:18  <bhasker> doh figured out why i was timing out
+2011-04-15T20:27:24  <bhasker> the game engine is not reading the stderr of the bots
+2011-04-15T20:27:28  <bhasker> so if the bot outputs any logs
+2011-04-15T20:27:36  <bhasker> then the write to stderr eventually blocks
+2011-04-15T20:27:39  <bhasker> and timesout the bot
+2011-04-15T20:27:46  <bhasker> let me open a bug
+2011-04-15T20:30:38  *** Eruonen <Eruonen!onensora@546BF933.cm-12-4d.dynamic.ziggo.nl> has quit IRC ()
+2011-04-15T20:55:52  *** xavi <xavi!6dba73de@gateway/web/freenode/ip.109.186.115.222> has joined #aichallenge
+2011-04-15T20:56:04  *** antimatroid <antimatroid!~nick@161.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-15T21:07:45  <bhasker> k i have a better sample bot as a framework which includes some logging etc in python
+2011-04-15T21:08:05  <bhasker> if people are interested i can commit it to my fork and you can pull it into trunk when you feel like it
+2011-04-15T21:25:17  <amstan> bhasker: yes
+2011-04-15T21:25:30  <amstan> bhasker: get a pull request, i'll look into it
+2011-04-15T21:50:37  *** amstan <amstan!~alex@216-58-42-50.cpe.distributel.net> has quit IRC (Ping timeout: 260 seconds)
+2011-04-15T21:55:39  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-04-15T22:20:53  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Read error: Connection reset by peer)
+2011-04-15T22:21:17  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-04-15T22:24:25  *** Sunhay <Sunhay!~ssbasi@taurine.csclub.uwaterloo.ca> has quit IRC (Ping timeout: 276 seconds)
+2011-04-15T22:27:06  *** xavi <xavi!6dba73de@gateway/web/freenode/ip.109.186.115.222> has quit IRC (Ping timeout: 252 seconds)
+2011-04-15T22:48:17  *** delt0r___ <delt0r___!~delt0r@188-22-160-220.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-15T22:49:03  *** delt0r_ <delt0r_!~delt0r@188-22-160-227.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-04-15T23:16:52  *** amstan <amstan!~amstan@75.119.241.144> has joined #aichallenge
+2011-04-15T23:16:52  *** ChanServ sets mode: +o amstan
+2011-04-15T23:57:49  *** javagamer <javagamer!~javagamer@ip-69-162-134-31.static.chi2.systeminplace.net> has quit IRC (Ping timeout: 246 seconds)

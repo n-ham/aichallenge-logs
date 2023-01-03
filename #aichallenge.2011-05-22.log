@@ -1,0 +1,876 @@
+2011-05-22T00:01:09  <amstan> demerzel: here.. i think i disabled that
+2011-05-22T00:03:00  <demerzel> oh your'e fine
+2011-05-22T00:03:09  <demerzel> it's the starter package anyway - the pathfinding logic is shitty
+2011-05-22T00:03:20  <demerzel> but honestly i didn't expect to put a lot of effort into the starter package haha
+2011-05-22T00:03:28  <demerzel> in that sense anwyay
+2011-05-22T00:03:59  <demerzel> it basically just goes west but gets stuck idk if i should bother to fix it for the starter package
+2011-05-22T00:04:16  <demerzel> i ahve a parallel real bot but it uses a completely different map idea that is quite a bit more advanced with XORs etc
+2011-05-22T00:04:21  <demerzel> dno't think i want to put that into the starter one
+2011-05-22T00:14:17  *** chris___0076 <chris___0076!~Chris_007@adsl-74-176-220-237.asm.bellsouth.net> has joined #aichallenge
+2011-05-22T00:16:16  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-225-159.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T00:26:30  *** chris__0076 <chris__0076!~Chris_007@adsl-98-66-252-38.asm.bellsouth.net> has joined #aichallenge
+2011-05-22T00:28:59  *** chris___0076 <chris___0076!~Chris_007@adsl-74-176-220-237.asm.bellsouth.net> has quit IRC (Ping timeout: 260 seconds)
+2011-05-22T00:35:20  *** Boom <Boom!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-22T00:47:28  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-22T00:48:15  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-22T01:00:42  *** Nebri <Nebri!Nebri@dhcp-0-22-b0-b2-4a-fb.cpe.quickclic.net> has quit IRC ()
+2011-05-22T01:02:59  <CIA-48> aichallenge: McLeopold epsilon * r47f870c / worker/worker.py : fix for 30 game no food issue. Closes #114 - http://bit.ly/k5EFoH
+2011-05-22T01:06:50  <amstan> McLeopold: woot!
+2011-05-22T01:07:05  <amstan> McLeopold: oh man! you serious? lol
+2011-05-22T01:07:10  <amstan> [:]
+2011-05-22T01:07:22  <McLeopold> yeah, I said earlier it was bad oop state
+2011-05-22T01:07:32  <McLeopold> modifying a global
+2011-05-22T01:07:50  <McLeopold> sry it's so late, life gets busy
+2011-05-22T01:08:27  <McLeopold> amstan: the api_game_result.php isn't running the manager.py correctly, so mu/sigma don't get updated
+2011-05-22T01:08:52  <amstan> my question is why there's so many duplicates in the rankings
+2011-05-22T01:09:00  <McLeopold> https://github.com/aichallenge/aichallenge/blob/epsilon/website/api_game_result.php#L99
+2011-05-22T01:09:28  <McLeopold> oh, that's because I'm going to attempt to show current and previous bots until the current bots stabalizes
+2011-05-22T01:09:43  <amstan> ok
+2011-05-22T01:09:45  <McLeopold> janzert and I had that discussion 2 months ago or so
+2011-05-22T01:10:04  <McLeopold> obviously, there's an issue with it right now...
+2011-05-22T01:10:11  <amstan> is it just me? or does this page not load? http://hypertriangle.com:13080/profile.php?user=7
+2011-05-22T01:10:19  <amstan> any user page for that matter
+2011-05-22T01:10:53  <amstan> apache is using 100% cpu
+2011-05-22T01:10:57  <McLeopold> hmm
+2011-05-22T01:11:02  <McLeopold> what about sql?
+2011-05-22T01:11:32  <amstan> it was fine
+2011-05-22T01:12:47  <McLeopold> It looks like you are running games?
+2011-05-22T01:13:16  <amstan> yes
+2011-05-22T01:13:21  <amstan> i restarted apache
+2011-05-22T01:13:46  <amstan> logs/error.log is full of [Sun May 22 01:13:22 2011] [error] [client 192.168.0.1] PHP Notice:  Use of undefined constant match_result - assumed 'match_result' in /home/contest/aichallenge/website/api_get_task.php on line 54
+2011-05-22T01:14:08  <McLeopold> I was just looking at that
+2011-05-22T01:14:16  <amstan> other than that, idk
+2011-05-22T01:14:21  <amstan> it was probably an infinite loop in apache
+2011-05-22T01:14:24  <amstan> php*
+2011-05-22T01:14:27  <amstan> that had to timout
+2011-05-22T01:14:54  <amstan> the user pages still take forever to load though
+2011-05-22T01:15:38  <McLeopold> it's probably my memcache code turned off
+2011-05-22T01:15:56  <amstan> memcached is in htop
+2011-05-22T01:17:41  <amstan> contestbot: later tell demerzel you know someone tried to do a c# starter before: https://github.com/jmcgonegal/aichallenge/commit/85ccd3ab669cc47b1fe63317b60870b0e4ded801
+2011-05-22T01:17:41  <contestbot> amstan: Yep.
+2011-05-22T01:17:59  <demerzel> tell me now
+2011-05-22T01:18:41  <amstan> demerzel: it's only one commit, it seems they kinda gave up after that
+2011-05-22T01:18:49  <demerzel> ah well the one i submitted works
+2011-05-22T01:18:54  <demerzel> did that one not work?
+2011-05-22T01:18:59  <amstan> i have no idea
+2011-05-22T01:20:07  <amstan> ok, well, i feel like going to sleep
+2011-05-22T01:20:16  <amstan> McLeopold: do you need my beta server anymore?
+2011-05-22T01:20:16  <demerzel> cya :)
+2011-05-22T01:20:22  <demerzel> yes he does
+2011-05-22T01:20:29  <McLeopold> amstan: yes
+2011-05-22T01:20:34  <amstan> aww
+2011-05-22T01:20:35  <amstan> ok
+2011-05-22T01:20:36  <demerzel> oh wait i guess not since the games are broken haha
+2011-05-22T01:20:46  <McLeopold> you want me to issue a shutdown later?  does that even help?
+2011-05-22T01:20:48  <amstan> demerzel: games are broken?
+2011-05-22T01:20:54  <demerzel> 30 turns no food
+2011-05-22T01:20:56  <amstan> McLeopold: yes, that would be nice
+2011-05-22T01:20:58  <demerzel> ?
+2011-05-22T01:21:08  <amstan> demerzel: you must have missed the [01:02] <CIA-48> aichallenge: McLeopold epsilon * r47f870c / worker/worker.py : fix for 30 game no food issue. Closes #114 - http://bit.ly/k5EFoH
+2011-05-22T01:21:14  <McLeopold> amstan: is there a command that would do a power off as well?
+2011-05-22T01:21:18  <demerzel> i did miss it then
+2011-05-22T01:21:22  <amstan> McLeopold: sudo shutdown -h now
+2011-05-22T01:22:49  <McLeopold> k
+2011-05-22T01:22:57  <amstan> thanks
+2011-05-22T01:44:17  *** jmpespxoreax <jmpespxoreax!~nosuchuse@unaffiliated/jmpespxoreax> has quit IRC (Read error: Operation timed out)
+2011-05-22T01:55:04  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-22T02:23:41  *** delt0r_ <delt0r_!~delt0r@188-22-167-62.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-22T03:16:18  *** demerzel <demerzel!63759e37@gateway/web/freenode/ip.99.117.158.55> has quit IRC (Ping timeout: 252 seconds)
+2011-05-22T03:17:17  *** berak <berak!~chatzilla@89.204.137.194> has joined #aichallenge
+2011-05-22T03:28:41  *** _0x47 <_0x47!~slash@p57B3E77A.dip.t-dialin.net> has joined #aichallenge
+2011-05-22T03:29:21  *** UncleVasya <UncleVasya!kvirc@31.144.25.179> has joined #aichallenge
+2011-05-22T04:21:44  *** UncleVasya <UncleVasya!kvirc@31.144.25.179> has quit IRC (Ping timeout: 260 seconds)
+2011-05-22T04:23:19  *** boegel <boegel!~boegel@91.182.88.225> has joined #aichallenge
+2011-05-22T04:32:28  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-05-22T04:49:53  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Quit: WeeChat 0.3.5)
+2011-05-22T05:16:54  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-05-22T06:37:38  *** mcstar <mcstar!~mcstar@adsl-89-134-11-153.monradsl.monornet.hu> has joined #aichallenge
+2011-05-22T06:44:06  *** orivej <orivej!~orivej@host-51-152-66-217.spbmts.ru> has quit IRC (Ping timeout: 248 seconds)
+2011-05-22T06:57:51  *** delt0r___ <delt0r___!~delt0r@188-22-172-51.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-22T06:59:29  *** delt0r_ <delt0r_!~delt0r@188-22-167-62.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-05-22T07:03:52  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-22T07:27:27  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 250 seconds)
+2011-05-22T07:43:49  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-05-22T08:03:05  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-22T08:10:15  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has joined #aichallenge
+2011-05-22T08:26:24  *** olexs <olexs!~Leviathan@drms-590cf79d.pool.mediaWays.net> has joined #aichallenge
+2011-05-22T08:35:24  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-22T08:51:49  *** berak <berak!~chatzilla@89.204.137.194> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T08:56:00  <smiley1983> I'm trying to find the correct setting for api_base_url in server_info.py when setting up a contest server inside a virtualbox. I've tried all of the api_something_something.php files from the website directory, but each gives me an error when I run worker.py -t
+2011-05-22T09:01:23  <smiley1983> Apache is running, the website is accessible on localhost, and I've made a few users and uploaded some code.
+2011-05-22T09:15:36  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-22T09:23:39  *** Eruonen <Eruonen!Its@546B3D94.cm-12-4a.dynamic.ziggo.nl> has joined #aichallenge
+2011-05-22T09:40:16  *** choas <choas!~lars@p578F6647.dip.t-dialin.net> has joined #aichallenge
+2011-05-22T09:53:26  <antimatroid> http://armorgames.com/play/11498/reimagine-the-game
+2011-05-22T09:53:27  <antimatroid> oh god
+2011-05-22T10:02:09  *** LastScene <LastScene!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-22T10:05:21  *** Ttech <Ttech!ttech@botters/staff/ttech> has quit IRC (Quit: Your nick was overruled.)
+2011-05-22T10:08:33  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-22T10:12:06  *** jmpespxoreax <jmpespxoreax!~nosuchuse@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-05-22T10:18:23  *** Ttech <Ttech!ttech@botters/staff/ttech> has joined #aichallenge
+2011-05-22T10:33:15  <mcstar> it says im a monster :(
+2011-05-22T10:38:43  *** boegel <boegel!~boegel@91.182.88.225> has quit IRC (Quit: This computer has gone to sleep)
+2011-05-22T10:40:03  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-22T10:47:16  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-05-22T10:53:06  *** Nebri <Nebri!Nebri@dhcp-0-22-b0-b2-4a-fb.cpe.quickclic.net> has joined #aichallenge
+2011-05-22T12:20:18  *** orivej <orivej!~orivej@host-51-152-66-217.spbmts.ru> has joined #aichallenge
+2011-05-22T12:20:23  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-22T12:25:47  *** berak <berak!~chatzilla@89.204.153.172> has joined #aichallenge
+2011-05-22T12:43:24  *** berak_ <berak_!~chatzilla@89.204.137.169> has joined #aichallenge
+2011-05-22T12:44:58  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-22T12:46:40  *** berak <berak!~chatzilla@89.204.153.172> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T12:49:42  *** boegel <boegel!~boegel@91.182.88.225> has joined #aichallenge
+2011-05-22T13:04:32  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-22T13:24:49  *** boegel <boegel!~boegel@91.182.88.225> has quit IRC (Quit: This computer has gone to sleep)
+2011-05-22T13:30:30  *** demerzel <demerzel!63759e37@gateway/web/freenode/ip.99.117.158.55> has joined #aichallenge
+2011-05-22T13:39:39  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-22T13:55:59  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-05-22T14:01:49  *** Nebri <Nebri!Nebri@dhcp-0-22-b0-b2-4a-fb.cpe.quickclic.net> has quit IRC ()
+2011-05-22T14:01:57  *** Eruonen <Eruonen!Its@546B3D94.cm-12-4a.dynamic.ziggo.nl> has quit IRC ()
+2011-05-22T14:22:09  *** boegel <boegel!~boegel@91.182.88.225> has joined #aichallenge
+2011-05-22T14:28:42  *** chris___0076 <chris___0076!~Chris_007@adsl-74-190-129-115.asm.bellsouth.net> has joined #aichallenge
+2011-05-22T14:28:42  *** UncleVasya <UncleVasya!kvirc@88-214-111-194.dialup.umc.net.ua> has joined #aichallenge
+2011-05-22T14:29:30  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-22T14:29:43  *** chris__0076 <chris__0076!~Chris_007@adsl-98-66-252-38.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-22T14:31:49  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 244 seconds)
+2011-05-22T14:36:12  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-22T14:36:12  *** ChanServ sets mode: +o amstan
+2011-05-22T14:40:40  <demerzel>  amstan why are you running the server on your home machine
+2011-05-22T14:40:46  <demerzel> i can grab a linux vps for cheap if you want one
+2011-05-22T14:41:25  <amstan> demerzel: i have nothing else
+2011-05-22T14:41:31  <amstan> demerzel: that could help
+2011-05-22T14:41:36  <demerzel> if i gave you access to a vps would you use it?
+2011-05-22T14:41:37  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-05-22T14:41:49  <amstan> demerzel: for beta testing, probably
+2011-05-22T14:42:08  <demerzel> is the actual contest run on uni servers or clouded or what?
+2011-05-22T14:42:10  <demerzel> i don't remember
+2011-05-22T14:42:16  <amstan> ec2
+2011-05-22T14:42:43  <demerzel> ah so you are clouding yea i can grab you a vps it's only like 20 bucks for a pretty decent one
+2011-05-22T14:43:02  <demerzel> actually we might have an extra softlayer node at work
+2011-05-22T14:43:06  <demerzel> i'll check on that
+2011-05-22T14:43:13  <amstan> what os?
+2011-05-22T14:43:20  <demerzel> debian iirc
+2011-05-22T14:43:39  <amstan> it should be ubuntu natty, we haven't tested the framework on debian
+2011-05-22T14:43:46  <amstan> there's different package names, locations and so on
+2011-05-22T14:43:57  <demerzel> ah the vps are ubuntu i think so i'll grab that
+2011-05-22T14:44:59  <demerzel> damn they're running a special even
+2011-05-22T14:45:06  <demerzel> 2gig mem / 100gb storage?
+2011-05-22T14:45:13  <amstan> that's fine
+2011-05-22T14:48:01  <demerzel> nameserver?
+2011-05-22T14:48:06  <demerzel> i think i only own one domain
+2011-05-22T14:48:19  <demerzel> or i guess you could access it by IP that's what i did
+2011-05-22T14:53:25  *** olexs1 <olexs1!~Leviathan@drms-590ed13c.pool.mediaWays.net> has joined #aichallenge
+2011-05-22T14:55:07  *** olexs <olexs!~Leviathan@drms-590cf79d.pool.mediaWays.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T14:58:27  *** delt0r_ <delt0r_!~delt0r@188-22-165-14.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-22T14:59:21  *** KP13 is now known as Kingpin13
+2011-05-22T14:59:41  *** delt0r___ <delt0r___!~delt0r@188-22-172-51.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-05-22T15:05:09  *** UncleVasya <UncleVasya!kvirc@88-214-111-194.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-05-22T15:05:37  *** chris___0076 <chris___0076!~Chris_007@adsl-74-190-129-115.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T15:06:57  *** chris___0076 <chris___0076!~Chris_007@adsl-98-66-251-214.asm.bellsouth.net> has joined #aichallenge
+2011-05-22T15:12:32  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-215-123.asm.bellsouth.net> has joined #aichallenge
+2011-05-22T15:14:22  *** chris___0076 <chris___0076!~Chris_007@adsl-98-66-251-214.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T15:23:16  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-215-123.asm.bellsouth.net> has quit IRC (Read error: Operation timed out)
+2011-05-22T15:24:27  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-17-251.asm.bellsouth.net> has joined #aichallenge
+2011-05-22T15:26:56  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-05-22T15:45:10  *** olexs1 <olexs1!~Leviathan@drms-590ed13c.pool.mediaWays.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-22T15:52:37  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-05-22T15:52:58  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2011-05-22T16:05:27  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-05-22T16:12:49  *** berak_ <berak_!~chatzilla@89.204.137.169> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T16:13:18  * amstan is setting up the beta host donated by demerzel
+2011-05-22T16:13:41  <demerzel> hopefully its not a pos
+2011-05-22T16:13:43  <demerzel> lol
+2011-05-22T16:17:55  * Frontier is setting up his administration in the citadel donated by our benefactors
+2011-05-22T16:19:11  <amstan> demerzel: it's a little fishy though, it's not a default ubuntu install, there's a bunch of warning poping out
+2011-05-22T16:19:42  <demerzel> warning?
+2011-05-22T16:20:20  <demerzel> if you cant use it tell me soon so i can get it from my buddyhost
+2011-05-22T16:20:28  <demerzel> just chargeback that one
+2011-05-22T16:20:33  <demerzel> <3 paypal
+2011-05-22T16:22:28  <amstan> i believe i can
+2011-05-22T16:22:39  <amstan> it'll be less of a hassle to try to fix it, than change hosts
+2011-05-22T16:22:54  <demerzel> well you're about 10 minutes into that one lol
+2011-05-22T16:22:54  <amstan> and i think i just fixed it
+2011-05-22T16:22:58  <demerzel> that sounds good tho
+2011-05-22T16:23:01  <amstan> http://ubuntuforums.org/showthread.php?p=2090770#post2090770
+2011-05-22T16:23:14  <amstan> demerzel: so you wanted a user then?
+2011-05-22T16:23:23  <amstan> demerzel ok?
+2011-05-22T16:23:26  <demerzel> yep
+2011-05-22T16:23:34  <demerzel> just reply to my forwarded email with it
+2011-05-22T16:23:50  <demerzel> doubt i will use it but good for emergencies
+2011-05-22T16:24:30  <demerzel> i will get the dns resolving correctly lost my cpanel login for the host haha
+2011-05-22T16:24:37  <demerzel> once i get ticket resolved i will fix it
+2011-05-22T16:25:13  <demerzel> what perl are you using?
+2011-05-22T16:25:18  <demerzel> i mean what does the perl do for you
+2011-05-22T16:25:25  <amstan> demerzel: ssh demerzel@aichallengebeta.hypertriangle.com
+2011-05-22T16:25:35  <amstan> demerzel: the pass is the root pass that you sent me
+2011-05-22T16:25:41  <demerzel> ok
+2011-05-22T16:25:55  <demerzel> email me anyway when you get a chance so i have it somewhere other than here
+2011-05-22T16:26:06  <amstan> demerzel: login now, it'll ask you to change the pass
+2011-05-22T16:26:15  <amstan> demerzel: you can put something that you can remember then
+2011-05-22T16:26:26  <demerzel> leaving in a min
+2011-05-22T16:26:31  *** stride is now known as dominictarr
+2011-05-22T16:26:36  *** dominictarr is now known as stride
+2011-05-22T16:27:05  <amstan> demerzel: sent
+2011-05-22T16:27:10  <demerzel> ty
+2011-05-22T16:30:06  *** boegel <boegel!~boegel@91.182.88.225> has quit IRC (Quit: Leaving)
+2011-05-22T16:31:14  <_flag> Is there a way I can find out what's the rate at which food spawns (how much food per unit area per turn)?
+2011-05-22T16:34:27  * amstan goes to eat
+2011-05-22T16:34:37  <amstan> _flag: how about having a statistic
+2011-05-22T16:34:42  <amstan> observe around you
+2011-05-22T16:41:54  <_flag> I suppose what I mean is if that's something that has been discussed and settled upon. I'd assume it's in the engine somewhere (I'm trying to find it right now)
+2011-05-22T16:42:03  *** chris___0076 <chris___0076!~Chris_007@adsl-74-190-124-50.asm.bellsouth.net> has joined #aichallenge
+2011-05-22T16:43:37  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-17-251.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-22T16:48:48  *** chris___0076 <chris___0076!~Chris_007@adsl-74-190-124-50.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-05-22T16:50:30  <_flag> It would appear that food spawns at a rate of player_num/map_area/turn
+2011-05-22T17:01:05  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-05-22T17:01:30  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-05-22T17:05:56  <amstan> contestbot: later tell mcleopold We have a new test server(donated by demerzel), please contact me for details
+2011-05-22T17:05:56  <contestbot> amstan: I think that worked...
+2011-05-22T17:12:10  *** choas <choas!~lars@p578F6647.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-05-22T17:31:34  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-22T17:31:48  <amstan> sigh: i'm working on the credits page
+2011-05-22T17:32:02  <amstan> sigh: i included everyone like this: "amstan (Alexandru Stan)"
+2011-05-22T17:32:09  <amstan> sigh: do you want me to get your full name as well in there?
+2011-05-22T17:35:27  <sigh> amstan: is it ok if I don't have my full name there for now?
+2011-05-22T17:35:33  <amstan> sigh: that's fine
+2011-05-22T17:35:40  <sigh> thanks
+2011-05-22T17:35:57  <amstan> so far it looks like this: http://home.hypertriangle.com/~alex/aichallenge/website/credits.php
+2011-05-22T17:36:05  <amstan> oppinions, concerns?
+2011-05-22T17:38:27  <CIA-48> aichallenge: Alexandru Stan epsilon * r7562419 / (4 files in 2 dirs): changed the footer to include links, removed people from the credits - http://bit.ly/mst2dZ
+2011-05-22T17:38:27  <CIA-48> aichallenge: Alexandru Stan epsilon * r985a59e / website/credits.php : redesigned the credits page - http://bit.ly/kWWPeb
+2011-05-22T17:38:28  <CIA-48> aichallenge: Alexandru Stan epsilon * r487fd58 / (4 files in 2 dirs): Merge branch 'credits' into epsilon - http://bit.ly/kRnVkj
+2011-05-22T17:39:04  <mcstar> (your not asking me, and its a negative opinion, but i dont think that green theme is nice)
+2011-05-22T17:39:26  <amstan> mcstar: someone is working on a new theme
+2011-05-22T17:39:30  <amstan> we'll see what he's got
+2011-05-22T17:39:55  <amstan> mcstar: would you prefer that we don't switch teams, stay with the old one?
+2011-05-22T17:40:04  <amstan> themes*
+2011-05-22T17:40:36  <mcstar> actually i liked that
+2011-05-22T17:40:51  <mcstar> no colors, except a nice image with a logo in the header or something
+2011-05-22T17:41:47  <mcstar> thaT look like professional, and this green one is sort of cheap-looking
+2011-05-22T17:41:54  <mcstar> if you know what i mean
+2011-05-22T17:42:21  <mcstar> but the font is nice on the new page
+2011-05-22T17:42:27  <mcstar> is it the new ubuntu font?
+2011-05-22T17:42:53  <amstan> yes
+2011-05-22T17:51:34  <amstan> well.. shit: There is insufficient memory for the Java Runtime Environment to continue.
+2011-05-22T17:51:44  <amstan> how does that work? i have 2GB, 100MB is used
+2011-05-22T17:58:54  *** _0x47 <_0x47!~slash@p57B3E77A.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-05-22T18:03:45  <amstan> demerzel: ping
+2011-05-22T18:03:50  <demerzel> ?
+2011-05-22T18:04:09  <amstan> demerzel: i'm having some issues running java, i think it's because that burst ram thing
+2011-05-22T18:04:19  <amstan> is there a way i can access this: https://secure.sshvm.com/clientarea.php
+2011-05-22T18:04:25  <amstan> for the support
+2011-05-22T18:04:57  <demerzel> yes pm
+2011-05-22T18:16:04  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-05-22T18:19:17  <Frontier> @later tell McLeopold: map files can now be read by the visualizer like replay files. Only the toolbar buttons will be shown (excluding the speed buttons)
+2011-05-22T18:19:17  <contestbot> Frontier: Ready to serve.
+2011-05-22T18:20:18  <amstan> Frontier: is there a way to make the visualizer on the frontpage link to a visualizer page?
+2011-05-22T18:20:23  <Frontier> amstan: I don't know how much you know about Java, but the default memory limit was at 256 MB for a long time. You can set it with -Xms or something like that
+2011-05-22T18:20:40  <amstan> Frontier: how do you make ant do that?
+2011-05-22T18:20:41  <Frontier> amstan: you want a link to the 'original' replay?
+2011-05-22T18:21:01  <Frontier> is the build process the prooblem?
+2011-05-22T18:21:06  <amstan> Frontier: yes
+2011-05-22T18:21:09  <amstan> probably more though
+2011-05-22T18:21:19  <amstan> i think that java doesn't like the ubuntu vm
+2011-05-22T18:21:20  <demerzel> amstan: If you are executing the <java> task in Ant you can add the <jvmarg value="=Xmx256m" /> tag to it.
+2011-05-22T18:21:35  <amstan> since it has 1GB of actual ram, but 2GB burst(whatever that means)
+2011-05-22T18:21:36  <Frontier> that is strange, I never hat to fiddle with the default setting for anything.
+2011-05-22T18:21:37  <amstan> http://pastebin.com/fm3xK8DY
+2011-05-22T18:21:43  <Frontier> except for Java servers
+2011-05-22T18:22:04  <demerzel> idk wtf 'burst' ram is in thsi case tho
+2011-05-22T18:22:16  <demerzel> hopefully the first gig is real ram lol
+2011-05-22T18:22:17  <Frontier> maybe disk swap :p
+2011-05-22T18:22:59  <Frontier> Is this ubuntu using icedtea6?
+2011-05-22T18:23:02  <demerzel> try 512 or 796 just to be sure you're under the 1st meg
+2011-05-22T18:23:07  <demerzel> err gig
+2011-05-22T18:23:19  <amstan> java version "1.6.0_22"
+2011-05-22T18:23:20  <amstan> OpenJDK Runtime Environment (IcedTea6 1.10.1) (6b22-1.10.1-0ubuntu1)
+2011-05-22T18:23:21  <amstan> OpenJDK 64-Bit Server VM (build 20.0-b11, mixed mode)
+2011-05-22T18:23:28  <demerzel> openjdk hmm
+2011-05-22T18:23:43  <Frontier> so the options may be different ^^
+2011-05-22T18:23:52  <demerzel> never used open always used sun
+2011-05-22T18:24:00  <demerzel> even on the centos vps i had
+2011-05-22T18:24:23  <demerzel> should be the same tho as far as ant is concerned
+2011-05-22T18:24:24  <amstan> well, i'm thinking we might have this issue on ec2 as well
+2011-05-22T18:25:09  <demerzel> have you tried adding that tag?
+2011-05-22T18:25:16  <Frontier> They probably support most of the Sun command line options
+2011-05-22T18:25:20  <amstan> demerzel: where?
+2011-05-22T18:25:34  <demerzel> yea ec2 probably won't have the same issues as some homebrew reseller
+2011-05-22T18:25:50  <demerzel> considering they've probably had the issue come up a billion times
+2011-05-22T18:26:02  <demerzel> i assume to the actual script
+2011-05-22T18:26:07  <demerzel> unless there's an xml config file somewhere
+2011-05-22T18:26:09  <demerzel> for ant that is
+2011-05-22T18:26:29  <amstan> demerzel: well, we have this: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/visualizer/build.xml
+2011-05-22T18:26:43  <demerzel> there's also something called ANT_OPTS environment variable
+2011-05-22T18:26:57  <demerzel> i don't know that much about ant since i don't use it but afaik it's just an xml build script
+2011-05-22T18:27:17  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-22T18:27:26  <Frontier> "The size of the initial heap is set dynamically, depending on your machine's capacity." - since we all have more than 1 gig i assume that the limit is set too low for this test server
+2011-05-22T18:28:11  <demerzel> i /think/ you would put the <jvmarg value="=Xmx256m" /> inside the javac tags
+2011-05-22T18:28:35  <amstan> demerzel: after line 22?
+2011-05-22T18:28:51  <amstan> also, isn't it -Xmx?
+2011-05-22T18:29:09  <demerzel> maybe a typo
+2011-05-22T18:29:11  <demerzel> yankedt hat
+2011-05-22T18:29:14  <demerzel> actually wait look at the java tag
+2011-05-22T18:29:15  <demerzel>       <arg value="${src.js}" />
+2011-05-22T18:29:21  <demerzel> why not just try changing that
+2011-05-22T18:29:24  <demerzel> is it dying on javac or java
+2011-05-22T18:29:41  <demerzel> looks like arg is a no nonsense addition of whatever the hell
+2011-05-22T18:29:41  <amstan>  /home/contest/aichallenge/ants/visualizer/build.xml:36: java.io.IOException: Cannot run program "/usr/lib/jvm/java-6-openjdk/jre/bin/java"
+2011-05-22T18:29:43  <demerzel> so that's a good fallback
+2011-05-22T18:30:42  <demerzel> idk honestly i'd just be making an .sh if i were you but thats only because i would rather not dick with ant xml and just write the commands myself
+2011-05-22T18:31:07  <demerzel> or at least just make the first javac statement and try to run it with the Xmx tag and see if it works
+2011-05-22T18:31:15  <demerzel> if it does then you know what to do at least
+2011-05-22T18:31:33  <demerzel> and its just a matter of translating it to ant
+2011-05-22T18:32:02  <CIA-48> aichallenge: Alexandru Stan fix-java-on-vm * rf0f8d51 / ants/visualizer/build.xml : added upper limit for ram - http://bit.ly/iyt19Y
+2011-05-22T18:32:06  <amstan> like that?
+2011-05-22T18:32:21  *** antimatroid <antimatroid!~nick@94.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-05-22T18:33:06  <Frontier> does that work?
+2011-05-22T18:33:18  <amstan>  /home/contest/aichallenge/ants/visualizer/build.xml:22: javac doesn't support the nested "jvmarg" element.
+2011-05-22T18:33:25  <demerzel> drop the jvmarg part
+2011-05-22T18:33:27  <demerzel> just arg
+2011-05-22T18:33:44  <demerzel> since you know arg is just a 'put this on the command line'
+2011-05-22T18:33:55  <amstan> nope
+2011-05-22T18:34:00  <amstan> same stuff
+2011-05-22T18:34:08  *** mcstar <mcstar!~mcstar@adsl-89-134-11-153.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-05-22T18:34:21  <demerzel> well sheeit
+2011-05-22T18:34:26  <Frontier> ANT_OPTS="-Xmx32m" ant deploy    <- works for me
+2011-05-22T18:34:34  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-05-22T18:34:40  <demerzel> ah so the ANT_OPTS is a good lead then cool
+2011-05-22T18:34:48  <amstan> Frontier: nope
+2011-05-22T18:35:13  <Frontier> try 64m or 700m
+2011-05-22T18:35:41  <Frontier> but I don't get why it would work with 32m in the Sun JVM and not with the default in icedtea
+2011-05-22T18:35:57  *** mcstar <mcstar!~mcstar@adsl-89-134-11-153.monradsl.monornet.hu> has joined #aichallenge
+2011-05-22T18:36:01  <Frontier> i mean how low can that default be on a 1gb machine?!
+2011-05-22T18:36:16  <amstan> i don't think it's actually out of memory
+2011-05-22T18:36:27  <Frontier> I don't think either, but what is it then?
+2011-05-22T18:36:27  <amstan> i think it's a false error or something caused by that burst ram
+2011-05-22T18:36:38  <amstan> it tries to use the whole 2gb but it can't
+2011-05-22T18:36:51  <demerzel> ahhh
+2011-05-22T18:36:56  <Frontier> or maybe I just set the limit for ant with ANT_OPTS, but not the sub tasks...
+2011-05-22T18:36:58  <demerzel> ant runs javac in process unlike java
+2011-05-22T18:37:06  <demerzel> ANT_OPTS should be doing it
+2011-05-22T18:37:07  <demerzel> but
+2011-05-22T18:37:10  <demerzel> If, however, you specify the attribute fork="true" on the <javac> tag you will be able to specify -J-Xms and -J-Xmx.
+2011-05-22T18:37:29  <demerzel> forces it to actually launch javac separately instead of inproc with ant
+2011-05-22T18:37:45  <amstan> demerzel: you can ssh in and try it
+2011-05-22T18:37:47  <Frontier> Which slows down the compile in turn :p, but yeah
+2011-05-22T18:37:55  <amstan> command is this: contest@aichallengebeta:~/aichallenge/ants/visualizer$ ant deploy -Djava.plugin=/usr/share/icedtea-web/plugin.jar -Ddeploy.path=/home/contest/aichallenge/website
+2011-05-22T18:38:02  <amstan> sudo su contest to switch user
+2011-05-22T18:38:06  <amstan> Frontier: wanna try?
+2011-05-22T18:38:08  <demerzel> pass :P
+2011-05-22T18:38:11  <demerzel> http://stackoverflow.com/questions/4134803/ant-passing-compilerarg-into-javac
+2011-05-22T18:38:40  <demerzel> i don't really use linux or ant so debugging problems with those 2 is far outside my specialty
+2011-05-22T18:38:50  <amstan> Frontier: ?
+2011-05-22T18:39:06  <Frontier> yeah sure, I was wondering what my password was
+2011-05-22T18:39:29  <demerzel> tbh this should work -- set ANT_OPTS=-Xms128m -Xmx512m
+2011-05-22T18:39:33  <demerzel> but idk
+2011-05-22T18:39:37  <amstan> Frontier: ssh frontrier@aichallengebeta.hypertriangle.com
+2011-05-22T18:39:39  <Frontier> looks, like I will need a coffee, it is 00:40 here :p
+2011-05-22T18:39:41  <amstan> Frontier: hold on a sec
+2011-05-22T18:39:47  <demerzel> frontrier?
+2011-05-22T18:39:48  <demerzel> lol
+2011-05-22T18:42:43  <amstan> Frontier: sudo su contest
+2011-05-22T18:44:23  <Frontier> ok, so it is the compile-js part failing
+2011-05-22T18:44:35  <amstan> yes, as shown in the pastebin
+2011-05-22T18:45:23  *** asdf_ <asdf_!62eb89b6@gateway/web/freenode/ip.98.235.137.182> has joined #aichallenge
+2011-05-22T18:49:58  <Frontier> it is an IOException
+2011-05-22T18:52:28  <Frontier> someone solved this by increasing the number of file descriptors with "ulimit -n 2048"
+2011-05-22T18:52:51  <Frontier> but mine is set to 1024, too and it doesn't work on the server
+2011-05-22T18:53:00  <Frontier> i mean: it doesnt solve the problem
+2011-05-22T18:56:27  <demerzel> There are memoryInitialSize (equivalent to -Xms) and memoryMaximumSize (equivalent to -Xmx) options for the javac task so try those instead of using compilerargs e.g.
+2011-05-22T18:56:35  <demerzel> only other thing i've read of interest
+2011-05-22T18:56:52  <demerzel> <javac srcdir="${test.src.dir}" destdir="${test.dist.dir}"   memoryInitialSize="128m"   memoryMaximumSize="512m">
+2011-05-22T18:57:40  <demerzel> amstan: ticket just got a response
+2011-05-22T18:57:43  <demerzel> The required changes is already done. root@aichallengebeta:/# cat /proc/sys/vm/overcommit_memory 0
+2011-05-22T18:57:52  <demerzel> doesn't mean a damn thing to me but that's the meat of it
+2011-05-22T18:58:17  <amstan> demerzel: it's supposed to be 1, not 0
+2011-05-22T18:58:20  <Frontier> they work for javac only, not for java, and yes i tried them ;)
+2011-05-22T18:58:28  <demerzel> says we should have 1732
+2011-05-22T18:58:39  <Frontier> dmerzel: Yeah just found that thread, too
+2011-05-22T18:58:39  <demerzel> yea but its dying on javac not java isn't it
+2011-05-22T18:58:46  <demerzel> since thats the first command
+2011-05-22T18:58:59  <Frontier> no it dies on java
+2011-05-22T18:59:05  <demerzel> oh that's news to me then
+2011-05-22T18:59:11  <Frontier> ok so lets do it
+2011-05-22T18:59:53  <demerzel> amstan: feel free to respodn to the ticket you'd have to explain way too much to be worthwhile for me to
+2011-05-22T19:00:33  <Frontier> "bash: echo: write error: Operation not permitted"   *cries out loud*
+2011-05-22T19:00:49  <amstan> Frontier: yes, i noticed
+2011-05-22T19:00:58  <demerzel> on the positive side http://aibeta.net-supremacy.com/ resolves correctly now lol
+2011-05-22T19:00:58  <Frontier> I cannot set overcommit_memory, but why?
+2011-05-22T19:01:58  <amstan> Frontier: idk
+2011-05-22T19:02:06  <amstan> demerzel: i changed the hostname though
+2011-05-22T19:02:31  <demerzel> well this has nothing to do with what linux has set
+2011-05-22T19:02:35  <Frontier> we may try the other way: set the memory max to something low like 128m
+2011-05-22T19:02:39  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 240 seconds)
+2011-05-22T19:02:52  <demerzel> i guess if you set another hostname up both will resolve to the same ip
+2011-05-22T19:03:08  <demerzel> assuming you set the dns records up for that domain
+2011-05-22T19:03:12  <Frontier> yeah that works
+2011-05-22T19:03:25  <demerzel> you didn't try setting the max yet?  :P
+2011-05-22T19:03:30  <demerzel> thought that was the first thing
+2011-05-22T19:03:49  <amstan> Frontier: i tried..
+2011-05-22T19:04:12  <Frontier> i set the max, but i set it to 700m
+2011-05-22T19:04:30  <demerzel> he was setting up the javac max i think
+2011-05-22T19:04:40  <demerzel> if that was ok and java was breaking taht would explain it
+2011-05-22T19:04:53  <Frontier> (ANT_OPTS="-Xmx100m") now with 100m it runs through, but there seem to be file system issues
+2011-05-22T19:05:22  <demerzel> try 512?  100 seems low
+2011-05-22T19:05:30  <demerzel> or maybe not actually
+2011-05-22T19:05:44  <demerzel> idk imma shut up and let people who know what they're doing fix it
+2011-05-22T19:06:28  <Frontier> I'll settle with 256 I think, I was just testing. But I wonder why the Java process cannot find a file that it just generated.
+2011-05-22T19:06:29  *** computerwiz_222 <computerwiz_222!~andrew@70.52.167.4> has joined #aichallenge
+2011-05-22T19:07:46  <Frontier> ah because "permission denied". It couldn't create a directory
+2011-05-22T19:08:02  <Frontier> wtf ? amstan !?!? :p
+2011-05-22T19:08:13  <amstan> Frontier: what are you doing?
+2011-05-22T19:08:56  <Frontier> this is the thing McLeopold told me about. The contest user cannot create a directory inside build/deploy/org/mozilla/javascript. This is really strange I think
+2011-05-22T19:09:17  <amstan> oh.. right, run ant deploy with sudo
+2011-05-22T19:10:04  <Frontier> hmm ok, but usually you would compile without root privileges.
+2011-05-22T19:11:42  <demerzel> i really dont understand the radius thing
+2011-05-22T19:13:01  <demerzel> i am using manhattan + wrap for distance calcs but i am not sure what is going on with radius
+2011-05-22T19:13:55  <demerzel> in euclidean distance isn't the square up and to the left the same distance as the one directly to the left and the one directly up?
+2011-05-22T19:13:59  <demerzel> maybe my brain isnt working right
+2011-05-22T19:14:52  <Frontier> wow Xmx200m is too much
+2011-05-22T19:14:55  <demerzel> ah nm ok i got it lol
+2011-05-22T19:14:56  <demerzel> is it?
+2011-05-22T19:14:57  <demerzel> damn
+2011-05-22T19:15:14  <demerzel> well ant/javac themselves would have grabbed a bunch
+2011-05-22T19:15:46  <Frontier> 128m is too much as well... i guess I'll settle with 100m :p
+2011-05-22T19:20:22  <Frontier> i think the java process with 128m hang up. can i just killall java or is there anything else running on java?
+2011-05-22T19:21:51  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-05-22T19:22:50  *** asdf_ <asdf_!62eb89b6@gateway/web/freenode/ip.98.235.137.182> has quit IRC (Ping timeout: 252 seconds)
+2011-05-22T19:24:09  <demerzel> doubt there's anything running on java
+2011-05-22T19:24:16  <demerzel> sicne the server is about 2 hours old
+2011-05-22T19:24:55  <Frontier> :) I used "ps -Af" to pin it down. I just always forget the command line options
+2011-05-22T19:28:59  <Frontier> amstan: ok it works now if ANT_OPTS=-Xmx100m is set. It also runs without root privileges as long as you never compile and deploy as root since then directories cannot be synched from a process running as the contest user.
+2011-05-22T19:32:15  <Frontier> I'll do a run with "deepclean" to see if "it needs root privileges to download rhino" as McLeopold reported.
+2011-05-22T19:33:40  <Frontier> jesus christ? is that a 1GB internet connection?
+2011-05-22T19:34:14  <amstan> Frontier: maybe
+2011-05-22T19:34:18  <Frontier> yeah, all working without root priv.
+2011-05-22T19:35:12  <Frontier> ANT_OPTS="-Xmx100m" ant deploy -Djava.plugin=/usr/share/icedtea-web/plugin.jar -Ddeploy.path=/home/contest/aichallenge/website
+2011-05-22T19:36:01  <Frontier> the question is: do you want to put that into a script or is /home/contest/aichallenge/website the final destination folder?
+2011-05-22T19:36:57  <amstan> Frontier: it's already in the setup script
+2011-05-22T19:36:59  <amstan> so.. does it work?
+2011-05-22T19:37:49  <Frontier> I'm a bit concerned still that it will work as well on 32-bit and 64-bit and with any possible update that may require more than 100mb ram, but hey... it works for now
+2011-05-22T19:38:50  <Frontier> I guess the setup script is running ant as 'root'?
+2011-05-22T19:38:50  <amstan> contest@aichallengebeta:~/aichallenge/ants/visualizer$ ANT_OPTS="-Xmx100m"
+2011-05-22T19:38:52  <amstan> contest@aichallengebeta:~/aichallenge/ants/visualizer$ sudo ant deploy -Djava.plugin=/usr/share/icedtea-web/plugin.jar -Ddeploy.path=/home/contest/aichallenge/website
+2011-05-22T19:38:53  <amstan> doesn't work for me
+2011-05-22T19:39:00  <amstan> same error
+2011-05-22T19:39:11  <Frontier> ah no! you do it wrong :p
+2011-05-22T19:39:22  <amstan> it's an env variable, right?
+2011-05-22T19:39:35  <Frontier> login as contest then just copy&paste the line I posted
+2011-05-22T19:39:45  <amstan> i am logged in as contest
+2011-05-22T19:39:47  <Frontier> but make sure the directories aren't owned by root
+2011-05-22T19:39:53  <amstan> but this must work from server_setup as well
+2011-05-22T19:40:20  <Frontier> ok, then tell McLeopold not to complain about having to run it as root
+2011-05-22T19:40:41  <amstan> yeah, don't worry about him
+2011-05-22T19:40:48  <amstan> what i'm concerned about is how to make it run at all
+2011-05-22T19:41:39  <amstan> Frontier: is that an enviromental variable then?
+2011-05-22T19:41:41  <Frontier> kk, so set that environment variable in the setup script then run "ant deploy -Djava.plugin=/usr/share/icedtea-web/plugin.jar -Ddeploy.path=/home/contest/aichallenge/website"
+2011-05-22T19:42:40  <Frontier> it is "export ANT_OPTS=-Xmx100m" in bash, don't know about python
+2011-05-22T19:42:46  <amstan> so shouldn't this work? contest@aichallengebeta:~/aichallenge/ants/visualizer$ export ANT_OPTS="-Xmx100m"
+2011-05-22T19:42:53  <Frontier> yes
+2011-05-22T19:42:57  <amstan> i'm running contest@aichallengebeta:~/aichallenge/ants/visualizer$ sudo ant deploy -Djava.plugin=/usr/share/icedtea-web/plugin.jar -Ddeploy.path=/home/contest/aichallenge/website just after
+2011-05-22T19:43:01  <amstan> and it doesn't work
+2011-05-22T19:43:06  <amstan> same ioexception
+2011-05-22T19:43:16  <Frontier> because you exported it as the contest user
+2011-05-22T19:43:20  <Frontier> log in as root to do it
+2011-05-22T19:43:25  <amstan> ugh
+2011-05-22T19:43:26  <amstan> ok
+2011-05-22T19:45:47  <amstan> k, installing
+2011-05-22T19:45:51  <amstan> i hope for the last time
+2011-05-22T19:46:08  <Frontier> what are you installing?
+2011-05-22T19:46:58  <amstan> everything
+2011-05-22T19:47:27  <amstan> perfect: http://aichallengebeta.hypertriangle.com/
+2011-05-22T19:47:49  <Frontier> Status 404: not found is perfect?
+2011-05-22T19:48:17  <amstan> Frontier: yes
+2011-05-22T19:48:21  <amstan> Frontier: there's no games yet.. so
+2011-05-22T19:48:37  <amstan> wait..
+2011-05-22T19:48:40  <amstan> the content is not there either
+2011-05-22T19:48:42  <amstan> wtf?
+2011-05-22T19:48:42  <Frontier> so... you added a fallback for that case of course? :p
+2011-05-22T19:48:59  <Frontier> Planet Wars isn't right, is it?
+2011-05-22T19:49:20  <amstan> where?
+2011-05-22T19:49:25  <amstan> it is
+2011-05-22T19:49:30  <amstan> i just left that entry
+2011-05-22T19:49:46  * amstan is reinstalling for the last time again now
+2011-05-22T19:49:49  <Frontier> Oh and I agree with that other guy that Sign In and Sign Up should be the same size.
+2011-05-22T19:51:48  <Frontier> And with a grin on my face I say: Even Microsoft does that: http://login.live.com/
+2011-05-22T19:52:08  <amstan> grin? why?
+2011-05-22T19:53:02  <amstan> there we go!
+2011-05-22T19:53:03  <Frontier> Because you get a lot of hate when you refer to Microsoft as a setter of standards
+2011-05-22T19:53:04  <amstan> http://aichallengebeta.hypertriangle.com/
+2011-05-22T19:53:05  <amstan> now it's perfect
+2011-05-22T19:53:24  <Frontier> cool, the rankings are there
+2011-05-22T19:53:58  <amstan> Frontier: can you make an account?
+2011-05-22T19:55:01  <Frontier> hmm, I'm waiting for my email
+2011-05-22T19:55:13  <amstan> Frontier: you're not supposed to
+2011-05-22T19:55:17  <amstan> click the link at the bottom
+2011-05-22T19:55:29  <Frontier> ah, reading helps
+2011-05-22T19:55:44  * amstan is installing the worker now
+2011-05-22T19:56:57  <Frontier> cool, and we should add tools to the downloads section. for example the 2 visualizer downloads and whatever others are working on.
+2011-05-22T19:57:32  <amstan> Frontier: tell me what to include and i'll gladly do it
+2011-05-22T19:57:47  <amstan> i haven't got a straight answer on that yet
+2011-05-22T19:58:07  <Frontier> visualizer.jar and html_visualizer.zip
+2011-05-22T19:58:21  <amstan> what about the engine?
+2011-05-22T19:58:43  <Frontier> ask McLeopold or sigh about that. I haven't seen any zip package for that
+2011-05-22T19:59:00  <amstan> i'm pretty sure it's all that's in ants/
+2011-05-22T19:59:17  <demerzel> oh i'm on the credits yay
+2011-05-22T19:59:20  <demerzel> you can put my real name lol
+2011-05-22T19:59:39  <demerzel> guess you got it working congrats
+2011-05-22T19:59:39  <amstan> demerzel: can you give it to me?
+2011-05-22T19:59:49  *** olexs <olexs!~Leviathan@drms-590ed13c.pool.mediaWays.net> has joined #aichallenge
+2011-05-22T19:59:49  <demerzel> isn't it in the email header?
+2011-05-22T19:59:54  <demerzel> Jay Pearce anyway
+2011-05-22T19:59:57  <amstan> demerzel: i guess
+2011-05-22T20:01:11  <CIA-48> aichallenge: Alexandru Stan epsilon * rcfcb9fb / website/credits.php : included full name for demerzel - http://bit.ly/kn7jKa
+2011-05-22T20:01:12  <CIA-48> aichallenge: Alexandru Stan fix-java-on-vm * r9564344 / website/credits.php : included full name for demerzel - http://bit.ly/jjf7em
+2011-05-22T20:01:52  <Frontier> 29 commiters, I don't think I know half of them ;)
+2011-05-22T20:02:10  <amstan> Frontier: half of them are probably from the start of pw
+2011-05-22T20:02:12  <amstan> one year ago
+2011-05-22T20:02:15  <amstan> like askhader
+2011-05-22T20:02:25  <amstan> and patrick(phor)
+2011-05-22T20:02:30  <amstan> or amreidle
+2011-05-22T20:02:45  <Frontier> oh right, I forgot how old the repo is.
+2011-05-22T20:02:46  <demerzel> are the starter packages forks?
+2011-05-22T20:02:55  <amstan> demerzel: what?
+2011-05-22T20:02:56  <Frontier> some of them
+2011-05-22T20:03:08  <amstan> oh.. yes, all the starter packages guys also appear there
+2011-05-22T20:03:17  <demerzel> can give me commit access to the cs one i'll put the cs starter packagei n there
+2011-05-22T20:03:37  <amstan> demerzel: most ppl forked then sent a pull request
+2011-05-22T20:03:39  <demerzel> https://github.com/jpearce
+2011-05-22T20:03:56  <amstan> http://help.github.com/fork-a-repo/
+2011-05-22T20:04:16  <demerzel> ah i can fork a repo i don't have commit to?  didn't know that
+2011-05-22T20:04:22  <demerzel> only use git for work and small personal shit
+2011-05-22T20:04:31  <amstan> demerzel: yes, that's why forks are so popular
+2011-05-22T20:04:49  <amstan> using git for work... you should be grateful for that
+2011-05-22T20:04:50  <demerzel> i was forced into git by my unix-loving macboss
+2011-05-22T20:05:01  <demerzel> always used svn
+2011-05-22T20:05:10  <amstan> yes, i was about to say.. better than svn
+2011-05-22T20:05:24  <demerzel> don't think so but not worth arguing
+2011-05-22T20:05:35  *** antimatroid <antimatroid!~nick@94.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-05-22T20:05:36  <demerzel> i am familiar with git now at least it was hell when i wasn't
+2011-05-22T20:05:52  <amstan> just wait a while, then try going back to svn
+2011-05-22T20:05:59  <amstan> you'll start swearing at it for various things
+2011-05-22T20:06:03  <amstan> like merges
+2011-05-22T20:06:14  <demerzel> keep in mind i am talking from a windows perspective as always haha
+2011-05-22T20:06:30  <demerzel> svn is well integrated - though smartgit is decent one you get the hang of it
+2011-05-22T20:06:54  <Frontier> TortoiseSVN is a great tool under Windows. I am still waiting for the NetBeans git plugin
+2011-05-22T20:07:02  * amstan waits until something crashes in this install
+2011-05-22T20:07:14  <Frontier> are the workers working?
+2011-05-22T20:07:33  <amstan> Frontier: i just rembered, the worker will probably fail working
+2011-05-22T20:07:41  <demerzel> you use netbeans?  i'm surprised
+2011-05-22T20:07:46  <demerzel> i hated how much it tried to package everything for me, i like intellij better
+2011-05-22T20:07:47  <amstan> on the server that i had before i gave up on the sandbox
+2011-05-22T20:08:20  <demerzel> in my os i like things to be automatically handled, in my coding not so much
+2011-05-22T20:08:47  <Frontier> there is an extra space in front of "My Profile"
+2011-05-22T20:08:49  <amstan> demerzel: weren't you the one that liked to double click on things?
+2011-05-22T20:09:07  <demerzel> re: batch files to run compiled programs?  yes
+2011-05-22T20:09:09  <amstan> Frontier: what?
+2011-05-22T20:09:47  <Frontier> demerzel: actually I use Eclipse, but NetBeans has better support for php/JavaScript
+2011-05-22T20:10:17  <Frontier> amstan: the menu item in the right column after you sign in says " My Profile"
+2011-05-22T20:10:23  <amstan> i really liked kdevelop for the few minutes i had it going
+2011-05-22T20:10:46  <demerzel> eclipse is ok but i had a hell of a time making it work with 64-bit windows 7 and 64-bit java and just gave up
+2011-05-22T20:10:53  <amstan> Frontier: on the brigth green? it's fine for me, no extra space
+2011-05-22T20:10:54  <Frontier> For C++ I use Code::Blocks and for Delphi... well Turbo Delphi 2006
+2011-05-22T20:11:15  <demerzel> i use vs for c/c++ haha
+2011-05-22T20:11:22  <demerzel> it actually has a compiler for iso c
+2011-05-22T20:11:26  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has quit IRC (Remote host closed the connection)
+2011-05-22T20:11:27  <demerzel> amazingly enough, hidden thoguh it is
+2011-05-22T20:11:30  <amstan> Frontier: you on opera?
+2011-05-22T20:11:47  <Frontier> on opera it is fine, it is firefox showing the space
+2011-05-22T20:12:22  <amstan> i see it
+2011-05-22T20:13:10  <CIA-48> aichallenge: Alexandru Stan epsilon * rc90f3ca / website/menu.php : removed space in front of 'my profile' - http://bit.ly/kXjAZa
+2011-05-22T20:13:15  <demerzel> frontier you made the visualizer?  nice work
+2011-05-22T20:13:37  <amstan> ugh..
+2011-05-22T20:13:40  <amstan> freaking workers
+2011-05-22T20:13:42  <demerzel> requesting 'small buttons' and 'don't wrap' options lol
+2011-05-22T20:13:50  <Frontier> I just uploaded a zip file
+2011-05-22T20:13:58  <amstan> fuse: failed to open /dev/fuse: Permission denied
+2011-05-22T20:14:03  <amstan> wtf does that mean?
+2011-05-22T20:14:14  <demerzel> wikipedia.org/File_permissions
+2011-05-22T20:14:16  <demerzel> lol
+2011-05-22T20:14:20  <Frontier> demerzel: you are welcome, but I had an unwrapped view and trashed it :p
+2011-05-22T20:14:25  <demerzel> whyyy
+2011-05-22T20:14:27  <amstan> did you guys upload something?
+2011-05-22T20:14:35  <Frontier> I did
+2011-05-22T20:14:45  <demerzel> frontier: how about a defined line around 1 instance then
+2011-05-22T20:14:49  *** mcstar <mcstar!~mcstar@adsl-89-134-11-153.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-05-22T20:14:55  <demerzel> i have zero problems tracking wrap horizontally but vertically i do for some reason
+2011-05-22T20:15:03  <Frontier> You said you would wait until the workers crash and I thought you need some rest from waiting
+2011-05-22T20:15:47  <demerzel> amstan: should i mark that ticket resolved?
+2011-05-22T20:15:52  <demerzel> or frontier
+2011-05-22T20:15:54  <demerzel> whoever can tell me
+2011-05-22T20:15:57  <Frontier> demerzel: So if I framed the 'main instance' of the map that would be ok for you?
+2011-05-22T20:15:59  <amstan> demerzel: i guess
+2011-05-22T20:16:06  <amstan> demerzel: for us, yes, we found a workaround
+2011-05-22T20:16:10  <amstan> demerzel: but it's still broken, lol
+2011-05-22T20:16:18  <demerzel> what's broken
+2011-05-22T20:16:25  <demerzel> frontier: yea that would be awesome!
+2011-05-22T20:16:36  <amstan> we just made sure java wasn't using above 100mb of ram
+2011-05-22T20:16:45  <demerzel> i'll say something to that effect then
+2011-05-22T20:16:46  <amstan> but we should be able to use 2gb
+2011-05-22T20:16:52  <demerzel> agreed
+2011-05-22T20:17:00  <demerzel> i can write the response i understand that
+2011-05-22T20:17:08  <Frontier> amstan: the limit is per process and ant spawns a sub process now and then
+2011-05-22T20:17:45  <demerzel> hmm
+2011-05-22T20:17:52  <demerzel> have you ran java by itself to see what kind of memory usage you can get
+2011-05-22T20:17:55  <Frontier> (but i'm really confused how it would add up to 1.7 GB)
+2011-05-22T20:17:57  <demerzel> if not can i request that
+2011-05-22T20:18:15  <demerzel> just run java -whatever -Xmx796M
+2011-05-22T20:18:17  <demerzel> see if it works
+2011-05-22T20:18:32  <demerzel> if it does then it's an ant hogging resources problem
+2011-05-22T20:18:43  <demerzel> if it doesn't then we still don' have a full gig we can allocate (whcih is what we should have)
+2011-05-22T20:19:27  <demerzel> oh hell i'll do it actually lol
+2011-05-22T20:20:10  <Frontier> java -Xmx900m -version works
+2011-05-22T20:20:40  <demerzel> ah ok
+2011-05-22T20:20:46  <demerzel> nice call didn't even think about -version
+2011-05-22T20:21:05  <demerzel> ok i'll resolve it
+2011-05-22T20:21:07  <demerzel> ty
+2011-05-22T20:21:18  <Frontier> But we get an IOError from the fork() somehow. I don't know if we can simply point at ant here.
+2011-05-22T20:21:46  <demerzel> what are you forking
+2011-05-22T20:21:51  <demerzel> in ant?
+2011-05-22T20:22:15  <Frontier> it could be ant, the vm, the kernel... yes in the build script i fork processes
+2011-05-22T20:22:33  <Frontier> well, ant does that if you set fork="yes" on a task.
+2011-05-22T20:22:40  <demerzel> yea thats what i meant by 'in ant'
+2011-05-22T20:22:49  <demerzel> but you are actually using a command line fork?
+2011-05-22T20:22:50  <Frontier> i did that to change into a different working directory
+2011-05-22T20:23:11  <Frontier> no I don't use a command line fork.
+2011-05-22T20:23:15  <demerzel> ie pid_t fork
+2011-05-22T20:23:41  <Frontier> No I would have to write C to do that
+2011-05-22T20:24:16  <demerzel> oh duh linux has a fork() command doesn't it
+2011-05-22T20:24:19  <demerzel> what about clone()
+2011-05-22T20:24:46  <Frontier> whatever, ant is calling some Java method that calls fork() internally at some point
+2011-05-22T20:25:12  <demerzel> ahaha ok so the fork is inside java code whic h is inside a java process whcih is forked from ant
+2011-05-22T20:25:14  <Frontier> or maybe a modern replacement, but I only know about fork() to spawn sub processes on unix
+2011-05-22T20:25:15  <demerzel> simple enough
+2011-05-22T20:25:40  <amstan> https://github.com/aichallenge/aichallenge/issues/118
+2011-05-22T20:25:45  <amstan> :(
+2011-05-22T20:25:50  <demerzel> well if you hit a brick wall that you think is a system problem pastebin it and i will ticket
+2011-05-22T20:25:58  <Frontier> lol, in other words, I let ant spawn a sub process when it should run a 'java' task
+2011-05-22T20:26:50  <demerzel> amstan have you tried just running it as root instead of sudo
+2011-05-22T20:26:59  <demerzel> i mean yea its bad practice but worth a shot
+2011-05-22T20:27:32  <amstan> should work the same
+2011-05-22T20:27:49  <demerzel> if i understand that error correctly it's a permissions issue with a python script?
+2011-05-22T20:28:05  <amstan> the permission is with fuse
+2011-05-22T20:29:04  <Frontier> so /dev/fuse is read/write for root?
+2011-05-22T20:29:39  <amstan> crw-rw---- 1 root fuse 10, 229 2011-05-23 03:55 fuse
+2011-05-22T20:29:52  <amstan> i made sure contest is a fuse member
+2011-05-22T20:29:53  <amstan> no deal
+2011-05-22T20:30:19  <amstan> hmm
+2011-05-22T20:30:30  <amstan> my other comp has it crw-rw-rw- 1 root fuse 10, 229 2011-05-22 20:21 /dev/fuse
+2011-05-22T20:31:08  <Frontier> my laptop has that as well
+2011-05-22T20:31:35  <Frontier> actually its group is root here
+2011-05-22T20:31:50  <amstan> same issue..
+2011-05-22T20:31:56  <Frontier> damn
+2011-05-22T20:32:05  <amstan> maybe a reboot? lol
+2011-05-22T20:32:12  <demerzel> ah shit
+2011-05-22T20:32:20  <demerzel> you rebooted it as i was confirming my new password lol
+2011-05-22T20:32:32  <amstan> demerzel: that's fine
+2011-05-22T20:32:40  <amstan> demerzel: it'll prompt you again
+2011-05-22T20:34:59  <amstan> ok, i give up, fuck this
+2011-05-22T20:35:22  <Frontier> Oo no ai-contest?
+2011-05-22T20:36:19  <demerzel> hmm i can't even add myself to the fuse group lol
+2011-05-22T20:36:37  <amstan> why not?
+2011-05-22T20:36:43  <demerzel> i mean it took the cmd
+2011-05-22T20:36:47  <demerzel> but when i looked at my groups it wasn't adde
+2011-05-22T20:36:47  <demerzel> d
+2011-05-22T20:37:33  <demerzel> oh i had to relog
+2011-05-22T20:37:34  <demerzel> now i have it
+2011-05-22T20:38:10  <demerzel> did you add contest to the fuse group i assume?
+2011-05-22T20:38:12  <amstan> ok.. installing the languages directly on the host
+2011-05-22T20:38:15  <amstan> demerzel: yes
+2011-05-22T20:38:25  <demerzel> bizarre
+2011-05-22T20:38:29  <amstan> i'll just do it without a sandbox for now
+2011-05-22T20:38:47  <demerzel> temp host hack sounds reasonable
+2011-05-22T20:39:00  <amstan> demerzel: oh yeah, do htop if you want fun stuff
+2011-05-22T20:39:32  <amstan> Frontier: the host doesn't have swap, would that matter for java?
+2011-05-22T20:39:37  <demerzel> is that the super ps
+2011-05-22T20:39:43  <amstan> demerzel: pretty much
+2011-05-22T20:40:03  <demerzel> im off now didn't wanna be jacking with groups while you were
+2011-05-22T20:40:06  <Frontier> amstan: not specifically no
+2011-05-22T20:40:10  <demerzel> i can add nothing of value at this point haha
+2011-05-22T20:41:00  <amstan> i don't think  4GB of swap would hurt
+2011-05-22T20:41:09  <Frontier> demerzel: There is some tricky hack to add yourself to a group without logging out, but I forgot it :p
+2011-05-22T20:41:24  <amstan> you type bash?
+2011-05-22T20:41:26  *** olexs <olexs!~Leviathan@drms-590ed13c.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-05-22T20:41:46  <Frontier> no, don't tell me that is enough
+2011-05-22T20:41:59  <amstan> bash;logout
+2011-05-22T20:42:05  <amstan> will be seamless then
+2011-05-22T20:44:38  <amstan> gay: swapon: /mnt/swap: swapon failed: Operation not permitted
+2011-05-22T20:44:44  <amstan> demerzel: this host sucks! lol
+2011-05-22T20:44:46  <Frontier> I don't think a process knows about swap at all. It is all in the kernel realm where virtual adresses are mapped to RAM or swapped out if unused for a while. I ran Windows and Linux without swap and it works fine.
+2011-05-22T20:44:56  <Frontier> lol @ host
+2011-05-22T20:45:00  <amstan> Frontier: i'm thinking maybe java went over the 2GB
+2011-05-22T20:45:02  <amstan> somehow
+2011-05-22T20:45:21  <demerzel> amstan: i am not familiar with 'gay: swapon'
+2011-05-22T20:45:35  <amstan> swapon enables swap
+2011-05-22T20:45:43  <amstan> i was trying to add more swap from a file
+2011-05-22T20:45:50  <demerzel> yea i know what swapon is lol
+2011-05-22T20:45:50  <amstan> apparently root is not permitted to do that
+2011-05-22T20:46:03  <demerzel> thats probably what 'super hyper memory' is lol
+2011-05-22T20:46:06  <amstan> from stackexchange: think you were hit by the limitations of OpenVZ. OpenVZ does not allow what they call "user defined swap": Swap is only available "as a whole" for the whole system, not for individual VPSes, see
+2011-05-22T20:46:26  <demerzel> ah
+2011-05-22T20:46:30  <demerzel> why do you need a swap anyway
+2011-05-22T20:46:38  <demerzel> what the hell are you running that needs all this memory
+2011-05-22T20:46:52  <amstan> demerzel: i was just thinking just in case
+2011-05-22T20:47:10  <demerzel> preoptimization
+2011-05-22T20:47:24  <amstan> ugh, now what! another error
+2011-05-22T20:47:38  <Frontier> maybe the virtual memory management is a bit buggy in OpenVZ. If they manage swap themselves that is.
+2011-05-22T20:47:52  <demerzel> you will run into these problems on any vps vs. your home machine anyway just by design i think unless we got a dedicated host
+2011-05-22T20:47:57  <demerzel> dedicated server*
+2011-05-22T20:49:25  <Frontier> When I worked on Wewaii, we had a Java server running on virtual server
+2011-05-22T20:50:06  <Frontier> It was slow with many users logging in, but we were using a lot of memory there.
+2011-05-22T20:50:59  <Frontier> And it worked without flaws. We did not use ant or OpenJDK though.
+2011-05-22T20:51:12  <Frontier> And I don't know if OpenVZ was involved
+2011-05-22T20:53:24  *** LastScene <LastScene!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-22T20:54:12  <Frontier> :p I'm just thinking loud. -> I can add nothing of value at this point.
+2011-05-22T20:55:38  <demerzel> same!
+2011-05-22T20:55:39  <demerzel> lol
+2011-05-22T20:59:26  <Frontier> this is nice btw: http://www.moeding.net/archives/20-Optimizing-virtual-memory-in-OpenVZ-I.html
+2011-05-22T21:03:26  <Frontier> OpenVZ shares one kernel among all running systems. That's probably why you cannot change kernel parameters.
+2011-05-22T21:11:02  <Frontier> It is also said that OpenVZ advertises virtual memory as RAM.
+2011-05-22T21:12:30  <demerzel> not surprising lol
+2011-05-22T21:17:13  <Frontier> Looking at the output of 'ps -A -ovsz,rsz,command' I see a lot of programs using a lot more virtual memory than resident. java for example: vsz: 1,326,292 / rsz: 223,080
+2011-05-22T21:18:36  <Frontier> And since you cannot add swap files in OpenVZ, you better buy a lot of 'RAM' if you want to run a Java server :p
+2011-05-22T21:20:05  <Frontier> Now I know what vm.overcommit_memory does!
+2011-05-22T21:21:31  <Frontier> If you allocate virtual memory and there is not enough RAM+swap to support it if you really used it later on, Linux errors out. With vm.overcommit_memory you can allocate more virtual memory than the system can pysically support.
+2011-05-22T21:21:39  *** Cerealklr <Cerealklr!~Cerealklr@cpe-71-74-237-65.neo.res.rr.com> has left #aichallenge
+2011-05-22T21:25:16  *** Blarg <Blarg!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-22T21:27:28  <Frontier> Ok, applying what I leant the server can currently guarantee you exactly 1GB of virtual memory. Depending on the load it may be up to 1,65 GB.
+2011-05-22T21:28:20  <Frontier> ~17% of virtual memory is currently used
+2011-05-22T21:30:49  *** computerwiz_222 <computerwiz_222!~andrew@70.52.167.4> has quit IRC (Remote host closed the connection)
+2011-05-22T21:39:16  <Frontier> burst memory is memory that doesn't belong to your vps. it is available to programs, but can be reclaimed at any time. if you don't want your programs to crash, don't use it. the biggest process will get killed first
+2011-05-22T21:45:59  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC ()
+2011-05-22T21:52:53  <demerzel> that sounds shitty
+2011-05-22T21:53:00  <demerzel> makes sense tho
+2011-05-22T21:59:51  <Frontier> demerzel: I'm running a simple java app right now that just goes to sleep. It uses 930 MB 'RAM'
+2011-05-22T22:00:52  <demerzel> see how long it lasts?
+2011-05-22T22:01:44  <Frontier> is that a question?
+2011-05-22T22:03:44  <Frontier> 25 MB is the lowest it will go if I set the stack to 104 KB and Xmx2m (<- lol)
+2011-05-22T22:05:19  <demerzel> wait so it juts naturally uses 930mb to run that?
+2011-05-22T22:05:23  <demerzel> i thought you were testing the upper limit
+2011-05-22T22:08:06  <Frontier> no it naturally uses 1 GB on my computer as well. Remember it is virtual memory!
+2011-05-22T22:08:30  <demerzel> i am completely lost now
+2011-05-22T22:08:33  <demerzel> thats ok i'm in 3 places at once
+2011-05-22T22:09:46  <Frontier> Ok, a Java process in OpenJDK or Sun JDK uses ~1 GB of virtual memory. Out of this allocated block it really uses only 10-13 MB for a simple program.
+2011-05-22T22:18:49  <Frontier> Unfortunatly in OpenVZ it is like using 1 GB of real RAM, so you HAVE to run any Java app with the -Xmx option.
+2011-05-22T22:19:11  <Frontier> amstan: ^ happy reading
+2011-05-22T22:25:29  <Frontier> I left the Test.java and Test.class in the visualizer folder for reference.
+2011-05-22T22:26:56  <amstan> Frontier: can you submit another submission? i think the D one crashes the worker
+2011-05-22T22:27:05  <amstan> also: {'errors': ['std.date and std.dateparse have been scheduled for deprecation. Please use std.datetime instead.\n']}
+2011-05-22T22:27:29  <Frontier> arrr, can't they stop deprecating stuff :p
+2011-05-22T22:27:44  <Frontier> it was like what? one month ago?
+2011-05-22T22:28:17  <Frontier> I'll try something clean from our repo
+2011-05-22T22:28:37  <Cyndre> neat - http://news.ycombinator.com/item?id=2573588
+2011-05-22T22:29:21  <amstan> Frontier: done?
+2011-05-22T22:29:28  <Cyndre> its a python ai game I just found on ycombinator.com
+2011-05-22T22:30:15  <Frontier> done
+2011-05-22T22:30:43  <amstan> you have the D submission right?
+2011-05-22T22:31:46  <Frontier> no I used cpp this time, but did not rename the zip file
+2011-05-22T22:32:32  <Frontier> *ready to be compiled*   (the first D submission was mine if that's the question)
+2011-05-22T22:32:40  <amstan> yeah, it's not going to skip the D one
+2011-05-22T22:32:43  <amstan> it has to do it anyway
+2011-05-22T22:33:10  <Frontier> aha, that's not good :p
+2011-05-22T22:33:26  <amstan> is there a save in nano?
+2011-05-22T22:33:36  <Frontier> Ctrl+O
+2011-05-22T22:35:18  <amstan> and is there a way to display line numbers?
+2011-05-22T22:41:30  <Frontier> I have no clue.
+2011-05-22T22:43:25  <amstan> we need more ppl to submit
+2011-05-22T22:44:26  <_flag> How come bots aren't being ranked?
+2011-05-22T22:44:41  <_flag> They were at the beginning
+2011-05-22T22:45:06  <demerzel> different server
+2011-05-22T22:45:57  <_flag> Different server with the same accounts/database? I'm talking about hypertriangle.com:13080
+2011-05-22T22:46:33  <amstan> _flag: they're not the same
+2011-05-22T22:46:44  <amstan> _flag: 13080 is going to be superseeded by this one
+2011-05-22T22:46:56  <_flag> Wait, so which one are you talking about then?
+2011-05-22T22:46:58  <demerzel> superceded heh
+2011-05-22T22:47:08  <demerzel> aichallengebeta.hypertriangle.com
+2011-05-22T22:47:12  <_flag> ah
+2011-05-22T22:47:12  <demerzel> they're setting it up
+2011-05-22T22:47:29  <amstan> can i get more ppl to submit?
+2011-05-22T22:47:39  <_flag> I'll submit in a second
+2011-05-22T22:48:23  <demerzel> damn i'm only userid 6?
+2011-05-22T22:48:34  <demerzel> i'll submit a cs bot haha
+2011-05-22T22:48:54  <demerzel> does it even have mono yet
+2011-05-22T22:48:58  <demerzel> or is that standard
+2011-05-22T22:49:50  <amstan> oh.. right, i need maps
+2011-05-22T22:50:23  <_flag> pfft... maps
+2011-05-22T22:50:55  <amstan> i have no idea how to get them though
+2011-05-22T22:51:07  <_flag> download them from github?
+2011-05-22T22:51:24  <amstan> there we go
+2011-05-22T22:51:24  <_flag> Run the generator?
+2011-05-22T22:52:08  <demerzel> the squared distance thing is screwing me up
+2011-05-22T22:52:25  <demerzel> so it's manhattan distance but with the row/col squared before added together?
+2011-05-22T22:52:39  <amstan> yay
+2011-05-22T22:52:40  <demerzel> it says euclidian but can that be right idk my brain isn't working right
+2011-05-22T22:52:41  <amstan> it works!
+2011-05-22T22:52:58  <demerzel> awesome you had me worried
+2011-05-22T22:53:05  <amstan> wait, wtf?
+2011-05-22T22:53:15  <amstan> nobody is eating
+2011-05-22T22:53:46  <demerzel> ?
+2011-05-22T22:53:48  <demerzel> http://aichallengebeta.hypertriangle.com/visualizer.php?game=4
+2011-05-22T22:53:55  <_flag> They're starter bots, they don't eat
+2011-05-22T22:53:59  <CIA-48> aichallenge: Alexandru Stan epsilon * r52ab8b9 / worker/worker.py : hopefully might fix #119 - http://bit.ly/jOVkiZ
+2011-05-22T22:54:06  <amstan> _flag: you sure?
+2011-05-22T22:54:09  <_flag> Or they do, but they do it poorly
+2011-05-22T22:54:21  <_flag> http://aichallengebeta.hypertriangle.com/visualizer.php?game=4
+2011-05-22T22:54:25  <demerzel> the starter bots just basically go north lol
+2011-05-22T22:54:27  <amstan> wtf??? lol
+2011-05-22T22:54:46  <demerzel> unless they can't in which case they back up 1 and then go north again
+2011-05-22T22:54:46  <demerzel> haha
+2011-05-22T22:54:48  <_flag> The starter bot is made to try all four directions in a clockwise sequence
+2011-05-22T22:55:00  <_flag> Nothing else
+2011-05-22T22:55:00  <amstan> ok.. at least that
+2011-05-22T22:55:02  <demerzel> really?  the cpp one just went north and got stuck when i uploaded it
+2011-05-22T22:55:11  <_flag> Then I think it's broken
+2011-05-22T22:55:22  <_flag> Or someone told me the wrong spec
+2011-05-22T22:55:40  <demerzel> damn 1000 turns
+2011-05-22T22:55:44  <_flag> That's what my C one does anyway
+2011-05-22T22:56:04  <demerzel> yea look at purple in that game @ turn 632
+2011-05-22T22:56:16  <demerzel> all of the ones hitting that big water llump just run into each other haha
+2011-05-22T22:56:35  <demerzel> the first time they can't go e/w/n
+2011-05-22T22:56:35  <CIA-48> aichallenge: Alexandru Stan epsilon * r08575a8 / worker/worker.py :
+2011-05-22T22:56:35  <CIA-48> aichallenge: Nope...
+2011-05-22T22:56:35  <CIA-48> aichallenge: Revert "hopefully might fix #119"
+2011-05-22T22:56:36  <CIA-48> aichallenge: This reverts commit 52ab8b9e147403db8bf472421542eac0e5691a66. - http://bit.ly/k1xeqH
+2011-05-22T22:57:22  <CIA-48> aichallenge: Alexandru Stan epsilon * re3b876a / worker/worker.py : this might work - http://bit.ly/k5kOJ4
+2011-05-22T22:58:23  <amstan> sigh..
+2011-05-22T22:58:25  *** delt0r___ <delt0r___!~delt0r@188-22-175-170.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-22T22:58:48  <demerzel> i am gonna try to do this without pathfinding
+2011-05-22T22:58:55  <demerzel> just pure heuristic tile weight
+2011-05-22T22:58:59  <demerzel> probably going to be a dismal failure
+2011-05-22T22:59:47  <_flag> What's the status on the/a tcp server?
+2011-05-22T22:59:58  <demerzel> is dhartmei not doing it again?
+2011-05-22T23:00:12  <demerzel> i can prob swing one if not but i assume he is
+2011-05-22T23:00:20  *** delt0r_ <delt0r_!~delt0r@188-22-165-14.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-05-22T23:00:27  <_flag> Is he aware that this is even going on?
+2011-05-22T23:00:34  <demerzel> he was there in the last 2
+2011-05-22T23:00:40  <demerzel> but maybe not since it's not exactly well advertised
+2011-05-22T23:00:51  <_flag> McLeopold was making a python one, but I'm not sure how that's going
+2011-05-22T23:01:04  <demerzel> i'd make a pure c one if i did
+2011-05-22T23:01:10  <demerzel> still have my socket code from last year
+2011-05-22T23:01:40  <demerzel> maybe when they move to ec2 i'll just take the vps if it isn't a pile of shit
+2011-05-22T23:02:14  <amstan> yeah, i'm not sure, i need mcleopold to take a look at it
+2011-05-22T23:02:16  <_flag> I was thinking the old one could be adapted but the problem is that it was written with its own implementation of the game, and ants is a lot more complicated than PlanetWars
+2011-05-22T23:02:19  <amstan> contestbot: seen mcleopold
+2011-05-22T23:02:20  <contestbot> amstan: mcleopold was last seen in #aichallenge 21 hours, 39 minutes, and 29 seconds ago: <McLeopold> k
+2011-05-22T23:04:33  <amstan> demerzel: apparently playgame.py includes options to write the inputs, outputs and error from bots to files
+2011-05-22T23:04:48  <amstan> demerzel: see *_logs options
+2011-05-22T23:05:22  <demerzel> interesting
+2011-05-22T23:05:26  <demerzel> is that causing problems?
+2011-05-22T23:05:37  <amstan> demerzel: weren't you asking about that?
+2011-05-22T23:05:44  <demerzel> or are you telling me that if i were to implement playgame
+2011-05-22T23:05:50  <amstan> no
+2011-05-22T23:05:54  <amstan> remember when i suggested tee?
+2011-05-22T23:06:01  <demerzel> barely because i don't know what tee is
+2011-05-22T23:06:52  <demerzel> oh apparently it's the term for >>
+2011-05-22T23:06:57  <demerzel> ok now i am with you
+2011-05-22T23:08:02  <demerzel> dhartmei's server used a direct TCP connection
+2011-05-22T23:08:10  <demerzel> although i guess you could wrap the output in json or something
+2011-05-22T23:08:23  <demerzel> or point to it idk i am rambling
+2011-05-22T23:08:54  <amstan> playgame.py is just a wrapper around ants.py
+2011-05-22T23:09:04  <amstan> which adds those options for logging and stuff
+2011-05-22T23:09:12  <amstan> i'm pretty sure it could be adapted for tcp
+2011-05-22T23:12:30  <demerzel> would have to be done by somebody else since it would be easier for me to just rewrite in c__ than try to tweak python
+2011-05-22T23:12:42  <demerzel> if there's a volunteer i'm all for it lol
+2011-05-22T23:37:03  *** Blarg <Blarg!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Quit: Page closed)
+2011-05-22T23:41:15  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.159.128> has quit IRC (Read error: No route to host)
+2011-05-22T23:56:48  <demerzel> argh i have collisions and i have no idea why gdi

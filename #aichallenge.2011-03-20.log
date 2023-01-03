@@ -1,0 +1,1016 @@
+2011-03-20T02:00:30  <antimatroid> what's a zombie process?
+2011-03-20T02:02:48  <janzert> http://www.brighthub.com/computing/linux/articles/79186.aspx
+2011-03-20T02:02:59  <janzert> seems to be a pretty good description
+2011-03-20T02:04:49  <antimatroid> okay cool
+2011-03-20T02:05:04  <antimatroid> my process thing is creating them
+2011-03-20T02:05:31  <antimatroid> they die when the parent program exits, but i want to be able to kill them off before that
+2011-03-20T02:06:01  *** ravic <ravic!~ravi@118-93-167-37.dsl.dyn.ihug.co.nz> has quit IRC (Remote host closed the connection)
+2011-03-20T02:08:18  <janzert> http://www.makelinux.net/alp/026.htm might help you with that
+2011-03-20T02:08:56  <janzert> assuming whatever your process thing is, is in c/c++
+2011-03-20T02:12:27  <antimatroid> it sort of is
+2011-03-20T02:12:33  <antimatroid> i need to do the whole wait thing
+2011-03-20T02:13:04  <antimatroid> but their example just declares an int then says wait(that int) but doesn't do anything with the int before? wtf?
+2011-03-20T02:13:28  <antimatroid> the 3.4.2 section
+2011-03-20T02:13:42  <antimatroid> is there a "alt tab" for switching desktops?
+2011-03-20T02:13:55  <sigh> no, it says wait(address of that in)
+2011-03-20T02:14:01  <sigh> it's an output value
+2011-03-20T02:14:25  <janzert> the int is filled with the child status
+2011-03-20T02:14:34  <janzert> see http://linux.die.net/man/2/wait
+2011-03-20T02:26:44  <antimatroid> hmmm i don't know how to get the process ID :P
+2011-03-20T02:26:55  <antimatroid> each process has FILE in,out;
+2011-03-20T02:27:31  <sigh> pid of processes that you are creating, or pid of processes you are waiting on?
+2011-03-20T02:27:58  <antimatroid> I have a process struct
+2011-03-20T02:28:24  <antimatroid> i didn't write the start function, it's that same one i've been fixing up for a while
+2011-03-20T02:28:25  <sigh> how did you create the process?
+2011-03-20T02:29:25  <sigh> either way, you don't need the pid to wait
+2011-03-20T02:29:37  <antimatroid> what do i need?
+2011-03-20T02:29:59  <antimatroid> i don't get how just the address of some random int tells you the status of some other running process :\
+2011-03-20T02:30:18  <antimatroid> surely that int needs to be linked to the process in some way?
+2011-03-20T02:30:33  <sigh> the return value of wait is the pid
+2011-03-20T02:30:44  <sigh> and it won't be running anymore by that point
+2011-03-20T02:31:14  <antimatroid> err what, but i might have a bunch of these processes running
+2011-03-20T02:31:21  <antimatroid> how does it know which one i'm calling wait on?
+2011-03-20T02:31:57  <sigh> wait() waits until any child process finishes up
+2011-03-20T02:32:21  <sigh> if you want to wait for a specific process then there is a version of wait which takes more arguments
+2011-03-20T02:32:46  <antimatroid> let me see where i get with just wait
+2011-03-20T02:32:48  <antimatroid> cheers
+2011-03-20T02:32:53  <antimatroid> janzert: thanks too
+2011-03-20T02:33:07  <sigh> wait() basically says "I can't continue until my children have finished processing", so tell me when one finishes
+2011-03-20T02:34:28  <sigh> if you just want to wait until all children have finished then put wait in a while loop
+2011-03-20T02:36:29  <antimatroid> the children still seem to become zombies until my parent process exits
+2011-03-20T02:40:19  <sigh> what are you doing?
+2011-03-20T02:42:55  <sigh> I mean, the absolute bare-bones thing to do is while(wait() != -1); but that doesn't do any error checking or anything
+2011-03-20T02:44:44  <antimatroid> no error checking is fine
+2011-03-20T02:45:47  <antimatroid> that doesn't compile :P
+2011-03-20T02:46:30  <sigh> oh, well wait needs to take that int *status argument
+2011-03-20T02:47:23  <antimatroid> still wont compile :P
+2011-03-20T02:47:38  <antimatroid> http://pastebin.com/XDApjjwB
+2011-03-20T02:47:52  <antimatroid> that's my function, the for loop is where i'm trying to get a process to end properly
+2011-03-20T02:50:35  <antimatroid> i've tried the wait in any (un)obvious place
+2011-03-20T02:51:03  <sigh> what's the error?
+2011-03-20T02:52:19  <sigh> well, you don't want to wait until after you have finished talking to the proccess
+2011-03-20T02:53:17  <sigh> remember, the wait is for when you are waiting for the child to finish, if the child is trying to write to you then waiting will just result in a deadlock
+2011-03-20T02:55:20  <antimatroid> it doesn't result in a deadlock
+2011-03-20T02:55:24  <antimatroid> it runs fine :\
+2011-03-20T02:55:42  <antimatroid> i don't think wait is waiting for anything
+2011-03-20T02:55:50  <antimatroid> http://pastebin.com/NCDazQr8
+2011-03-20T02:56:04  <antimatroid> that's the error i get for "while(wait(*test) != -1);"
+2011-03-20T02:57:21  <antimatroid> my bad, http://pastebin.com/PufT2NJb for &test
+2011-03-20T02:57:28  <antimatroid> i had tried both, both hated me
+2011-03-20T02:59:19  <sigh> did you #include <sys/wait.h>
+2011-03-20T03:00:24  <sigh> either way, this seems like something the process class should be taking care of
+2011-03-20T03:00:45  <sigh> *shrug*
+2011-03-20T03:02:48  <antimatroid> it would be, i want to work out how to first :P
+2011-03-20T03:02:52  <antimatroid> i'll play some more
+2011-03-20T03:04:27  <sigh> also, why do you have a vector of processes when you only have one child process at a time?
+2011-03-20T03:05:03  <antimatroid> well, i currently don't have a way to cleanly close and reopen the same process object
+2011-03-20T03:05:07  <antimatroid> but i'm working on that now
+2011-03-20T03:05:19  <antimatroid> and i seem to have got somewhere by including sys/wait.h :D, cheers
+2011-03-20T03:05:28  <antimatroid> i'll keep playing now till it's clean
+2011-03-20T03:05:56  <antimatroid> is sys/wait.h on windows too?
+2011-03-20T03:06:42  <antimatroid> not that it matters too much to me now, but i might as well try and keep it working on everything now
+2011-03-20T03:08:04  <sigh> no, unless you something that enumlates a unix environment like cygwin or minggw
+2011-03-20T03:08:31  <sigh> I don't know anything about windows programming though
+2011-03-20T03:08:54  <antimatroid> i use mingw usually
+2011-03-20T03:09:09  <antimatroid> mingw is nice
+2011-03-20T03:22:29  <antimatroid> okay i can now reuse it :)
+2011-03-20T03:22:31  <antimatroid> cheers again
+2011-03-20T03:26:36  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-20T03:39:36  <Stocha> The problem with using both friendy and ennemy ant, is that it is even slower :/
+2011-03-20T03:40:23  <Stocha> If you go with counting nearby ants, give a quick efficient algorithm with every starter kit :p
+2011-03-20T03:40:37  <Stocha> though that really is intuitive
+2011-03-20T03:41:30  <Stocha> but that would allow blocking unless it is either statistical. Or it always allow to reach contact point some way or others
+2011-03-20T03:41:49  <Stocha> at distance 1, you can maximum be 3 vs 3 i think
+2011-03-20T03:42:19  <Stocha> so worst blocking scenario would be a 1 corridor like in my gif
+2011-03-20T03:42:27  <Stocha> .b.
+2011-03-20T03:42:35  <Stocha> bbb
+2011-03-20T03:42:39  <Stocha> .a.
+2011-03-20T03:42:47  <Stocha> ah no
+2011-03-20T03:42:50  <Stocha> %b%
+2011-03-20T03:42:52  <Stocha> bbb
+2011-03-20T03:42:56  <Stocha> %a%
+2011-03-20T03:42:59  <Stocha> %.%
+2011-03-20T03:43:01  <Stocha> %.%
+2011-03-20T03:43:14  <Stocha> so it is 2 vs 3 here
+2011-03-20T03:43:36  <Stocha> if two vs three always die that a is blocked there.
+2011-03-20T03:44:41  <Stocha> Life point or statistical will solve that.
+2011-03-20T03:45:14  <Stocha> But then we have double slow counting ennemy and friendly units. And have complex state (life point) or tricky testing (statistical)
+2011-03-20T03:46:08  <Stocha> I understand that everyone wants complex fighting. I really think we have to something straight forward and fast to calculate for it to be good.
+2011-03-20T03:48:32  <antimatroid> Stocha: how is it slower?
+2011-03-20T03:58:48  <antimatroid> iterators are really just structs inside structs yeah?
+2011-03-20T03:59:17  <antimatroid> why not template the iterator with the type it is point to, then you can use a template to create an iterator for your template type
+2011-03-20T04:03:07  <antimatroid> it, taking a template Game,
+2011-03-20T04:03:07  <antimatroid> Game::NStrategy doesn't work, but
+2011-03-20T04:03:08  <antimatroid> NStrategy<Game> would
+2011-03-20T04:06:38  <antimatroid> oh, but then you'd need to name them all differently
+2011-03-20T04:06:40  <antimatroid> that doesn't help me
+2011-03-20T04:09:47  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-20T04:12:23  <Stocha> fast is : logic bit operation and simple addition. Anything else is slow. Then there is the consideration of Complexity against the total number of ants in the worst case.
+2011-03-20T04:12:52  <Stocha> fast is O(n) (with low multiplicator) where n is total number of ant present on the map.
+2011-03-20T04:13:12  <Stocha> Ant dies in sames square falls into that categorie.
+2011-03-20T04:13:27  <antimatroid> Stocha: it doesn't really matter provided it's fair
+2011-03-20T04:13:32  <antimatroid> the simple rules are boring
+2011-03-20T04:13:43  <antimatroid> you're one of the few people i know of who think they aren't
+2011-03-20T04:16:11  <Stocha> i don't think they aren't. I just think it might be too soon
+2011-03-20T04:16:23  <Stocha> and that they have to be lighting fast to compute and testcase.
+2011-03-20T04:16:38  <Stocha> then i will be happy to have whatever complexity.
+2011-03-20T04:16:42  *** delt0r___ <delt0r___!~delt0r@188-22-23-85.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-20T04:16:43  <Stocha> and big tree solvers and such.
+2011-03-20T04:17:33  <Stocha> but if it's hard to compute, to undestand the spec, and to implement an  unoptimized version, then i'm really worrying.
+2011-03-20T04:17:51  <Stocha> because that will not be fun for most casual people willing to participate.
+2011-03-20T04:18:21  *** delt0r_ <delt0r_!~delt0r@188-22-169-63.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-20T04:18:43  <Stocha> People will want to solve interesting games. Not to debug / optimize their code for month, before starting to really work on the ai challenge itself.
+2011-03-20T04:19:32  <Stocha> So if you think complexity is good, make it linear in the number of ant, and easy to understand/ check for rightness if implementation.
+2011-03-20T04:22:43  <sigh> it is linear in the number of ants, because you only need to check a constant number of map positions per ant
+2011-03-20T04:27:07  <Stocha> constant time would be even better :p
+2011-03-20T04:28:32  <sigh> well, that would be doing no attacks what so every
+2011-03-20T04:28:43  <sigh> *ever
+2011-03-20T04:29:03  <Stocha> In my case it was not linear : i would find the ennemy ant by checking the shape around. Then iterate over the enemies to count them :p
+2011-03-20T04:29:30  <Stocha> I made a post about a rock/scisor/paper combat for ants.
+2011-03-20T04:29:42  <Stocha> but the post got lost when it asked me to login again.
+2011-03-20T04:30:09  <Stocha> I think the success of tron and planet wars as AI challenge, came from the simplicity of thoses games.
+2011-03-20T04:30:20  <Stocha> You had straight forward rules, very easy to understand.
+2011-03-20T04:30:22  <sigh> all the methods are constant time per ant, if that's what you mean
+2011-03-20T04:30:48  <Stocha> Then you could put all your mind into solving them. Not debugging for years, or trying to understand what the heck those specs means.
+2011-03-20T04:31:08  <Stocha> no constant time doesn't depends on ant numbers.
+2011-03-20T04:31:12  <janzert> people manage to make sort O(n**2) instead of O(n log n) all the time too, it's not the fault of sorting ;)
+2011-03-20T04:31:37  <Stocha> You can sort in linear time also.
+2011-03-20T04:31:42  <sigh> Stocha: the current methods are constant time per ant
+2011-03-20T04:31:47  <Stocha> Think how child sort out cards on the table.
+2011-03-20T04:32:06  <sigh> with a vision radius of 6, a constant number (21) of map positions need to be checked
+2011-03-20T04:32:22  <Stocha> You take cards one by one, you put them "at their right place on the table", 1 place for each 52 cards, then you stack them one by one, sorted.
+2011-03-20T04:32:36  <janzert> yes, see radix sort
+2011-03-20T04:32:45  <sigh> or bucket sorting
+2011-03-20T04:33:14  <janzert> of course they come with other limitations though
+2011-03-20T04:33:32  <Stocha> As i use bit maps, i have time linear in the number of long it take to bitmap the map, for solving collisions.
+2011-03-20T04:33:43  <sigh> doesn't work on things which you can't compare with the bit representation
+2011-03-20T04:33:50  <Stocha> yeah that O(***) is meaningless i guess :p
+2011-03-20T04:33:54  <sigh> (re limitations)
+2011-03-20T04:34:10  <Stocha> what are the sort of thing you can't compare with bit representations ?
+2011-03-20T04:34:14  <Stocha> i don't get it :p
+2011-03-20T04:34:33  <Stocha> How do you compare them then ? With quantical representation ? :p
+2011-03-20T04:34:48  <sigh> say a simple implementation of rational numbers
+2011-03-20T04:34:57  <Stocha> what ??
+2011-03-20T04:35:40  <Stocha> You mean complex bit comparison then :p
+2011-03-20T04:35:40  <sigh> if you store a rational number as a pair (numerator, denominator) sorting their bit representation wont sort by value
+2011-03-20T04:35:55  <sigh> then radix sorts wont work
+2011-03-20T04:36:03  <janzert> Stocha: see http://en.wikipedia.org/wiki/Radix_sort if you're not familiar with radix sort
+2011-03-20T04:36:15  <Stocha> what if you keep them by pair of reduced numbers ?
+2011-03-20T04:36:16  <sigh> you are into general comparision sorts which have a optimal bound of O(n log(n))
+2011-03-20T04:36:19  <janzert> I'm pretty sure it explains the limitations sigh is refering to
+2011-03-20T04:36:32  <sigh> Stocha: how will reduced numbers help?
+2011-03-20T04:37:17  <sigh> for example, the following is in sorted order in reduced repr: (1,3), (1,2), (2,3), (1,1), (2,1)
+2011-03-20T04:37:23  <Stocha> you have only one representation for any number then ?
+2011-03-20T04:37:24  <janzert> anyway have fun, 4:30am so I really should go to bed ;)
+2011-03-20T04:37:46  <sigh> Stocha: yes, but that representation doesn't work for radix sort
+2011-03-20T04:38:13  <sigh> you can make a representation for rationals that work for radix sort, but that isn't good for adding and multiplying them
+2011-03-20T04:38:15  <Stocha> let's be discussing about the game then, as it appears i'm somewhat lacking in algorithmic culture :p
+2011-03-20T04:38:47  <Stocha> I hate numbers since i heard of uncountable sets anyway.
+2011-03-20T04:39:16  <sigh> well I was only talking about rationals, which are countable
+2011-03-20T04:39:19  <Stocha> especially when you try to trick me into "infinit set of whatever"
+2011-03-20T04:39:56  <Stocha> that's still bigger than a 64 bits operand.
+2011-03-20T04:40:23  <Stocha> one number being an infinite string with ununderstable rules for comparison :p
+2011-03-20T04:40:52  <Stocha> so let's be on about the need for simplicity.
+2011-03-20T04:41:10  <Stocha> Anywhere i look i see people asking for "complex interesting ant game" :'(
+2011-03-20T04:41:16  <Stocha> what can i do about that ?
+2011-03-20T04:41:19  <antimatroid> why do you want basic?
+2011-03-20T04:41:37  <sigh> Stocha: by complex they mean they want the emergent strategies to be complex, not the rules
+2011-03-20T04:41:44  <Stocha> Why do i beleave it has to be easy to implement and test for ? like less than 4 days to have an engine work fast.
+2011-03-20T04:41:57  <antimatroid> without a good battle resolution i am worried the game would just be fastest to find food and not be stupid
+2011-03-20T04:42:12  <antimatroid> you don't need to make your own engine
+2011-03-20T04:42:28  <Stocha> You have to, if you want to build a solver
+2011-03-20T04:42:37  <antimatroid> lol, no you don't
+2011-03-20T04:42:47  <Stocha> you won't be able to make a tree of anything, if you don't have rules for calculating the next nodes.
+2011-03-20T04:42:50  <antimatroid> you need to emulate some things, but you don't need your own working engine
+2011-03-20T04:42:57  <antimatroid> yes, but that isn't an engine
+2011-03-20T04:42:57  <Stocha> same goes with montecarlo trees.
+2011-03-20T04:43:12  <Stocha> Yeah, thoses things need to be easy to emulate then.
+2011-03-20T04:43:20  <antimatroid> they are
+2011-03-20T04:43:24  <Stocha> less than a full day work for unoptimized.
+2011-03-20T04:43:28  <antimatroid> you don't just go with the most trivial option
+2011-03-20T04:43:31  <antimatroid> you go with the most interesting
+2011-03-20T04:43:35  <Stocha> and with few risk of getting wrong.
+2011-03-20T04:43:43  <antimatroid> that's stupid
+2011-03-20T04:43:57  <Stocha> planet wars is such a game.
+2011-03-20T04:43:59  <Stocha> so is tron.
+2011-03-20T04:44:05  <Stocha> (they are even simpler i guess but well)
+2011-03-20T04:44:06  <antimatroid> planet wars wasn't so simple
+2011-03-20T04:44:14  <antimatroid> and there were lots of little fiddly bits here and there
+2011-03-20T04:44:15  <Stocha> what rues are hard to test ?
+2011-03-20T04:44:23  <Stocha> rules
+2011-03-20T04:44:30  <antimatroid> there was a huge fuss over battle resolution for that
+2011-03-20T04:44:35  <sigh> planet wars has annoying battle resolution, and a few bugs sprang up during the comp
+2011-03-20T04:44:44  <antimatroid> and the tiniest change in things caused a huge change in optimal strategies
+2011-03-20T04:44:46  <Stocha> You have planet regeneration, and then ships, and then ships order
+2011-03-20T04:44:55  <antimatroid> it was very hard to make any visible progress after a while as well
+2011-03-20T04:45:09  <Stocha> progress at what ? bot strength ?
+2011-03-20T04:45:14  <antimatroid> yes
+2011-03-20T04:45:20  <Stocha> why is it that a bot totally overclassed the others then ?
+2011-03-20T04:45:25  <antimatroid> most people seemed to hit a brick wall after a while
+2011-03-20T04:45:31  <antimatroid> because mega1 is mega
+2011-03-20T04:45:36  <Stocha> that would go for any challenge.
+2011-03-20T04:45:40  <antimatroid> he pantsed everybody
+2011-03-20T04:45:51  <antimatroid> not like that, tron had no such wall
+2011-03-20T04:46:01  <antimatroid> and i expect people to find a lot more to write stuff for with this than pw
+2011-03-20T04:46:01  <Stocha> He solved it better than the other. He won the challenge.
+2011-03-20T04:46:18  <Stocha> ah, tron didn't have the wall, okay. you have a point then.
+2011-03-20T04:46:28  <Stocha> didn't people had fun with planet war ?
+2011-03-20T04:46:30  <antimatroid> that's another reason for now just having the most basic game mechanics with a straight forward strategy for micro and macro, it gives people obvious things to improve, and they can see clear results
+2011-03-20T04:46:45  <Stocha> they went and said : let me regret to have applyed ? :p
+2011-03-20T04:46:47  <antimatroid> planet wars was an awesome little problem
+2011-03-20T04:46:56  <antimatroid> but i personally don't think it made for a great ai game
+2011-03-20T04:47:05  <antimatroid> it was awesome to watch as well etc.
+2011-03-20T04:47:13  <antimatroid> i just feel it was lacking in the way of decent strategies
+2011-03-20T04:47:27  <Stocha> Still it fast to compute state for.
+2011-03-20T04:47:30  <Stocha> that's good.
+2011-03-20T04:47:40  <Stocha> and you can build a working state transition in a day.
+2011-03-20T04:47:45  <Stocha> that's good too.
+2011-03-20T04:47:49  <antimatroid> you can do that with the current options
+2011-03-20T04:47:54  <antimatroid> i don't see that as necessary
+2011-03-20T04:48:08  <Stocha> and you can read the spec on time, and go : mm i think i understand what the game is, and how to implement it :p
+2011-03-20T04:48:11  <antimatroid> if you're not willing to spend a bit of time making your bot good, you shouldn't expect to win
+2011-03-20T04:48:18  <antimatroid> i want to play around with cooperation in n-player games
+2011-03-20T04:48:30  <Stocha> I want to make the bot, not debug the spec of the game :p
+2011-03-20T04:48:38  <Stocha> i want them to be crystal clear.
+2011-03-20T04:48:48  <antimatroid> they are clear
+2011-03-20T04:48:56  <Stocha> that they are not at this point.
+2011-03-20T04:49:08  <antimatroid> it's still in development
+2011-03-20T04:49:14  <antimatroid> the actual rules are clear, the specs may not be
+2011-03-20T04:49:47  <Stocha> but for the fact that ant receive a dir order and cant walk on water. and one food spawn one ant if only one color is nearby and disapear if more than one is nearby
+2011-03-20T04:49:52  <Stocha> that is what crystal clear is :)
+2011-03-20T04:50:29  <_flag> There's small subtle rules, but the basic rules are fairly clear
+2011-03-20T04:50:29  <Stocha> and that if more than one ant occupy a square, all ant in that square disapears; That's clear too.
+2011-03-20T04:51:03  <Stocha> there's small unatural hard to compute/ test/ implement ... hard to understand rules.
+2011-03-20T04:51:39  <antimatroid> the idea is we want attacks
+2011-03-20T04:51:43  <Stocha> but all them are unfinalized also.
+2011-03-20T04:51:51  <antimatroid> and your "favourite rule" isn't attacks, it's removing collided ants
+2011-03-20T04:51:52  <sigh> well, the only thing in regard to the bots that matters here is battle resolution
+2011-03-20T04:52:05  <sigh> which is why it is being discussed now
+2011-03-20T04:52:05  <antimatroid> you other proposed method is random
+2011-03-20T04:52:10  <antimatroid> which is laughably less clear
+2011-03-20T04:52:17  <Stocha> The only thing that matters so far, is exploration, and food gathering
+2011-03-20T04:52:27  <antimatroid> no, attacks matter
+2011-03-20T04:52:31  <antimatroid> that is how you get points
+2011-03-20T04:52:41  <_flag> You have a set of ants, you move them around to find food for more ants, and your ants die if they have more or equal enemies around them than friends. There was some odd aspects of planet wars battle resolution dealing with neutral planets, but that didn't stop anyone from saying "I'll just pick the planet with the smallest number of ships and send 50% of my ships there".
+2011-03-20T04:52:41  <Stocha> i doubt that your fighting rules make it that the one that get the exploration and food gathering better won't win.
+2011-03-20T04:53:25  <antimatroid> that will be an important component, but not the only one
+2011-03-20T04:53:29  <antimatroid> nor do i want it to be
+2011-03-20T04:53:31  <_flag> Similarly, if you want to be the best, you have to understand all the intricacies of the game. Otherwise, there's nothing stoping you from making a bot that moves around randomly
+2011-03-20T04:54:03  <Stocha> that's what i did so far :p
+2011-03-20T04:54:04  <antimatroid> there will be a range of levels of bots for people to compete against
+2011-03-20T04:54:08  <Stocha> a bot that moves randomly.
+2011-03-20T04:54:24  <antimatroid> but why make the game so simple that anyone willing to put a tiny bit of effort is going to be fairly noisely fighting it out near the top?
+2011-03-20T04:54:35  <Stocha> Well i guess, that if i'm right it won't be a real problem after all.
+2011-03-20T04:54:44  <antimatroid> ?
+2011-03-20T04:54:45  <Stocha> top players will be solving the food gathering thing.
+2011-03-20T04:54:58  <Stocha> and stockpiling at borders.
+2011-03-20T04:55:00  <antimatroid> i've already got my food gathering algorithm worked out
+2011-03-20T04:55:07  <Stocha> that's how every rules end anyway :p
+2011-03-20T04:55:12  <antimatroid> that's how boring i think it is
+2011-03-20T04:55:14  <_flag> Food gatherthing isn't a problem that takes months to solve on its own
+2011-03-20T04:55:35  <Stocha> i have trouble believing it could be optimal in such a few effort :p
+2011-03-20T04:55:52  <Stocha> The game is about that, ant life is about that :)
+2011-03-20T04:56:12  <antimatroid> find the border of each food square, then paint outwards and find "closest ants" repeatedly moving ties until a player will win
+2011-03-20T04:56:26  <Stocha> They have been studied for years, for that. How they find food and bring it back.
+2011-03-20T04:56:31  <antimatroid> the only difficult is possibly switching up the order of moving ants to food in order to make sure you gaurantee getting more
+2011-03-20T04:56:41  <antimatroid> but that's a little bit of play work, not a whole contests worth
+2011-03-20T04:56:43  <Stocha> They have a nice solving of that game too. ants.
+2011-03-20T04:57:11  <Stocha> So you have the go to the border problem then.
+2011-03-20T04:57:18  <antimatroid> that's easy
+2011-03-20T04:57:22  <Stocha> even with simple dieonsamesquare you have that.
+2011-03-20T04:57:23  <antimatroid> i paint to find that too
+2011-03-20T04:57:33  <antimatroid> or i can store the translate amounts for a border
+2011-03-20T04:57:40  <Stocha> you always says you solved it. but i have no evidences of that.
+2011-03-20T04:57:57  <antimatroid> it's not completely worked out, but pretty much
+2011-03-20T04:58:10  <Stocha> If you solved it in a day then you 'll win or the game is  too simple.
+2011-03-20T04:58:16  <antimatroid> i need to go through and implement and iron through a few things, but it's certainly not a contest making problem
+2011-03-20T04:58:37  <Stocha> you maybe right
+2011-03-20T04:58:51  <Stocha> i have to admit that.
+2011-03-20T04:59:17  <Stocha> though i doubt it at this point, it may be that you will be right in the end. but what is the probability of your being right about it i wonder.
+2011-03-20T04:59:40  <antimatroid> if you have the enemies>=friends then the best strategy isn't necessarily to fight something as fast as possible, you will want to dance around each other and try to improve your death ratio
+2011-03-20T04:59:46  <antimatroid> can you imagine how cool that will look?
+2011-03-20T05:00:43  <Stocha> The rule i proposed wall all about enemies>friends ratio.
+2011-03-20T05:00:52  <Stocha> although it was statisticall
+2011-03-20T05:00:59  <Stocha> it could also be life based.
+2011-03-20T05:01:31  <antimatroid> Stocha: are you aware that we've pretty much got a new favourite battle option?
+2011-03-20T05:01:32  <Stocha> I still stated that i had this feeling that it was too soon.
+2011-03-20T05:01:46  <antimatroid> the one where your ant dies if it has at least as many ants in its battle radius than friends?
+2011-03-20T05:01:53  <antimatroid> rather than the power option
+2011-03-20T05:02:03  <Stocha> Let's first go with a challenge about solving the simple ant wars game. Then next  challenge you had interesting fighting based on the feed back of 5000 users ?
+2011-03-20T05:02:06  <sigh> enemies > friends is implemented as "--attack support" in the engine
+2011-03-20T05:02:12  <antimatroid> sigh: with McLeopold's aggreance, i think you could almost make that the new default
+2011-03-20T05:02:33  <sigh> meh, I'll make it the new default now
+2011-03-20T05:02:40  <antimatroid> easy
+2011-03-20T05:02:40  <_flag> sigh: enemies > friends or enemies >= friends?
+2011-03-20T05:02:48  <sigh> current >
+2011-03-20T05:02:54  <sigh> what is your opinion, _flag
+2011-03-20T05:03:02  <antimatroid> sigh: 1vs1 doesn't die then?
+2011-03-20T05:03:12  <sigh> 1vs1 does die, 1 vs has no friends
+2011-03-20T05:03:16  <sigh> 1v1
+2011-03-20T05:03:19  <_flag> Oh
+2011-03-20T05:03:22  <_flag> Okay nevermind then
+2011-03-20T05:03:27  <antimatroid> okay sure
+2011-03-20T05:03:30  <antimatroid> leave it at that
+2011-03-20T05:03:40  <antimatroid> maybe even make a comment note of that
+2011-03-20T05:03:41  <Stocha> is the ant is own friend or not ?
+2011-03-20T05:03:48  <Stocha> that should be stated once and for all :p
+2011-03-20T05:03:49  <antimatroid> it's not counted
+2011-03-20T05:03:57  <antimatroid> he just did
+2011-03-20T05:04:04  <Stocha> i used it as own friend in my formulae
+2011-03-20T05:04:15  <_flag> sigh: That's better than what we have now because it just leads to people sending in 1 ant at a time
+2011-03-20T05:04:21  <Stocha> so one ant always have a friend.
+2011-03-20T05:04:41  <antimatroid> Stocha: an ant is not its own friend for calculations
+2011-03-20T05:04:44  <Stocha> it allows blocking. But let's say that blocking is not a problem.
+2011-03-20T05:04:45  <_flag> If that's what you wanted my opinion on
+2011-03-20T05:05:09  <antimatroid> _flag: i don't think it does
+2011-03-20T05:05:38  <Stocha> Only way i see with solving blocking is life or statisticall.
+2011-03-20T05:05:45  <antimatroid> it gives them a better chance at killing off your one when you have nothing to really lose from going all in, and the scoring makes you want more ants inside the range of the dying ant than enemies
+2011-03-20T05:06:00  <antimatroid> i originally thought that too :P
+2011-03-20T05:06:14  <antimatroid> well, all in or no in
+2011-03-20T05:06:16  <Stocha> and you don't now ?
+2011-03-20T05:06:34  <antimatroid> blocking 1 width corridors is fine
+2011-03-20T05:06:43  <Stocha> how is it fine ?
+2011-03-20T05:06:46  <antimatroid> if it's too much of a problem we'll make the map gens not make them
+2011-03-20T05:06:50  <Stocha> and how do you prove it's the only case ?
+2011-03-20T05:07:04  <Stocha> you didn't find this case in the first place. So you need some proof don't you ?
+2011-03-20T05:07:15  <_flag> antimatroid: are you referring to optionn 1 or 2?
+2011-03-20T05:07:16  <Stocha> Even i you did find it, you still need a simple proof.
+2011-03-20T05:07:18  <antimatroid> we did find the 1 corridor case
+2011-03-20T05:07:27  <antimatroid> _flag: the new option
+2011-03-20T05:07:27  <Stocha> and i don't think that such proof will exists :)
+2011-03-20T05:07:39  <antimatroid> Stocha: challenge accepted
+2011-03-20T05:07:46  <Stocha> okay then :)
+2011-03-20T05:07:47  <antimatroid> but i'm busy atm, sometime in the next week or two
+2011-03-20T05:07:52  <Stocha> spit there, and shake hand !
+2011-03-20T05:08:09  <_flag> antimatroid: I was referring to the current one (which I still have as option 2, I don't know if it's been updated)
+2011-03-20T05:08:24  <antimatroid> _flag: it's about to change
+2011-03-20T05:08:40  <Stocha> if you make a mathematically acceptable proof that blocking can only happen in one width corridor, i won't give any more arguments about fighting rules !
+2011-03-20T05:08:50  <Stocha> we'll need a mathematician though
+2011-03-20T05:08:54  <antimatroid> new method is: your ant dies if it has more enemies in range than friends, not counting itself as a friend
+2011-03-20T05:09:07  <_flag> Wait, so what's the difference between the new one and option 1?
+2011-03-20T05:09:08  <antimatroid> do i count as a mathematician?
+2011-03-20T05:09:14  <antimatroid> i'm only an honours student
+2011-03-20T05:09:21  <antimatroid> otherwise i'll pass it on to jmcarthur
+2011-03-20T05:09:50  <antimatroid> jmcarthur: you're now our resident mathematician :)
+2011-03-20T05:09:59  <CIA-33> aichallenge: sigh epsilon * r6f19970 / ants/ants.py : Cleanup code a bit - http://bit.ly/gBoywP
+2011-03-20T05:10:00  <CIA-33> aichallenge: sigh epsilon * r7a961b7 / (ants/ants.py ants/playgame.py): Make support default attack method. Comment do_attack_support. - http://bit.ly/dRU4GE
+2011-03-20T05:10:01  <Stocha> you certainly not count as your own proof validator :p
+2011-03-20T05:10:19  <antimatroid> my friend is a little too keen on actually writing one of those
+2011-03-20T05:10:22  <Stocha> you build the proof, and a mathematician check for compleetness
+2011-03-20T05:10:25  <sigh> ok, it's now the default attack method
+2011-03-20T05:10:27  <antimatroid> from the very bottom up
+2011-03-20T05:10:31  <antimatroid> well, almost
+2011-03-20T05:10:37  <antimatroid> we'd extend it to set theory later
+2011-03-20T05:10:45  <antimatroid> sigh: :)
+2011-03-20T05:10:58  <antimatroid> now i have to actually work out how to run this on ubuntu
+2011-03-20T05:11:17  <Stocha> There is only limited number of case to study. So it might be possible to build up a program for solving the blocking problem also.
+2011-03-20T05:11:46  *** kaemo <kaemo!~mad5ci@djb180.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-20T05:11:54  <antimatroid> when we have come across rules that allowed blocking
+2011-03-20T05:12:00  <antimatroid> they always happened in a fairly obvious way
+2011-03-20T05:12:10  <Stocha> wich challenger no doubt will do once the rule is gold.
+2011-03-20T05:12:17  <antimatroid> and even then i don't think they would have been easy to do very well
+2011-03-20T05:12:27  <Stocha> that i don't argue with.
+2011-03-20T05:12:45  <Stocha> only with the fact that there exists some case with blocking.
+2011-03-20T05:13:04  <sigh> antimatroid: McLeopold was in support of it earlier, so I don't think he would have a problem with it being default
+2011-03-20T05:13:09  <antimatroid> and really, does it matter if people can "make their own walls"
+2011-03-20T05:13:21  <antimatroid> people just need to not be stupid enough to walk into such a trap
+2011-03-20T05:13:44  <antimatroid> which is really a nice starting point for writing your own emulate state iteration function
+2011-03-20T05:13:50  <antimatroid> sigh: neither
+2011-03-20T05:13:53  <Stocha> they might have no choice although
+2011-03-20T05:13:57  <Stocha> if all ways are blocked
+2011-03-20T05:14:02  <Stocha> then they lost i guess
+2011-03-20T05:14:09  <antimatroid> it's a single game
+2011-03-20T05:14:18  <Stocha> but same goes with any rules. Although blocking might be dynamicall
+2011-03-20T05:14:19  <antimatroid> provided it doesn't end up being the same thing happening every game, i think it's all good
+2011-03-20T05:14:41  <antimatroid> it's also not trivial to check that you're blocking something
+2011-03-20T05:14:50  <Stocha> we might know for quite sure, once the challenge is well under way.
+2011-03-20T05:15:10  <Stocha> if blocking is the deciding factor, games may not be fun to watch after a few weeks :p
+2011-03-20T05:15:11  <antimatroid> (i'm quite good at saying something is trivial when i want it to be and not otherwise, :P)
+2011-03-20T05:15:25  <Stocha> when everyone go straight at blocking point, and the randomness does the rest.
+2011-03-20T05:15:36  <antimatroid> yeah, everyone agrees on that being bad i think
+2011-03-20T05:15:52  <Stocha> i agree on it being not fun to watch.
+2011-03-20T05:15:59  <antimatroid> if that happened we'd almost have to consider changing attack rules, but i really don't think it's possible to block passsages greater than 1
+2011-03-20T05:16:04  <Stocha> especially if it happens in the few first days of the challenge
+2011-03-20T05:16:06  <antimatroid> and we can eliminate those fairly easily if neede
+2011-03-20T05:16:09  <Stocha> and then the game is solved :p
+2011-03-20T05:16:21  <Stocha> you can't change the rules once the realy thing start.
+2011-03-20T05:16:25  <Stocha> that's the problem.
+2011-03-20T05:16:28  <antimatroid> actually, no it's not
+2011-03-20T05:16:32  <antimatroid> but it makes for an interesting game
+2011-03-20T05:16:38  <antimatroid> if you all block off, then no one gets points
+2011-03-20T05:16:48  <antimatroid> two of you unblocking and fighting will get you above everyone else to win
+2011-03-20T05:16:55  <CIA-33> aichallenge: sigh epsilon * r452dc87 / ants/ants.py : Stop hard-coding maxx dist in do_attack_closest - http://bit.ly/eNFIWW
+2011-03-20T05:16:56  <antimatroid> by interesting i mean weird
+2011-03-20T05:17:30  <Stocha> well if blocking is paramount, there is bound to be one or two ant dies in the early stages.
+2011-03-20T05:17:32  <antimatroid> the scoring makes it so that you have to be involved in the game
+2011-03-20T05:17:35  <antimatroid> not just grow your army
+2011-03-20T05:17:37  <Stocha> so that will be the noise.
+2011-03-20T05:18:00  <Stocha> you have to be involved in order to grow your army.
+2011-03-20T05:18:11  <antimatroid> two players could cooperate and just fight in their zoned up blocked region
+2011-03-20T05:18:12  <antimatroid> and win
+2011-03-20T05:18:23  <antimatroid> but i really don't expect blocking to be a major component to the game
+2011-03-20T05:18:30  <antimatroid> and am willing to design the maps around that
+2011-03-20T05:18:49  <Stocha> i don't like the sound of it
+2011-03-20T05:18:54  <antimatroid> sound of what?
+2011-03-20T05:19:30  <Stocha> next you'll have full ground map in order to have an interesting ai challenge with good combat rules and no blocking :p
+2011-03-20T05:19:55  <Stocha> and then blocking might be dynamic
+2011-03-20T05:20:02  <Stocha> and easy to achieves
+2011-03-20T05:20:09  <antimatroid> dynamic blocking is guess work
+2011-03-20T05:20:14  <Stocha> with my bot, (random moving) blocking happens spontaneously
+2011-03-20T05:20:14  <antimatroid> which is all part of the game
+2011-03-20T05:20:25  <Stocha> well, it's still blocking
+2011-03-20T05:20:31  <sigh> dynamic blocking is an interesting ai problem
+2011-03-20T05:20:31  <Stocha> if it happens fast, and efficient
+2011-03-20T05:20:33  <antimatroid> so is 2vs1 if you look at it like that
+2011-03-20T05:20:45  <Stocha> there will be no game other than blocking quick, and having luck at the begining.
+2011-03-20T05:20:56  <Stocha> but such is the way of all easy to solved game :p
+2011-03-20T05:20:58  <antimatroid> sigh: a..b..a
+2011-03-20T05:21:02  <antimatroid> both a's die with the new rule
+2011-03-20T05:21:12  <Stocha> it becomes a matter of randomness, because everyone is already optimal.
+2011-03-20T05:21:22  <antimatroid> same as with a..b..c
+2011-03-20T05:21:24  <sigh> antimatroid: and the b
+2011-03-20T05:21:34  <antimatroid> we don't get as much cool cooperation features from this rule
+2011-03-20T05:21:57  <antimatroid> i will alas compromise, just realising these defficiencies :)
+2011-03-20T05:22:51  <antimatroid> in fact, cooperation is out :(
+2011-03-20T05:22:57  <Stocha> just go with life point if you want some combat magic.
+2011-03-20T05:23:06  <Stocha> i don't like it, but it seems less weird still.
+2011-03-20T05:23:14  <antimatroid> option 1 is the only rule that offers true cooperation
+2011-03-20T05:23:16  <antimatroid> in battle
+2011-03-20T05:23:31  <antimatroid> so far anyway
+2011-03-20T05:23:32  <sigh> option 1 is a bit non-intutive in the results too
+2011-03-20T05:23:37  <Stocha> where is the mathematical proof of that ?
+2011-03-20T05:23:47  <sigh> wtf?
+2011-03-20T05:23:49  <antimatroid> what? a..b..a would intuitively git b dead yeah?
+2011-03-20T05:24:14  <Stocha> the proof of it be the only combat rule to make cooperation important
+2011-03-20T05:24:33  <antimatroid> cooperation important for battles
+2011-03-20T05:24:47  <antimatroid> it's because it's the only rule where an ants death depends on the enemies enemies
+2011-03-20T05:24:52  <Stocha> yeah how do you proof that your rules is just that ?
+2011-03-20T05:25:04  <antimatroid> because it depends on your enemies enemies :P
+2011-03-20T05:25:14  <Stocha> why would that solve it, and be the only way to solves it ?
+2011-03-20T05:25:36  <sigh> antimatroid: yes, that case is intuitive... but if the 'a's are more surrounded then it will fail again
+2011-03-20T05:25:41  <sigh> which is a bit confusing
+2011-03-20T05:26:23  <antimatroid> sigh: yeah it might be a bit, it's certainly less cooperative than 1 was
+2011-03-20T05:26:38  <antimatroid> i'm still happy to go for it, as i don't think cooperation would have been that big
+2011-03-20T05:27:02  <antimatroid> and i've already got some cool little ideas for cooperation to try generally just from playing around with this
+2011-03-20T05:27:02  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-20T05:27:57  <sigh> hmm... how about (just throwing out there, not advocating), each ant deals 1/#enemies damage to each enemy, any ant with over 1 damage dies, damage does not accumulate over turns
+2011-03-20T05:28:16  <sigh> so if you have more support on either side, the damage is distributed
+2011-03-20T05:28:57  <antimatroid> i think that's just the new rule
+2011-03-20T05:29:02  <sigh> no, it isn't
+2011-03-20T05:29:18  <antimatroid> oh maybe not
+2011-03-20T05:29:19  <sigh> a..b..a now kills 'b' but keeps both 'a' alive
+2011-03-20T05:29:21  <antimatroid> hmmm, i like it
+2011-03-20T05:29:36  <antimatroid> now, can we generalise it to work with integers? :P
+2011-03-20T05:29:49  <antimatroid> i think you could, lcm (possible ants in range)
+2011-03-20T05:29:59  <antimatroid> or just use rationals
+2011-03-20T05:30:04  <sigh> yes, use rationals
+2011-03-20T05:30:32  <sigh> I think it is intuitive
+2011-03-20T05:30:46  <antimatroid> yeah, i like that
+2011-03-20T05:31:05  <sigh> you damage surrounding enemies equally, and your total attack power is always the same
+2011-03-20T05:31:25  <sigh> I'm going to implement it
+2011-03-20T05:31:27  <antimatroid> and ants heal after battles
+2011-03-20T05:31:30  <antimatroid> :)
+2011-03-20T05:31:32  <sigh> yes
+2011-03-20T05:32:22  <antimatroid> sigh: it's not option 1 in simple form is it? Oo
+2011-03-20T05:32:44  <antimatroid> oh no, it's not
+2011-03-20T05:32:50  <sigh> i don't think so
+2011-03-20T05:32:52  <antimatroid> it's a lot like it
+2011-03-20T05:33:12  <sigh> but it is smoother
+2011-03-20T05:33:38  <sigh> option 1 has sharp cut-offs and it is more difficult to understand the rational
+2011-03-20T05:33:47  <antimatroid> yep
+2011-03-20T05:33:59  <sigh> damage is intuitive, I think
+2011-03-20T05:34:10  <sigh> I think anyone can understand it
+2011-03-20T05:34:44  <antimatroid> we'll get mcleopold to test with his friend
+2011-03-20T05:36:52  <antimatroid> the implementation is a lot like 1 yeah?
+2011-03-20T05:36:59  <antimatroid> if i'm thinking it through right
+2011-03-20T05:37:19  <sigh> hmm... a bit, yeah
+2011-03-20T05:42:04  <antimatroid> what usually causes segmentation faults?
+2011-03-20T05:44:14  <sigh> trying to read memory you shouldn't
+2011-03-20T05:44:28  <sigh> bad pointers usually
+2011-03-20T05:53:40  <antimatroid> sigh: waiting for the process to actually stop doubles my running time :|
+2011-03-20T05:53:42  <CIA-33> aichallenge: sigh epsilon * rc2b0594 / (ants/ants.py ants/playgame.py): Implement do_attack_damage - http://bit.ly/ibPibe
+2011-03-20T05:53:55  <antimatroid> sigh: did you set that as main? :P
+2011-03-20T05:54:03  <sigh> no, it is not default
+2011-03-20T05:54:12  <antimatroid> aww, okay
+2011-03-20T05:54:51  <sigh> antimatroid: can't really say anything about run time if I don't know what your program actually does
+2011-03-20T05:55:23  <antimatroid> the chilren processes are reading a game then exiting
+2011-03-20T05:56:56  <sigh> antimatroid: try this, put this at the start of your program: signal(SIGCHLD,SIG_IGN);
+2011-03-20T05:57:03  <sigh> and take out the wait stuff
+2011-03-20T05:57:20  <sigh> also: #include <signal.h>
+2011-03-20T05:59:35  <antimatroid> okay so that was as fast as normal without
+2011-03-20T05:59:45  <sigh> yes
+2011-03-20T05:59:47  <antimatroid> is that going to have killed my zombie processes?
+2011-03-20T06:00:17  <antimatroid> i'll test, but it's a bit of effort to change, if it's a straight no, what did it do? :P
+2011-03-20T06:00:38  <sigh> well yes, SIGCHLD is the signal that tells you when children terminate, you've told the os that you don't care about it
+2011-03-20T06:00:48  <antimatroid> ah cool
+2011-03-20T06:00:55  <antimatroid> :)
+2011-03-20T06:01:22  <sigh> if you want to be fast AND care about it, then instead of SIG_IGN you have a function pointer which is run whenever a child dies
+2011-03-20T06:01:47  <antimatroid> i don't need it to be too fast, just not horribly slow
+2011-03-20T06:01:53  <antimatroid> and actually work without crashing
+2011-03-20T06:02:04  <sigh> :)
+2011-03-20T06:16:04  <antimatroid> i can play 6000 3x3x3 games in about 30 seconds
+2011-03-20T06:16:26  <antimatroid> when the player is just returning 1 as their strategy
+2011-03-20T07:20:55  *** antimatroid <antimatroid!~nick@147.245-26-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-03-20T07:21:12  *** antimatroid <antimatroid!~nick@147.245-26-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-20T07:21:45  <antimatroid> i think my network just hates git :\
+2011-03-20T07:22:08  <antimatroid> or vice versa
+2011-03-20T07:26:27  *** antimatroid <antimatroid!~nick@147.245-26-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-03-20T07:37:16  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-20T07:37:39  <Stocha> i just tested a food path finding algorithm. Okay it is easy to write. It is also very efficient.
+2011-03-20T07:38:19  <Stocha> There is some room for improvement at the moment. But it may well hit a wall pretty soon.
+2011-03-20T07:38:51  <Stocha> With food gathering.
+2011-03-20T07:39:11  <Stocha> (i posted some picture also, as you might expect now :p )
+2011-03-20T07:39:37  <Stocha> I guess i should simply go with more advanced bot, and see where it leads.
+2011-03-20T07:39:49  <sigh> Stocha: out of curiosity, what language are you using?
+2011-03-20T07:39:53  <Stocha> At wich point exactly combat rules kick in
+2011-03-20T07:39:57  <Stocha> i'm doing that in java.
+2011-03-20T07:40:12  <sigh> i se
+2011-03-20T07:40:15  <sigh> *i see
+2011-03-20T07:40:17  <Stocha> i have been around java for years. I'm started to be confortable with it.
+2011-03-20T07:40:37  <Stocha> and i'm started to be uncomfortable with anything else also ... :'(
+2011-03-20T07:40:53  <Stocha> i guess i'm growing old or something.
+2011-03-20T07:41:21  <Stocha> I use C style and a bit of fonctionnal style when i do java.
+2011-03-20T07:41:38  <Stocha> only relying to standard java way of writing when it really has no importance.
+2011-03-20T07:41:45  *** antimatroid <antimatroid!~nick@121.246-26-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-20T07:42:11  <Stocha> (which means i use int[] heavilly, and functor through anonymous function quite a lot too)
+2011-03-20T07:42:32  <Stocha> while leaving room for quite some bit of optimization
+2011-03-20T07:42:57  <Stocha> at the moment, it could easilly mean 30x speed; if i were willing to optimize without refactoring the architecture.
+2011-03-20T07:43:05  <antimatroid> Stocha: told you it's not too difficult :P
+2011-03-20T07:43:19  <antimatroid> i see it as a fun little side problem
+2011-03-20T07:43:24  <Stocha> i guess you where more experimented than me on the subject.
+2011-03-20T07:43:49  <Stocha> There is room for improvement. it might hard to do it really efficiently
+2011-03-20T07:44:05  <Stocha> but combat will surelly kick in somewhere.
+2011-03-20T07:44:19  <Stocha> the trouble is, you can hardly go for combat, if you don't gather food efficiently
+2011-03-20T07:44:58  <Stocha> i still think the best bot will have the best food gathering mechanisms at the moment. none of your rule could change that.
+2011-03-20T07:46:05  <Stocha> But i agree that you need room for bots to have possibility to gain advantage in the meeting phase.
+2011-03-20T07:46:55  <Stocha> one pbot socred a victory !
+2011-03-20T07:47:00  <Stocha> scored a victory
+2011-03-20T07:47:05  <Stocha> i wonder what happenned
+2011-03-20T07:47:13  <Stocha> in like 400 games.
+2011-03-20T07:47:24  <Stocha> i don't log the games :p
+2011-03-20T07:47:28  <Stocha> just collect the score.
+2011-03-20T07:47:33  <sigh> eh? java does not have anonymous functions
+2011-03-20T07:47:51  <Stocha> it doesn't ?
+2011-03-20T07:47:51  *** antimatroid <antimatroid!~nick@121.246-26-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 250 seconds)
+2011-03-20T07:47:58  <Stocha> anonymous classes maybe then ?
+2011-03-20T07:48:24  <sigh> are sure, you have those
+2011-03-20T07:48:34  <Stocha> i'm not always up with lexical terms.
+2011-03-20T07:48:43  <Stocha> what is anonymous function ?
+2011-03-20T07:49:25  <sigh> a function that doesn't have a name associated with it
+2011-03-20T07:49:41  <sigh> it's a bit hard to have one in a language without first-class functions
+2011-03-20T07:50:18  <sigh> ie. a language where functions are just like any other objects which you can assign to variables and so on
+2011-03-20T07:50:27  <Stocha> okay, let's say it's too deep into the functionnal way of thinking for me to grab it :p
+2011-03-20T07:50:30  <sigh> in java you must wrap it in a class
+2011-03-20T07:50:54  <Stocha> i think there are things in java that really tricky (if not impossible) to do.
+2011-03-20T07:51:04  <sigh> like?
+2011-03-20T07:51:09  <Stocha> still it's practical for most purpose
+2011-03-20T07:51:16  <Stocha> like macros for sure :p
+2011-03-20T07:51:49  <Stocha> or converting a int[] into a byte[] efficiently. Although there may be some library that i'm not aware of.
+2011-03-20T07:52:01  <Stocha> but here i was talking about architecture
+2011-03-20T07:52:16  <Stocha> everyone keeps telling me how functionnal style is good at architecturing stuff.
+2011-03-20T07:52:34  <sigh> what do you mean by functional?
+2011-03-20T07:52:55  <Stocha> where ?
+2011-03-20T07:53:18  <sigh> what do you understand "functional style" to be?
+2011-03-20T07:53:34  <Stocha> haskell freak late night talk ?
+2011-03-20T07:53:59  <sigh> ah, fair enough... yeah, it's really hard to do that in java
+2011-03-20T07:54:04  <Stocha> with alcohool
+2011-03-20T07:54:42  <sigh> because you need to wrap functions in classes which implement the correct interface and that's a whole lot of boilerplate which gets in the way
+2011-03-20T07:54:44  <Stocha> not that i was involved too much with true haskell freaks.
+2011-03-20T07:55:00  <Stocha> yeah that's probably that.
+2011-03-20T07:55:06  <Stocha> you have to write lot's of junk
+2011-03-20T07:55:19  <Stocha> so you would end up with a big pile of crap :p
+2011-03-20T07:55:33  <Stocha> all for without accomplishing much.
+2011-03-20T07:55:34  <sigh> :)
+2011-03-20T07:56:20  <Stocha> Still when you have been around it, java is good for prototyping. And you can do some IHM pretty fast. And then kinda run everywhere. So it is a good one.
+2011-03-20T07:56:39  <Stocha> although if you really want speed, you might run into a wall at some point. Without the macros and such.
+2011-03-20T07:56:43  <sigh> IHM?
+2011-03-20T07:56:52  <Stocha> User interface i thinnk
+2011-03-20T07:56:54  <Stocha> UI then ?
+2011-03-20T07:57:02  <sigh> yeah, UI
+2011-03-20T07:57:19  <sigh> by macros you mean c-type macros, or lisp-type macros?
+2011-03-20T07:57:27  <Stocha> I'll walk a bit and find plan for next generation bot i think.
+2011-03-20T07:57:34  <Stocha> i know c type.
+2011-03-20T07:57:39  <Stocha> i don't heard of list type :p
+2011-03-20T07:57:46  <Stocha> lisp
+2011-03-20T07:57:55  <Stocha> are they different ?
+2011-03-20T07:58:13  <sigh> c macros is essentially search and replace
+2011-03-20T07:58:26  <Stocha> yeah that's brutal, but efficient in some cases.
+2011-03-20T07:58:33  <sigh> lisp macros treat the code like data and do arbitrary proccessing on them
+2011-03-20T07:58:35  <Stocha> we have that in most assembly langage too
+2011-03-20T07:58:54  <Stocha> that sound a bit obscure too me at this point :p
+2011-03-20T07:59:04  <Stocha> Code is always data.
+2011-03-20T07:59:22  <sigh> yes, but not every language allows you to treat it as such
+2011-03-20T07:59:30  <Stocha> sure most, won't.
+2011-03-20T07:59:43  <Stocha> because it can get messy pretty quick.
+2011-03-20T07:59:49  <Stocha> and has few application too :p
+2011-03-20T08:00:04  <Stocha> unless you make an abstract call or something.
+2011-03-20T08:00:12  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-20T08:00:18  <sigh> it has many applications, because it allows you extend the language
+2011-03-20T08:00:58  <Stocha> i have tryed to grow excited into functionnal langages. And always failed miserably. It
+2011-03-20T08:01:23  <Stocha> it hardly enable to program faster. But it does execute slower on a lot of cases.
+2011-03-20T08:02:06  <sigh> depends really, it's hard to judge how fast development is if you re not familiar with the lanuage
+2011-03-20T08:02:17  <sigh> *language
+2011-03-20T08:05:50  *** kaemo <kaemo!~mad5ci@djb180.neoplus.adsl.tpnet.pl> has quit IRC (Read error: Operation timed out)
+2011-03-20T08:05:51  *** antimatroid <antimatroid!~nick@121.246-26-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-20T08:06:41  <Stocha> yes. it also has a lot to do with the fact that java is very comfortable to be comfortable with, whenever you are looking for a job.
+2011-03-20T08:06:55  <Stocha> wich tend to happen, once i'm hungry enough :p
+2011-03-20T08:08:08  <Stocha> Still java is quite flexible. You can do fast algorithm. And nice architectures. And have access to huges libraries. And run on a lot of platforms effortlessly
+2011-03-20T08:08:26  <Stocha> if applet where usable everywhere, it would be something :)
+2011-03-20T08:08:49  <Stocha> but most firms block them. So people have to do javascript rather than applets O_o
+2011-03-20T08:09:42  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-20T08:10:51  <antimatroid> my internet is fail
+2011-03-20T08:13:17  *** Zoo <Zoo!~Miranda@cs27020114.pp.htv.fi> has joined #aichallenge
+2011-03-20T08:37:38  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-20T08:41:19  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-20T08:41:26  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 252 seconds)
+2011-03-20T09:05:48  *** boegel <boegel!~boegel@boegel.ugent.be> has joined #aichallenge
+2011-03-20T09:32:24  *** boegel <boegel!~boegel@boegel.ugent.be> has quit IRC (Quit: Leaving)
+2011-03-20T09:33:38  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-20T10:00:45  *** choas <choas!~lars@p578F6951.dip.t-dialin.net> has joined #aichallenge
+2011-03-20T10:12:41  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-20T10:26:31  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has joined #aichallenge
+2011-03-20T10:43:24  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has left #aichallenge
+2011-03-20T10:43:30  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has joined #aichallenge
+2011-03-20T10:48:18  *** amriedle <amriedle!~amriedle@CPE00248c6815f6-CM001225401352.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-20T11:24:41  *** boegel <boegel!~boegel@boegel.ugent.be> has joined #aichallenge
+2011-03-20T11:26:43  *** jmpespxo1eax <jmpespxo1eax!~notauser@69-196-163-39.dsl.teksavvy.com> has joined #aichallenge
+2011-03-20T11:28:36  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has quit IRC (Ping timeout: 255 seconds)
+2011-03-20T11:41:32  *** amriedle <amriedle!~amriedle@CPE00248c6815f6-CM001225401352.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-03-20T11:57:25  <jmcarthur> there's a new option?
+2011-03-20T11:58:02  <jmcarthur> oh i see
+2011-03-20T11:58:58  <jmcarthur> antimatroid: "new method is: your ant dies if it has more enemies in range than friends, not counting itself as a friend"   <-- i think McLeopold and were working with that one before switching to option 1. IIRC, it's really easy to deadlock with it
+2011-03-20T11:59:13  <jmcarthur> but i don't remember for sure
+2011-03-20T12:16:46  *** delt0r_ <delt0r_!~delt0r@188-22-172-36.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-20T12:18:18  *** delt0r___ <delt0r___!~delt0r@188-22-23-85.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-20T12:48:40  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Quit: Leaving)
+2011-03-20T12:53:19  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-20T12:53:19  *** ChanServ sets mode: +o amstan
+2011-03-20T12:58:20  <antimatroid> jmcarthur: sigh came up with an even better one i think
+2011-03-20T12:59:19  <antimatroid> each ant starts the turn on 1 health, each ant dishes out 1/#enemiesinrange hit points to its enemies, if an ant runs out of hp that turn, it dies
+2011-03-20T12:59:49  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-20T13:02:19  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-20T13:09:17  <antimatroid> McLeopold: ^^ that do you think about that rule
+2011-03-20T13:10:29  <antimatroid> for a..b..a and a..b..c situations you get just b dying
+2011-03-20T13:10:36  <antimatroid> which is what i think we really want
+2011-03-20T13:11:30  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-20T13:12:34  <boegel> hiya y'all
+2011-03-20T13:12:45  <boegel> any news for a next contest?
+2011-03-20T13:21:22  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Read error: Connection reset by peer)
+2011-03-20T13:49:09  *** Umsturz <Umsturz!~Umsturz@nat-wh-hadi.rz.uni-karlsruhe.de> has joined #aichallenge
+2011-03-20T13:50:48  <Frontier> boegel: I can recall your name dimly. Have you been in the team of the last contest?
+2011-03-20T14:02:01  <Frontier> boegel: We have an internal deadline as orientation. No heads will roll if it isn't met, but we hope everyone at least tries to meet the deadline. There were a lot of possible improvements over the last contest: Sandboxed source code compiles, games with more than 2 players, viewing replays without accessing the database or the truskill scoring system. In a week we'll probably see if what everyone worked on fits together.
+2011-03-20T14:16:04  <McLeopold> antimatroid/jmcarthur: for sigh's rule, it means an ant farther out has a more focused attack.
+2011-03-20T14:21:46  *** Umsturz <Umsturz!~Umsturz@nat-wh-hadi.rz.uni-karlsruhe.de> has quit IRC (Quit: Umsturz)
+2011-03-20T14:41:46  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-20T14:44:32  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Client Quit)
+2011-03-20T15:04:51  <boegel> Frontier: I wasn't part of the organizing team no, I was just wondering :)
+2011-03-20T15:18:46  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-03-20T15:43:54  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-20T16:08:27  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 252 seconds)
+2011-03-20T16:09:56  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-20T16:15:20  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-20T16:31:55  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-20T16:37:28  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-20T16:48:32  <janzert> not *really* related but I bet this makes searches for google and ants go up, which could bring people to us if we were launched http://news.cnet.com/8301-30685_3-20043249-264.html
+2011-03-20T17:02:02  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-20T17:12:31  <Frontier> oh noes. i calculated the cpu usage in the visualizer wrong. the implementations seem to use a rendering thread and i did not synchronize that with the javascript when timing the drawing routines. so the rendering is really a lot slower than estimated.
+2011-03-20T17:20:21  *** boegel <boegel!~boegel@boegel.ugent.be> has quit IRC (Quit: Leaving)
+2011-03-20T17:24:33  <Frontier> 30 fps max in firefox, 70 fps max in chrome
+2011-03-20T17:31:04  *** tapwater <tapwater!~tapwater@pool-71-252-196-104.dllstx.fios.verizon.net> has joined #aichallenge
+2011-03-20T17:31:18  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has quit IRC (Ping timeout: 246 seconds)
+2011-03-20T17:57:21  *** choas <choas!~lars@p578F6951.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-20T18:02:15  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-20T18:05:58  <jbroman> So the wiki was posted to reddit. For some reason.
+2011-03-20T18:06:36  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-20T18:06:36  *** ChanServ sets mode: +o amstan
+2011-03-20T18:32:08  *** Jizzard <Jizzard!~a@74.83.221.102> has joined #aichallenge
+2011-03-20T18:33:03  <Jizzard> hey guys
+2011-03-20T18:37:21  *** Jizzard <Jizzard!~a@74.83.221.102> has quit IRC (Ping timeout: 252 seconds)
+2011-03-20T18:40:31  <jmcarthur> antimatroid: that sounds like a neat suggestion. need to think about it a bit
+2011-03-20T18:40:52  <jmcarthur> i like that it's a simple rule and, at least at first glance, seems like it might lead to interesting strategies
+2011-03-20T18:41:03  *** MojoeMAN <MojoeMAN!44b70102@gateway/web/freenode/ip.68.183.1.2> has joined #aichallenge
+2011-03-20T18:42:02  *** Jizzard <Jizzard!~a@74.83.221.102> has joined #aichallenge
+2011-03-20T18:43:02  *** antimatroid <antimatroid!~nick@121.246-26-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-03-20T18:44:54  *** MojoeMAN is now known as jhuynh85
+2011-03-20T18:46:28  *** Zoo <Zoo!~Miranda@cs27020114.pp.htv.fi> has quit IRC (Read error: Connection reset by peer)
+2011-03-20T18:47:02  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has joined #aichallenge
+2011-03-20T18:51:52  <sigh> jmcarthur: what rule are we talking about here?
+2011-03-20T18:52:48  <jmcarthur> sigh: the one that apparently you came up with
+2011-03-20T18:52:54  <jmcarthur> i didn't read the backlog
+2011-03-20T18:53:07  *** Jizzard <Jizzard!~a@74.83.221.102> has quit IRC (Ping timeout: 252 seconds)
+2011-03-20T18:53:31  <sigh> ah, the damage one... imo it is similar to option 1 but with a more obvious and intuitive motivation
+2011-03-20T18:54:23  <jmcarthur> yeah
+2011-03-20T18:54:29  <jmcarthur> i need to think about it some, but it sounds good
+2011-03-20T18:54:38  <Frontier> The latest commit to the Code::Blocks IDE: "replaced cbMessageBox with AnnoyingDialog, when deleting entries in the Recent files/projects list in the Start page"  <- :D
+2011-03-20T18:58:05  *** Jizzard <Jizzard!~a@74.83.221.102> has joined #aichallenge
+2011-03-20T18:58:35  *** antimatroid <antimatroid!~nick@86.198.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-20T19:00:06  <sigh> jmcarthur: "antimatroid: "new method is: your ant dies if it has more enemies in range than friends, not counting itself as a friend"   <-- i think McLeopold and were working with that one before switching to option 1. IIRC, it's really easy to deadlock with it" <-- that's odd because McLeopold was the one who brought it up yesterday
+2011-03-20T19:00:31  <sigh> pretend I escaped the inside quotes
+2011-03-20T19:01:01  <sigh> the #enemies > #friends method, that is
+2011-03-20T19:02:29  <antimatroid> sigh: i only remembered about that yesterday
+2011-03-20T19:02:34  *** Jizzard <Jizzard!~a@74.83.221.102> has quit IRC (Ping timeout: 250 seconds)
+2011-03-20T19:02:40  <antimatroid> but i really don't think people are going to deadlock it
+2011-03-20T19:02:54  <antimatroid> did you see mcleopolds comment on your rule?
+2011-03-20T19:03:04  <sigh> yeah, what did he mean by that?
+2011-03-20T19:03:15  <antimatroid> not sure, they don't really have any more attacking power
+2011-03-20T19:03:28  <antimatroid> you can just defend with your ants
+2011-03-20T19:03:52  <sigh> I think he means that the further away ants are more likely to focus on one enemy, and thus take it out
+2011-03-20T19:04:21  <sigh> but that's similar to option 1?
+2011-03-20T19:04:39  <antimatroid> yeah, i don't think that's much different to 1
+2011-03-20T19:05:05  <antimatroid> while it's not the same as 1, it's very similar and encourages similar strategies imo
+2011-03-20T19:05:13  <antimatroid> while being easier to grasp/understand
+2011-03-20T19:05:46  <javagamer> Just saw on Reddit there's going to be another one of these, I can't wait.
+2011-03-20T19:06:25  <antimatroid> haha, look forward to the wave over the next few days
+2011-03-20T19:06:44  <sigh> javagamer: yeah, it's still in dev though, so don't take the specs as a given yet :)
+2011-03-20T19:07:19  <javagamer> Yeah, I saw, plus I have a few other things I want to get done, I think I'll try and be productive until things get finalized
+2011-03-20T19:10:25  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has joined #aichallenge
+2011-03-20T19:10:53  <javagamer> Like the look of this game, is it going to be more than just 1v1s this time?
+2011-03-20T19:12:41  <antimatroid> yes, n-player with a fog of war :P
+2011-03-20T19:12:44  <antimatroid> with wrapped edges
+2011-03-20T19:13:33  <javagamer> I saw that it said n-player, but the last game itself was n-player too.
+2011-03-20T19:14:00  <antimatroid> that was 2-player from the start though, anyway, yes there will be maps with more than 2 players :)
+2011-03-20T19:14:04  <antimatroid> http://pastebin.com/HA6EfpUm
+2011-03-20T19:14:09  <antimatroid> there's some sample symmetric maps from my generator
+2011-03-20T19:14:33  <antimatroid> . = land, % = water, a-z = players ant, the engine does the food spawning
+2011-03-20T19:14:37  <javagamer> Ooh, sounds good. I absolutely love these challenges.
+2011-03-20T19:15:20  <antimatroid> so do i :)
+2011-03-20T19:16:30  <javagamer> Didn't do too well on the last one, I think I'll try a higher level language this time.  I wasted too much time trying to prematurely optimize things and not enough working on my strategy.
+2011-03-20T19:16:49  *** BtbN <BtbN!btbn@btbn.de> has quit IRC (Read error: Operation timed out)
+2011-03-20T19:18:36  <antimatroid> what language did you use?
+2011-03-20T19:18:44  *** BtbN <BtbN!~btbn@85.214.28.16> has joined #aichallenge
+2011-03-20T19:18:50  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-20T19:18:56  <antimatroid> i'm tempted to try and use the time to learn haskell more, but otherwise i'm just going to use c++
+2011-03-20T19:19:22  <sigh> I'm guessing he used java?
+2011-03-20T19:19:25  <javagamer> I'll probably do python unless I feel really daring and go for haskell
+2011-03-20T19:19:41  <javagamer> Java originally, C++ in the last contest
+2011-03-20T19:19:44  <antimatroid> sigh: could just be an old username :P
+2011-03-20T19:19:51  <sigh> :)
+2011-03-20T19:20:09  <antimatroid> anyway, i need to get to uni, back later
+2011-03-20T19:20:10  <javagamer> It is, from a long time ago, but waiting to change it until I find something really good
+2011-03-20T19:20:31  <antimatroid> i would use kirby or something, but too common
+2011-03-20T19:20:37  <sigh> haha
+2011-03-20T19:20:53  <sigh> I'm surprised I got to use 'sigh' in so many places
+2011-03-20T19:21:00  <antimatroid> yeah, it's a good one too :P
+2011-03-20T19:21:15  <antimatroid> i've found one other antimatroid handle through google
+2011-03-20T19:21:19  <antimatroid> otherwise i've been sweet with this
+2011-03-20T19:21:22  <sigh> o_O
+2011-03-20T19:21:29  <antimatroid> i used to go by "Duckling" on torrent sites aha
+2011-03-20T19:26:37  <javagamer> I'm hoping for something really creative, but I haven't gotten any inspiration
+2011-03-20T19:38:32  *** peripheraldevice <peripheraldevice!5c2dbb3c@gateway/web/freenode/ip.92.45.187.60> has joined #aichallenge
+2011-03-20T19:41:37  *** me0w <me0w!~me0w@197.200.64.252> has joined #aichallenge
+2011-03-20T19:42:33  *** peripheraldevice <peripheraldevice!5c2dbb3c@gateway/web/freenode/ip.92.45.187.60> has quit IRC (Client Quit)
+2011-03-20T20:01:21  *** antiuni <antiuni!83d90608@gateway/web/freenode/ip.131.217.6.8> has joined #aichallenge
+2011-03-20T20:05:59  *** antiuni <antiuni!83d90608@gateway/web/freenode/ip.131.217.6.8> has quit IRC (Client Quit)
+2011-03-20T20:06:50  *** carrutstick <carrutstick!~isaac@c-76-124-108-109.hsd1.pa.comcast.net> has joined #aichallenge
+2011-03-20T20:13:57  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-20T20:16:05  *** me0w <me0w!~me0w@197.200.64.252> has quit IRC (Quit: leaving)
+2011-03-20T20:17:17  *** delt0r___ <delt0r___!~delt0r@188-22-170-233.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-20T20:18:50  *** delt0r_ <delt0r_!~delt0r@188-22-172-36.adsl.highway.telekom.at> has quit IRC (Ping timeout: 248 seconds)
+2011-03-20T20:37:45  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-20T20:41:17  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 255 seconds)
+2011-03-20T20:44:31  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-253-173.asm.bellsouth.net> has joined #aichallenge
+2011-03-20T20:47:25  *** drhodes <drhodes!~none@drhodes.xen.prgmr.com> has joined #aichallenge
+2011-03-20T20:48:04  <amstan> McLeopold: ping
+2011-03-20T20:48:10  <McLeopold> hi
+2011-03-20T20:48:26  <amstan> i got a private message today on github
+2011-03-20T20:48:33  <amstan> McLeopold: http://pastebin.com/gKL4uGYb
+2011-03-20T20:49:07  <McLeopold> cool
+2011-03-20T20:49:14  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-20T20:51:04  <sigh> McLeopold: what did you mean by this: "for sigh's rule, it means an ant farther out has a more focused attack."
+2011-03-20T20:51:32  <sigh> as in, what point were you trying to make
+2011-03-20T20:51:37  <McLeopold> If you have a single ant, you want to make sure your attack only hits 1 enemy.  So you want to stay at the edge of the attack range.
+2011-03-20T20:52:10  <McLeopold> In a big battle, ants close to the center are less useful, yet you still need a lot more ants to win.
+2011-03-20T20:52:25  <sigh> sure, but were you just making an observation, do you see it as a problem, or something else?
+2011-03-20T20:52:27  <McLeopold> It's like the hit point idea, but the healing is instant. :)
+2011-03-20T20:52:42  <McLeopold> No, I think this has the most promise right now.
+2011-03-20T20:52:57  <sigh> option 1 has the same issues
+2011-03-20T20:53:20  <sigh> I think this is similar strategy to option 1, but has the advantage of actually being intuitive
+2011-03-20T20:54:16  <amstan> McLeopold: cool how? it's a proprietary language that we must buy..
+2011-03-20T20:54:32  <amstan> and i seriously doubt it can be hooked up in our system
+2011-03-20T20:54:40  <McLeopold> It's still cool.  There is a student version.
+2011-03-20T20:57:42  <McLeopold> It looks like it produces C code?
+2011-03-20T20:59:47  <sigh> why don't you just ask the guy if there is a simple, free way to set it up on ubuntu?
+2011-03-20T21:00:10  <amstan> sigh: yeah, good idea
+2011-03-20T21:03:55  <amstan> https://github.com/aichallenge/aichallenge/issues#issue/32
+2011-03-20T21:05:40  *** suicidolt <suicidolt!~chatzilla@97.104.27.168> has joined #aichallenge
+2011-03-20T21:07:22  <McLeopold> amstan: http://joule.ni.com/nidu/cds/view/p/id/1020/lang/en
+2011-03-20T21:07:57  <amstan> McLeopold: decent, can you add it to the issue?
+2011-03-20T21:08:22  <amstan> McLeopold: though.. it seems like we need a compiler too
+2011-03-20T21:08:41  *** suicidolt <suicidolt!~chatzilla@97.104.27.168> has quit IRC (Client Quit)
+2011-03-20T21:08:47  <amstan>  This Run-Time Engine must be installed on any Linux system where you plan to run *executables that you build* with the LabVIEW Application Builder.
+2011-03-20T21:08:47  <McLeopold> Yes
+2011-03-20T21:09:02  <McLeopold> It's like the jvm, i guess
+2011-03-20T21:10:39  *** carrutstick <carrutstick!~isaac@c-76-124-108-109.hsd1.pa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-03-20T21:10:52  *** suicidolt <suicidolt!~chatzilla@97.104.27.168> has joined #aichallenge
+2011-03-20T21:13:55  <McLeopold> amstan: might might be able to do it if we allowed compiled submissions
+2011-03-20T21:14:20  *** jhuynh85 <jhuynh85!44b70102@gateway/web/freenode/ip.68.183.1.2> has quit IRC (Ping timeout: 252 seconds)
+2011-03-20T21:20:33  *** JaycobC <JaycobC!18edc0f9@gateway/web/freenode/ip.24.237.192.249> has joined #aichallenge
+2011-03-20T21:23:21  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-03-20T21:25:32  *** suicidolt <suicidolt!~chatzilla@97.104.27.168> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.15/20110303190149])
+2011-03-20T21:28:15  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has left #aichallenge
+2011-03-20T21:33:14  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 264 seconds)
+2011-03-20T21:41:09  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-03-20T21:41:32  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has left #aichallenge
+2011-03-20T21:45:02  *** Parn <Parn!60f82b76@gateway/web/freenode/ip.96.248.43.118> has joined #aichallenge
+2011-03-20T21:47:06  *** Parn <Parn!60f82b76@gateway/web/freenode/ip.96.248.43.118> has quit IRC (Client Quit)
+2011-03-20T21:47:42  *** suicidolt <suicidolt!~chatzilla@97.104.27.168> has joined #aichallenge
+2011-03-20T21:55:08  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-20T21:57:37  *** antiuni <antiuni!83d90608@gateway/web/freenode/ip.131.217.6.8> has joined #aichallenge
+2011-03-20T21:59:25  <Frontier> McLeopold: think of the complications with different architectures (64-bit, windows/unix, libs) when it comes to binaries
+2011-03-20T22:01:47  <Frontier> ah wait, the compiled files are just byte code that runs on any architecture with the runtime, right?
+2011-03-20T22:05:21  <CIA-33> aichallenge: Alexandru Stan epsilon * r6451e1d / (13 files in 4 dirs): Merge remote branch 'tjc/perlstarter' into epsilon - http://bit.ly/fXyct5
+2011-03-20T22:05:40  <amstan> Frontier: we have no idea in labview's case
+2011-03-20T22:07:02  *** BrandonAGr <BrandonAGr!4cff6bd4@gateway/web/freenode/ip.76.255.107.212> has joined #aichallenge
+2011-03-20T22:10:28  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-03-20T22:14:36  *** tapwater <tapwater!~tapwater@pool-71-252-196-104.dllstx.fios.verizon.net> has quit IRC (Quit: tapwater)
+2011-03-20T22:18:37  *** BrandonAGr <BrandonAGr!4cff6bd4@gateway/web/freenode/ip.76.255.107.212> has quit IRC (Quit: Page closed)
+2011-03-20T22:18:49  *** suicidolt <suicidolt!~chatzilla@97.104.27.168> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.15/20110303190149])
+2011-03-20T22:19:47  <genericbob> Is there a more effeciant way to mark an area as unseen then looping over every map tile, and then looping over every ant and checking the distance?
+2011-03-20T22:20:38  <sigh> you can loop over each ant, and just check mark the surrounding tiles
+2011-03-20T22:21:54  <sigh> also, you might want to look at the get_vision function that the engine uses: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/ants.py#L170
+2011-03-20T22:22:12  <genericbob> i.e. precalculate the maximum x and y distance from each ant, and then loop through those areas....
+2011-03-20T22:22:18  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has joined #aichallenge
+2011-03-20T22:22:21  <genericbob> good idea ;)
+2011-03-20T22:22:50  <sigh> there are ways to make it more efficient, but haven't got around to that in the engine, but the current implementation is not bad
+2011-03-20T22:24:07  <genericbob> ahh, not bad.
+2011-03-20T22:31:22  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-20T22:40:17  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-20T22:40:24  <McLeopold> amstan: ping
+2011-03-20T22:40:36  <amstan> McLeopold: pong
+2011-03-20T22:40:58  <McLeopold> Frontier was saying you wanted the visualizer.php to be the frame?
+2011-03-20T22:41:10  <amstan> no? what where?
+2011-03-20T22:41:29  <Frontier> hiho
+2011-03-20T22:41:36  <McLeopold> Anyway, we were talking about the appropriate place to but stuff like username and links to profile pages.
+2011-03-20T22:41:56  <McLeopold> I'd like to keep profile links out of the replay files, but include usernames
+2011-03-20T22:42:22  <McLeopold> I was also thinking the visualizer could have a few text tags around the canvas.
+2011-03-20T22:43:10  *** Ttech <Ttech!ttech@botters/staff/ttech> has quit IRC (Quit: Your nick was overruled.)
+2011-03-20T22:43:40  <McLeopold> Frontier: it might just be easiest to go with the api method.
+2011-03-20T22:44:21  <McLeopold> Or, you could infer what the links are depending on the url the replay comes from?
+2011-03-20T22:46:50  <amstan> McLeopold: yeah.. no need for links in replay files, a username should suffice
+2011-03-20T22:47:03  <amstan> McLeopold: or.. user id?
+2011-03-20T22:47:38  <amstan> McLeopold: we used user id in the past to generate the links, but i think we could also do something like http://ai-contest.com/find_user.php?username=amstan&search=Go
+2011-03-20T22:48:27  <amstan> McLeopold: maybe change find_user to accept an exact match flag, that way you can just use the previous link to go to the profile directly
+2011-03-20T22:49:39  <Frontier> I assume that some people download their replays and would like to see their opponents' names
+2011-03-20T22:49:59  <McLeopold> Yes, names in the replay, no id's.
+2011-03-20T22:50:09  <amstan> McLeopold: then we can easily modify find_user.php
+2011-03-20T22:50:37  <amstan> just watch out for the weird chars as usernames
+2011-03-20T22:51:09  <McLeopold> Frontier: for my tcp, if I can set the links, that would be nice.
+2011-03-20T22:51:10  <Frontier> ...and optionally have full 'track-back' support, so they can get back to the server where they downloaded the replay from and watch it there or lookup the users. that's what the url in the replay would be nice for.
+2011-03-20T22:51:18  *** Ttech <Ttech!ttech@botters/staff/ttech> has joined #aichallenge
+2011-03-20T22:51:52  <McLeopold> Okay.
+2011-03-20T22:52:01  <McLeopold> It doesn't hurt to store a little extra info.
+2011-03-20T22:53:09  <Frontier> McLeopold: does the engine have the neccesary info available?
+2011-03-20T22:53:38  <McLeopold> The engine doesn't.  That info would be tacked on by the system running the engine.
+2011-03-20T22:53:50  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has quit IRC (Remote host closed the connection)
+2011-03-20T22:54:10  <McLeopold> The engine should never know about usernames or ids.
+2011-03-20T22:54:54  <Frontier> how do I have to imagine this? the engine writes out a replay file and the system running the engine inserts lines about user ids and a back-track url?
+2011-03-20T22:55:05  <McLeopold> yes
+2011-03-20T22:55:34  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has joined #aichallenge
+2011-03-20T22:55:34  <McLeopold> so, it would be nice if the spec had all the player stuff at the very top
+2011-03-20T22:56:01  <McLeopold> I know you like things to be in a certain order, but I think it should be flexible
+2011-03-20T22:56:11  <Frontier> at the VERY top as in 'before the version and id'?
+2011-03-20T22:56:24  <McLeopold> either way
+2011-03-20T22:56:56  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has quit IRC (Remote host closed the connection)
+2011-03-20T22:57:00  <McLeopold> http://en.wikipedia.org/wiki/Robustness_principle
+2011-03-20T22:57:08  <Frontier> :p
+2011-03-20T22:57:11  <McLeopold> liberal in what you accept ^^
+2011-03-20T22:57:29  <Frontier> ok, let me see if i can nail you down on that link, hehe
+2011-03-20T22:58:23  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has joined #aichallenge
+2011-03-20T22:59:57  <Frontier> ..."as long as the meaning is clear" means that I have to know at least that i am reading an ants replay, not a planetwars one or tron or a future format. thus a version line should always be up front. :p Why not append the data? I think thats easier on the processor and file system as well
+2011-03-20T23:00:31  <Frontier> our last lines atm are <# of players> * s <scores>
+2011-03-20T23:00:40  <McLeopold> okay
+2011-03-20T23:00:59  <McLeopold> but, for someone just looking at the file, username at the top would be nice
+2011-03-20T23:01:18  <Frontier> btw. I'm liberal in accepting any number of blank lines, upper/lower-case and whitespace including tab in between options ^^
+2011-03-20T23:01:26  <McLeopold> great
+2011-03-20T23:02:07  <McLeopold> what ever is calling the engine wouldn't know the replay version being produced
+2011-03-20T23:02:24  <McLeopold> so, a simple append or prepend is out
+2011-03-20T23:02:41  <Frontier> oh man this starts to look like html on emails ^^
+2011-03-20T23:02:49  <McLeopold> I think username info would be fairly universal, wouldn't it?
+2011-03-20T23:04:08  <McLeopold> gotta go, I'm sure whatever you come up with will be fine.
+2011-03-20T23:04:11  <Frontier> it is, no doubt. but i would like to introduce some very reduced structure that clearly identifies the replay format. we have arguments over the format every time
+2011-03-20T23:04:28  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-03-20T23:04:41  <McLeopold> okay, cya
+2011-03-20T23:04:48  <Frontier> ok, bye
+2011-03-20T23:04:57  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-20T23:06:27  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-20T23:07:29  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.15/20110303190149])
+2011-03-20T23:08:11  * Frontier thinks: in planetwars there was some kind of wrapper around the actual replay containing meta information.
+2011-03-20T23:09:06  <amstan> Frontier: in planetwars there was no replay file, the replay data was in the database
+2011-03-20T23:09:08  <Frontier> engine -> replay -> manager adds metadata -> final data ?
+2011-03-20T23:09:52  <Frontier> amstan: a zipped binary blob in the db or a file, where is the difference? ;)
+2011-03-20T23:10:39  <amstan> Frontier: because the binary blob in planet wars's case did not have any info such as users and so on, it was all fetched from the database by php
+2011-03-20T23:11:54  <Frontier> i know, but the php created a single 'file' from that information. it escaped the \n in the replay and had a structure similar to a JSON file.
+2011-03-20T23:12:05  <sigh> "binary blob" => binary binary large object?
+2011-03-20T23:12:15  <amstan> sigh: huh?
+2011-03-20T23:12:20  <Frontier> sigh: lol, you are right
+2011-03-20T23:12:32  <amstan> sigh: oh! lol
+2011-03-20T23:12:53  <Frontier> i tend to refer to text blobs, too.
+2011-03-20T23:12:58  <sigh> :)
+2011-03-20T23:13:20  <sigh> there's a reason TEXT and BLOB are different data types :P
+2011-03-20T23:14:40  <sigh> btw either way, what is the problem with post-processing the replay file to include player info?
+2011-03-20T23:15:37  <Frontier> amstan: I was interested in some container format that survives our endless arguments over replay formats every term ^^, so I thought a simple line with 'v <game name> <version of replay file>' could be the common header and the rest is variable. But now there is the manager trying to add metadata to the replay, not knowing about the actual format
+2011-03-20T23:16:11  <sigh> if you are worried about format the engine can output a placeholder
+2011-03-20T23:18:17  <Frontier> that's a good idea. could it still mess up replay parsers?
+2011-03-20T23:18:26  <sigh> just make the placeholder a comment
+2011-03-20T23:20:16  <Frontier> so it would be like "# <metadata>" and the manager places... no wait, player names should probably be each on a single line
+2011-03-20T23:20:41  <sigh> it can be replaced by more than one line
+2011-03-20T23:21:03  <sigh> all it is doing is giving the manager a safe place to inject data
+2011-03-20T23:21:23  <Frontier> but the manager doesn't know about the comment style in use :(
+2011-03-20T23:21:35  <Frontier> it could be // or #, allow blocks or not
+2011-03-20T23:21:56  <sigh> ah we really expecting this thing to be that general?
+2011-03-20T23:22:06  <sigh> *are
+2011-03-20T23:23:13  <Frontier> I always expect the worst. Maybe next term someone says '//' comments are better than '#'
+2011-03-20T23:23:37  <sigh> I don't think you have to worry about that
+2011-03-20T23:23:45  <sigh> if you want it to be that general, then you have to have actual inline placeholders
+2011-03-20T23:24:18  <sigh> which brings up even more problems
+2011-03-20T23:24:31  <Frontier> or a simple container format
+2011-03-20T23:25:16  <sigh> ok, this is getting too complicated
+2011-03-20T23:25:20  <Frontier> :(
+2011-03-20T23:25:30  <Frontier> i said /simple/
+2011-03-20T23:25:35  <sigh> what you want is the manager to be unaware of the replay format
+2011-03-20T23:25:40  <Frontier> planet wars had that too
+2011-03-20T23:25:57  <Frontier> antimatroid said, the system doesn't know about the format
+2011-03-20T23:26:03  <Frontier> sorry, McLeopold
+2011-03-20T23:26:10  <sigh> therefore, it should not write anything that cares about the replay format, so it can't even insert data
+2011-03-20T23:26:30  <amstan> why do you need to comment extra data that the manager injects?
+2011-03-20T23:26:46  <amstan> just inject it at the end, the visualizer should be parsing them
+2011-03-20T23:27:39  <sigh> I was just suggesting a comment for the placeholder that the manager would replace with the actual data
+2011-03-20T23:27:49  <sigh> since they didn't want to but the data at the end
+2011-03-20T23:28:24  <Frontier> It is nice to have the metadata on top when you open the file.
+2011-03-20T23:28:30  <amstan> contestbot: topic add Ants is on Reddit: http://goo.gl/NSpYJ
+2011-03-20T23:28:30  *** contestbot changes topic to "Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge || Launch Checklist: https://github.com/aichallenge/aichallenge/issues/labels/launch || Ants is on Reddit: http://goo.gl/NSpYJ"
+2011-03-20T23:28:42  <Frontier> But I actually prefer the append idea
+2011-03-20T23:29:05  <sigh> having the data at the top is nice
+2011-03-20T23:29:23  <Frontier> but at the end it can never get in any conflict :)
+2011-03-20T23:29:24  <sigh> *shrug*
+2011-03-20T23:29:35  <sigh> it can still conflict
+2011-03-20T23:29:48  <Frontier> not if the length of the original replay data is known
+2011-03-20T23:30:05  <Frontier> waiting for the eof is lame anyway :p
+2011-03-20T23:30:05  <sigh> now you are getting complicated again
+2011-03-20T23:30:10  <sigh> how is it known
+2011-03-20T23:30:17  * amstan points at http://goo.gl/NSpYJ
+2011-03-20T23:30:35  <Frontier> the last lines are the scores. they start with 's' and there is exactly one line per player.
+2011-03-20T23:30:42  <Frontier> if there is more data, it is the metadata
+2011-03-20T23:30:57  <sigh> so now you are back to careing about the replay format
+2011-03-20T23:32:25  <Frontier> you asked how the file length is known. and i think the only constraints on the replay format should be a common header for all our games to identify them by and that the length can be computed from the data.
+2011-03-20T23:33:08  <Frontier> then the manager can just append whatever it wants without replacing tokens in the file
+2011-03-20T23:33:22  <Frontier> isn't that easier for everyone?
+2011-03-20T23:33:32  <sigh> ok, if the manager can append, why can't it prepend
+2011-03-20T23:34:23  <Frontier> because then you have to put the same constraints on the metadata :)
+2011-03-20T23:35:04  <sigh> sure, but now it's at the top
+2011-03-20T23:35:34  <Frontier> metadata is generally less important so it shouldn't be a requirement for a visualizer implementation to understand it before it can parse the actual data
+2011-03-20T23:36:47  <sigh> fair enough, but if it is easy to ignore it shouldn't be an issue
+2011-03-20T23:37:34  <Frontier> ok, lets find a good way to skip the metadata
+2011-03-20T23:38:09  <Frontier> "metadata <# of lines following>" would be one way
+2011-03-20T23:38:59  <Frontier> (local replays may not even contain metadata and we end up with two possible first lines: the general 'metadata' line or the game specific 'v ants 1' line)
+2011-03-20T23:39:58  <sigh> simplest way is to prepend metadata lines with a special character
+2011-03-20T23:40:08  <sigh> like "!" so that only one char has to be checked
+2011-03-20T23:40:56  <sigh> or even #! so that a naive visualiser would ignore it anyway :)
+2011-03-20T23:41:21  <Frontier> that is reserved for runnable script on unix
+2011-03-20T23:42:06  <Frontier> #!/bin/bash would make the file executable in the bash shell, #!/bin/python runs a script through python
+2011-03-20T23:42:25  <sigh> sure, was just an example
+2011-03-20T23:42:33  <sigh> I only added the # as an afterthought
+2011-03-20T23:43:26  <sigh> my main point with that second point was that if you want to make it really easy for visualisers to ignore, and the metadata isn't relavent to parsing in anyway, then you can put it in a comment
+2011-03-20T23:45:26  *** thagomizr <thagomizr!~thagomizr@173-26-197-78.client.mchsi.com> has joined #aichallenge
+2011-03-20T23:46:18  <sigh> doesn't really matter, as long as it is easy to ignore the lines
+2011-03-20T23:47:18  <Frontier> i understand your point. we would put another simple constraint on replay formats then. comment lines like say '#%' or '##' contain metadata and must not be used for 'real' comments
+2011-03-20T23:47:55  *** chris__0076 <chris__0076!~Chris_007@adsl-66-249-161.asm.bellsouth.net> has joined #aichallenge
+2011-03-20T23:48:28  <Frontier> the manager can insert them anywhere it likes to
+2011-03-20T23:49:22  <sigh> if you always put the metadata at the top, you don't even need to constrain the comments that way as long as it is easy for the metadata parser to figure out where the metadata
+2011-03-20T23:50:45  <Frontier> isn't it odd to have all the metadata and then the line that defines the file format ? ^^
+2011-03-20T23:50:46  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-253-173.asm.bellsouth.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-20T23:51:10  <sigh> nope, because the metadata is not part of the file format
+2011-03-20T23:51:22  <Frontier> kk
+2011-03-20T23:51:26  <sigh> which is why i think it should not be mixed in the middle
+2011-03-20T23:52:24  <amstan> i am confused on why we need this..
+2011-03-20T23:52:44  <Frontier> amstan: why did planetwars need metadata?
+2011-03-20T23:52:56  <amstan> no.. why we need comments for metadata?
+2011-03-20T23:53:02  <amstan> why can't we just append it directly
+2011-03-20T23:53:04  <sigh> I think it's fine to just stick the options raw, personally
+2011-03-20T23:53:14  <amstan> like that ^
+2011-03-20T23:53:16  <amstan> +1
+2011-03-20T23:53:36  <sigh> just frontier doesn't want the parser to have to be aware of it
+2011-03-20T23:53:42  <sigh> visualiser
+2011-03-20T23:53:43  <Frontier> it is a matter of opinion. sigh and McLeopold want the metadata at the top, we want it at the end
+2011-03-20T23:54:01  <sigh> oh yes, that's the only thing that I actually want... I think it should be at the top
+2011-03-20T23:54:29  <sigh> everything else is just matching it up with concerns that others have :)
+2011-03-20T23:54:50  <amstan> top should be preffered, in case the file only partially loads
+2011-03-20T23:55:22  <amstan> i just said end because it was a more convenient word at the time
+2011-03-20T23:55:36  <sigh> lol?
+2011-03-20T23:55:37  <Frontier> *sigh*
+2011-03-20T23:55:51  *** zvitamiinz <zvitamiinz!ae718880@gateway/web/freenode/ip.174.113.136.128> has joined #aichallenge
+2011-03-20T23:56:04  <amstan> i never gave a reason for end... don't just take my word for it if i don't explain why
+2011-03-20T23:56:07  <amstan> lol
+2011-03-20T23:57:30  <Frontier> amstan: i want the metadata to be different from the replay format because a) local files don't have metadata b) the manager writes the metadata and doesn't know the replay format the engine writes out, so it needs a way to do it without getting in conflict with the actual data.
+2011-03-20T23:57:51  <amstan> Frontier: conflict how?
+2011-03-20T23:58:06  <amstan> Frontier: local files do have metadata, you have filenames for bots
+2011-03-20T23:58:39  <amstan> Frontier: why does manager need to know replay format? all it needs to do is append key-value lines with its metadata
+2011-03-20T23:58:42  <Frontier> amstan: I'm thinking into the future. Every term we have a different replay format. Metadata should be placable in a way so that the manager doesn't need to be changed because the replay format changed
+2011-03-20T23:59:01  <Frontier> if that was clear ^^
+2011-03-20T23:59:10  <amstan> yeah, it was
+2011-03-20T23:59:25  <amstan> what about json?
+2011-03-20T23:59:35  <sigh> this is a wonderful bikeshed
+2011-03-20T23:59:36  <Frontier> json is fine for me
+2011-03-20T23:59:37  <amstan> can we use that as a replay format?
+2011-03-20T23:59:53  <amstan> sigh: hmm?
+2011-03-20T23:59:56  <Frontier> as a replay format? hmm.

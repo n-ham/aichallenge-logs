@@ -1,0 +1,1808 @@
+2011-06-21T00:03:35  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 250 seconds)
+2011-06-21T00:15:45  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Quit: Page closed)
+2011-06-21T00:20:23  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has joined #aichallenge
+2011-06-21T00:21:23  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has quit IRC (Client Quit)
+2011-06-21T00:21:58  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has joined #aichallenge
+2011-06-21T00:23:43  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has quit IRC (Client Quit)
+2011-06-21T00:24:24  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has joined #aichallenge
+2011-06-21T00:30:29  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has quit IRC (Quit: pvarga)
+2011-06-21T01:06:45  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-21T01:10:04  *** okay is now known as okayzed
+2011-06-21T01:10:59  *** slkjcna_ <slkjcna_!~proton@li189-81.members.linode.com> has quit IRC (Read error: Operation timed out)
+2011-06-21T01:11:03  *** slkjcna <slkjcna!~proton@li189-81.members.linode.com> has joined #aichallenge
+2011-06-21T01:22:44  *** mleise <mleise!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-06-21T01:30:14  <mleise> how was the meeting going?
+2011-06-21T01:30:15  *** amstan <amstan!~alex@69-196-143-145.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-06-21T01:41:03  *** _flag_ <_flag_!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-06-21T02:08:48  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-21T02:08:58  <stocha> how does trueskill do pairings really ?
+2011-06-21T02:10:31  <Zaphus> what do you mean by pairings ?
+2011-06-21T02:11:01  <stocha> Zaphus: how is the choosing of which bot to put in the same game fighting one another done
+2011-06-21T02:11:37  <Zaphus> Trueskill doesnt do that, trueskill just generates ratings.   However if you want bots of similar strength in a battle, use ones of similar rating
+2011-06-21T02:12:42  <Zaphus> of course that slows down your ability to 'climb' the ladder, mixing it up a bit gets better results (in my opinion)
+2011-06-21T02:14:50  <Zaphus> plus you'd hate to play the same bots over and over again, which is what would tend to happen
+2011-06-21T02:16:14  *** janzert <janzert!~janzert@24-247-70-35.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2011-06-21T02:17:25  <Zaphus> stocha: is the reason you keep questioning Trueskill because it's giving rankings that dont match with the data (the game results) ?   if so that may indicate it's not implemented correctly.   now that the java bots are playing and everyone's getting lots of games, it seems to have settled pretty nicely from what I see
+2011-06-21T02:18:13  *** janzert <janzert!~janzert@24-247-70-35.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-06-21T02:19:30  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has joined #aichallenge
+2011-06-21T02:21:09  <Zaphus> stocha: the one thing I'm not a fan of with this implementation is the increase in sigma (decreasing the probability that your rating is correct, effectively) that happens when you don't play games - but I kind of understand the logic behind it
+2011-06-21T02:23:30  <stocha> Zaphus: whats the logic behind ?
+2011-06-21T02:26:50  <Zaphus> stocha:  it's "we haven't seen you for a while, so maybe your rating isnt quite correct" - and by increasing sigma it gives you the chance to move more after the result of the game than you otherwise would.   helps take into account the new/changed bots may have affected your rating even if you havent played them yet
+2011-06-21T02:27:01  <Zaphus> for humans it's more about the fact that we aren't consistent
+2011-06-21T02:27:03  <stocha> Zaphus: I don't have enougth data to judge what bot are stronger. Though i'd still want to see those matrix for each bot. I'm too lazy to do it without a ready gui :o   However, i watched the ranking a lot, and it feels that it moves a lot. So if you trusted the values, depending on when you look at it, you would draw out different conclusions
+2011-06-21T02:27:39  <Zaphus> I'd love the matrix - I have enough data in the SQL to get it now (no idea how to make a matrix from it, but I'll give someone the commands)
+2011-06-21T02:27:55  <stocha> Zaphus: yeah, but bot are consistent. And new submission should not share anything with old submission. So really this feature is not desirable.
+2011-06-21T02:28:57  <Zaphus> but your bot isn't consistant.   I can see that you sometimes beat davidju, and sometimes you lose - thats inconsistant
+2011-06-21T02:29:11  <Zaphus> davidjliu I mean
+2011-06-21T02:29:23  <stocha> Maybe the variations i observe are due partly to this feature (especially since sometime bots don't get a game in a day or so). But they i also think the pairing make for hard to draw conclusions in the first place.
+2011-06-21T02:30:12  <Zaphus> look today, all bots are getting multiple games an hour - and ratings are settling
+2011-06-21T02:30:17  <stocha> Zaphus:  the bot is consistent, in the sense that it does always play the same. There is a lot of randomness in games. But for a given set of opponent, you'll end up with a probility value that one is first for example.
+2011-06-21T02:30:40  <stocha> Zaphus: but with humans, you woudln't have that feature. Because they tend to change over time. Try new things. Adapt, etc.
+2011-06-21T02:31:10  <Zaphus> stocha: correct, if the odds are 60:40 that you will beat Zaphus, and then you beat me three times in a row, your rating will increase and it will think you are now (for example)  80:20  - and then I'll win a few and it will move back down.
+2011-06-21T02:31:18  <stocha> The pairing is very important, because of the multplayer aspect.
+2011-06-21T02:32:18  <stocha> Zaphus: the trouble is, i may have 60:40 on one on one, and then 30:30 if we add another well choosen bot. And then 70 if we add another well choosen bot
+2011-06-21T02:32:23  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-21T02:32:57  <stocha> My retreating bots, seems especially good at disturbing my stronger bots, in multiplayer games.
+2011-06-21T02:33:12  <Zaphus> rock paper scissors
+2011-06-21T02:33:27  <stocha> so while i know how they do when i put only them in games, the ranking from the beta server, is all random.
+2011-06-21T02:33:42  <Zaphus> here's the question, look at stoha2 - it's had more or less the same rating for the last 3 hours, and has played something like 30 games in that time
+2011-06-21T02:34:05  <Zaphus> where's the randomness in there ?
+2011-06-21T02:34:23  <stocha> Zaphus: at this particular moment, the rating do are consistent with my data.
+2011-06-21T02:34:41  <Zaphus> matches mine too
+2011-06-21T02:35:45  <Zaphus> mostly thats from the last two fixes that had nothing to do with ratings - it was to fix it up so everyone got a game, and to get Java to work :-)
+2011-06-21T02:36:37  <Zaphus> but those changes had a big effect on the rating because now everyone gets to play - crashes messed up the ratings (sort of, it's actually accurate to say those bots were erratic)
+2011-06-21T02:38:40  <Zaphus> stocha:  ignore whats happened with the rating up until today, see how it fares over the next couple of days.   I *think* it's a pretty good indicator of the strength of the bots at the moment from what I see
+2011-06-21T02:38:55  <stocha> still the fact that sto_greed_002 is 8th leagues under davidjliu seems strange. Unless david changed his code of course
+2011-06-21T02:39:31  <stocha> but being there is only one submission of both, i find it hard to believe. from what i have seen in the past. Maybe my conclusion where wrong though.
+2011-06-21T02:40:12  <stocha> sir_macelon is the strongest, wich seems consistent with my own feeling.
+2011-06-21T02:40:58  <Zaphus> stocha:  Davidjliu has played you 7 times today, and finished ahead of you in 5 of those - so I'd say he does deserve to be higher than you
+2011-06-21T02:41:37  <stocha> well it's not me, it's only a ref_bot that is in fact public now. :p
+2011-06-21T02:41:45  <Zaphus> but you get what I mean
+2011-06-21T02:41:51  <stocha> Although i have some idea to test, i didn't put them yet.
+2011-06-21T02:42:06  <Zaphus> 5:2 ratio means he should be ranked higher than that bot, all else being equal
+2011-06-21T02:42:35  <stocha> there was far more than 7 games played involving those two bot.
+2011-06-21T02:43:05  <stocha> if it only use 7 out of many, then yes the conclusion over the 7 are right, but what about all the data it has gathered ?
+2011-06-21T02:43:06  <Zaphus> yeah, ignore before today
+2011-06-21T02:43:18  <stocha> obviously with 7 game you can only have poor rating
+2011-06-21T02:43:41  <Zaphus> well no, you've got 50+ games - only 7 involved him today though
+2011-06-21T02:43:48  <stocha> Zaphus: why does it ignore before today
+2011-06-21T02:44:02  <Zaphus> zaphus: no, I'm telling you to ignore before today :-)
+2011-06-21T02:44:12  <Zaphus> stocha: I mean you, not me :-)
+2011-06-21T02:44:42  <stocha> Zaphus: why should i do that ?
+2011-06-21T02:45:15  <stocha> with 7 game, you can hardly draw out any conclusion. Unless you somewhat have microdata (like a human can look at a bot behavior and draw conclusion from that. eventually)
+2011-06-21T02:45:25  <Zaphus> because the other things were tainting the ranking.    However, Trueskill (like Elo) is an on-the-fly rating system, it keeps adjusting after each game - you don't go back over the entire history each time a game is played
+2011-06-21T02:45:53  <stocha> What's the use of that, with bot that play with consistency ?
+2011-06-21T02:45:55  <Zaphus> stocha: you have way more than 7 games data, just 7 involving him.  but   you've played lots of people who've played him and Trueskill uses that too
+2011-06-21T02:46:03  <stocha> A ranking that use all the data is far better in there.
+2011-06-21T02:46:40  <Zaphus> this conversation will last forever :-)    offer something better, I can't keep arguing !
+2011-06-21T02:46:47  <stocha> Zaphus: yeah, obviously those indirect data are less reliable.
+2011-06-21T02:47:04  <stocha> i already offered something.
+2011-06-21T02:47:10  <Zaphus> what was it ?
+2011-06-21T02:47:47  <stocha> Calculate out of all data, a value from the probability of winning for each pair of bot.
+2011-06-21T02:48:08  <stocha> i think that's what Bayeselo would. if not i'm sure there are algorithms to do just htat.
+2011-06-21T02:48:38  <Zaphus> so you have a grid of results , but where's the ranking?
+2011-06-21T02:48:53  <Rabidus> this n vs n thing complicates things
+2011-06-21T02:48:53  <stocha> You'd have to ponder direct data much heavier than inderect data. Let's say 10 time more.
+2011-06-21T02:49:07  <stocha> the grid is the objective  basis.
+2011-06-21T02:49:14  <stocha> then you can use any system wich rely on it.
+2011-06-21T02:49:22  <stocha> i think bayeselo rely on it.
+2011-06-21T02:49:30  <stocha> beside previous ranking used bayeselo.
+2011-06-21T02:49:35  <stocha> so the algorithms are already ready.
+2011-06-21T02:50:11  <Zaphus> Guess I'm biased, I'm never going to agree that Bayeselo gives a better ranking
+2011-06-21T02:50:13  <stocha> I have no idea how they came to the conclusion it was good for 1vs1 games, and bad for multiplayer free for all games.
+2011-06-21T02:50:41  <Rabidus> what about ai-contest publishes the sql of scores and rankings
+2011-06-21T02:50:49  <Rabidus> and everyone can try his own ranking mechanism
+2011-06-21T02:50:57  <Rabidus> i would give a shot
+2011-06-21T02:50:58  <stocha> i don't know bayeselo really. Except for the fact that some version of it was used for sorting out features of goplaying bot. And it worked quite well indeed
+2011-06-21T02:51:00  <Zaphus> it's there on github
+2011-06-21T02:51:10  <Rabidus> the .sql of the beta server?
+2011-06-21T02:51:16  <Zaphus> oh no, the code
+2011-06-21T02:51:21  <Rabidus> yeah, i ment the database
+2011-06-21T02:51:25  <Rabidus> of scores only
+2011-06-21T02:51:32  <stocha> if they gives the data, then people can't complain i guess :)
+2011-06-21T02:51:40  <Zaphus> but everyone will just try to find the algorithm that gives the ranking order that they believe is correct :-)
+2011-06-21T02:51:45  <stocha> If they are two lazy to work on it, too bad for them :
+2011-06-21T02:52:11  <Rabidus> Zaphus: yeah? so? at least there is something to take a look
+2011-06-21T02:52:14  <stocha> Zaphus: hopefully most method but the very twisted one would give about similar conclusions.
+2011-06-21T02:52:42  <Zaphus> stocha:  why is it that you say you don't know Trueskill, and dont trust it, and you don't know Bayeselo and do trust it ?   whats magic about Bayeselo that convinces you where the science behind Trueskill doesnt ?
+2011-06-21T02:52:53  <Zaphus> stocha:  I'm assuming it's not just anti-microsoft bias :-)
+2011-06-21T02:53:10  <stocha> Zaphus:  i have seen it used for other thing. Building go playing bots. and it worked for that.
+2011-06-21T02:53:48  <stocha> show me how trueskill was able to sort out go playing bot features efficiently, and built top world go bot, and i'll trust it more. Even if i don't know the internals well.
+2011-06-21T02:54:08  <Zaphus> http://research.microsoft.com/pubs/67956/NIPS2006_0688.pdf   - note the word "Bayesian" in the title, does that make it better :-)
+2011-06-21T02:54:30  <stocha> Beside, bayeselo, i have read article about. So although i have no precise view of the working, i have feelings about how it might work :p
+2011-06-21T02:55:29  <stocha> "can infer rating out from team play"  I see the value of it for games like warcraft. However in ant, there are no teams.
+2011-06-21T02:56:10  <Zaphus> team play can mean free for all too
+2011-06-21T02:56:28  <stocha> Both bayselo and trueskill claim to be better than ELO. But elo is an old broken ranking system isn't it ?
+2011-06-21T02:56:42  <stocha> team play means team play. For example 2vs2vs2
+2011-06-21T02:56:48  <stocha> free for all, means no team play.
+2011-06-21T02:57:09  <Zaphus> elo isn't broken, it's just limited
+2011-06-21T02:57:21  <stocha> It doesn't mean it doesn't work without team play. only that it was built for a need we don't have here.
+2011-06-21T02:57:22  <Zaphus> trueskill is used for lots of free-for-all games (no teams)
+2011-06-21T02:58:16  <Zaphus> there are others as well - in the end one needs to get chosen, and the organisers chose this one.  I'm yet to see it giving the wrong results (based on the input) so I remain on the 'keep it' side
+2011-06-21T03:00:02  <antimatroid> i thought bayeslo doesn't work for multiplayer games?
+2011-06-21T03:00:04  <antimatroid> only 1v1?
+2011-06-21T03:00:17  <antimatroid> stocha: did you comment about sharing your code?
+2011-06-21T03:00:26  <antimatroid> personally i'd prefer to go back to having people not share source code again now
+2011-06-21T03:00:30  <antimatroid> get my*
+2011-06-21T03:00:57  <stocha> Yeah one thing that makes distrust true skill is the fact that over and over some people here said it's not working well for 1vs1
+2011-06-21T03:01:15  <stocha> wich would mean it's not reliable really. but maybe it was not right to say that.
+2011-06-21T03:01:16  <antimatroid> no, i never said that
+2011-06-21T03:01:20  <Rabidus> 1v1v1v1 (a v b v c v d) is just a v b, a v c, a v d, b v c, b v d, c v d
+2011-06-21T03:01:24  <antimatroid> i said the scoring system doesn't work for 1v1
+2011-06-21T03:01:29  <antimatroid> i said nothing about trueskill
+2011-06-21T03:01:32  <antimatroid> if you're referring to that
+2011-06-21T03:01:41  <stocha> mm, maybe i confused myself out of that.
+2011-06-21T03:01:48  <Zaphus> for a 1 v 1 game, Trueskill boils down to a Elo (slight maths differences, but no more than Chess and Go use variants)
+2011-06-21T03:01:49  <stocha> or maybe someone else said it.
+2011-06-21T03:02:17  <antimatroid> the scoring with spawn points might work for two player though
+2011-06-21T03:02:20  <antimatroid> it didn't without it
+2011-06-21T03:02:33  <stocha> Okay, so let's say true skill is accurate, and base on the assumption that each player do have a fixed consistent strength (the point i wanted to make sure through reading the article :p)
+2011-06-21T03:02:38  <antimatroid> i think it would make more sense now
+2011-06-21T03:02:49  <stocha> Then there is still the fact that we DO NEED a PAIRING POLICY
+2011-06-21T03:03:00  <stocha> either there already is one. Or we need to build one.
+2011-06-21T03:03:20  <Zaphus> stocha: because you don't want your bot playing random bots from the list, you only want to play the ones around you ?
+2011-06-21T03:03:47  <Zaphus> stocha:  if so, that shouldnt be hard to do - but you won't get much variety in your games
+2011-06-21T03:04:26  <Zaphus> becomes more like boxing, you have to fight all the way up the ladder to get the right to fight the top bots
+2011-06-21T03:05:28  <antimatroid> there is already a matching algorithm
+2011-06-21T03:05:39  <antimatroid> tron had random pairing and it was awful
+2011-06-21T03:06:14  <Rabidus> what do you guys mean by pairing algorithm? like who will be against each other?
+2011-06-21T03:06:19  <Zaphus>     -- pick the closest 100 available submissions (limited for speed)        we just dont have more than 100 yet :-)
+2011-06-21T03:06:27  <antimatroid> Rabidus: yeah pretty much
+2011-06-21T03:06:51  <Zaphus> yes, it will only choose from bots within 100 places of your bot.. we need a few hundred more test bots to see it in action :-)
+2011-06-21T03:06:58  <antimatroid> in pw it did something like the following: pick the bot who has played the least number of games then match them against someone using a poisson distribution
+2011-06-21T03:07:14  <Rabidus> i don't see a problem. Why just player x doesn't take a opponent who is rank +- ~20 ?
+2011-06-21T03:07:16  <antimatroid> Zaphus: nah, it shouldn't restrict you to only bots near your ranking, but weight it
+2011-06-21T03:07:53  <stocha> for 1vs1 given enougth data, pairing policy won't influence too badly on ranking. obviously. only slower to converge.
+2011-06-21T03:08:06  <Rabidus> * +- ~20 of players rank
+2011-06-21T03:08:08  <Zaphus> antimatroid:  do it on probability, the odds of playing someone decreases as the gap gets larger
+2011-06-21T03:08:08  *** dr- <dr-!~lotus@tuborg.lifl.fr> has joined #aichallenge
+2011-06-21T03:08:08  <stocha> but with those multiplayer settings, i'm not confident about it converging somewhere.
+2011-06-21T03:08:32  <Zaphus> Rabidus: it needs to be on position/rank - not rating (I think thats what you are saying)   - the rating value is arbitrary
+2011-06-21T03:08:39  <stocha> from the article, it seems that trueskill does have a pairing algorithm, or am i wrong ?
+2011-06-21T03:08:47  <Rabidus> yeah position.
+2011-06-21T03:08:59  <stocha> then if need more diversity, try 50% chance that the game is a close game , and 50 % it's a wider game.
+2011-06-21T03:09:11  <Zaphus> stocha:  for the xbox implementation, yes it does - but trueskill is just math itself and doesnt have one
+2011-06-21T03:09:18  <stocha> i certainly can not find any close game at all in the current data.
+2011-06-21T03:09:25  <Rabidus> lets say that we have list x where is included all bots. we go each one thru and get random opponent set who has rank near yours.
+2011-06-21T03:09:26  <stocha> even 10% of close game would be good to me.
+2011-06-21T03:09:35  <Rabidus> when list has gone thru, do it again
+2011-06-21T03:09:57  <Rabidus> and before that 'do it again' we update the list
+2011-06-21T03:10:08  <Rabidus> very hard to see a problem
+2011-06-21T03:10:16  <stocha> Gives me at least 10% of games with all opponents closely matched, and i'll be quite happy :)
+2011-06-21T03:10:30  <Zaphus> close game:  http://aichallengebeta.hypertriangle.com/visualizer.php?game=29371&user=78
+2011-06-21T03:11:12  <janzert> stocha: second to most recent game for first place player has 1st, 2nd, 5th and 19th ranked players?
+2011-06-21T03:11:14  <stocha> 28 –	tmwitt
+2011-06-21T03:11:30  <Zaphus> no pleasing some people :-)
+2011-06-21T03:11:48  <stocha> find me a game, with less that 3 rank, and i'll give credit that there exist one close game.
+2011-06-21T03:12:00  <stocha> but even it does exist one over 1000. It's not 10% for sure :)
+2011-06-21T03:12:03  <Zaphus> what does that mean ? less than 3 rank ?
+2011-06-21T03:12:19  <stocha> it means for example 1 vs 2 vs 5 vs 8
+2011-06-21T03:12:34  <stocha> maximim three rank of jumping between players :p
+2011-06-21T03:12:45  <Rabidus> 2 vs 5 isn't less than 3 rank ;)
+2011-06-21T03:13:00  <Rabidus> (and 5 vs 8 isnt either)
+2011-06-21T03:13:00  <stocha> isn't it less or equal ?
+2011-06-21T03:13:07  <Rabidus> yes
+2011-06-21T03:13:14  <stocha> okay then :p
+2011-06-21T03:13:16  <stocha> 1 vs
+2011-06-21T03:13:24  <stocha> 1 vs 8 isn't
+2011-06-21T03:13:28  <stocha> but there exist a chain
+2011-06-21T03:13:39  <Rabidus> yeah i understood that
+2011-06-21T03:13:47  <stocha> so i say it's a close game. Maybe not the best definition
+2011-06-21T03:13:51  <Rabidus> 1 vs 3 vs 5 vs 7
+2011-06-21T03:13:52  <stocha> but let's get along with this one.
+2011-06-21T03:14:23  <antimatroid> http://aichallengebeta.hypertriangle.com/visualizer.php?game=29676&user=126 i can has best expansion?
+2011-06-21T03:14:26  <Zaphus> so yes, that would be awesome.  the player matching doesnt force that yet.  put a bug in asking for it to do them occasionally
+2011-06-21T03:14:48  <stocha> let's call a close game, if there exist a chain of less than either 3 rank or 0.20 true skil points
+2011-06-21T03:15:17  <Zaphus> technically thats a well-matched game, it may or may not turn out to be close
+2011-06-21T03:15:29  <stocha> i would like that there was at least 10% of the game that match those criterions
+2011-06-21T03:15:41  <Zaphus> so add a bug
+2011-06-21T03:15:41  <stocha> yeah well-matched game then :)
+2011-06-21T03:15:58  <stocha> i think if this is on, i'd be far more happy.
+2011-06-21T03:16:19  <Zaphus> I doubt it, you'll just find something else to pick on :-)     but it's a good idea (and essential for the finals!)
+2011-06-21T03:16:24  <stocha> (although you might want adjust the criterion at some point when we have more data)
+2011-06-21T03:17:03  <Zaphus> actually, if we had 5000 entries, which is 50-60x what we have now, then you'd accept a wider range for closeness I imagine
+2011-06-21T03:17:50  <Zaphus> maybe once per day, 1v2v3v4v5v6v7v8v9v10,  11v12v13v14v15v16v17v18v19v20  etc  :)
+2011-06-21T03:18:09  <Rabidus> how much there was submissions in last competion ?
+2011-06-21T03:18:11  <Rabidus> 1000 ?
+2011-06-21T03:18:13  <Rabidus> 2000 ?
+2011-06-21T03:18:15  <Zaphus> 4600 I think
+2011-06-21T03:18:17  <Rabidus> :OO
+2011-06-21T03:18:21  <Rabidus> wow
+2011-06-21T03:18:22  *** mcstar <mcstar!~mcstar@adsl-89-132-11-97.monradsl.monornet.hu> has joined #aichallenge
+2011-06-21T03:18:25  <Zaphus> as in users
+2011-06-21T03:18:39  <Rabidus> i think that 5000 entries is near then
+2011-06-21T03:18:43  <Zaphus> lots of starter bots in there I suspect though
+2011-06-21T03:18:49  <Rabidus> yeah ofcourse
+2011-06-21T03:19:00  *** stocha_ <stocha_!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-21T03:19:02  <antimatroid> for reference, we had under 1000 bots for tron
+2011-06-21T03:19:06  <Rabidus> i had very simple bot and lasted somewhere ... 500 ?
+2011-06-21T03:19:08  <antimatroid> so who knows how many bots ants will have
+2011-06-21T03:19:22  <Rabidus> ants looks very promising
+2011-06-21T03:19:28  <Zaphus> so - somewhere between 1000 and (1000*4*4 = 16,000)  :-)
+2011-06-21T03:19:33  <Rabidus>  :D
+2011-06-21T03:19:37  <antimatroid> imo ants is a less interesting problem to planet wars, but it's way more suited to ai
+2011-06-21T03:19:39  <Rabidus> nice guess
+2011-06-21T03:19:46  <antimatroid> in that there are a lot more obvious problems to tackle
+2011-06-21T03:19:52  <antimatroid> with many obvious approaches to them
+2011-06-21T03:19:55  <Rabidus> i didn't think planet wars as a problem
+2011-06-21T03:19:56  <mcstar> (i dreamt about extending lisp in ways i wouldnt think of not dreaming)
+2011-06-21T03:20:21  <Zaphus> Gotta go - have a beach volleyball game to get to - cya later
+2011-06-21T03:20:27  <antimatroid> see ya
+2011-06-21T03:20:33  <mcstar> bb
+2011-06-21T03:20:34  <Rabidus> but ants had multiple "simple" problems in first steps (pathfinding, fighting)
+2011-06-21T03:20:38  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T03:20:50  <antimatroid> yeah, food collection is the first thing for ants
+2011-06-21T03:20:51  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Quit: Page closed)
+2011-06-21T03:20:56  <stocha_> i think if there exist wide gaps in trueskill give ranking possible chain, we should use the rank number, otherwise, we can just give a trueskill range for defining what closely related opponent are.
+2011-06-21T03:21:26  <Rabidus> there might be a problem that there are too many submissions..
+2011-06-21T03:21:56  <mcstar> too early to understand that sentence stocha
+2011-06-21T03:21:58  <stocha_> for example if 1: 93.0    2 : 78.0     3 : 77.9   4 : 77. 8   5 : 60
+2011-06-21T03:22:05  <stocha_> then 1 is close to 2
+2011-06-21T03:22:11  <stocha_> but far from 3
+2011-06-21T03:22:24  <stocha_> but 2 and 4 are close together. that sort of things
+2011-06-21T03:22:50  <stocha_> 3 is far for 5, but close to 4
+2011-06-21T03:22:59  <stocha_> and 4 is close to 5
+2011-06-21T03:23:17  <stocha_> so we say a game is "well matched", if there exist a chain of closeness
+2011-06-21T03:23:44  <mcstar> i would say we should look at stability
+2011-06-21T03:23:49  <stocha_> then we can have ever stronger "well matched" condition from time to time. Like   two fartherst bot in, are close.
+2011-06-21T03:23:51  <mcstar> how long a given order lasts
+2011-06-21T03:23:51  <antimatroid> not all games need to be between bots of close rank
+2011-06-21T03:23:58  <antimatroid> just on average pure random sucks ass
+2011-06-21T03:24:07  <stocha_> i want 10 % of game closed ranked.
+2011-06-21T03:24:16  <janzert> stocha_: you know trueskill has a built in metric for how 'good' a specific pairing is?
+2011-06-21T03:24:26  <Rabidus> would it be stupid that in 8 players game  if you win a game, you'll get 5 points, second gets 3, third gets 2 and fourth gets 1, all others 0
+2011-06-21T03:24:27  <stocha_> (for my own satifaction. more might be okay too)
+2011-06-21T03:24:36  <janzert> you should go figure that out for the pairings and see how it is
+2011-06-21T03:24:41  * antimatroid doesn't like 8+player games
+2011-06-21T03:24:43  <antimatroid> too many bots
+2011-06-21T03:24:51  * Rabidus doesn't like either
+2011-06-21T03:24:53  <stocha_> janzert: let's use that then ? i hope it's not activated now ? from what i see about current pairing
+2011-06-21T03:24:54  <Rabidus> yes
+2011-06-21T03:25:02  <Rabidus> i think 8 is too big already
+2011-06-21T03:25:05  * mcstar likes chocolate though
+2011-06-21T03:25:08  <Rabidus> :p
+2011-06-21T03:25:15  <janzert> stocha_: it doesn't tell you how to pair, it tells you how good a specific pairing is
+2011-06-21T03:25:17  <antimatroid> janzert: what are your thoughts on number of bots?
+2011-06-21T03:25:33  * janzert is fairly ambivalent about it
+2011-06-21T03:25:52  <stocha_> janzert: okay so let's do it so, that 10% of the game are good pairings. And see how it feels then :p
+2011-06-21T03:26:20  <janzert> go start checking them and report back what trueskill says about them
+2011-06-21T03:26:32  <stocha_> because it's multiplayer game, let's have equivalent number of game for 2 opponents up to 8.
+2011-06-21T03:26:36  <stocha_> and see how it feels.
+2011-06-21T03:26:42  <stocha_> we do need 1vs1 game added though.
+2011-06-21T03:27:09  <janzert> you're probably stuck there, cause antimatroid actively doesn't want them
+2011-06-21T03:27:19  <stocha_> janzert: i don't know how to do that. I can say that about none match the criteria i gave though.
+2011-06-21T03:27:26  <mcstar> what i dont get is: isnt this matching system self-balancing? why do you care at all?
+2011-06-21T03:28:03  <stocha_> janzert: let's build an early poll and see how much antimatroid opinion match with most poeples feeling. What about the famous "decision making" team ?
+2011-06-21T03:28:04  <janzert> anyway I'm off
+2011-06-21T03:28:36  <janzert> that would be me, amstan and mcleopold and you haven't done much to sway me ;)
+2011-06-21T03:29:26  <antimatroid> i'm not as opposed to 2 player anymore with spawn points i don't think
+2011-06-21T03:29:35  <antimatroid> but i also haven't really thought too much about it since that happened
+2011-06-21T03:29:41  <mcstar> anyway, stocha, wouldnt you be glad if the contest started already?
+2011-06-21T03:29:55  <stocha_> let's at least try it during beta then.
+2011-06-21T03:30:02  <stocha_> mcstar: no.
+2011-06-21T03:30:10  <stocha_> it's ways too soon for starting it.
+2011-06-21T03:30:16  <stocha_> although we could make publicity for the beta.
+2011-06-21T03:30:22  <Rabidus> idd
+2011-06-21T03:30:27  *** sigh <sigh!~sigh@173-164-174-193-SFBA.hfc.comcastbusiness.net> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-21T03:30:29  <Rabidus> then tcp servers would get running too
+2011-06-21T03:30:35  <stocha_> the beta is very important, because you can change the rules, and tweak things, and try stuff.
+2011-06-21T03:30:58  <stocha_> tcp servers are important. Well one well built one is important.
+2011-06-21T03:31:10  <stocha_> although i can't take profit out of them right now :p
+2011-06-21T03:31:16  <mcstar> mcleopold said, i beleive, that if they start early the contest, they could make changes nevertheless
+2011-06-21T03:31:19  <stocha_> because i have no hardware to run my bots.
+2011-06-21T03:31:42  <Rabidus> i can spare my network and my server for tcp server
+2011-06-21T03:31:44  <stocha_> making change during the contest, i strongly dissupport :p
+2011-06-21T03:31:49  <Rabidus> but tcp server software is buggy atm.
+2011-06-21T03:32:01  <antimatroid> mcstar: changes now are unideal
+2011-06-21T03:32:07  <antimatroid> changes after launch are even more unideal
+2011-06-21T03:32:13  <antimatroid> but if necessary yes they will be made
+2011-06-21T03:32:17  <stocha_> all should be carved in stone, then people make their bot, they are ranked, and one winner is ellected somehow.
+2011-06-21T03:32:48  <mcstar> well, its not too likely, but something can still come up after the rules are fixed....
+2011-06-21T03:33:07  <antimatroid> we semi agreed to fix most of the rules this morning
+2011-06-21T03:33:18  <stocha_> Rabidus:  i would appreciate that there exists an official way of setting up a tcp server that approximate "real" conditions though.
+2011-06-21T03:33:24  <mcstar> what if there is a simple startegy to the game, and you couldnt do better if you were god himslef?
+2011-06-21T03:33:39  <mcstar> what if a 1000 bots would implement that startegy?
+2011-06-21T03:33:43  <antimatroid> mcstar: if that happened really early in the contest then that would be an example of the game breaking
+2011-06-21T03:33:44  <Rabidus> there is tcp server on github that is ready to run
+2011-06-21T03:33:47  <stocha_> mcstar: that's what the beta is for. finding stuff. If they are found after beta, they live with them.
+2011-06-21T03:33:50  <antimatroid> if that happens well into the contest, good for them
+2011-06-21T03:34:11  <stocha_> mcstar: then the challenge is a draw. and we wait for next one.
+2011-06-21T03:34:18  <antimatroid> although where one would draw the line is anyones guess as it's never happened and i don't expect it to
+2011-06-21T03:35:28  <stocha_> up from now there was always a clear winner. I have no reason yet to think that ant will be different. it might. it always might.
+2011-06-21T03:35:53  <mcstar> yeah, prev. experience doesnt really help there
+2011-06-21T03:36:14  <antimatroid> you can never be entirely certain about some of these things without actually running it and seeing what happens
+2011-06-21T03:36:19  <mcstar> lets hope for the best :D
+2011-06-21T03:36:20  <stocha_> at worse, there will be like 5 very strong bot, very closely matched. And then we have a problem.
+2011-06-21T03:36:27  <stocha_> but i doubt it could be worse than that
+2011-06-21T03:36:34  <antimatroid> one problem we saw with planet wars maps in the final contest was that a lot sucked
+2011-06-21T03:36:41  <stocha_> even with blocking etc.
+2011-06-21T03:36:44  <antimatroid> despite our efforts to eliminate "trivially crap maps" from being generated
+2011-06-21T03:36:53  <stocha_> someone will still hack a way to get ahead.
+2011-06-21T03:37:06  <antimatroid> but once those are generated there's no turning back
+2011-06-21T03:37:10  <mcstar> antimatroid: was a new map generated for every new game?
+2011-06-21T03:37:15  <stocha_> i don't think crap map should be eliminated either. But that's another story.
+2011-06-21T03:37:15  <antimatroid> no
+2011-06-21T03:37:28  <antimatroid> i am in favour of that though, there are reasonable arguments for or against the idea
+2011-06-21T03:37:56  <antimatroid> stocha_: provided people know those types of maps wont show up, i don't mind
+2011-06-21T03:38:04  <antimatroid> i do mind if we go through and select which maps not to use
+2011-06-21T03:38:08  <stocha_> but as far as beta goes, i'm happy with the look of the map. Although i'd prefer random generated ones.
+2011-06-21T03:38:27  <antimatroid> they are random
+2011-06-21T03:38:37  <stocha_> and i'd like for beta at least to try the assymetric one.
+2011-06-21T03:38:38  <antimatroid> once i finish exams i am going to play with maps
+2011-06-21T03:38:43  <antimatroid> (I have my last exam thursday)
+2011-06-21T03:38:55  <antimatroid> i thought they tried asymmetric and decided they sucked?
+2011-06-21T03:38:57  <stocha_> they are not random in the sense that the same map can happen in more than one game.
+2011-06-21T03:39:28  <stocha_> i tryed assymetric. And decided they where okay to find out wich bot is strongest.
+2011-06-21T03:39:30  <mcstar> stocha_: try running your own bot on assym. maps see whats ur conclusion
+2011-06-21T03:40:04  <stocha_> mcstar:  i already done that. I was always able to tell what bot was strongest. Even very closely related one.
+2011-06-21T03:40:21  <mcstar> different versions of your own bot?
+2011-06-21T03:40:29  <stocha_> different bots yes.
+2011-06-21T03:40:31  <stocha_> or same bots.
+2011-06-21T03:40:36  <stocha_> always consistent
+2011-06-21T03:41:07  <stocha_> i don't know if it would converge much slower though. But it will converge.
+2011-06-21T03:41:10  <antimatroid> i thought of an awesome extension to my food collection idea last night
+2011-06-21T03:41:12  <mcstar> yeah, well, if a bot expands very fast( i mean theres no error in that part) than it can compensate for an asymmetry i guess
+2011-06-21T03:41:45  <stocha_> mcstar: i was able to distinguish bot very close in strength
+2011-06-21T03:42:00  <stocha_> BUT .. bot strength can depend on map distribution. And food spawning.
+2011-06-21T03:42:20  <stocha_> so the strength is for a given distribution of maps building process, and food distribution .
+2011-06-21T03:42:42  <mcstar> yeah, well than wtf are we talking about?
+2011-06-21T03:42:53  <stocha_> it's not the same :)
+2011-06-21T03:43:18  <stocha_> because you can have both symetric an assymetric maps, using closely related map shape and food distribution
+2011-06-21T03:43:21  <mcstar> im sorry i must have misunderstood you, i thought that regardless of asymmetries, you could distunguish your bots as far as "strength" is concerned
+2011-06-21T03:43:34  <stocha_> yeah, that's whay i claim.
+2011-06-21T03:43:46  <stocha_> however the shape , and speed of food spawning affect bots.
+2011-06-21T03:43:52  <mcstar> but now you say that: strength is for a given distribution of maps building process, and food distribution
+2011-06-21T03:44:14  <stocha_> yeah, but it doesn't depend on it being symetric/vs assymetric
+2011-06-21T03:44:18  <stocha_> in depends on shape
+2011-06-21T03:44:22  <mcstar> obviously for an asymmetric map, food spawing cant be symmetric
+2011-06-21T03:44:41  <mcstar> only statistical homogenity can be achieved
+2011-06-21T03:45:02  <stocha_> for food spawning, it was more about the speed of it.
+2011-06-21T03:45:18  <stocha_> does one food spawn every turn ? does they spawn more than every turn ? etc.
+2011-06-21T03:45:30  <stocha_> then i didn't try twisted spawning strategyes
+2011-06-21T03:45:38  <stocha_> like : spawn only at starting positions
+2011-06-21T03:45:55  <stocha_> but even food speed can make or break bots.
+2011-06-21T03:46:13  <stocha_> bots very well suited for high density food, might do poorly with low density
+2011-06-21T03:46:22  <stocha_> high spawning rate rather
+2011-06-21T03:46:29  <stocha_> then you have the time management also
+2011-06-21T03:46:44  <stocha_> high food rate, often mean high ant count.
+2011-06-21T03:47:03  <Rabidus> its players problem
+2011-06-21T03:47:06  <stocha_> then the map shape : open maps are very different from tiny corridors labyrinth maps
+2011-06-21T03:47:23  <mcstar> stocha_: how robust is path finding?
+2011-06-21T03:47:25  <Rabidus> that's also player problem
+2011-06-21T03:47:52  <stocha_> although in both case assymetric/vs symetric would give same bot strength, the probability of a map being wholy oppen between labyrinth corridor will change the respective strength of the bots.
+2011-06-21T03:48:01  <mcstar> i.e. are there corner cases when it breaks down?
+2011-06-21T03:48:28  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-21T03:48:33  <mcstar> sorry, i mean Your path finding
+2011-06-21T03:48:39  <stocha_> mcstar: path finding is perfect path finding. You probably want to know what one i use ? i use perfect path finding one, with no congestion control.
+2011-06-21T03:49:01  <stocha_> although i had some bot not using any pathfinding also.
+2011-06-21T03:49:19  <mcstar> ok, just because i dont want to implement bfs and a* or any graph walking bitch
+2011-06-21T03:49:39  <stocha_> especially in very oponned map, pathfinding might not add to much to bot strength; (nothing indeed in fact)
+2011-06-21T03:49:44  <mcstar> right now im thinking about conves hulls
+2011-06-21T03:49:46  <mcstar> convex
+2011-06-21T03:50:26  <stocha_> i went with floodfill. it works well. it's perfect in the sense it will alway find the best path.
+2011-06-21T03:50:38  <stocha_> it's easy to debug etc.
+2011-06-21T03:50:48  <stocha_> i didn't have any performances problem so far.
+2011-06-21T03:51:16  <stocha_> what's convex hulls ?
+2011-06-21T03:51:34  *** aerique <aerique!310225@xs8.xs4all.nl> has joined #aichallenge
+2011-06-21T03:52:35  <mcstar> well, given a set of points in any dimensin ther exists a uniqe polyhedron which contains all those points, and has the property of least volume and surface
+2011-06-21T03:53:07  <mcstar> a line segment or a triangle is always a convex hull :D
+2011-06-21T03:53:30  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-21T03:54:04  <mcstar> so, if the ant and the target are both part of the convex hull, i can calculate it with the points of water included, and i can simply travel one side of the convex hull
+2011-06-21T03:54:07  <stocha> probably good for very big maps.
+2011-06-21T03:54:17  <stocha> but there will not be any very big maps
+2011-06-21T03:54:20  <mcstar> and it will take me to the target in optimal turns
+2011-06-21T03:55:06  <stocha> with traffic control ?
+2011-06-21T03:55:28  *** stocha_ <stocha_!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T03:55:49  <mcstar> what do you mean? mutltiple ants travelling simultaenously?
+2011-06-21T03:56:10  <mcstar> i havent given much thought into that
+2011-06-21T03:59:49  <antimatroid> my a* will crawl if there was LOTS of food i think
+2011-06-21T04:00:01  <antimatroid> although maybe not too bad
+2011-06-21T04:00:17  <antimatroid> i need to iterate through a set of target locations for every square i add to the search queue
+2011-06-21T04:01:31  <aerique> mcstar: were you writing a cl ants game engine?
+2011-06-21T04:01:41  <mcstar> yep
+2011-06-21T04:01:42  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T04:02:00  <aerique> mcstar: is the code shared somewhere? :)
+2011-06-21T04:02:18  <mcstar> no, sadly its proprietary
+2011-06-21T04:02:30  <mcstar> you would like to see it?
+2011-06-21T04:02:46  <mcstar> i havent thought about sharing, but why not
+2011-06-21T04:03:01  <aerique> mcstar: i hacked together one as well and it seemed like a waste of time to work on two seperate projects
+2011-06-21T04:03:11  <mcstar> sure
+2011-06-21T04:03:35  <mcstar> its more or less ready, i mean now its working perfectly, only not everything is implemented
+2011-06-21T04:04:11  <mcstar> for example viewradius is not taken into account
+2011-06-21T04:04:27  <mcstar> but for testing its alright
+2011-06-21T04:04:41  <aerique> mcstar: same here, except my code is horrid (https://github.com/aerique/google-ai-challenge-2011-1-ants/tree/master/src-play-game)
+2011-06-21T04:04:53  <mcstar> oh aerique, im not sure if its clear, but i didnt mean it to interface with existing bots
+2011-06-21T04:05:00  <aerique> mcstar: i'd just like to take a look at it and see whether i should ditch mine
+2011-06-21T04:05:22  <mcstar> ok
+2011-06-21T04:05:25  <aerique> mcstar: i'm not quite sure what you mean with that last sentence
+2011-06-21T04:05:31  <mcstar> ok?
+2011-06-21T04:05:34  <aerique> no :)
+2011-06-21T04:05:35  <mcstar> alright
+2011-06-21T04:05:38  <aerique> the one before
+2011-06-21T04:06:00  <mcstar> exactly what is written: its not for testing other bots other than cl classes
+2011-06-21T04:06:12  <aerique> mcstar: ah, right.
+2011-06-21T04:06:19  <mcstar> is it ok?
+2011-06-21T04:06:30  <mcstar> i mean, i didnt want to replicate the official engine
+2011-06-21T04:06:44  <mcstar> i wanted a place where i can plug my logic class into
+2011-06-21T04:06:54  <aerique> right, clear.  i only replicated most of the original one for testing my engine
+2011-06-21T04:07:15  <mcstar> ill set up a github account
+2011-06-21T04:07:18  <aerique> if you don't mind i'd still like to look at it, if only to improve my version
+2011-06-21T04:07:21  <aerique> cool thanks
+2011-06-21T04:07:53  *** onensora <onensora!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-21T04:08:09  <mcstar> ah, username is already taken
+2011-06-21T04:08:21  <aerique> porny the clown?
+2011-06-21T04:08:56  <Rabidus> porn highlighted
+2011-06-21T04:09:54  <mcstar> funny
+2011-06-21T04:09:57  <mcstar> the bunny
+2011-06-21T04:10:13  <mcstar> aerique: help me pls
+2011-06-21T04:10:19  <mcstar> whats now?
+2011-06-21T04:10:36  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-06-21T04:10:37  <mcstar> ah, ok a found a new rep. button
+2011-06-21T04:10:40  <aerique> mcstar: what do you need help with?
+2011-06-21T04:14:55  <antimatroid> lol, it's pretty easy to come up with an example with no pure strategy optimal move
+2011-06-21T04:20:38  <Rabidus> well you need to remember that there are only under 100 bots
+2011-06-21T04:22:37  <mcstar> aerique: https://github.com/liquid-phynix/cl-ants-engine
+2011-06-21T04:23:30  <mcstar> symbols are not exported from the :engine package
+2011-06-21T04:23:45  <mcstar> so: (require :engine) (in-package :engine)
+2011-06-21T04:24:00  <mcstar> (start-engine :players 1 :ants-per-player 1 :food 1)
+2011-06-21T04:24:26  <mcstar> oh, and of course add the dir. to your asdf path
+2011-06-21T04:24:51  <mcstar> hell sorry
+2011-06-21T04:25:00  <mcstar> you will need my vis package too
+2011-06-21T04:26:29  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-06-21T04:27:36  <aerique> mcstar: thanks!
+2011-06-21T04:28:00  <mcstar> now there is a cl-vis rep. up there
+2011-06-21T04:28:20  <mcstar> you already used my vis, but this is different now, it runs on another thread
+2011-06-21T04:29:04  <Rabidus> help me with simple github problem. how can i mark issues into berak's tcpserver
+2011-06-21T04:29:10  <aerique> mcstar: heh, i coded up something pretty similar to choices-from-quadrant this weekend
+2011-06-21T04:29:24  <mcstar> :) math is universal
+2011-06-21T04:30:40  <Rabidus> there just is no issues -button
+2011-06-21T04:31:22  <aerique> Rabidus: he might have disabled the issues button
+2011-06-21T04:31:30  <Rabidus> just why
+2011-06-21T04:31:31  <Rabidus> :<
+2011-06-21T04:35:24  <mcstar> me?
+2011-06-21T04:35:31  <mcstar> what is an issues button :)
+2011-06-21T04:37:18  <mcstar> aerique: are you trying to run it?
+2011-06-21T04:38:19  <Rabidus> in github
+2011-06-21T04:38:35  <Rabidus> https://github.com/McLeopold/TCPServer
+2011-06-21T04:38:41  <Rabidus> Issues (0)
+2011-06-21T04:38:47  <Rabidus> https://github.com/berak/TCPServer
+2011-06-21T04:38:52  <Rabidus> no Issues
+2011-06-21T04:38:53  <Rabidus> :>
+2011-06-21T04:39:38  <mcstar> oh no ohno
+2011-06-21T04:39:50  <mcstar> my vis.lisp containes the package.lisp file
+2011-06-21T04:40:01  <mcstar> i accidentaqlly overwrote it???
+2011-06-21T04:41:08  <Rabidus> :p
+2011-06-21T04:42:12  <aerique> mcstar: no not yet, i'm at work :)
+2011-06-21T04:42:31  <mcstar> ok, well, i destroyed one of my important files
+2011-06-21T04:44:48  <mcstar> i must have destroyed it earlier, but asdf kept loading in the fasl, thats why i havent noticed before
+2011-06-21T04:45:27  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-06-21T04:45:43  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 240 seconds)
+2011-06-21T04:49:50  <antimatroid> mcstar: "math is universal", but notation isn't :P
+2011-06-21T04:50:03  <antimatroid> i can't imagine the horrible time we'd have matching up notation with an alien species
+2011-06-21T04:50:04  <aerique> mcstar: ugh, hope it's not due to me :-|
+2011-06-21T04:50:14  <mcstar> nono
+2011-06-21T04:50:33  <antimatroid> index matrices teh wrong way, write on a page the wrong way, integrate around a circle the wrong way etc. etc.
+2011-06-21T04:50:49  <mcstar> aliens you row/col didnt you know antimatroid ?
+2011-06-21T04:50:51  <antimatroid> left hand rule for graphs?
+2011-06-21T04:51:01  <mcstar> you->use
+2011-06-21T04:52:22  <mcstar> i dont think that i have to remind you that nevertheless notation is different, mathematical truth isnt, thats why some think its the key to understand them
+2011-06-21T04:52:46  <mcstar> its the fixed point of communication
+2011-06-21T04:52:55  <Rabidus> hey
+2011-06-21T04:53:04  <antimatroid> mcstar: i agree with that
+2011-06-21T04:53:10  <antimatroid> including the way to communicate
+2011-06-21T04:53:27  <antimatroid> connect with something we can both understand, then build outwards
+2011-06-21T04:53:31  <Rabidus> tcp-server @ uhiainen.dyndns.org:992 (for client) and http://uhiainen.dyndns.org:991 (for browsing) is up again
+2011-06-21T04:53:36  <Rabidus> push it to the limit
+2011-06-21T04:53:46  <mcstar> (however in practice its very difficult to do so :D)
+2011-06-21T04:53:57  <antimatroid> yes, but you would have to start somewhere
+2011-06-21T04:54:47  <Rabidus> 0/4
+2011-06-21T04:54:52  <Rabidus> hey some test game now please
+2011-06-21T04:54:55  <Rabidus> :)
+2011-06-21T04:55:01  <antimatroid> it would be really fun going through and compare each species knowledge of mathematics
+2011-06-21T04:55:09  <george1914> ok, i would like to test :)
+2011-06-21T04:55:15  <Rabidus> nice
+2011-06-21T04:55:24  <antimatroid> george1914: i had an interesting idea for food collection last night...
+2011-06-21T04:55:30  <george1914> aha?
+2011-06-21T04:55:43  <george1914> go downstairs to fridge?
+2011-06-21T04:55:52  <Rabidus> :D
+2011-06-21T04:56:12  <antimatroid> do a bfs from all enemies locations to find the shortest number of turns it would take an enemy to reach a square, then in your search, only consider squares that aren't in the battle radius of a square an enemy can reach in time, so your search tracks around where an enemy can reach you
+2011-06-21T04:56:43  <antimatroid> of course then you don't collect food you can't reach with such a condition
+2011-06-21T04:56:46  <antimatroid> which i haven't resolved
+2011-06-21T04:57:37  <george1914> there was similar thing in PW - picking planets i can reach always first, - made decision making easier cos you could kind of ignore enemy's actions
+2011-06-21T04:57:47  <george1914> but it was too defensive/negative
+2011-06-21T04:57:49  <antimatroid> not quite the same thing
+2011-06-21T04:57:56  <antimatroid> it's easy to go to food you can reach first only
+2011-06-21T04:58:07  <antimatroid> this is tracking the path around an enemies reach to avoid them
+2011-06-21T04:58:11  <george1914> sure, but i wonder if you ignore a lot of (in practice) good moves
+2011-06-21T04:58:16  <Rabidus> tcp, tcp, tcp
+2011-06-21T04:58:22  <george1914> sorry Rabidus
+2011-06-21T04:58:25  <Rabidus> :)
+2011-06-21T04:58:31  <george1914> i am not very good with computers ...
+2011-06-21T04:58:36  <antimatroid> at the moment i am just collecting every piece of food i can see
+2011-06-21T04:58:38  <mcstar> antimatroid: dont you want to kill the ant that just ate your food?
+2011-06-21T04:58:42  <antimatroid> which is useful while other bots suck :P
+2011-06-21T04:59:05  <antimatroid> mcstar: let me come up with an example situation
+2011-06-21T04:59:10  <mcstar> if you can rac the food in your battle radius, you can still make him unhappy
+2011-06-21T04:59:15  <mcstar> reach
+2011-06-21T04:59:34  <mcstar> of course thats probably only 1 square difference
+2011-06-21T05:00:20  <antimatroid> mcstar: http://pastebin.com/mYnTXnfc
+2011-06-21T05:00:23  <antimatroid> i think that works
+2011-06-21T05:00:30  <antimatroid> if 'a' goes up then right, they get the food
+2011-06-21T05:00:41  <antimatroid> if the go right then up, b will probably battle you before you get to the food
+2011-06-21T05:01:07  <antimatroid> i think b might need to be 1 lower
+2011-06-21T05:01:13  <antimatroid> but you get the idea yeah?
+2011-06-21T05:01:17  <george1914> Rabidus: are there any 'tcp instructions for dummys like george'?
+2011-06-21T05:01:35  <antimatroid> +1 for dummies tcp instructions
+2011-06-21T05:02:10  <mcstar> going up before going right is not better than the other way around i think
+2011-06-21T05:02:43  <Rabidus> use python
+2011-06-21T05:02:45  <mcstar> the target of a is the south face of the food square
+2011-06-21T05:02:47  <Rabidus> python tcpclient.py
+2011-06-21T05:02:52  <Rabidus> it gives you some instructions
+2011-06-21T05:02:55  <antimatroid> mcstar: http://pastebin.com/eQnygE2L try that situation
+2011-06-21T05:03:30  <mcstar> a is 4 turns away from spawning a food
+2011-06-21T05:03:33  <mcstar> i mean ant
+2011-06-21T05:03:42  <antimatroid> if a goes E E and b goes N N then they fight
+2011-06-21T05:03:52  <antimatroid> if a takes any other path to food then he gets there safely
+2011-06-21T05:04:01  <antimatroid> any other min path*
+2011-06-21T05:04:13  <mcstar> b is 5, so he can kill a before the ant is spawned
+2011-06-21T05:04:29  <antimatroid> erm yes
+2011-06-21T05:04:41  <antimatroid> do you get what i mean though?
+2011-06-21T05:04:45  <mcstar> yes
+2011-06-21T05:04:46  <antimatroid> my example isn't perfect
+2011-06-21T05:05:15  <antimatroid> you could also just use the enemy ant information to track the path that stays furthest away from the enemy i think
+2011-06-21T05:05:24  <antimatroid> which might be ideal, and it's fairly cheap
+2011-06-21T05:07:29  <mcstar> i think later, when your battle strategy is ready, you can simply start a battle with that enemy ant
+2011-06-21T05:07:36  <mcstar> and not to pay attention to the food
+2011-06-21T05:07:39  <mcstar> you will get it
+2011-06-21T05:07:57  <mcstar> so, for example you switch on battle mode, and send 2 ants there
+2011-06-21T05:13:34  <antimatroid> ants would make for an excellent ai course assignment thing
+2011-06-21T05:14:02  <antimatroid> first assignment is doing food collection, then second assignment is a tournament among the class, with a baseline bot written by the instructers that needs to be beaten in order to pass
+2011-06-21T05:18:01  <george1914> Rabidus:  sorry to be dumb - i should do?  i guess something like:     ./tcpclient.py uhiainen.dyndns.org:992 995 george MyBot    ?
+2011-06-21T05:27:19  <Rabidus> hehe, i don't remember.. i'm at work right now
+2011-06-21T05:27:22  <Rabidus> but let me see
+2011-06-21T05:28:13  <george1914> def main():      usage="""          tcpclient.py   host_or_ip  port  botpath  player_nick  [num_rounds]
+2011-06-21T05:28:23  <Rabidus> python tcpclient.py uhiainen.dyndns.org 992 my_epic_bot.exe Rabidus
+2011-06-21T05:28:27  <Rabidus> that works for me
+2011-06-21T05:29:02  <mcstar> whoa, you have an epic bot too?
+2011-06-21T05:29:22  <Rabidus> lol, no :D
+2011-06-21T05:29:28  <Rabidus> that was just something what came my mind
+2011-06-21T05:29:29  <antimatroid> mine is currently called graphbot :P
+2011-06-21T05:29:40  <mcstar> i dont have one either :D
+2011-06-21T05:30:24  <mcstar> mine has a stupid name, i thought about world peace when i named it
+2011-06-21T05:30:28  <Rabidus> mine is 'aimyle' which means something .. ai hazzard or something :p
+2011-06-21T05:32:08  <Rabidus> still 0/4 :<
+2011-06-21T05:34:50  *** george1914 <george1914!519b30ca@gateway/web/freenode/ip.81.155.48.202> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T05:46:44  *** george1914 <george1914!519b30ca@gateway/web/freenode/ip.81.155.48.202> has joined #aichallenge
+2011-06-21T05:49:18  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-21T05:50:29  *** Naktibalda_ <Naktibalda_!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-06-21T05:51:44  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T05:52:04  *** Naktibalda_ is now known as Naktibalda
+2011-06-21T05:55:43  <george1914> Rabidus:  so, i am failing at the point:   # Start up the bot.  This may fail.
+2011-06-21T05:55:53  <george1914> i.e.   bot = BotThread(bot_command)
+2011-06-21T05:56:03  <Rabidus> how do you launch it ?
+2011-06-21T05:56:26  <george1914> python tcpclient.py uhiainen.dyndns.org 992 ./MyBot george
+2011-06-21T05:56:44  <Rabidus> and it returns to you what
+2011-06-21T05:56:45  <george1914> and other combinations  eg full path for bot
+2011-06-21T05:57:03  <george1914> trying to start up bot  ['george'] Traceback (most recent call last):   File "tcpclient.py", line 190, in <module>     main(sys.argv[1:])   File "tcpclient.py", line 175, in main     tcp(ip, port, user, command, options)   File "tcpclient.py", line 19, in tcp     bot = BotThread(bot_command)       File "/home/george/NetBeansProjects/GAI333/McLeopold-TCPServer-39e9547/engine.py", line 35, in __init__     stdin=subprocess.PIPE)
+2011-06-21T05:57:09  <Rabidus> with full path do you use " -chars ?
+2011-06-21T05:58:09  <Zaphus> you guys testing a TCP server ?
+2011-06-21T05:58:13  <george1914> sorry, i dont follow
+2011-06-21T05:58:17  <george1914> i try eg
+2011-06-21T05:58:17  <Rabidus> yep
+2011-06-21T05:58:20  <george1914> python tcpclient.py uhiainen.dyndns.org 992 /home/george/NetBeansProjects/GAI333/MyBot_d george
+2011-06-21T05:58:29  <Rabidus> george is having problems to start it
+2011-06-21T05:58:32  <Zaphus> can I join the fun ?
+2011-06-21T05:58:36  <Rabidus> you must
+2011-06-21T05:58:37  <Rabidus> :)
+2011-06-21T05:58:45  <Zaphus> where's the client/proxy ?
+2011-06-21T05:59:20  <Rabidus> http://uhiainen.dyndns.org:991/
+2011-06-21T05:59:26  <Rabidus> there's the client
+2011-06-21T05:59:31  <Rabidus> tho in github has more recent
+2011-06-21T05:59:40  <Rabidus> http://uhiainen.dyndns.org:991/
+2011-06-21T05:59:42  <Rabidus> fuu
+2011-06-21T05:59:53  <Rabidus> https://github.com/berak/TCPServer
+2011-06-21T06:02:12  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-21T06:02:38  <george1914> stop press - seems the order of MyBot and username should be reversed ...
+2011-06-21T06:03:09  <Rabidus> :o
+2011-06-21T06:03:46  <george1914> python tcpclient.py uhiainen.dyndns.org 992 george "/home/george/NetBeansProjects/GAI333/MyBot_d"
+2011-06-21T06:03:59  <george1914> trying to start up bot  george['/home/george/NetBeansProjects/GAI333/MyBot_d'] just after trying to start up bot  trying to connect  connected
+2011-06-21T06:04:34  <Rabidus> good thing
+2011-06-21T06:04:37  *** _0x47 <_0x47!~slash@p57B3FFB2.dip.t-dialin.net> has joined #aichallenge
+2011-06-21T06:08:20  <Zaphus> no, it says botname then nick for me, and seems to want to work
+2011-06-21T06:08:25  <Zaphus> match going now
+2011-06-21T06:09:37  <Rabidus> wow, nice
+2011-06-21T06:09:59  <Zaphus> interesting, it says one of my moves is blocked...
+2011-06-21T06:10:00  <george1914> hm,  i used  https://github.com/McLeopold/TCPServer
+2011-06-21T06:10:09  <Zaphus> I used the berak one
+2011-06-21T06:10:13  <george1914> ah
+2011-06-21T06:10:27  <george1914> are there many differences?
+2011-06-21T06:10:31  <Rabidus> whaat
+2011-06-21T06:10:34  <Rabidus> lol :)
+2011-06-21T06:10:44  <Zaphus> well, one works... thats a difference :-)
+2011-06-21T06:10:48  <Rabidus> mcleopold's tcp server is for planet wars
+2011-06-21T06:10:52  <george1914> i just sat down, saw the 2 links, and went for the first one ...
+2011-06-21T06:11:01  <Zaphus> is there a ladder/website somewhere ?
+2011-06-21T06:11:05  <george1914> sorry for the confusion
+2011-06-21T06:11:10  <Rabidus> its ok :)
+2011-06-21T06:11:17  <george1914> http://uhiainen.dyndns.org:991/
+2011-06-21T06:11:29  <Zaphus> I can't connect to that
+2011-06-21T06:11:57  <Rabidus> well, it works for me anf for george
+2011-06-21T06:12:01  <Rabidus> *and
+2011-06-21T06:12:19  <Zaphus> hmm - could be the port or something, since I'm obviously connecting to 992 for the match
+2011-06-21T06:12:46  <Rabidus> 992 is for the matches where bots play
+2011-06-21T06:12:51  <Rabidus> and 991 is for website
+2011-06-21T06:13:08  <george1914> actually ...:991 isnt reloading for me atm
+2011-06-21T06:13:15  <george1914> was earlier
+2011-06-21T06:13:25  <Rabidus> wow, same to me
+2011-06-21T06:13:30  <Zaphus> :-)
+2011-06-21T06:13:36  <Zaphus> I didnt do it !
+2011-06-21T06:14:03  <Rabidus> ok, so that other 992 bot-thread is blocking connections or something......... dunno
+2011-06-21T06:14:20  <Rabidus> 991 worked when there was no games running
+2011-06-21T06:14:51  <Zaphus> perhaps.. will let you know when it stops - could be a while :-)
+2011-06-21T06:15:13  <Rabidus> yesterday (or was it day before that) it took something like 45 minutes per match :p
+2011-06-21T06:15:40  <Zaphus> whats the time limit set to ?
+2011-06-21T06:15:46  <Rabidus> 5 seconds
+2011-06-21T06:16:11  <Zaphus> a 2000 turn match could take 166 minutes then :-)
+2011-06-21T06:16:17  <Rabidus> my upstream is only 2 Mb so that's fair enough i think
+2011-06-21T06:16:23  <Rabidus> yeah .. :)
+2011-06-21T06:16:33  <Zaphus> thats assuming all moves are in parallel, otherwise multiply by the number of bots !
+2011-06-21T06:17:09  <Rabidus> and python is taking again 100% cpu
+2011-06-21T06:17:21  <Rabidus> no its not parallel :)
+2011-06-21T06:17:25  <Rabidus> afaik
+2011-06-21T06:17:39  <Zaphus> wish I had dumped the output of this to a file, I want to know why it's rejecting my move
+2011-06-21T06:17:46  <antimatroid> Rabidus: just connected :)
+2011-06-21T06:18:10  <Zaphus> finished
+2011-06-21T06:19:24  <Rabidus> georges bot is making 'invalid player socket' :s, but that's because he were using wrong client
+2011-06-21T06:19:28  <Rabidus> so that will take a time
+2011-06-21T06:20:06  <antimatroid> i grabbed the file from your github page
+2011-06-21T06:20:17  <antimatroid> i wasn't adding python to the start of my thing the other day
+2011-06-21T06:20:22  <Zaphus> can the output be redirected so that the input from the server goes to one file and the echo from my bot goes to another ?
+2011-06-21T06:20:42  <george1914> i have berak's now
+2011-06-21T06:21:28  <Rabidus> i write my debug info into a file
+2011-06-21T06:21:30  <Zaphus> fyi - on windows, if you want to redirect to a file when running python, you *must* call it via   python file.py  -  if you just do   file.py   then it wont launch (only when redirecting output, it's documented somewhere)
+2011-06-21T06:21:33  <antimatroid> damnit people, i want a game!
+2011-06-21T06:21:37  <antimatroid> :p
+2011-06-21T06:21:45  <Rabidus> :p
+2011-06-21T06:21:51  <antimatroid> windows is the worst if you're a programmer
+2011-06-21T06:22:24  <Zaphus> but not if you are a human being :-)
+2011-06-21T06:23:02  <george1914> i must be a programmer then  :/    though not many others think so  :)
+2011-06-21T06:24:01  <antimatroid> george1914: i didn't say it was necessary to be a programmer for windows to be the worst :P
+2011-06-21T06:24:27  <george1914> the choice seemed to be 'human'  or  'programmer'
+2011-06-21T06:24:36  <antimatroid> it's just painful to do a lot of stuff that's programming related on windows
+2011-06-21T06:24:37  <Zaphus> what else is there ?  :-)
+2011-06-21T06:24:53  <george1914> ai, but not programmer
+2011-06-21T06:24:55  <george1914> ?
+2011-06-21T06:25:01  <antimatroid> george1914: what do you do?
+2011-06-21T06:25:33  <antimatroid> i wouldn't really class myself as a programmer either
+2011-06-21T06:25:45  <antimatroid> recreational programmer maybe?
+2011-06-21T06:26:28  <george1914> physics/maths person who writes  FORTRAN   (90)  in any other language ...
+2011-06-21T06:26:42  <antimatroid> maths :), physics meh
+2011-06-21T06:26:49  <antimatroid> :p
+2011-06-21T06:28:02  <george1914> i did mostly maths problems,  but as a physicist   (the style is very different, even(especially) on the same problems)
+2011-06-21T06:31:11  <george1914> so, i appear to be playing a game
+2011-06-21T06:31:32  <george1914> but i get always INFO:  invalid: ['o 94 12 w\no 95 12 w # incorrectly formatted order']
+2011-06-21T06:31:54  <george1914> though i think i should not (at least for 1of the bots i am running)
+2011-06-21T06:32:24  <Zaphus> looks like unix line ending not being handled ?   I'm also getting invalid move messages that I've never seen on the live server
+2011-06-21T06:33:06  <antimatroid> why aren't i playing a game? :(
+2011-06-21T06:33:11  <antimatroid> it just says i'm waiting for 3 people
+2011-06-21T06:33:12  <george1914> well, looks like we are testing it anyway  :)
+2011-06-21T06:33:42  <george1914> i 'submitted'   6
+2011-06-21T06:33:51  <george1914> to be sure of getting a game going
+2011-06-21T06:33:58  <george1914> strangely, only 2 are playing
+2011-06-21T06:34:09  <george1914> INFO: hello george_b, we still need 4 more players for the upcoming game.
+2011-06-21T06:34:11  <george1914> etc
+2011-06-21T06:34:23  <george1914> but then it seems just the last 2 submission are running
+2011-06-21T06:34:25  *** sir_macelon <sir_macelon!c06482e5@gateway/web/freenode/ip.192.100.130.229> has joined #aichallenge
+2011-06-21T06:34:30  <sir_macelon> hi
+2011-06-21T06:34:49  <antimatroid> heloo
+2011-06-21T06:34:54  <Rabidus> haluu
+2011-06-21T06:34:57  <sir_macelon> well, so finally my bot is on a deserved place ;)
+2011-06-21T06:35:01  <antimatroid> :p
+2011-06-21T06:35:08  <Rabidus> :)
+2011-06-21T06:35:08  <antimatroid> i can expand better :P
+2011-06-21T06:35:09  <george1914> hi, top of the rankings to you  :)
+2011-06-21T06:35:14  <antimatroid> i just haven't done anything about battles
+2011-06-21T06:36:56  <sir_macelon> what's better about your expanding? you mean food collection? :)
+2011-06-21T06:37:24  <antimatroid> yeah
+2011-06-21T06:37:31  <antimatroid> http://aichallengebeta.hypertriangle.com/visualizer.php?game=29974&user=126
+2011-06-21T06:37:39  <antimatroid> watch the ant/scores in the game near the start :P
+2011-06-21T06:39:23  <antimatroid> it might have been more luck of search
+2011-06-21T06:39:47  <antimatroid> sir_macelon: are you using a*?
+2011-06-21T06:39:54  <antimatroid> i am using that for food collection
+2011-06-21T06:39:57  <sir_macelon> yup, still
+2011-06-21T06:39:57  <george1914> Zaphus:  so should we tell someone about the   \n   problem, do you think?
+2011-06-21T06:40:03  *** Alex__ <Alex__!5bcb3f1a@gateway/web/freenode/ip.91.203.63.26> has joined #aichallenge
+2011-06-21T06:40:32  <Zaphus> george1914:  only once you've proved thats what it is...   it was just a thought
+2011-06-21T06:40:52  <Zaphus> I'm connecting, but it just sits at 'connected' and does nothing
+2011-06-21T06:40:58  <antimatroid> same^^
+2011-06-21T06:41:01  <sir_macelon> as to that game, it's more about the exploration and luck, but yet i have just basic exploration implemented
+2011-06-21T06:41:13  <Rabidus> where did you get that tcpclient.py ?
+2011-06-21T06:41:20  <Rabidus> from uhiainen or from github?
+2011-06-21T06:41:21  <sir_macelon> and still would have to work on it
+2011-06-21T06:41:21  <george1914> well, problem starts once i get 2 ants
+2011-06-21T06:41:28  <Zaphus> https://github.com/berak/TCPServer
+2011-06-21T06:41:30  <antimatroid> yeah i did a fairly quick exploration thing yesterday
+2011-06-21T06:41:31  <Rabidus> ok
+2011-06-21T06:41:34  <george1914> and start submitting 2 lines of orders
+2011-06-21T06:42:00  <Zaphus> socket error - I think it's not running any more perhaps ?
+2011-06-21T06:42:35  <Rabidus> antimatroid is having socket errors
+2011-06-21T06:42:42  <Zaphus> sir_macelon:  when I run all my old bots against each other, the ones with the better food searching always win - even if the others know how to fight (sortof)
+2011-06-21T06:43:21  <Zaphus> reset the server perhaps (if it belongs to someone here)
+2011-06-21T06:43:25  <antimatroid> sir_macelons bot walks all over mine when they go to fight each other
+2011-06-21T06:44:02  <george1914> antimatroid: you have game now?
+2011-06-21T06:44:23  <antimatroid> george1914: i do
+2011-06-21T06:44:31  <sir_macelon> Zaphus: depends on the fighting skill, better food collection gives you an advantage and without good battling it might still be not enough to win
+2011-06-21T06:44:31  <antimatroid> and i'm getting that invalid order stuff too
+2011-06-21T06:44:39  <george1914> ah  :(
+2011-06-21T06:44:48  <george1914> is it once you have 2 bots?
+2011-06-21T06:44:52  <george1914> sorry, 2 ants
+2011-06-21T06:45:17  <Rabidus> if you have solution for code i'll change it
+2011-06-21T06:45:22  <mcstar> aerique: i re-wrote the missing part, when you try it out and something isnt working let me know
+2011-06-21T06:45:24  <Zaphus> how's this for just winning:  http://aichallengebeta.hypertriangle.com/visualizer.php?game=28997&user=78    had a great lead, didnt know what to do with it and would have lost if it went to 2010 turns I think
+2011-06-21T06:45:52  <antimatroid> george1914: yep
+2011-06-21T06:48:29  <aerique> mcstar: will do
+2011-06-21T06:48:58  <antimatroid> Zaphus: love the graph :P
+2011-06-21T06:49:48  <Zaphus> that version of my bot is a coward, doesnt want to get into a fight :-)
+2011-06-21T06:52:04  <antimatroid> pussy :P
+2011-06-21T06:52:13  <antimatroid> cup of concrete?
+2011-06-21T06:52:52  <mcstar> when i see games like that, ideal gas and pressure comes into my mind
+2011-06-21T06:53:20  <mcstar> well, yeah its not so ideal, diffusion is quite minimal
+2011-06-21T06:53:48  <george1914> my ants follow Metropolis  Stat Mech   method,  (when it doesnt see any food)
+2011-06-21T06:53:55  <george1914> potential has repulsion
+2011-06-21T06:54:18  <george1914> so very like a gas ...
+2011-06-21T06:54:24  <mcstar> is it for evaluating the zustandsumme?
+2011-06-21T06:54:33  <mcstar> Z
+2011-06-21T06:54:46  <george1914> :)
+2011-06-21T06:54:52  <george1914> i guessed that
+2011-06-21T06:55:12  <george1914> no,  was just a very cheap way to make ants move, and spread out
+2011-06-21T06:55:13  <mcstar> i dont know much about it, but as far as ai can remmeber iz samples the space on which the partition function is defined, right?
+2011-06-21T06:55:19  <george1914> better than totally random moves
+2011-06-21T06:55:29  <george1914> yes
+2011-06-21T06:56:01  <george1914> but i never reach equilibrium, because  sir-m  et al keep killing my ants ...
+2011-06-21T06:56:30  <Zaphus> you need a bubble, gas inside with a membrane around the outside
+2011-06-21T06:56:46  <Zaphus> good luck coding that :-)
+2011-06-21T06:56:49  <mcstar> Zaphus: that kept you from killing david!
+2011-06-21T06:56:59  <mcstar> you HAD a bubble :D
+2011-06-21T06:57:13  * antimatroid doesn't understand these physicsy things 
+2011-06-21T06:57:31  <antimatroid> pesky muggles
+2011-06-21T06:57:49  <Zaphus> mcstar:  yes, but I had a bubble that was too afraid of losing a single ant, so never risked anything, and slowly got crushed
+2011-06-21T06:57:51  <mcstar> now i have to look up muggles
+2011-06-21T06:58:33  <mcstar> no luck with muggles, i feel stupid :(
+2011-06-21T06:59:09  <antimatroid> mcstar: you might as well go and kill yourself
+2011-06-21T06:59:49  <george1914> for not being able to use google?   a bit harsh ...
+2011-06-21T06:59:51  <mcstar> well, i laughed at it, is it ok?
+2011-06-21T07:00:02  <antimatroid> for not knowing what a muggle is
+2011-06-21T07:00:11  <mcstar> noooo, i wont ude google for english, come on
+2011-06-21T07:00:18  <mcstar> i use dictionaries
+2011-06-21T07:00:35  <george1914> well, it needs to not predate harry potter books then ...
+2011-06-21T07:00:35  <antimatroid> a muggle is someone with no magical abilities
+2011-06-21T07:00:38  <Rabidus> i like turtles
+2011-06-21T07:00:58  <mcstar> well, im certainly a muggle then
+2011-06-21T07:01:07  <mcstar> but im not pesky, am i?
+2011-06-21T07:01:26  <antimatroid> i was kidding :P
+2011-06-21T07:01:37  <mcstar> now i see
+2011-06-21T07:02:26  <mcstar> btw how you feel about talking to all of these people, these half wits in english, compared to you?
+2011-06-21T07:03:05  <mcstar> i know if they were to speak hungarian, and if they made a mistake, i couldnt stand it
+2011-06-21T07:03:18  <mcstar> i would yell at them
+2011-06-21T07:04:17  <george1914> i am very happy i do not need to speak hungarian - english is hard enough for me, thanks   :)
+2011-06-21T07:06:02  <george1914> it is fine - the only issue i have is my english accept is too strong for many/most foreigners - so when talking, i have to try hard to speak clearly, and separate words
+2011-06-21T07:06:30  <george1914> after many years of this, i now have a very strange accent which people at home do not recognise
+2011-06-21T07:06:47  <george1914> sorry,  'accxent'   not  'accept'
+2011-06-21T07:06:49  <mcstar> you mean accent
+2011-06-21T07:06:51  <george1914> no,  accent
+2011-06-21T07:06:55  <george1914> right finally
+2011-06-21T07:07:07  <Rabidus> finnish english is funny in most cases. it comes with separate words by default :p
+2011-06-21T07:07:45  <Rabidus> you can search from youtube dudes like 'tommi mäkinen' or 'juha kankkunen'
+2011-06-21T07:08:19  <mcstar> you mean a different vocabulary?
+2011-06-21T07:08:39  <george1914> if it is not in a dictionary, mcstar wont accept it ...
+2011-06-21T07:09:02  <mcstar> it is allowed for it to be in urban dictionary :D
+2011-06-21T07:10:16  <george1914> now, back to tcp ...
+2011-06-21T07:10:54  *** sir_macelon <sir_macelon!c06482e5@gateway/web/freenode/ip.192.100.130.229> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T07:13:14  <Rabidus> is it working now?
+2011-06-21T07:14:07  <Rabidus> it has jammed
+2011-06-21T07:14:53  <george1914> it gives:   INFO:  invalid: ['o 94 12 w\no 95 12 w # incorrectly formatted order']
+2011-06-21T07:15:15  <george1914> the moves are not getting broken into separate lines
+2011-06-21T07:15:18  <Rabidus> so thats newline issue
+2011-06-21T07:15:27  <Rabidus> i'll stop the server for now
+2011-06-21T07:16:02  <george1914> and then in ants.py  parse_orders,  it complains because it expects each order to be just 4 words
+2011-06-21T07:16:08  <Zaphus> george: are you on linux ?
+2011-06-21T07:16:12  <george1914> yes
+2011-06-21T07:16:30  <george1914> antimatroid is windows though, isnt he?
+2011-06-21T07:16:30  <Zaphus> can you modify your code to send  \n\r   as a test (at the end of a line)
+2011-06-21T07:16:42  <george1914> ok
+2011-06-21T07:16:52  <Zaphus> (or is it \r\n  I can't remember)
+2011-06-21T07:17:01  <antimatroid> george1914: nah i'm on ubuntu
+2011-06-21T07:17:12  <antimatroid> mcstar: despite it being my first language, i'm not the best with english
+2011-06-21T07:17:18  <antimatroid> i can usually make out what people are trying to say
+2011-06-21T07:17:34  <Zaphus> I think it should be \r\n (CRLF)
+2011-06-21T07:17:43  <Zaphus> that being said, the server should handle it
+2011-06-21T07:17:50  <Rabidus> ok, i'll start it again
+2011-06-21T07:18:19  <Rabidus> up
+2011-06-21T07:19:29  <mcstar> who knows git-hub?
+2011-06-21T07:19:40  <Zaphus> barely
+2011-06-21T07:19:46  <antimatroid> i barely know anything too
+2011-06-21T07:19:46  <mcstar> i modify my file, commit, then push
+2011-06-21T07:19:58  <mcstar> and it seems that it wont update the file
+2011-06-21T07:20:16  <antimatroid> it's probably done some separate branch or something
+2011-06-21T07:20:29  <antimatroid> i dunno how to handle that kind of stuff
+2011-06-21T07:21:30  <Zaphus> woah, just connected to the tcp server and it's sent me millions of blank lines
+2011-06-21T07:21:42  <Rabidus> :o
+2011-06-21T07:21:58  <Zaphus> I don't think it's ready for prime-time yet :-)
+2011-06-21T07:22:39  <Rabidus> are you connecting to correct port?
+2011-06-21T07:22:45  <Rabidus> 992 in tcpclient
+2011-06-21T07:23:44  *** Guest55669 <Guest55669!xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-21T07:23:57  *** boegel_ <boegel_!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-06-21T07:26:26  <Zaphus> lol - whoops
+2011-06-21T07:27:10  <Rabidus> hehe
+2011-06-21T07:32:59  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-21T07:33:40  <george1914> now i get:
+2011-06-21T07:33:43  <george1914> turn 108 a 71 90 0 f 2 90 f 6 90 f 67 85 f 70 95 go bot: george    turn: 107 o 71 90 S  INFO:  ignored: ['o 71 90 s # move blocked']
+2011-06-21T07:33:52  <stocha> mcstar: read Harry Potter books.
+2011-06-21T07:34:13  <Rabidus> turn 108 ?? wow, that's fast!
+2011-06-21T07:34:15  <mcstar> excuse moi?
+2011-06-21T07:34:15  <stocha> mcstar: Muggle is term from those stories. It's not english most probably.
+2011-06-21T07:34:37  <stocha> mcstar: volontier Monsieur. Mais de quoi donc ?
+2011-06-21T07:34:37  <george1914> the move is valid (ie no water)   so i guess i have wrong syntax?
+2011-06-21T07:34:39  <mcstar> stocha: if you were to pay me i still wouldnt read those
+2011-06-21T07:34:53  <stocha> mcstar: don't complain about lacking culture then :p
+2011-06-21T07:35:02  <george1914> i have audiobooks, if you prefer ...
+2011-06-21T07:35:20  <mcstar> george1914: ask me what can you do with audiobooks....
+2011-06-21T07:35:24  <stocha> i think it might be that there is a film also, made out from the book.
+2011-06-21T07:35:41  <stocha> mcstar: what can he do with audibooks ?
+2011-06-21T07:35:49  <mcstar> he can shove it .....
+2011-06-21T07:36:01  <mcstar> hehe sorry guys
+2011-06-21T07:36:12  <stocha> mcstar: i think some are usefull for stabilizing shelves.
+2011-06-21T07:36:13  <mcstar> im not in the mood of Herr Riporter
+2011-06-21T07:36:16  <george1914> traditional hungarian humour?
+2011-06-21T07:36:27  <mcstar> for
+2011-06-21T07:36:44  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Quit: Page closed)
+2011-06-21T07:36:48  <mcstar> george1914: we are very funny people
+2011-06-21T07:36:56  <mcstar> and we swear a lot
+2011-06-21T07:37:03  <stocha> Potters. It's a guy to make potteries.
+2011-06-21T07:37:12  <george1914> Zaphus:  so the \r\n   instead of   std::endl    seems to not fix it
+2011-06-21T07:37:35  <mcstar> try louder
+2011-06-21T07:37:39  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Client Quit)
+2011-06-21T07:38:10  <mcstar> lol, i like stocha, he quits after telling me to read the potter
+2011-06-21T07:41:36  <antimatroid> australians swear the most
+2011-06-21T07:42:17  <george1914> i have met some very strange hungarians ...
+2011-06-21T07:42:27  <george1914> odd rather than funny ...
+2011-06-21T07:42:46  <george1914> though one or two funny ones also ....
+2011-06-21T07:44:02  <mcstar> yeah, should have said me, instead of hungarians
+2011-06-21T07:44:53  <mcstar> i dont know if i should say this or not
+2011-06-21T07:45:03  <antimatroid> ...
+2011-06-21T07:45:04  <mcstar> ill spit it out
+2011-06-21T07:45:22  <mcstar> i think the bot should keep a replica of the board
+2011-06-21T07:45:32  <mcstar> like the engine does
+2011-06-21T07:45:53  <mcstar> you dont just store objects you encounter in vectors or ahshtables or whatever
+2011-06-21T07:46:03  <mcstar> but on a 2d array as well
+2011-06-21T07:46:10  <antimatroid> the c++ bot does :P
+2011-06-21T07:46:19  <mcstar> :)
+2011-06-21T07:46:28  <mcstar> i guess its not a secret then
+2011-06-21T07:47:51  <Rabidus> hey wohoo
+2011-06-21T07:47:53  <Rabidus> there's a game!
+2011-06-21T07:47:55  <Rabidus> http://uhiainen.dyndns.org:991/replay.2
+2011-06-21T07:49:01  <george1914> hm - nice to see it.  HOWEVER - i wonder if the water is being reported correctly?  i suspect not.
+2011-06-21T07:49:05  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-06-21T07:49:10  <george1914> all bots try to walk into water
+2011-06-21T07:49:34  <Rabidus> not that zaphtest afais
+2011-06-21T07:49:35  <mcstar> thats why then aint moving?
+2011-06-21T07:49:37  <mcstar> y
+2011-06-21T07:50:00  <mcstar> only moves when another food appears
+2011-06-21T07:50:04  <Rabidus> yep
+2011-06-21T07:50:12  <antimatroid> maybe it's trying to index as x,y somewhere
+2011-06-21T07:50:20  <mcstar> and its close than the one on the other side of water
+2011-06-21T07:50:25  <antimatroid> never use x,y for indexing, it only leads to confusion
+2011-06-21T07:50:52  <mcstar> hehe, how many times did i tell you children? NEVER use x y for indexing
+2011-06-21T07:50:53  <mcstar> !!
+2011-06-21T07:52:09  <george1914> ok, i think this tcp server still has a few small issues - i will leave it for the time being ...    thanks very much for running it, Rabidus.
+2011-06-21T07:52:09  <Rabidus> another game!
+2011-06-21T07:52:15  <Rabidus> http://uhiainen.dyndns.org:991/replay.3
+2011-06-21T07:52:23  <george1914> anyone tell me where/how i report issues?
+2011-06-21T07:52:25  <Rabidus> locutus is spreading nice
+2011-06-21T07:52:36  <Rabidus> to berak
+2011-06-21T07:52:38  <Rabidus> i think
+2011-06-21T07:52:43  *** boegel_ <boegel_!~boegel@ca60c171.ugent.be> has quit IRC (Quit: *poof!*)
+2011-06-21T07:52:46  <Rabidus> he hasn't enabled that issues -button on github
+2011-06-21T07:53:50  <mcstar> smart fellow
+2011-06-21T07:54:05  <Rabidus> lol
+2011-06-21T07:56:48  <Rabidus> i think that server crashes every time when someone tries to run it with that planetwars tcpclient
+2011-06-21T07:56:51  <Rabidus> because now it runs good
+2011-06-21T08:03:31  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-21T08:04:25  <locutus2> i' am have installed my bot at work on my second laptop. from their it is now running 24/7 to play on the tcp server
+2011-06-21T08:04:53  <mcstar> how do you know that?
+2011-06-21T08:05:28  <mcstar> a day hasnt passed yet since you installed it, let alone a week
+2011-06-21T08:06:15  <george1914> Zaphus:  so the \r\n   DOES seem to work - not sure what i did wrong earlier ...
+2011-06-21T08:06:20  <george1914> thanks for that :)
+2011-06-21T08:06:52  <mcstar> george1914: use later, he isnt here
+2011-06-21T08:06:57  <Rabidus> but that \r\n thing is server-side problem
+2011-06-21T08:07:21  <george1914> antimatroid: maybe replace   << std::endl;     with    << "\r\n";      and get your bot(s) running?
+2011-06-21T08:07:39  <antimatroid> george1914: meh, i'll wait :P
+2011-06-21T08:08:19  <Rabidus> for what?
+2011-06-21T08:08:56  <george1914> so i can leave message for berak somehow?   ask contestbot, or something?
+2011-06-21T08:09:24  <mcstar> @later tell george1914 yes
+2011-06-21T08:09:24  <contestbot> mcstar: Aye, aye, sir
+2011-06-21T08:09:39  <mcstar> now you write something
+2011-06-21T08:09:44  <george1914> berak is his name here?
+2011-06-21T08:10:00  <mcstar> now you see? on freenode it shows my message
+2011-06-21T08:10:04  <Rabidus> @later tell berak hi, can you enable that 'issues' -button thingie on github?
+2011-06-21T08:10:04  <contestbot> Rabidus: Aye, aye, sir
+2011-06-21T08:10:09  <george1914> yes, thankyou
+2011-06-21T08:12:57  <george1914> @later tell berak hi, have been using your tcp code - on linux, does not parse newline char correctly - accepts "\r\n"   but NOT std::endl;    can you modify please?   probably the line to modify is in tcpserver.py,   "valid, ignored, invalid = self.ants.do_moves(i, s.split('\r\n')) "
+2011-06-21T08:12:57  <contestbot> george1914: OK
+2011-06-21T08:13:44  <Rabidus> ah, you have found the spot
+2011-06-21T08:13:46  <Rabidus> i can try that
+2011-06-21T08:14:16  <george1914> i dont know quite what to change it to - my python to fortran translator is poor ....
+2011-06-21T08:15:00  <george1914> i guess it should do  '\r\n'  and then do '\n'    so maybe add a line?
+2011-06-21T08:15:46  <mleise> and what about Mac ?
+2011-06-21T08:15:54  <Rabidus> what's macs newline?
+2011-06-21T08:15:57  <mleise> \r
+2011-06-21T08:16:00  <Rabidus> fuu
+2011-06-21T08:16:01  <mleise> hehe
+2011-06-21T08:16:13  <Rabidus> i made it to .. wait a minute
+2011-06-21T08:16:21  <mleise> the 3 companies were really smart in making it hard
+2011-06-21T08:16:29  <Rabidus>  s.replace('\r','').split('\n')
+2011-06-21T08:16:39  <Rabidus> so now it should work on windows and linux
+2011-06-21T08:17:06  <antimatroid> george1914: why the love for fortran?
+2011-06-21T08:17:08  <mleise> replace \r\n -> \n first, then \r -> \n :)
+2011-06-21T08:17:13  <antimatroid> c++ <3
+2011-06-21T08:17:19  <mleise> D <3
+2011-06-21T08:17:20  <Rabidus> plagh..
+2011-06-21T08:17:24  <Rabidus> windows <3
+2011-06-21T08:17:26  <Rabidus> ;)
+2011-06-21T08:17:29  <Rabidus> "here we go again"
+2011-06-21T08:17:43  <antimatroid> turtles <3
+2011-06-21T08:17:52  <antimatroid> microworlds <3
+2011-06-21T08:17:53  <mleise> oh noes, not the annoying kid
+2011-06-21T08:18:15  <george1914> long ago, when mathematica was too slow for my problem, i needed to write in something fast - my officemate knew F90, so i went for that - then i had someone to ask when i had questions.
+2011-06-21T08:18:23  <george1914> and, i still like it
+2011-06-21T08:18:37  <Rabidus> howbout s.replace('\r','\n').replace('\n\n','\n').split('\n')
+2011-06-21T08:18:49  <Rabidus> bubblegum
+2011-06-21T08:18:57  <Rabidus> but should work, shouldn't it ?
+2011-06-21T08:19:08  <george1914> yes
+2011-06-21T08:19:11  <george1914> thanks
+2011-06-21T08:19:18  <Rabidus> i'll try and restart the server
+2011-06-21T08:19:22  <george1914> want to do the change, then i test?
+2011-06-21T08:19:27  <Rabidus> ok
+2011-06-21T08:19:28  <george1914> ok
+2011-06-21T08:19:31  <george1914> :)
+2011-06-21T08:20:54  <Rabidus> up n running
+2011-06-21T08:21:10  <mcstar> silence, Lisp is on the way!
+2011-06-21T08:21:16  <mcstar> peasants...
+2011-06-21T08:22:02  <mcstar> george1914: when i started using lisp in march, i realized i knew it all along
+2011-06-21T08:22:07  <mcstar> it was called mathematica
+2011-06-21T08:22:15  <mcstar> its a total rip-off
+2011-06-21T08:23:00  <george1914> aha?  the thing is, i write fortran in mathematica also :)
+2011-06-21T08:23:03  <Rabidus> george1914: is it working?
+2011-06-21T08:23:21  <george1914> i have tried those clever Nest[...]   commands, and they confuse me
+2011-06-21T08:23:22  <mcstar> well, i suppose you know FullForm[]
+2011-06-21T08:23:54  <george1914> vaguely
+2011-06-21T08:24:02  <george1914> i write Do[  loops
+2011-06-21T08:24:04  <george1914> etc
+2011-06-21T08:24:22  <mcstar> well, in mma every expression is a Head[arg1,....,argN]
+2011-06-21T08:24:23  <george1914> and then do symbolic stuff when i am too dumb to use pencil and paper
+2011-06-21T08:24:39  <mcstar> this is exactly how lisp look slike
+2011-06-21T08:24:52  <mcstar> with the exception: (head arg1 .... argN)
+2011-06-21T08:25:29  <mcstar> and of course mma doesnt have macros, but the power of the language comes from lisp, wolfram was studying lisp before the wrote mma
+2011-06-21T08:25:47  <mleise> variadic arguments?
+2011-06-21T08:25:55  <mcstar> btw maxima is written in lisp, but the syntax of that language is totally different
+2011-06-21T08:26:13  <mcstar> mleise: what do you mean?
+2011-06-21T08:26:23  <george1914> Rabidus:  yes, works fine  :)  thanks
+2011-06-21T08:26:29  <Rabidus> wow, nice
+2011-06-21T08:26:57  <mleise> mcstar: oh nothing, i just thought head arg1 ... argN looked like you take a look at the first given argument or something
+2011-06-21T08:27:19  <mcstar> its just an abstract notation of a function call
+2011-06-21T08:27:26  <george1914> BUT i have:      INFO:  ignored: ['o 12 56 n # move blocked']
+2011-06-21T08:27:34  <george1914> even though no water reported ...
+2011-06-21T08:27:39  <Rabidus> :o
+2011-06-21T08:27:45  <mleise> lol
+2011-06-21T08:27:53  <mleise> invisible walls, the new feature
+2011-06-21T08:28:01  <george1914> i forget - do i always get told about water?  or just when i first see it?
+2011-06-21T08:28:14  <mleise> only on first sight!
+2011-06-21T08:28:28  <george1914> ok, then i cannot be sure there is no water there
+2011-06-21T08:28:36  <mcstar> hehe, blind ants
+2011-06-21T08:28:40  <mleise> your ants are very forgettable
+2011-06-21T08:28:42  <mcstar> i like that
+2011-06-21T08:28:45  <Rabidus> in previous games you were right next to water
+2011-06-21T08:28:46  <george1914> not a mistake my bot has made before though ...
+2011-06-21T08:29:35  <mleise> george1914: then I assume there was a big change in your code
+2011-06-21T08:29:44  <Rabidus> http://uhiainen.dyndns.org:991/replay.2
+2011-06-21T08:29:46  <Rabidus> over there
+2011-06-21T08:29:52  <Rabidus> they all move few squares down
+2011-06-21T08:29:58  <mleise> there is so much water.. at some point in the past it must have run into it
+2011-06-21T08:30:00  <Rabidus> and then they hit into water
+2011-06-21T08:30:38  <mleise> lol, what is with the status texts?
+2011-06-21T08:30:44  <george1914> no, it is old version i am running here (in storeage directory) - ought to be fine
+2011-06-21T08:30:48  <mleise> and what kind of server is this? Oo
+2011-06-21T08:31:03  <Rabidus> tcp-tryout
+2011-06-21T08:31:11  <mleise> :D great stugg
+2011-06-21T08:31:13  <mleise> *stuff
+2011-06-21T08:31:34  <mcstar> mleise: you type blind too?
+2011-06-21T08:32:15  <mleise> I try to, yes
+2011-06-21T08:32:20  <mcstar> +1
+2011-06-21T08:33:08  <george1914> ok, well, the game ran, and can be viewed  :)
+2011-06-21T08:33:24  <Rabidus> hehe
+2011-06-21T08:33:27  <george1914> my bots seem to not know about some water, but then play more or less normally
+2011-06-21T08:33:57  <mleise> You should change the page encoding to utf-8
+2011-06-21T08:33:57  <george1914> so, anyone else want to submit bot(s)?
+2011-06-21T08:34:10  <Rabidus> as soon as i can get away from my work
+2011-06-21T08:34:33  <george1914> Rabidus is just trying out the code of berak
+2011-06-21T08:34:57  <george1914> inperfections may not be his doing!
+2011-06-21T08:35:06  <Rabidus> that utf8 thing is just line of a code in <head> tags?
+2011-06-21T08:35:16  <mleise> yes, should be
+2011-06-21T08:35:23  <Rabidus> yes, i'll do it then soon
+2011-06-21T08:37:07  <mleise> interestingly firefox 5 is not released yet. hope they fix the regression bug(s), before millions of people upgrade
+2011-06-21T08:38:10  <Guest55669> mleise: Oh god, firefox 5 has sooooooooooooo many bugs
+2011-06-21T08:38:21  <george1914> ok, this last game - i am ~sure that the water was not reported correctly.
+2011-06-21T08:38:23  <Guest55669> My graphics driver crashes once every hour because of it
+2011-06-21T08:38:40  <Rabidus> hmm..
+2011-06-21T08:39:00  <Rabidus> george1914: what the heck.. you didn't ran into water in last game
+2011-06-21T08:39:07  <Rabidus> but now you did
+2011-06-21T08:39:30  <mleise> Guest55669: i am kinda glad to hear that, because people wont hate me then when the visualizer looks ugly, but the mozilla crew :D
+2011-06-21T08:39:36  * mcstar doesnt understand why would people use software that bleeds bugs
+2011-06-21T08:39:37  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 240 seconds)
+2011-06-21T08:39:38  <Rabidus> did you kill yourself there with your own ants?
+2011-06-21T08:39:38  *** Alex__ <Alex__!5bcb3f1a@gateway/web/freenode/ip.91.203.63.26> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T08:39:40  <george1914> http://uhiainen.dyndns.org:991/replay.3
+2011-06-21T08:39:46  <Rabidus> yes, i watched it
+2011-06-21T08:40:02  <george1914> yes - both went north, but one couldnt move and the other ran into it  :)
+2011-06-21T08:40:14  <Rabidus> yep, so water wasn't the issue
+2011-06-21T08:40:18  <george1914> but, the terminal shows that no water was reported there
+2011-06-21T08:40:24  <Rabidus> hmm..
+2011-06-21T08:40:34  <george1914> -nve water was the issue - it was not reported to Bot
+2011-06-21T08:40:47  <Rabidus> can't do anything on that
+2011-06-21T08:40:48  <mleise> only to one bot??
+2011-06-21T08:40:55  <george1914> do you think i drop a line of input from server?
+2011-06-21T08:40:59  <mleise> is this an experimental engine?
+2011-06-21T08:41:05  <george1914> checking other bots ...
+2011-06-21T08:41:05  <Rabidus> i have no idea
+2011-06-21T08:41:23  <Rabidus> mleise: its experimental tcp-server
+2011-06-21T08:41:41  *** Guest55669 <Guest55669!xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC ()
+2011-06-21T08:41:47  <Rabidus> little buggy and very vurnerable
+2011-06-21T08:41:51  <mleise> I thought it would use the existing engine.py
+2011-06-21T08:42:16  <mleise> don't know how flexible that is or if the server is written in python after all
+2011-06-21T08:43:15  <Rabidus> you can check the sources
+2011-06-21T08:43:47  <mleise> the tcp-server source code is available for download?
+2011-06-21T08:43:49  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-21T08:44:16  <Rabidus> yes
+2011-06-21T08:44:25  <Rabidus> https://github.com/berak/TCPServer
+2011-06-21T08:44:34  <george1914> Rabidus:  i am not getting water reports at the start
+2011-06-21T08:44:46  <Rabidus> interesting
+2011-06-21T08:45:07  <george1914> connected bot: george BOT INPUT line is INFO: hello george_d, we still need 1 more players for the upcoming game. BOT INPUT line is INFO: you joined game 3 on map symmetric_166.map BOT INPUT line is INFO: your opponents are:  george_a george_b george_c george_e BOT INPUT line is turn 0 BOT INPUT line is loadtime 3000 BOT INPUT line is turntime 5000 BOT INPUT line is rows 90 BOT INPUT line is cols 80 BOT INPUT line is turns 35
+2011-06-21T08:45:27  <george1914> sorry, messy - but doesnt report water ate setup
+2011-06-21T08:45:32  <george1914> it seems
+2011-06-21T08:45:56  <Rabidus> for your eyes, but will it for bots eye?
+2011-06-21T08:46:00  <george1914> maybe if another person ran a bot, then we could check it isnt me going mad?
+2011-06-21T08:46:06  <Rabidus> :D
+2011-06-21T08:46:16  <Rabidus> wait an hour and i'll run some test at home
+2011-06-21T08:46:39  <Rabidus> hour or two
+2011-06-21T08:47:02  <george1914> ok, thanks.   i will be away for a few hours soon, so maybe catch you later this evening
+2011-06-21T08:47:11  <george1914> thanks again for runnign server   :)
+2011-06-21T08:47:55  <mleise> ok, so it uses a home-grown engine :)
+2011-06-21T08:48:07  <Rabidus> afaik, yes.
+2011-06-21T08:48:08  <Rabidus> :)
+2011-06-21T08:55:15  <Rabidus> i think that \r\n -problem caused the server to use 100% cpu
+2011-06-21T08:55:18  <Rabidus> it runs now fine
+2011-06-21T08:55:26  <Rabidus> no games running tho
+2011-06-21T08:55:37  <george1914> 1 just started
+2011-06-21T08:55:38  <Rabidus> george1914: can you put few games running for testing purposes
+2011-06-21T08:55:40  <Rabidus> ok
+2011-06-21T08:56:27  <Rabidus> working good so far
+2011-06-21T08:58:22  *** jmpespxoreax <jmpespxoreax!~nosuchuse@unaffiliated/jmpespxoreax> has quit IRC (Ping timeout: 240 seconds)
+2011-06-21T08:58:29  <antimatroid> oh god, why would i do a physics unit?
+2011-06-21T08:58:41  <antimatroid> today was meant to be the last day of exams at my unit too :\
+2011-06-21T09:00:47  <bhasker> morning
+2011-06-21T09:01:01  <Rabidus> evening
+2011-06-21T09:02:05  <antimatroid> bhasker: morningh
+2011-06-21T09:02:14  <antimatroid> and happy fathers day for yesterday! :P
+2011-06-21T09:03:55  <bhasker> hehe thanks:)
+2011-06-21T09:04:03  <bhasker> i see that combat resolution has changed
+2011-06-21T09:04:34  *** dr- <dr-!~lotus@tuborg.lifl.fr> has quit IRC (Quit: WeeChat 0.3.0)
+2011-06-21T09:04:41  *** lotus <lotus!~lotus@tuborg.lifl.fr> has joined #aichallenge
+2011-06-21T09:04:42  *** lotus is now known as dr-
+2011-06-21T09:05:34  <bhasker> openssl is a bitch!
+2011-06-21T09:09:26  <antimatroid> bhasker: yeah, too worried about blocking
+2011-06-21T09:09:44  <antimatroid> i always wanted this battle resolution anyway
+2011-06-21T09:09:54  <bhasker> ah
+2011-06-21T09:10:04  <bhasker> i should update my bot sometime
+2011-06-21T09:10:07  <bhasker> too busy with other stuff
+2011-06-21T09:10:23  <Rabidus> something goes ahead of this?!
+2011-06-21T09:11:40  <george1914> i have left a few bots running as script - keeps submitting after each game.   so should always be 2 opponents, at least until you restart server.
+2011-06-21T09:11:44  <george1914> see yous later
+2011-06-21T09:12:17  <Rabidus> ok thx
+2011-06-21T09:12:18  <Rabidus> :)
+2011-06-21T09:19:39  <Rabidus> hmm.. now the server isn't updating games
+2011-06-21T09:20:09  <Rabidus> so i think i need to clean things and restart .. again
+2011-06-21T09:20:29  <Rabidus> but not yet
+2011-06-21T09:51:13  *** berak <berak!~chatzilla@89.204.137.192> has joined #aichallenge
+2011-06-21T09:53:36  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 244 seconds)
+2011-06-21T09:55:27  *** dr- <dr-!~lotus@tuborg.lifl.fr> has quit IRC (Ping timeout: 276 seconds)
+2011-06-21T09:58:04  <mcstar> if you write down the last number of every timeout value, its giving the floating point representation of Pi
+2011-06-21T10:07:33  *** _0x47 <_0x47!~slash@p57B3FFB2.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-06-21T10:07:50  <berak> george1914: done!
+2011-06-21T10:09:03  <Rabidus> he left :p
+2011-06-21T10:10:07  <Rabidus> oh, and there is now that issues
+2011-06-21T10:10:20  <berak> Rabidus: thanks for the feedback
+2011-06-21T10:10:49  <antimatroid> http://i.imgur.com/wX6P4.png
+2011-06-21T10:10:55  <Rabidus> hey, now that doesn't work on macs :p
+2011-06-21T10:11:02  <Rabidus> because macs newline is \r
+2011-06-21T10:11:56  <Rabidus> i solved it by making this line: s.replace('\r','\n').replace('\n\n','\n').split('\n')
+2011-06-21T10:12:54  *** dr- <dr-!~lotus@tuborg.lifl.fr> has joined #aichallenge
+2011-06-21T10:13:19  <berak> let's see if it works here ( on win )
+2011-06-21T10:13:35  <Rabidus> that server is up on uhiainen.dyndns.org
+2011-06-21T10:13:44  <Rabidus> port for games is 992 and browsing 991
+2011-06-21T10:16:30  <berak> ;) it's in.
+2011-06-21T10:17:25  <Rabidus> nice
+2011-06-21T10:18:16  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Read error: Operation timed out)
+2011-06-21T10:19:33  <dr-> I have a question about c++ server compilation, does it intelligently manage -I option (include dirs) or do I have to put all files in only one dir ?
+2011-06-21T10:21:43  <antimatroid> dr-: all files in one directory
+2011-06-21T10:21:51  <antimatroid> and zip the files not inside a directory (there's some bug there)
+2011-06-21T10:22:51  *** Alex____ <Alex____!5bcb3f1a@gateway/web/freenode/ip.91.203.63.26> has joined #aichallenge
+2011-06-21T10:22:59  <dr-> okay ... I don't like this solution because it's messy
+2011-06-21T10:23:28  <dr-> all src and headers files in a directory, it makes me shiver :p
+2011-06-21T10:24:17  <antimatroid> i know :P
+2011-06-21T10:24:44  <antimatroid> i currently have 11 header files and 3 .cc files
+2011-06-21T10:26:11  <dr-> i read you use a timer antimatroid (cf the c++ starter bot) ; at which moment do you consider that you have to stop computing anything quickly ?
+2011-06-21T10:27:00  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-21T10:27:02  <antimatroid> dr-: depends, my strategy will be broken up into different components, each of which will be allocated time
+2011-06-21T10:27:22  <antimatroid> but usually I try and rap things up when I get to like 0.9*turntime
+2011-06-21T10:27:39  <dr-> okay
+2011-06-21T10:28:04  <dr-> and, do you use jump instruction to skip quickly all the things you were doing ?
+2011-06-21T10:29:16  *** Alex____ <Alex____!5bcb3f1a@gateway/web/freenode/ip.91.203.63.26> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T10:29:17  <dr-> because it could take time to pop all functions on the stack :/
+2011-06-21T10:29:25  <antimatroid> what?
+2011-06-21T10:29:47  <antimatroid> i try to do things iteratively, so if i need to stop, then i just stop there for the turn
+2011-06-21T10:30:12  <antimatroid> when i'm making game trees, i'll generate them with a queue of extendable nodes and just stop after long enough and evaluate the tree as is
+2011-06-21T10:30:25  <antimatroid> i haven't got that far for this yes
+2011-06-21T10:30:40  <antimatroid> i'm just doing food collection, "enemy collection" and exploration
+2011-06-21T10:33:42  *** sigh <sigh!~sigh@173-164-174-193-SFBA.hfc.comcastbusiness.net> has joined #aichallenge
+2011-06-21T10:33:53  <dr-> okay :)
+2011-06-21T10:34:01  <dr-> thanks answering my questions ;)
+2011-06-21T10:36:58  <antimatroid> are other people tracking old food information?
+2011-06-21T10:40:21  <aerique> not yet, is there a point to it?  perhaps a random number generator not working correctly :)
+2011-06-21T10:41:16  *** eashoka <eashoka!70874ea1@gateway/web/freenode/ip.112.135.78.161> has joined #aichallenge
+2011-06-21T10:41:54  <eashoka> hi all!
+2011-06-21T10:42:19  <antimatroid> aerique: you can go back and collect food
+2011-06-21T10:42:29  <antimatroid> watch some of my games, i think it's quite useful
+2011-06-21T10:42:37  <antimatroid> eashoka: hello :)
+2011-06-21T10:42:39  <dr-> i plan to do it
+2011-06-21T10:42:49  <eashoka> why is the aichallenge forum page down and ai-contest.com site gone somewhere else ?
+2011-06-21T10:43:11  <dr-> stock somewhere locations of seen food, with relevance attribute, decreasing over the time
+2011-06-21T10:43:15  <antimatroid> eashoka: the main site is down for some reason, the beta site is just on a different server and not down
+2011-06-21T10:43:53  <eashoka> looks like main site domain has got by someone else ?
+2011-06-21T10:44:04  <antimatroid> dr-: it's relatively easy to make a copy of food information before clearing it, then going through that information after updating vision information to see what is food information at a not-currently visible square
+2011-06-21T10:44:11  <antimatroid> eashoka: ?
+2011-06-21T10:44:52  <dr-> I'll do something like that
+2011-06-21T10:44:52  <eashoka> ai-contest.com goes to some Default Parells ?
+2011-06-21T10:45:00  <antimatroid> i suspect that's just the page of the people hosting it normally or something
+2011-06-21T10:45:05  <antimatroid> i don't know much about that kind of thing
+2011-06-21T10:45:33  <eashoka> ah ok. hope everything is going fine then :-) tx.
+2011-06-21T10:45:56  <eashoka> any idea when will the real site start ?
+2011-06-21T10:46:12  <aerique> antimatroid: oh right, i thought you meant squares that used to have food
+2011-06-21T10:46:45  <antimatroid> eashoka: hopefully not too far away
+2011-06-21T10:47:05  <aerique> antimatroid: yeah, i'm not planning to throw that info away unless i can see that square again and can confirm the food is gone
+2011-06-21T10:47:26  <antimatroid> aerique: what i suggested above does that
+2011-06-21T10:49:49  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Read error: Connection reset by peer)
+2011-06-21T10:50:28  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-06-21T10:52:46  *** sigh <sigh!~sigh@173-164-174-193-SFBA.hfc.comcastbusiness.net> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-21T11:01:18  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 276 seconds)
+2011-06-21T11:01:28  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-21T11:01:48  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-21T11:08:38  <mcstar> im simulating lightnings
+2011-06-21T11:09:41  <mcstar> random, minimal length paths look exactly like them
+2011-06-21T11:10:39  <antimatroid> http://aichallengebeta.hypertriangle.com/visualizer.php?game=30529&user=126
+2011-06-21T11:10:48  <antimatroid> longest legit game i've seen
+2011-06-21T11:12:03  <mcstar> those graphs are hairy!
+2011-06-21T11:12:12  *** sigh <sigh!~sigh@nat/google/x-kvttuyyfnkzyhhwu> has joined #aichallenge
+2011-06-21T11:13:28  <aerique> that is a very nice game
+2011-06-21T11:14:01  <aerique> the interaction between sir_macelon's and stocha's ants is funny
+2011-06-21T11:16:33  <janzert> I now have 20000 games locally (game #20000 to 30000) from the beta server to analyze. No histogram or percentile or any good metrics out of it yet, but the average game length is 869 turns
+2011-06-21T11:16:55  <antimatroid> janzert: :)
+2011-06-21T11:17:01  <antimatroid> did you see that above game?
+2011-06-21T11:17:23  <antimatroid> ending it earlier wouldn't have changed the result, but i think it would have looked weirder if it ended earlier
+2011-06-21T11:17:29  *** smly- <smly-!~smly-@sage.naist.jp> has joined #aichallenge
+2011-06-21T11:17:32  <janzert> I took a quick look at it
+2011-06-21T11:18:18  <antimatroid> i'm really surprised at how my quick "explore" code works
+2011-06-21T11:18:34  <janzert> I think there will always be some games that would have been nice to go longer, the trick is setting the cutoff to balance the number of those and the resources used
+2011-06-21T11:18:34  <antimatroid> i knocked it together quickly when just collecting food and enemies sucked
+2011-06-21T11:18:42  <antimatroid> yep
+2011-06-21T11:19:06  *** okayzed is now known as okay
+2011-06-21T11:19:11  <antimatroid> how well*
+2011-06-21T11:19:30  <janzert> I think an early game end will help with the above as well
+2011-06-21T11:19:49  <janzert> but I gotta run, hopefully get some better game stats later
+2011-06-21T11:20:47  <antimatroid> yep, see ya
+2011-06-21T11:24:22  *** aerique <aerique!310225@xs8.xs4all.nl> has quit IRC (Quit: ...)
+2011-06-21T11:29:34  *** sigh <sigh!~sigh@nat/google/x-kvttuyyfnkzyhhwu> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-21T11:32:37  *** sigh <sigh!~sigh@nat/google/x-sqaywwjgdiwmwybz> has joined #aichallenge
+2011-06-21T11:36:15  *** okay is now known as okayzed
+2011-06-21T11:40:45  <eashoka> antimatroid : nice game that!
+2011-06-21T11:40:52  <antimatroid> :)
+2011-06-21T11:40:54  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-06-21T11:42:02  <eashoka> antimatroid : but u won after 1600th turn or so ..... hmm
+2011-06-21T11:42:13  <antimatroid> yeah, not very ideal
+2011-06-21T11:42:21  <antimatroid> it's a fairly simple bot atm though
+2011-06-21T11:42:36  <eashoka> antimatroid : may be u r explorer code need to kick in much earlier :-)
+2011-06-21T11:42:48  <antimatroid> it's all running from the start
+2011-06-21T11:42:52  <antimatroid> i'm not doing anything about battles
+2011-06-21T11:43:03  <eashoka> antimatroid : c++ ?
+2011-06-21T11:43:07  <antimatroid> i threw the strategy for that bot together in a few hours
+2011-06-21T11:43:09  <antimatroid> of course
+2011-06-21T11:43:21  <antimatroid> well, it took me way longer to get the strategy
+2011-06-21T11:43:26  <antimatroid> but i implemented it in a few hours
+2011-06-21T11:43:45  <eashoka> g8!
+2011-06-21T11:44:09  <eashoka> I just started. have some ideas.. need to do some cranking and submit something
+2011-06-21T11:44:28  <antimatroid> are you using the c++ bot?
+2011-06-21T11:44:38  <antimatroid> i'd recommend tackling food collection first
+2011-06-21T11:44:47  <eashoka> nope. me java (of course)
+2011-06-21T11:44:50  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-06-21T11:44:53  <antimatroid> (N)
+2011-06-21T11:44:55  <eashoka> yeah that's what I too was thinking
+2011-06-21T11:50:33  *** sigh <sigh!~sigh@nat/google/x-byactgjkwvaddfxf> has joined #aichallenge
+2011-06-21T11:52:22  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 240 seconds)
+2011-06-21T11:55:09  *** gobang <gobang!~gobang@89.204.137.192> has joined #aichallenge
+2011-06-21T11:57:09  *** gobang <gobang!~gobang@89.204.137.192> has left #aichallenge
+2011-06-21T12:08:26  *** nux67 <nux67!4f58cc94@gateway/web/freenode/ip.79.88.204.148> has joined #aichallenge
+2011-06-21T12:09:17  *** eashoka <eashoka!70874ea1@gateway/web/freenode/ip.112.135.78.161> has quit IRC (Quit: Page closed)
+2011-06-21T12:21:20  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has joined #aichallenge
+2011-06-21T12:37:40  *** olexs <olexs!~Leviathan@drms-4d0157e1.pool.mediaWays.net> has joined #aichallenge
+2011-06-21T12:42:08  *** okayzed is now known as okay
+2011-06-21T12:45:01  *** carlop <carlop!~chatzilla@2-227-10-134.ip183.fastwebnet.it> has joined #aichallenge
+2011-06-21T12:54:25  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 4.0.1/20110413222027])
+2011-06-21T12:58:35  <george1914> berak:  thanks for doing the change :)      nice to have a tcp server!
+2011-06-21T12:59:29  <george1914> not sure if i have missed people's comments but ...     does anyone see disprepancies between the inputs their bots gets from the server, compared the the actual map?
+2011-06-21T13:00:21  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:00:21  *** ChanServ sets mode: +o amstan
+2011-06-21T13:04:20  *** sigh <sigh!~sigh@nat/google/x-byactgjkwvaddfxf> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-21T13:05:04  <george1914> ... i was expecting everyone to say  'oh yes, i dont get told about the water squares visible on turn zero'
+2011-06-21T13:05:35  <george1914> from watching other bots, this does seem to be the case for (at least) some of them ...
+2011-06-21T13:05:35  *** bhasker <bhasker!~bhasker@nat/yahoo/x-qemsdrychqyjjdup> has joined #aichallenge
+2011-06-21T13:06:14  <george1914> anyone?
+2011-06-21T13:07:51  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Quit: Konversation terminated!)
+2011-06-21T13:08:28  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:08:28  *** ChanServ sets mode: +o amstan
+2011-06-21T13:10:42  <mcstar> george1914: i beleive only a few people use that tcp server
+2011-06-21T13:11:18  <george1914> looks like about 10 so far ...
+2011-06-21T13:11:44  <mcstar> ok, thats 8 more than i have guessed
+2011-06-21T13:12:11  <mcstar> but still, people dont react to messages usually, only if their nicks are highlighted
+2011-06-21T13:12:20  <george1914> http://uhiainen.dyndns.org:991/
+2011-06-21T13:12:57  <george1914> i'm not quite up to speed on this irc etiquette ...
+2011-06-21T13:13:02  <mcstar> ok, im very surprised
+2011-06-21T13:13:07  <mcstar> who is Hungry bot?
+2011-06-21T13:13:30  <mcstar> the guy has uploaded onyl once to the beta server
+2011-06-21T13:13:33  <Rabidus> hi
+2011-06-21T13:13:37  <george1914> no idea, but i recohnise most of the otehrs
+2011-06-21T13:13:39  <mcstar> and knows about the tcp server:
+2011-06-21T13:13:41  <mcstar> ?
+2011-06-21T13:14:03  <george1914> hi Rabidus
+2011-06-21T13:14:26  <Rabidus> hi grg
+2011-06-21T13:14:48  <george1914> i was looking at some of the games
+2011-06-21T13:14:59  <Rabidus> hmh
+2011-06-21T13:15:06  <Rabidus> my loop has somehow ended
+2011-06-21T13:15:27  <Rabidus> i made 7 bots to run on tcp after they finished previous game
+2011-06-21T13:15:32  <Rabidus> didn't work out i see
+2011-06-21T13:15:53  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Quit: Konversation terminated!)
+2011-06-21T13:16:31  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:16:31  *** ChanServ sets mode: +o amstan
+2011-06-21T13:16:34  <mcstar> http://uhiainen.dyndns.org:991/replay.11
+2011-06-21T13:16:47  <mcstar> four of the 7 players make the same first moves
+2011-06-21T13:16:50  <mcstar> wth?
+2011-06-21T13:17:37  <mcstar> there is soo much sense in running the starter bots with uninitialized random number generator
+2011-06-21T13:17:45  <mcstar> may the world perish
+2011-06-21T13:19:55  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Client Quit)
+2011-06-21T13:20:31  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:20:32  *** ChanServ sets mode: +o amstan
+2011-06-21T13:21:27  <george1914> Rabidus:   i get   eg   "INFO: george_f got eliminated !"   and then python does not finish ...   might stop you from running bot again ?
+2011-06-21T13:21:40  <Rabidus> yeah, same on me
+2011-06-21T13:21:53  <mcstar> i think those people who still use starter bots, somehow hope that their bots will become self-aware and the wouldnt have to code a thing
+2011-06-21T13:22:04  <mcstar> y
+2011-06-21T13:22:22  <berak> george1914: changed that, so that the bot doesn't wait till game finished anymore
+2011-06-21T13:22:34  <george1914> ah, i see your submission
+2011-06-21T13:22:53  <george1914> berak: can i ask you about the game engine?
+2011-06-21T13:23:01  <Rabidus> now it only gives me 'connected'...
+2011-06-21T13:23:08  <berak> shure
+2011-06-21T13:23:22  <george1914> i am thinking that it does not report water on turn 1  (ie first turn)
+2011-06-21T13:23:28  <george1914> only food and ants
+2011-06-21T13:23:44  <Rabidus> whoo, it works now
+2011-06-21T13:23:56  <berak> i've seen some missing water, too, in different turns
+2011-06-21T13:24:14  <berak> no idea yet, where that comes from
+2011-06-21T13:24:14  <george1914> it think this from looking at my bot's python inputs   (does not mention water on turn 1, even though it is there)
+2011-06-21T13:24:34  <berak> yes.
+2011-06-21T13:24:49  <george1914> ok, as long as you know about it  :)
+2011-06-21T13:25:26  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Client Quit)
+2011-06-21T13:26:30  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:26:30  *** ChanServ sets mode: +o amstan
+2011-06-21T13:26:34  <berak> it might have been due to that '\r', '\r\n' '\n' thing, maybe the lines werent properly split, so that ants.py did not see all the ants/orders
+2011-06-21T13:27:03  <berak> hope, that gets better now.
+2011-06-21T13:28:37  <george1914> hm,  but on turn 1 the Bots have sent no orders, so it is the server side that must be wrong,   or else the server map info is going missing in  tcpclient.py
+2011-06-21T13:29:08  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Client Quit)
+2011-06-21T13:31:02  <berak> stupid thing is that it does not happen all the time, not to all bots, i can see it is wrong, but no pattern there
+2011-06-21T13:31:48  <george1914> possibly windows vs linux thing again?  (like the \n)  ?
+2011-06-21T13:31:58  <george1914> i am using linux
+2011-06-21T13:32:22  <berak> happens sometimes whith playgame.py, too, but less often
+2011-06-21T13:34:58  <McLeopold> berak: is the tcp based on my repo, or something new?
+2011-06-21T13:35:30  <george1914> really?  i hadnt noticed that in playgame.py - though likely i havent watched enough games closely ...
+2011-06-21T13:35:38  <berak> McLeopold: hi, shure based on yours.
+2011-06-21T13:35:52  <McLeopold> cool, is it on github?
+2011-06-21T13:36:03  <berak> forked
+2011-06-21T13:36:06  <george1914> https://github.com/berak/TCPServer
+2011-06-21T13:36:36  <berak> ha! found a game, where playgame does it, too!
+2011-06-21T13:36:51  <george1914> interesting
+2011-06-21T13:39:22  <McLeopold> wow, you forked it, then just deleted everything :)
+2011-06-21T13:40:34  <smiley1983> In the game running right now on TCP, my bot can't see any water but it's being blocked by something invisible to the south on every turn :)
+2011-06-21T13:42:38  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:42:38  *** ChanServ sets mode: +o amstan
+2011-06-21T13:42:45  <berak> McLeopold: and later put almost everything back in again
+2011-06-21T13:43:15  <berak> sans sandboxes & engine
+2011-06-21T13:44:30  <george1914> smiley1983: thanks for that - good to know i wasnt the only one seeing mirages (or non-mirages)
+2011-06-21T13:44:49  <berak> http://pastebin.com/bWrvTicN
+2011-06-21T13:45:43  <mcstar> do any of you know nc?
+2011-06-21T13:45:49  <berak> shure makes a difference, if you get to see every warning
+2011-06-21T13:46:07  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Client Quit)
+2011-06-21T13:46:38  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:46:38  *** ChanServ sets mode: +o amstan
+2011-06-21T13:46:41  <mcstar> cause its the simplest was to redirect stdout to a socket and fly it through th einternet
+2011-06-21T13:46:47  <mcstar> was->way
+2011-06-21T13:47:15  <berak> netcat ?
+2011-06-21T13:47:18  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-06-21T13:47:19  <mcstar> yes
+2011-06-21T13:47:25  *** okay is now known as okayzed
+2011-06-21T13:47:34  <mcstar> i mean isnt it easier to add a bit of code to the existing engine?
+2011-06-21T13:47:42  <mcstar> than to use a rewrite?
+2011-06-21T13:49:32  <berak> i couldn't imagine how to do it with those sandboxes, given that the engine can't "create" a bot in this tcp situation, but have
+2011-06-21T13:49:49  <berak> to wait for a client connecting
+2011-06-21T13:50:02  <mcstar> the sandbox is not used by default i think
+2011-06-21T13:50:08  <smiley1983> george1914: yes, I was at first thinking "just wait, surely my bot is checking whether moves are blocked or not", then I saw your message and was also glad it wasn't just me :)
+2011-06-21T13:50:26  <smiley1983> berak: the \n vs \r\n does seem to be solved (at least for my bot)
+2011-06-21T13:50:35  <smiley1983> which uses \n
+2011-06-21T13:50:54  <mcstar> berak: so the sandbox is definitely not an issue, and consider that that engine is more or less perfectly debugged
+2011-06-21T13:51:36  <mcstar> but McLeopold is here and could share his expert opinion on this ....
+2011-06-21T13:51:56  <smiley1983> by the way, thanks again for doing the work to get this up and running :)
+2011-06-21T13:52:01  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-06-21T13:53:12  <McLeopold> you could write a sandbox class that does the tcp work, then you can use the same engine
+2011-06-21T13:53:28  <berak> mcstar, engine can't start a tcp game at will, think of it, you have to get the socket connetions int it somehow
+2011-06-21T13:53:38  <mcstar> see berak? now you only have to type a bit
+2011-06-21T13:53:55  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Quit: Konversation terminated!)
+2011-06-21T13:54:10  <mcstar> McLeopold: the sandbox handles the redirection entirely?
+2011-06-21T13:54:10  <berak> McLeopold, i didn't see a way to do that.
+2011-06-21T13:54:40  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:54:40  *** ChanServ sets mode: +o amstan
+2011-06-21T13:54:41  <mcstar> im not familiar with that architecture
+2011-06-21T13:57:35  <McLeopold> The engine calls functions on the sandbox class, pause, resume, kill, write, read, etc.  You just need a class to implement those functions.
+2011-06-21T13:57:54  <McLeopold> The class itself can then talk to the tcp socket
+2011-06-21T13:58:09  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Client Quit)
+2011-06-21T13:58:25  <McLeopold> The engine.py would need to be modified to create the tcp class instead, but I think that's it
+2011-06-21T13:58:42  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T13:58:42  *** ChanServ sets mode: +o amstan
+2011-06-21T14:00:23  <berak> hmm.yes
+2011-06-21T14:00:52  *** sigh <sigh!~sigh@nat/google/x-hyapzzlcdxrrgsjy> has joined #aichallenge
+2011-06-21T14:00:52  <berak> import tcpbox as Sandbox
+2011-06-21T14:00:54  <McLeopold> so, the work done in playgame inside the rounds loop would still need to be done somewhere, when you have enough tcp connections for a game
+2011-06-21T14:01:32  <McLeopold> What we should do is make the engine accept a list of classes instead of bot commands
+2011-06-21T14:01:41  *** carlop <carlop!~chatzilla@2-227-10-134.ip183.fastwebnet.it> has quit IRC (Ping timeout: 240 seconds)
+2011-06-21T14:01:49  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-06-21T14:01:54  <McLeopold> Then you wouldn't even need to modify it
+2011-06-21T14:02:09  <berak> again ?
+2011-06-21T14:02:39  <McLeopold> right there https://github.com/aichallenge/aichallenge/blob/epsilon/worker/engine.py#L79
+2011-06-21T14:02:41  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Client Quit)
+2011-06-21T14:03:02  <McLeopold> if the sandboxes were already created and just passed into the engine, that would be nicer
+2011-06-21T14:03:24  <McLeopold> then you can create any type of sandbox you want, and pass it to the engine
+2011-06-21T14:03:36  <berak> yup, definitely, that was one of the reasons
+2011-06-21T14:03:42  *** amstan <amstan!~alex@142.222.224.30> has joined #aichallenge
+2011-06-21T14:03:42  *** ChanServ sets mode: +o amstan
+2011-06-21T14:03:52  <McLeopold> amstan: wtf?
+2011-06-21T14:04:32  <berak> pass al ist of already cerated sandboxes to run_game, instead of names
+2011-06-21T14:04:32  *** sigh <sigh!~sigh@nat/google/x-hyapzzlcdxrrgsjy> has quit IRC (Client Quit)
+2011-06-21T14:04:37  <amstan> McLeopold: wha?
+2011-06-21T14:04:51  <McLeopold> what's with the constant reconnections?
+2011-06-21T14:05:01  <amstan> sorry about that, i'm at school
+2011-06-21T14:05:06  <amstan> sucky internets
+2011-06-21T14:05:09  <McLeopold> ah
+2011-06-21T14:05:27  <amstan> McLeopold: have you heard about 10 july?
+2011-06-21T14:05:53  *** choas <choas!~lars@p578F6E65.dip.t-dialin.net> has joined #aichallenge
+2011-06-21T14:06:23  *** amstan <amstan!~alex@142.222.224.30> has quit IRC (Client Quit)
+2011-06-21T14:15:01  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-olovkebxsvglsddm> has joined #aichallenge
+2011-06-21T14:17:40  *** bhasker <bhasker!~bhasker@nat/yahoo/x-qemsdrychqyjjdup> has quit IRC (Ping timeout: 260 seconds)
+2011-06-21T14:56:58  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-06-21T15:01:05  *** okayzed is now known as okay
+2011-06-21T15:03:10  *** nux67 <nux67!4f58cc94@gateway/web/freenode/ip.79.88.204.148> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T15:11:41  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-06-21T15:12:14  *** george1914_ <george1914_!519b30ca@gateway/web/freenode/ip.81.155.48.202> has joined #aichallenge
+2011-06-21T15:13:40  <McLeopold> @later tell amstan I have not heard anything specific about July 10th.
+2011-06-21T15:13:40  <contestbot> McLeopold: I come to serve.
+2011-06-21T15:14:58  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has joined #aichallenge
+2011-06-21T15:15:05  <GreenTea> Hi
+2011-06-21T15:15:29  <GreenTea> I want to tell you about a bug in engine.py
+2011-06-21T15:15:30  <_flag> Is anyone else having problems loading the beta website?
+2011-06-21T15:15:43  <berak> http://www.downforeveryoneorjustme.com/http://aichallengebeta.hypertriangle.com
+2011-06-21T15:16:42  <_flag> Okay, just checking :)
+2011-06-21T15:17:11  <GreenTea> if  --fill command is specified
+2011-06-21T15:18:25  <GreenTea> and for example 3 th bot write something to syserr stream then we got
+2011-06-21T15:18:29  <GreenTea> Traceback (most recent call last):   File "../worker\engine.py", line 160, in run_game     if error_logs and error_logs[b]: IndexError: list index out of range
+2011-06-21T15:19:03  <GreenTea> in logs directory I can see 3 log files
+2011-06-21T15:19:25  <GreenTea> however bots on map are more than 3
+2011-06-21T15:19:55  <GreenTea> so looks like scrit don't create error log files for filled bots
+2011-06-21T15:20:00  <GreenTea> * script
+2011-06-21T15:22:48  *** olexs1 <olexs1!~Leviathan@drms-590ed6dc.pool.mediaWays.net> has joined #aichallenge
+2011-06-21T15:23:22  *** okay is now known as okayzed
+2011-06-21T15:25:51  *** olexs <olexs!~Leviathan@drms-4d0157e1.pool.mediaWays.net> has quit IRC (Ping timeout: 276 seconds)
+2011-06-21T15:27:25  *** Accout <Accout!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-21T15:32:05  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-06-21T15:39:46  *** amstan_ <amstan_!~amstan@69-196-143-145.dsl.teksavvy.com> has joined #aichallenge
+2011-06-21T15:39:46  *** ChanServ sets mode: +o amstan_
+2011-06-21T15:40:48  *** Accout <Accout!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-21T15:43:19  *** sigh <sigh!~sigh@nat/google/x-tdfgqxgscstfzzxg> has joined #aichallenge
+2011-06-21T15:44:14  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T15:48:49  <CIA-48> aichallenge: McLeopold epsilon * r9b2c5c8 / (sql/0_schema.sql sql/2_generate_matchup.sql website/sql.php): improvements to matchup generator, added delete flag to matchup tables for debugging - http://bit.ly/kHg3gd
+2011-06-21T15:49:02  *** Alex__ <Alex__!5bcb3f1a@gateway/web/freenode/ip.91.203.63.26> has joined #aichallenge
+2011-06-21T15:52:33  <CIA-48> aichallenge: McLeopold epsilon * r147734f / ants/playgame.py : fix for not logging filled bots io - http://bit.ly/l1J9XU
+2011-06-21T15:53:04  <McLeopold> @later tell GreenTea I've fixed the bot io error using the --fill switch, pull from the repo again
+2011-06-21T15:53:04  <contestbot> McLeopold: Ready to serve.
+2011-06-21T16:00:15  *** Dlayne <Dlayne!qw@dynamicip-94-181-233-239.pppoe.kirov.ertelecom.ru> has joined #aichallenge
+2011-06-21T16:00:39  *** Dlayne is now known as InsaneMalkavian
+2011-06-21T16:07:40  *** bhasker <bhasker!~bhasker@nat/yahoo/x-evtowkqfrskmgzyo> has joined #aichallenge
+2011-06-21T16:09:13  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-olovkebxsvglsddm> has quit IRC (Ping timeout: 244 seconds)
+2011-06-21T16:13:12  *** Alex__ <Alex__!5bcb3f1a@gateway/web/freenode/ip.91.203.63.26> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T16:25:10  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-06-21T16:25:28  *** sigh <sigh!~sigh@nat/google/x-tdsrneybvboybujp> has joined #aichallenge
+2011-06-21T16:38:35  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has quit IRC (Remote host closed the connection)
+2011-06-21T16:39:32  *** berak <berak!~chatzilla@89.204.137.192> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-06-21T16:51:41  *** InsaneMalkavian <InsaneMalkavian!qw@dynamicip-94-181-233-239.pppoe.kirov.ertelecom.ru> has left #aichallenge
+2011-06-21T17:00:17  *** locutus2 <locutus2!~locutus2@89.204.137.70> has joined #aichallenge
+2011-06-21T17:05:32  *** jmpespxoreax <jmpespxoreax!~nosuchuse@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-06-21T17:06:25  <CIA-48> aichallenge: McLeopold epsilon * rf3e80cf / (ants/ants.py worker/engine.py): added ability to stop games early - http://bit.ly/kacjan
+2011-06-21T17:07:13  <McLeopold> @later tell janzert please pull the code for the current worker, games now end early
+2011-06-21T17:07:13  <contestbot> McLeopold: I think that worked...
+2011-06-21T17:07:46  *** anon23434 <anon23434!b8b79c0a@gateway/web/freenode/ip.184.183.156.10> has joined #aichallenge
+2011-06-21T17:10:39  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 4.0.1/20110518052719])
+2011-06-21T17:25:18  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-06-21T17:33:57  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 244 seconds)
+2011-06-21T17:42:40  *** george1914_ <george1914_!519b30ca@gateway/web/freenode/ip.81.155.48.202> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T17:48:41  <mcstar> Good night, Zion. Sweet dreams.
+2011-06-21T17:48:45  *** mcstar <mcstar!~mcstar@adsl-89-132-11-97.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-21T17:49:26  *** carlop <carlop!~chatzilla@2-227-10-134.ip183.fastwebnet.it> has joined #aichallenge
+2011-06-21T17:50:52  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-21T17:55:24  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-21T17:55:47  <Zaphus> Ok, who broke the matchup algorithm ? :-)
+2011-06-21T17:56:07  <sigh> me!
+2011-06-21T17:56:40  <Zaphus> nicely done, every game since midnight has been the same (for me) :-)
+2011-06-21T17:56:51  <sigh> it wasn't me... don't hurt me
+2011-06-21T17:57:44  *** bhasker <bhasker!~bhasker@nat/yahoo/x-evtowkqfrskmgzyo> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T17:58:42  <Zaphus> on the plus side, I've won some of them :-)
+2011-06-21T17:59:11  <Zaphus> McLeopold:  I think you broke the matchup generator
+2011-06-21T17:59:33  <sigh> if every game has been the same, how come you only won some of them? :P
+2011-06-21T18:00:09  <Zaphus> the same set of bots and map, doesnt mean it ends the same every time  (I have a random seed in my bot to mix things up a bit)
+2011-06-21T18:00:36  <Zaphus> it's possible food and starting positions are mixed too, havent checked
+2011-06-21T18:00:55  <sigh> ah, so it wans't the same game
+2011-06-21T18:01:40  <Zaphus> no, technically it was the same matchup - and McLeopold is the culprit from what I can see :-)
+2011-06-21T18:02:01  <sigh> yes, that seems likely
+2011-06-21T18:03:20  <Zaphus> woah, it's worse than that... those are the ONLY games being played by the server from what I see...  top 5 playing over and over again  http://aichallengebeta.hypertriangle.com/profile.php?user=139   nobody else is getting a game
+2011-06-21T18:08:34  *** carlop <carlop!~chatzilla@2-227-10-134.ip183.fastwebnet.it> has quit IRC (Ping timeout: 244 seconds)
+2011-06-21T18:10:46  <_flag> Zaphus: I wonder if someone re-uploads their bot will it break the cycle
+2011-06-21T18:10:59  <Zaphus> go for it :-)
+2011-06-21T18:12:47  <_flag> Zaphus: uploaded
+2011-06-21T18:18:05  *** bhasker <bhasker!~bhasker@nat/yahoo/x-afcdsvgcppwnhbja> has joined #aichallenge
+2011-06-21T18:25:35  *** locutus2 <locutus2!~locutus2@89.204.137.70> has quit IRC (Ping timeout: 260 seconds)
+2011-06-21T18:28:11  <Zaphus> _flag:  it looks like it is still running your old bot ?  thats not good !
+2011-06-21T18:28:23  <_flag> Zaphus: No it's not :(
+2011-06-21T18:28:39  <Zaphus> is anyone here that organises this thing ?
+2011-06-21T18:28:48  <Zaphus> j3camero : you around ?
+2011-06-21T18:29:31  <_flag> You're probably better off trying janzert, amstan or McLeopold -- j3camero is rarely around
+2011-06-21T18:29:41  <Zaphus> janzert : ping - are you here ?
+2011-06-21T18:29:48  <Zaphus> amstan_ : ping - are you here ?
+2011-06-21T18:29:54  <amstan_> yes?
+2011-06-21T18:30:08  <Zaphus> the matchup algorithm has been majorly broken
+2011-06-21T18:30:18  <_flag> Every single game being played on the server currently is the same
+2011-06-21T18:30:28  <_flag> It's just the top 5 bots repeatedly playing each other on one map
+2011-06-21T18:30:32  <Zaphus> seems to be McLeopolds checkin a couple of hours ago
+2011-06-21T18:30:34  <amstan_> do you know since when?
+2011-06-21T18:30:40  <Zaphus> midnight approx (server time)
+2011-06-21T18:30:51  <amstan_> it would be nice if i had a commit number
+2011-06-21T18:30:53  <Zaphus> http://aichallengebeta.hypertriangle.com/profile.php?user=139  - look at around midnight for when the pattern happens
+2011-06-21T18:31:35  <Zaphus> there have been 4 commits - it is probably this:  bbba69144e6227753254   and/or this  9b2c5c8063f776f35c6c
+2011-06-21T18:31:51  <amstan_> is that the buggy one? or is it the one after?
+2011-06-21T18:31:54  <amstan_> i need the last working one
+2011-06-21T18:32:00  <Zaphus> how would I know ?
+2011-06-21T18:32:21  <_flag> Check to see if he changed the matchup sql or something like that
+2011-06-21T18:32:42  <Zaphus> both those changes are to that file
+2011-06-21T18:32:43  <amstan_> wait, it's just a matchup problem?
+2011-06-21T18:32:58  <amstan_> then i only have to worry about the server
+2011-06-21T18:32:58  <Zaphus> "just"  :-)
+2011-06-21T18:33:15  <_flag> There is only 1 match being played right now; over and over again
+2011-06-21T18:33:26  <Zaphus> yeah, sorry, I thought we said it was the server
+2011-06-21T18:33:28  <amstan_> ok, checking out ff6acca26d7366fddbe67d9ab6398996b1939514
+2011-06-21T18:34:14  *** choas <choas!~lars@p578F6E65.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-06-21T18:35:16  <amstan_> Zaphus: k, watch out for new games
+2011-06-21T18:35:26  <McLeopold> oh crap
+2011-06-21T18:35:57  <amstan_> ;)
+2011-06-21T18:36:44  <CIA-48> aichallenge: McLeopold epsilon * rb949628 / website/sql.php : fix get next matchup code - http://bit.ly/kTg05N
+2011-06-21T18:36:53  <Zaphus> McLeopold:  but thanks for all the games, my bot is getting a good workout :-)
+2011-06-21T18:37:15  <amstan_> Zaphus: i could resubmit you, lol
+2011-06-21T18:37:39  <Zaphus> amstan_  flag resubmitted, it kept playing his old submission !?!
+2011-06-21T18:37:39  <_flag> I already resubmitted but the server kept playing my old bot
+2011-06-21T18:37:51  <amstan_> Zaphus: i mean after this
+2011-06-21T18:38:07  <Zaphus> amstan:  damn :-)
+2011-06-21T18:38:39  <Zaphus> amstan_  good thing about TrueSkill is it just reacts to the last game, so it doesnt take long to recover from odd behaviour
+2011-06-21T18:39:14  <_flag> Well the sigma is relatively low now, so it still might take awhile
+2011-06-21T18:39:35  <Zaphus> 30830 is still the same match, but it may have started before you did the change
+2011-06-21T18:40:17  <McLeopold> I'm watching the database table, a a new matchup has been created.
+2011-06-21T18:40:31  <amstan_> 30830 is timestamped at 2:38
+2011-06-21T18:40:34  <amstan_> it's 2:40 now
+2011-06-21T18:40:56  <McLeopold> matchup id 78201 got handed out
+2011-06-21T18:42:42  <Zaphus> 30831 is different - yay !   now to make sure the next one is different again :-)
+2011-06-21T18:42:44  <_flag> New game!
+2011-06-21T18:43:01  *** hacklash <hacklash!80bb6102@gateway/web/freenode/ip.128.187.97.2> has joined #aichallenge
+2011-06-21T18:43:15  <_flag> 30832 is different too
+2011-06-21T18:43:30  <McLeopold> amstan_: how do I undo the weird stuck on a version thing?
+2011-06-21T18:43:34  <Zaphus> yep, looking good.   and by not being those 5 the games are fast again :-)
+2011-06-21T18:43:41  <amstan_> McLeopold: what?
+2011-06-21T18:43:59  <amstan_> McLeopold: you want to go back to head?
+2011-06-21T18:43:59  <McLeopold> You are not currently on a branch, so I cannot use any 'branch.<branchname>.merge' in your configuration file. Please specify which remote branch you want to use on the command line and try again (e.g. 'git pull <repository> <refspec>'). See git-pull(1) for details.
+2011-06-21T18:44:00  <Zaphus> _flag: v11 of yours has had 2 games now since the change
+2011-06-21T18:44:19  <amstan_> well, i checked out
+2011-06-21T18:44:29  <amstan_> to do mostly anything, you have to go back to head first
+2011-06-21T18:44:31  <McLeopold> go back to head
+2011-06-21T18:44:31  <_flag> Zaphus: Yup, I'm following it closely
+2011-06-21T18:44:33  <amstan_> git checkout master
+2011-06-21T18:44:37  <amstan_> and then you can pull
+2011-06-21T18:44:43  <amstan_> sorry, checkout epsilon
+2011-06-21T18:45:24  <McLeopold> okay, hopefully we are back now
+2011-06-21T18:46:10  <McLeopold> amstan_: do you have access to the worker?
+2011-06-21T18:46:18  <amstan_> the one worker, yes
+2011-06-21T18:46:24  <McLeopold> is it current?
+2011-06-21T18:46:36  <amstan_> hold on, it'll take a while
+2011-06-21T18:46:36  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Quit: Page closed)
+2011-06-21T18:46:40  <amstan_> McLeopold: can you get me its ip?
+2011-06-21T18:46:51  <amstan_> it's in the db
+2011-06-21T18:46:56  <McLeopold>  50.16.64.166
+2011-06-21T18:48:49  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has joined #aichallenge
+2011-06-21T18:49:28  <amstan_> well.. i can't figure this out
+2011-06-21T18:49:46  <amstan_> i have a private key for the host, how do i give it to ssh so it lets me in
+2011-06-21T18:50:15  <McLeopold> it goes in your .ssh dir
+2011-06-21T18:51:13  <amstan_> alex@alex-desktop:~$ head -n 1 .ssh/ai-contest_worker
+2011-06-21T18:51:14  <amstan_> -----BEGIN RSA PRIVATE KEY-----
+2011-06-21T18:51:16  <amstan_> yes, and?
+2011-06-21T18:52:26  <McLeopold> uh, I though you were the expert?
+2011-06-21T18:52:34  <amstan_> i never said that, lol
+2011-06-21T18:53:17  <McLeopold> call it id_rsa
+2011-06-21T18:53:28  <McLeopold> so ~/.ssh/id_rsa
+2011-06-21T18:53:48  <amstan_> no dice
+2011-06-21T18:53:50  <McLeopold> on the server side you need ~/.ssh/authorized_keys2
+2011-06-21T18:54:25  <amstan_> on the server side i don't have access yet, that's the problem
+2011-06-21T18:54:57  <McLeopold> janzert had to flip a switch for passwords to work last time
+2011-06-21T18:56:11  *** sigh <sigh!~sigh@nat/google/x-tdsrneybvboybujp> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-21T19:11:02  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-21T19:14:54  *** sigh <sigh!~sigh@nat/google/x-mbvbupxjsathqykk> has joined #aichallenge
+2011-06-21T19:14:57  <hacklash> have you decided yet how much variety there will be in maps (corridors vs open spaces)?
+2011-06-21T19:18:19  *** sigh <sigh!~sigh@nat/google/x-mbvbupxjsathqykk> has quit IRC (Client Quit)
+2011-06-21T19:18:54  <hacklash> also, is the site down for a reason?
+2011-06-21T19:19:18  <McLeopold> hacklash: we want as much variety as possible
+2011-06-21T19:19:27  <McLeopold> the site is not down for any official reason
+2011-06-21T19:19:39  <McLeopold> @beta
+2011-06-21T19:19:40  <contestbot> McLeopold: beta could be http://aichallengebeta.hypertriangle.com/.
+2011-06-21T19:19:45  <McLeopold> go there for now
+2011-06-21T19:19:52  <hacklash> ok
+2011-06-21T19:20:03  <hacklash> does posting bots on the server work?
+2011-06-21T19:20:05  <amstan_> contestbot: seen demerzel
+2011-06-21T19:20:05  <contestbot> amstan_: demerzel was last seen in #aichallenge 3 weeks, 4 days, 8 hours, 52 minutes, and 22 seconds ago: <demerzel> haha
+2011-06-21T19:20:13  <amstan_> hacklash: yes
+2011-06-21T19:20:18  <McLeopold> hacklash: yes, but you code won't be secure
+2011-06-21T19:20:40  <hacklash> the bytecode?
+2011-06-21T19:21:01  <hacklash> or do you submit the actual source code
+2011-06-21T19:21:04  <McLeopold> what you upload
+2011-06-21T19:21:08  <hacklash> and it gets sompiled on the server
+2011-06-21T19:21:11  <McLeopold> which should be source
+2011-06-21T19:21:27  <hacklash> ok
+2011-06-21T19:22:17  <hacklash> does anyone have any thoughts about the haskell starter kit? I just noticed it ...
+2011-06-21T19:22:30  <amstan_> what about it?
+2011-06-21T19:24:26  <CIA-48> aichallenge: McLeopold epsilon * rb03d543 / (6 files in 4 dirs): added game length to replay and database - http://bit.ly/lzCdaq
+2011-06-21T19:24:52  <hacklash> someone was going to dubmit one but didn't because they didn't feel it was good enough
+2011-06-21T19:24:57  <hacklash> *submit
+2011-06-21T19:25:21  <hacklash> amstan: you committed it, do you like using it?
+2011-06-21T19:25:37  <amstan_> hacklash: i did?
+2011-06-21T19:25:58  <McLeopold> I like line 42
+2011-06-21T19:26:12  <amstan_> oh, right, i added the submodule
+2011-06-21T19:26:13  <_flag> Is the server even playing games? The last game appears to be from 20 minutes ago
+2011-06-21T19:26:16  <hacklash> it has your name next to the haskell folder
+2011-06-21T19:26:18  <amstan_> i didn't make it though
+2011-06-21T19:26:22  <hacklash> well yeah
+2011-06-21T19:26:28  <amstan_> click it and you'll go the the repo
+2011-06-21T19:26:31  <hacklash> but you added it so i thought you might haved used it
+2011-06-21T19:26:41  <amstan_> nah, all i did was pack it and test if it worked
+2011-06-21T19:26:46  <hacklash> ok
+2011-06-21T19:27:06  <hacklash> i'm trying to decide between haskell and scala
+2011-06-21T19:27:09  <McLeopold> _flag: yes, apparently the game took 20 minutes
+2011-06-21T19:27:12  *** Evious is now known as Bearaware
+2011-06-21T19:27:17  <hacklash> i guess i'll have to try them both
+2011-06-21T19:29:26  <McLeopold> _flag: something weird is going on with the games...
+2011-06-21T19:29:31  <hacklash> oh, do any languages have the code to track how long until the end of the turn?
+2011-06-21T19:29:43  <McLeopold> most should
+2011-06-21T19:29:47  <McLeopold> it's in the spec
+2011-06-21T19:29:51  <_flag> McLeopold: did you revert it to whaat i
+2011-06-21T19:30:05  <hacklash> ok, cool that's new from when i looked around last
+2011-06-21T19:30:07  <_flag> what it was previuosly or add something new?
+2011-06-21T19:30:23  <hacklash> thanks everybody
+2011-06-21T19:30:26  *** hacklash <hacklash!80bb6102@gateway/web/freenode/ip.128.187.97.2> has quit IRC (Quit: Page closed)
+2011-06-21T19:30:31  <McLeopold> _flag: I'm watching the database
+2011-06-21T19:30:31  <_flag> s/previuosly/previously
+2011-06-21T19:30:58  <_flag> I mean after the problem with the repeated game with the top 5 players
+2011-06-21T19:31:11  <McLeopold> yeah, we are past that
+2011-06-21T19:31:24  <McLeopold> but now it looks like it's handing out the last matchup again
+2011-06-21T19:31:34  *** jmcarthur <jmcarthur!~jake@pool-71-183-197-52.nycmny.fios.verizon.net> has joined #aichallenge
+2011-06-21T19:32:22  *** bhasker <bhasker!~bhasker@nat/yahoo/x-afcdsvgcppwnhbja> has quit IRC (Ping timeout: 252 seconds)
+2011-06-21T19:34:01  <CIA-48> aichallenge: McLeopold epsilon * r7119a4e / website/api_game_result.php : Bug with saving game length. - http://bit.ly/l2radh
+2011-06-21T19:36:30  <CIA-48> aichallenge: McLeopold epsilon * r74096b2 / (website/api_get_task.php website/sql.php): prevent worker from getting same task - http://bit.ly/kJ62xe
+2011-06-21T19:37:49  <McLeopold> @later tell janzert worker is down until we can get access
+2011-06-21T19:37:49  <contestbot> McLeopold: Ready to serve.
+2011-06-21T19:47:01  <McLeopold> amstan_: do you know of a special way to get ahold of janzert?
+2011-06-21T19:48:35  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-06-21T19:48:37  *** Apophis_ <Apophis_!~apophis@217.162.217.10> has joined #aichallenge
+2011-06-21T19:49:59  <amstan_> i might..
+2011-06-21T19:51:42  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 276 seconds)
+2011-06-21T19:52:37  <McLeopold> amstan_: first game with cutoff http://aichallengebeta.hypertriangle.com/visualizer.php?game=30860
+2011-06-21T19:52:55  <McLeopold> The game ended early do to the bots sucking
+2011-06-21T19:57:24  <McLeopold> Second game ending early because the food beat all the bots. http://aichallengebeta.hypertriangle.com/visualizer.php?game=30862
+2011-06-21T20:06:17  *** amstan_ <amstan_!~amstan@69-196-143-145.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-06-21T20:06:51  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has joined #aichallenge
+2011-06-21T20:06:52  *** ChanServ sets mode: +o amstan
+2011-06-21T20:13:31  <McLeopold> @later tell janzert it appears submission 1223 can cause the worker to hang when compiling
+2011-06-21T20:13:31  <contestbot> McLeopold: OK
+2011-06-21T20:15:41  <janzert> here
+2011-06-21T20:15:48  <McLeopold> yeah \o/
+2011-06-21T20:16:00  *** sigh <sigh!~sigh@nat/google/x-fvsqqnkrawaqzuww> has joined #aichallenge
+2011-06-21T20:16:13  <McLeopold> http://pastebin.com/LrZfT2Dq
+2011-06-21T20:16:19  <janzert> we need new version of code on the worker?
+2011-06-21T20:16:26  <McLeopold> that's the traceback for the compile that hung
+2011-06-21T20:16:30  <McLeopold> janzert: yes
+2011-06-21T20:16:37  <McLeopold> amstan couldn't log in
+2011-06-21T20:16:44  <janzert> figure out the cause yet?
+2011-06-21T20:16:56  <McLeopold> I made changes
+2011-06-21T20:17:19  <amstan> janzert: i tried ssh ip -l ubuntu -i .ssh/ai-contest_worker
+2011-06-21T20:17:40  <janzert> that traceback looks like it is just waiting for a compiler to return or timeout
+2011-06-21T20:17:49  <McLeopold> The worker needs to add 'game_length' to the replay now.  I didn't want to code api_game_result to check if it was there or not, so I just turned it off.
+2011-06-21T20:18:02  <McLeopold> janzert: it was running about 5 minutes
+2011-06-21T20:18:52  <janzert> amstan: command line I use is something like ssh -i ~/ai-contest-worker ubuntu@ip.address.here
+2011-06-21T20:19:04  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-21T20:19:20  <amstan> janzert: yes, host -l username is the same as username@host
+2011-06-21T20:21:31  *** Apophis_ <Apophis_!~apophis@217.162.217.10> has quit IRC (Ping timeout: 240 seconds)
+2011-06-21T20:21:52  <janzert> ahh, game_length will be nice in the replay instead of having to do len(scores...
+2011-06-21T20:22:10  <McLeopold> plus it's in the database now, so we can get some good stats
+2011-06-21T20:22:32  <janzert> I actually just downloaded the last 10000 games yesterday and parsed the information out
+2011-06-21T20:22:48  <McLeopold> oh, can you create me an update statement for the server then?
+2011-06-21T20:23:34  <McLeopold> also, can you do a git pull in a cron job?
+2011-06-21T20:23:58  <janzert> workers don't have a full git repository
+2011-06-21T20:24:44  <McLeopold> should we create an update task?
+2011-06-21T20:24:46  <janzert> and I'm stating to think we don't actually have the key for the current workers
+2011-06-21T20:24:59  <janzert> might need to just terminate bring up some new ones
+2011-06-21T20:25:03  <janzert> still looking though
+2011-06-21T20:25:26  <antimatroid> lol what happened to the matching algorithm?
+2011-06-21T20:25:36  <antimatroid> it seems to want to pair me to people really close in rankings
+2011-06-21T20:25:44  <antimatroid> also my bot is doing awfully :P
+2011-06-21T20:26:23  <antimatroid> http://aichallengebeta.hypertriangle.com/profile.php?user=139
+2011-06-21T20:26:27  <antimatroid> lol look at the map?
+2011-06-21T20:27:03  <antimatroid> all games are on symmetric_22.map lately?
+2011-06-21T20:27:31  <McLeopold> :(
+2011-06-21T20:27:54  <McLeopold> janzert: did you update the worker yet?
+2011-06-21T20:28:05  <antimatroid> interesting chance to look at how the same bots do on the same map
+2011-06-21T20:28:06  <janzert> I saw a message a bit ago that all the games were same map same players for the last hours
+2011-06-21T20:28:12  <antimatroid> although the food spawning changes
+2011-06-21T20:28:26  <janzert> McLeopold: not yet, we're going to have to just terminate and start fresh
+2011-06-21T20:28:44  <McLeopold> mind if I clear out the worker table?
+2011-06-21T20:29:07  <janzert> wait just a few minutes
+2011-06-21T20:30:13  <janzert> have you updated the worker archive on the beta server?
+2011-06-21T20:30:37  <antimatroid> oh, did anyone question j3camero about the website yesterday?
+2011-06-21T20:30:42  <antimatroid> i think we might have forgotten
+2011-06-21T20:30:47  <amstan> antimatroid: question?
+2011-06-21T20:30:47  <antimatroid> amstan: ^?
+2011-06-21T20:31:44  <amstan> antimatroid: what about the website?
+2011-06-21T20:31:47  <McLeopold> janzert: worker archive?
+2011-06-21T20:32:04  <antimatroid> amstan: have you been to ai-contest.com in the last day or so?
+2011-06-21T20:32:12  <amstan> antimatroid: oh.. that..
+2011-06-21T20:32:20  <janzert> McLeopold: the setup/create_worker_archive.py script
+2011-06-21T20:32:53  <janzert> after doing a git pull to get the new code on the beta server then run "./create_worker_archive.py ../website"
+2011-06-21T20:32:59  <janzert> to update the worker archive
+2011-06-21T20:33:02  <janzert> I'll do it now
+2011-06-21T20:33:08  <McLeopold> oh
+2011-06-21T20:33:23  <McLeopold> why do we need that?
+2011-06-21T20:33:24  <antimatroid> amstan: yeah...?
+2011-06-21T20:33:37  <amstan> antimatroid: we'll just get it up when we have the new server
+2011-06-21T20:33:38  <janzert> it creates the tarball that the worker gets it's code from
+2011-06-21T20:33:46  <McLeopold> why not just pull from git?
+2011-06-21T20:34:02  <janzert> so you know what your workers are running
+2011-06-21T20:34:24  <McLeopold> I'd prefer git over a tarball
+2011-06-21T20:34:25  <janzert> ok, terminating current workers now
+2011-06-21T20:34:50  <janzert> the tarball is a "git archive" command
+2011-06-21T20:35:13  <McLeopold> okay, i meant github over a tarball
+2011-06-21T20:35:42  <janzert> I'd rather we only pulled at known times from github
+2011-06-21T20:35:59  <McLeopold> we could create an update task that had the version guid
+2011-06-21T20:36:41  <McLeopold> Okay, all stop now, it works
+2011-06-21T20:36:52  <janzert> i.e. I really want all pulls from github to be manual human action ;)
+2011-06-21T20:37:19  * janzert tries to remember and find the right ec2 command line :P
+2011-06-21T20:38:34  <janzert> gah, it was the first command I recalled but missed seeing in the list of commands
+2011-06-21T20:39:28  <janzert> oh if you want to clear the worker table do it quick
+2011-06-21T20:39:32  <janzert> I forgot you wanted to
+2011-06-21T20:39:35  <McLeopold> already done
+2011-06-21T20:39:38  <janzert> ok
+2011-06-21T20:40:16  <McLeopold> I'm liking the game cutoff code.  Watch the next few games go through when the worker is up.
+2011-06-21T20:40:55  <janzert> great, did you see earlier where I gave the average game length?
+2011-06-21T20:41:01  <McLeopold> no
+2011-06-21T20:41:05  <janzert> it was 800 and something
+2011-06-21T20:41:32  <McLeopold> In my tests, the cutoff happened just above 1000 most often.
+2011-06-21T20:41:52  <McLeopold> Plus, we cut off games where bots don't gather food really early.
+2011-06-21T20:41:55  <janzert> I haven't started on a histogram or what the say 90th percentile is yet
+2011-06-21T20:41:59  <janzert> hope to do that tonight
+2011-06-21T20:42:18  <janzert> what are is the cutoff metric currently?
+2011-06-21T20:42:25  <McLeopold> With the cutoff code, I don't think we need to worry about game length.
+2011-06-21T20:42:53  <McLeopold> must hold 90% of population for 100 turns.  population includes food.  food can win :)
+2011-06-21T20:43:03  <janzert> heh
+2011-06-21T20:43:04  <janzert> ok
+2011-06-21T20:43:29  <janzert> I was worried that 90%/100 might be too aggressive but it will be a good test
+2011-06-21T20:43:35  <McLeopold> meaning if there is 90% more food than all other ants for 100 turns, the bots are declared stupid and we don't care to run the game
+2011-06-21T20:43:45  <janzert> :)
+2011-06-21T20:43:52  <janzert> fine with me
+2011-06-21T20:44:07  <McLeopold> with food in the population, it naturally makes the 90% harder to acheive
+2011-06-21T20:44:34  <McLeopold> In looking at the games, we could probably even lower it some.
+2011-06-21T20:46:55  <janzert> I take it you haven't looked into what is going on with pairing yet?
+2011-06-21T20:47:05  <McLeopold> I have
+2011-06-21T20:47:11  <McLeopold> It should be all fixed now.
+2011-06-21T20:47:13  <janzert> ahh, find the cause?
+2011-06-21T20:47:14  <janzert> ok
+2011-06-21T20:47:15  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-06-21T20:47:49  <janzert> mind if https://github.com/aichallenge/aichallenge/wiki/Occupied-battle-resolution-narrative goes into the top of your explanation page?
+2011-06-21T20:48:07  <McLeopold> It needs to go in somewhere.  I'm not sure if the top is good.
+2011-06-21T20:48:34  <janzert> I was thinking the narrative could lead into the slightly more technical explanation
+2011-06-21T20:48:35  <McLeopold> were we going to change the name to something else?
+2011-06-21T20:48:47  <janzert> it doesn't matter too much to me
+2011-06-21T20:49:10  <janzert> attention or distracted are the alternate candidates that sound best to me
+2011-06-21T20:50:28  <McLeopold> torrmented? engrossed?
+2011-06-21T20:52:58  <janzert> antimatroid: any thoughts? ^^
+2011-06-21T20:53:30  <janzert> https://github.com/aichallenge/aichallenge/wiki/Ants-occupied-battle-resolution-method is now the definitive guide :P
+2011-06-21T20:54:13  <janzert> we just need some not quite so deeply entrenched in it and with writing ability to fill it all out :/
+2011-06-21T20:54:51  <janzert> new workers are coming up now, should be running in about 8-10 minutes
+2011-06-21T20:54:58  <janzert> and I gotta run for an hour or so
+2011-06-21T20:55:17  <amstan> "although the details aren't completely known it involves much flailing of legs" XD
+2011-06-21T20:57:11  <antimatroid> janzert: i don't mind either way :)
+2011-06-21T21:05:06  <antimatroid> amstan: could a copy of the pw leaderboard stuff go up online somewhere before it all gets cleared
+2011-06-21T21:05:33  <amstan> antimatroid: i don't intend to loose that data, i'll try to get the whole site up somewhere
+2011-06-21T21:05:38  <amstan> i just need jeff to be more cooperative
+2011-06-21T21:05:43  <antimatroid> :) cheers
+2011-06-21T21:05:53  <amstan> same for tron and rps
+2011-06-21T21:09:31  <Mathnerd314> anyone looked at ICFP?
+2011-06-21T21:10:35  <antimatroid> talk to a1k0n_:
+2011-06-21T21:27:00  <McLeopold> antimatroid: can you paste your math latex into the wiki?
+2011-06-21T21:29:18  *** olexs1 <olexs1!~Leviathan@drms-590ed6dc.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-21T21:34:40  *** sigh <sigh!~sigh@nat/google/x-fvsqqnkrawaqzuww> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-21T21:38:20  <McLeopold> another game cutoff: http://aichallengebeta.hypertriangle.com/visualizer.php?game=30890
+2011-06-21T21:38:24  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-06-21T21:40:29  *** Sunhay_ is now known as Sunhay
+2011-06-21T21:43:31  *** filter <filter!admin@adsl-75-49-222-29.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-06-21T22:01:58  <_flag> The rankings don't appear to be updating
+2011-06-21T22:07:51  <janzert> hmm, yeah looks like the script isn't running
+2011-06-21T22:08:14  <janzert> amstan: are you familiar with how the manager script is being run on the server?
+2011-06-21T22:08:39  <amstan> janzert: ./manager -t -n 0 or something like that
+2011-06-21T22:08:45  <amstan> swap the t and n if it doesn't work
+2011-06-21T22:09:14  <janzert> I mean in a screen session somewhere I assume, I only see one for the worker though?
+2011-06-21T22:09:42  <amstan> you might want to try screen -r contest/worker
+2011-06-21T22:10:58  <janzert> found it
+2011-06-21T22:11:29  <janzert> manager is in one window of that session and worker in the other
+2011-06-21T22:11:46  <janzert> _flag: should be back to normal in 2 minutes
+2011-06-21T22:13:18  <janzert> amstan: should I look around and try to manually fix ai-contest.com again or do think jeff will get something through the panel soon?
+2011-06-21T22:13:50  *** sigh <sigh!~sigh@173-164-174-193-SFBA.hfc.comcastbusiness.net> has joined #aichallenge
+2011-06-21T22:16:36  <amstan> janzert: not sure
+2011-06-21T22:16:53  <janzert> ok, I'll hold off for now
+2011-06-21T22:17:19  <janzert> also did I see something that we need to get off the current beta server soon?
+2011-06-21T22:17:37  <amstan> janzert: well, i don't want to impose on demerzel
+2011-06-21T22:17:58  <janzert> I'm thinking I could bring up a small ec2 instance that would give us less cpu power but more memory than the current one, if we need to switch
+2011-06-21T22:18:33  <janzert> and it won't cost a whole month if we get to a permanent server in less time
+2011-06-21T22:18:54  <_flag> Were the new maps supposed to eliminate this blocking problem or is that just my imagination (fast-forwarward to the end)? http://aichallengebeta.hypertriangle.com/visualizer.php?game=30982
+2011-06-21T22:19:39  <janzert> _flag: hmm, I'm not sure. would have to ask antimatroid
+2011-06-21T22:31:01  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has quit IRC (Remote host closed the connection)
+2011-06-21T22:34:51  *** Accout <Accout!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Read error: Connection reset by peer)
+2011-06-21T22:41:04  *** Accout <Accout!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-21T22:43:40  <antimatroid-uni> _flag: I just generated a few more with the current generator
+2011-06-21T22:43:53  <antimatroid-uni> i have my last exam tomorrow then i'll look at maps properly again
+2011-06-21T22:54:57  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-06-21T22:55:58  *** filter <filter!admin@adsl-70-131-123-214.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-06-21T23:05:00  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 255 seconds)
+2011-06-21T23:14:55  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-06-21T23:26:39  *** okayzed is now known as okay
+2011-06-21T23:29:47  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Disconnected by services)
+2011-06-21T23:30:39  *** Mathnerd314_ <Mathnerd314_!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-06-21T23:31:37  *** Mathnerd314_ is now known as Mathnerd314

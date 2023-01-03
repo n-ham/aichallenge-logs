@@ -1,0 +1,728 @@
+2011-03-14T00:00:13  <McLeopold> and the engine just spawns food in the one part
+2011-03-14T00:00:13  <antimatroid> they must come up with some horrible hacks with game mechanics for actual retail games
+2011-03-14T00:00:28  <McLeopold> thinking it is spawning food for everyone, that can be unfair
+2011-03-14T00:00:33  <_flag> McLeopold: Then spawn it in all parts?
+2011-03-14T00:00:46  <McLeopold> yes :)
+2011-03-14T00:01:17  <_flag> Either I'm really confused, or you guys are over complicating things
+2011-03-14T00:01:32  <McLeopold> antimatroid: so, spawn one food for each section, pick one subsection from each section not touching, pick one free land space in each subsection
+2011-03-14T00:01:59  <McLeopold> layer appropriately for best results
+2011-03-14T00:02:31  <McLeopold> for each subsection choice, make sure each one gets an even distribution
+2011-03-14T00:02:47  <McLeopold> so there isn't one sub-section that got 5 hits and one that got 1
+2011-03-14T00:03:00  <McLeopold> keep a max diff of 1 or 2
+2011-03-14T00:04:02  <McLeopold> or, we could say don't spawn food within X of 2 different ants, but that would be expensive to compute
+2011-03-14T00:12:26  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-twkyerryekhnhkah> has joined #aichallenge
+2011-03-14T00:23:50  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T00:23:50  *** ChanServ sets mode: +o amstan
+2011-03-14T00:24:26  *** Prillicy <Prillicy!~chatzilla@97.104.27.168> has joined #aichallenge
+2011-03-14T00:26:15  <antimatroid> McLeopold: i was thinking like follows
+2011-03-14T00:27:50  <antimatroid> find the set of squares that never translate to each other at the start (this is easier than it sounds), then randomly put them into a list, then each turn go to your selected square and increment the number of food squares needing to be spawned there, if that was currently 0, add the position to the queue of squares to spawn food at
+2011-03-14T00:29:18  <antimatroid> sigh: ^^ does that make sense, and go along with your interpretation of things?
+2011-03-14T00:30:08  <sigh> that makes sense
+2011-03-14T00:31:27  <antimatroid> i don't think that'd be too hard to implement
+2011-03-14T00:36:44  <McLeopold> I doesn't make sense yet
+2011-03-14T00:37:15  <antimatroid> McLeopold: do you understand that for any location, translating it by rtrans,ctrans n times will get you back to the same location?
+2011-03-14T00:37:32  <McLeopold> no
+2011-03-14T00:37:36  <McLeopold> I need pictures :)
+2011-03-14T00:38:05  <McLeopold> are rtrans and ctrans variables, or a property of the map
+2011-03-14T00:38:44  <antimatroid> the map generator picks them, but you can get them from the different between row,col of any two enemy ants starting positions
+2011-03-14T00:39:12  <antimatroid> so say you have loc1 and loc2, rtrans = abs(loc1.row-loc2.row), similarly for ctrans
+2011-03-14T00:40:04  <antimatroid> then translating loc1 is just loc = ((loc1.row+rtrans)%rows, ...)
+2011-03-14T00:40:14  <McLeopold> so, on a 4x4 map, with rtrans=2 and ctrans=1, n would be 4?
+2011-03-14T00:40:30  <antimatroid> yes, but i wouldn't allow that map
+2011-03-14T00:40:33  <McLeopold> and there would be 8 sets
+2011-03-14T00:40:50  <antimatroid> you would have 2 squares to order for placing food
+2011-03-14T00:41:04  <McLeopold> where do you get 2?
+2011-03-14T00:41:19  <antimatroid> wait, maybe 4
+2011-03-14T00:41:25  <McLeopold> yeah, 4 set
+2011-03-14T00:41:27  <McLeopold> s
+2011-03-14T00:41:58  <antimatroid> you just take one of those sets, order them randomly, then place the food in each of the equivalent squares selected each turn
+2011-03-14T00:42:21  <McLeopold> or, order the sets you mean
+2011-03-14T00:42:28  <antimatroid> yeah
+2011-03-14T00:42:33  <McLeopold> okay
+2011-03-14T00:42:51  <antimatroid> my map generator enforces no two enemy ants start in the same row or column, as it looks better and makes it easier to calculate rtrans and ctrans
+2011-03-14T00:43:45  <antimatroid> still need pictures? they'd be quite messy
+2011-03-14T00:44:31  <antimatroid> what paint program do i want for ubuntu?
+2011-03-14T00:46:01  <McLeopold> no, I don't need pictures
+2011-03-14T00:46:33  <McLeopold> what types of symmetry are you doing?
+2011-03-14T00:47:24  <antimatroid> that is it
+2011-03-14T00:47:29  <antimatroid> i can't think of any other way to do symmetry
+2011-03-14T00:47:56  <McLeopold> well, for 4 players in a square, you could do mirror or radial
+2011-03-14T00:48:05  <McLeopold> or just tellelate
+2011-03-14T00:48:05  <antimatroid> yeah, but not arbitrarily for n players
+2011-03-14T00:48:10  <McLeopold> uh tesselate
+2011-03-14T00:48:21  <antimatroid> my method atm is just tesselating
+2011-03-14T00:48:30  <McLeopold> no, each player count would have it's own set of symmetry options
+2011-03-14T00:48:49  <McLeopold> anything divisible by 2 can be mirror
+2011-03-14T00:48:53  <antimatroid> true
+2011-03-14T00:49:32  <antimatroid> that would mean people can come across each other on symmetric terms
+2011-03-14T00:49:44  <McLeopold> I'm installing ubuntu on my other laptop right now
+2011-03-14T00:49:54  <antimatroid> in mine, at the start, if you meet an enemy, you both took different starting paths and are facing each other asymmetrically
+2011-03-14T00:50:04  <antimatroid> i really like it so far
+2011-03-14T00:50:27  <antimatroid> i am going to have a go at setting up that ssh key stuff with git in a bit
+2011-03-14T00:50:40  <antimatroid> i don'tunderstand what the hell they mean when they ask for a passphrase
+2011-03-14T00:50:44  <McLeopold> oh, I've done that on both win and linux
+2011-03-14T00:51:00  <McLeopold> I've just used a blank passphrase
+2011-03-14T00:51:11  <antimatroid> haha, i'll try that after
+2011-03-14T00:51:15  <antimatroid> gotta finish actually cooking food now
+2011-03-14T00:51:22  <McLeopold> You're ssh key can be used in lots of places, so it's like security your key
+2011-03-14T00:51:52  <McLeopold> plus, you can copy your generated key to multiple machines
+2011-03-14T00:52:58  <sigh> antimatroid: a passphrase is just a password for your key... otherwise anyone who got access to your key could use it
+2011-03-14T00:53:29  <McLeopold> or you could generate a different key at each computer, and let github know about all of them
+2011-03-14T00:55:38  <antimatroid> so i can just come up with a random piece of text?
+2011-03-14T00:55:42  <antimatroid> can it contain spaces?
+2011-03-14T00:55:53  <_flag> Has the food spawning bug been fixed yet?
+2011-03-14T00:55:55  <sigh> yes and yes
+2011-03-14T00:55:59  <sigh> @antimatroid
+2011-03-14T00:56:00  <contestbot> sigh: You have no gotten any error messages recently, so here's a random one just to let you know that we care.
+2011-03-14T00:56:00  <antimatroid> okay cool
+2011-03-14T00:56:06  <antimatroid> cheers :)
+2011-03-14T00:56:34  <antimatroid> _flag: suggest me a paint program
+2011-03-14T00:56:37  <McLeopold> make sure you remember it
+2011-03-14T00:56:42  <antimatroid> yeah i will
+2011-03-14T00:56:46  <_flag> antimatroid: gimp?
+2011-03-14T00:56:49  <McLeopold> gimp
+2011-03-14T00:57:15  <McLeopold> if you were on xp, I'd say use visio
+2011-03-14T00:57:31  <McLeopold> I haven't found a good linux equivalent yet.
+2011-03-14T00:57:44  <sigh> _flag: hasn't been fixed in the main repo, no
+2011-03-14T00:57:44  <antimatroid> i don't mind learning something new
+2011-03-14T00:58:13  <sigh> McLeopold: what do you think of dia
+2011-03-14T00:58:18  <McLeopold> ?
+2011-03-14T00:58:32  <McLeopold> denver airport?
+2011-03-14T00:58:53  <sigh> dia is a program which is similar to visio
+2011-03-14T00:58:53  <_flag> http://projects.gnome.org/dia/ I think
+2011-03-14T00:59:48  <McLeopold> looks okay
+2011-03-14T00:59:55  <McLeopold> looks "old"
+2011-03-14T01:00:10  <sigh> haha, yeah it does a bit
+2011-03-14T01:00:14  *** greghaynes <greghaynes!~irc@174.136.108.178> has quit IRC (Ping timeout: 250 seconds)
+2011-03-14T01:01:38  *** McLeopold is now known as McLeopold_Win7
+2011-03-14T01:01:38  <_flag> It uses your gnome theme (I just tried it) so it doesn't look as bad
+2011-03-14T01:05:53  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-14T01:06:35  *** McLeopold is now known as McLeopold_Ubuntu
+2011-03-14T01:10:28  <sigh> btw, McLeopold, have you done your big merge yet?
+2011-03-14T01:10:33  <McLeopold_Win7> :(
+2011-03-14T01:10:49  <McLeopold_Win7> I just haven't had time to work on it this weekend
+2011-03-14T01:10:56  <sigh> ahh
+2011-03-14T01:11:01  <McLeopold_Win7> stuff happens
+2011-03-14T01:11:18  <McLeopold_Win7> but I'm really close
+2011-03-14T01:11:42  <McLeopold_Ubuntu> and sometimes I get distracted with other things, like os installs
+2011-03-14T01:11:47  <sigh> hehe
+2011-03-14T01:12:33  <McLeopold_Ubuntu> so, when I do merge, there's just a couple of changes to the engine and ants, to support getting json results and a few engine options
+2011-03-14T01:12:43  <McLeopold_Ubuntu> but after that, I'm hoping you'll take over completely
+2011-03-14T01:14:39  <antimatroid> :P
+2011-03-14T01:15:24  <sigh> haha
+2011-03-14T01:16:05  <antimatroid> surely the engine is almost done?
+2011-03-14T01:18:47  <McLeopold_Ubuntu> does anyone have any font preferences for coding?
+2011-03-14T01:19:36  <antimatroid> neg
+2011-03-14T01:21:06  *** Prillicy <Prillicy!~chatzilla@97.104.27.168> has quit IRC (Quit: I be bangin')
+2011-03-14T01:37:33  *** McLeopold_Ubuntu <McLeopold_Ubuntu!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-14T01:41:14  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-twkyerryekhnhkah> has quit IRC (*.net *.split)
+2011-03-14T01:41:15  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has quit IRC (*.net *.split)
+2011-03-14T01:43:29  *** McLeopold_Ubuntu <McLeopold_Ubuntu!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-14T01:43:37  *** McLeopold_Ubuntu <McLeopold_Ubuntu!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-14T01:47:23  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 264 seconds)
+2011-03-14T01:57:45  *** delt0r___ <delt0r___!~delt0r@188-22-170-116.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-14T01:59:06  *** delt0r_ <delt0r_!~delt0r@188-22-168-86.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-03-14T02:03:10  *** antimatroid <antimatroid!~nick@231.202.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-14T02:04:08  <antimatroid> i have git fully set up now :D
+2011-03-14T02:04:13  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-twkyerryekhnhkah> has joined #aichallenge
+2011-03-14T02:04:13  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-03-14T02:11:17  <janzert> http://www.proggyfonts.com/index.php?menu=download
+2011-03-14T02:22:22  <McLeopold_Win7> antimatroid: what's your editor/ide?
+2011-03-14T02:22:38  <antimatroid> code::blocks
+2011-03-14T02:22:43  <McLeopold_Win7> janzert: thx
+2011-03-14T02:22:49  <antimatroid> i don't use it for python though
+2011-03-14T02:22:55  <McLeopold_Win7> but I prefer anti-aliased
+2011-03-14T02:23:18  <janzert> vim
+2011-03-14T02:23:53  <antimatroid> McLeopold: yeah, it's only for c++
+2011-03-14T02:24:15  <McLeopold_Win7> Yeah, I use vim too.
+2011-03-14T02:24:19  <McLeopold_Win7> and eclipse
+2011-03-14T02:25:31  <antimatroid> how to i get the terminal to know what python is in ubuntu?
+2011-03-14T02:25:47  <sigh> python should already be installed
+2011-03-14T02:25:53  <sigh> type python
+2011-03-14T02:26:10  <antimatroid> claims it's not defined :\
+2011-03-14T02:26:19  <antimatroid> it does say python is installed
+2011-03-14T02:26:33  <sigh> paste the error
+2011-03-14T02:27:05  <antimatroid> http://pastebin.com/31HzVrUy
+2011-03-14T02:27:18  <janzert> >>> is a python prompt
+2011-03-14T02:27:22  <sigh> dude, you are in the python repl
+2011-03-14T02:27:33  <janzert> i.e. you're already in python
+2011-03-14T02:27:34  <antimatroid> lol :P
+2011-03-14T02:28:09  <antimatroid> works now
+2011-03-14T02:28:13  <sigh> haha
+2011-03-14T02:28:49  <McLeopold_Win7> OMG
+2011-03-14T02:32:27  <antimatroid> i want frontier to come online :(
+2011-03-14T02:32:39  <antimatroid> i'm so close to having access to the greek alphabet with my finger tips
+2011-03-14T02:37:29  <McLeopold_Win7> like, for irc?
+2011-03-14T02:40:33  <antimatroid> i'm hoping it'll compile
+2011-03-14T02:40:42  <antimatroid> it probably wont
+2011-03-14T02:41:28  <sigh> what will compile
+2011-03-14T02:41:38  <antimatroid> greek alphabet in me codez
+2011-03-14T02:42:23  <sigh> -_-
+2011-03-14T02:42:56  *** McLeopold <McLeopold!~McLeopold@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-14T02:42:58  <antimatroid> haters gonna hate, i'd love lots more symbols for relations/operations too
+2011-03-14T02:43:12  *** McLeopold_Win7 <McLeopold_Win7!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-14T02:43:19  <antimatroid> and god damnit, i want to overload operater precedence!
+2011-03-14T02:56:30  <McLeopold> :)
+2011-03-14T03:06:19  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-twkyerryekhnhkah> has quit IRC (Remote host closed the connection)
+2011-03-14T03:09:17  *** greghaynes <greghaynes!~irc@174.136.108.178> has joined #aichallenge
+2011-03-14T03:09:49  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-14T03:19:42  *** McLeopold <McLeopold!~McLeopold@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-14T03:23:53  *** McLeopold <McLeopold!~McLeopold@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-14T03:24:33  *** McLeopold <McLeopold!~McLeopold@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-14T03:39:35  *** boegel <boegel!~boegel@46.179.106.160> has joined #aichallenge
+2011-03-14T03:43:33  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has joined #aichallenge
+2011-03-14T03:57:06  *** boegel <boegel!~boegel@46.179.106.160> has quit IRC (Quit: *poof!*)
+2011-03-14T04:25:37  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-03-14T04:31:46  *** antimatroid <antimatroid!~nick@231.202.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-03-14T04:35:40  *** antimatroid <antimatroid!~nick@231.202.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-14T04:37:00  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-14T04:45:47  *** kaemo <kaemo!~mad5ci@150.254.83.39> has joined #aichallenge
+2011-03-14T04:46:45  *** antimatroid <antimatroid!~nick@231.202.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-03-14T05:37:59  *** antimatroid <antimatroid!~nick@231.202.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-14T05:54:52  <antimatroid> hmmm i think it'd make it interesting to do the spawning before battle and use a spawn method like battle method 1
+2011-03-14T05:55:07  <antimatroid> player with the most ants in range gets the spawn, if it's draw the food square dies
+2011-03-14T05:55:42  <antimatroid> it'd make contests over food much more interesting anyway
+2011-03-14T06:17:04  *** kaemo <kaemo!~mad5ci@150.254.83.39> has quit IRC (Ping timeout: 250 seconds)
+2011-03-14T06:34:01  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-03-14T07:03:29  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.15/20110303024726])
+2011-03-14T07:11:49  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-03-14T07:18:29  *** stocha <stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-14T07:18:46  <stocha> hi
+2011-03-14T07:26:47  *** kaemo <kaemo!~mad5ci@150.254.83.166> has joined #aichallenge
+2011-03-14T07:30:30  <antimatroid> stocha: hi
+2011-03-14T07:54:03  *** kaemo <kaemo!~mad5ci@150.254.83.166> has quit IRC (Ping timeout: 276 seconds)
+2011-03-14T07:56:47  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-14T08:08:45  *** bss03 <bss03!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has left #aichallenge ("Konversation terminated!")
+2011-03-14T08:09:22  *** stocha <stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 245 seconds)
+2011-03-14T08:14:14  *** bss03 <bss03!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has joined #aichallenge
+2011-03-14T08:20:53  *** kaemo <kaemo!~mad5ci@150.254.83.39> has joined #aichallenge
+2011-03-14T08:27:22  <CIA-33> aichallenge: Marco Leise epsilon * rb9aeb59 / (45 files in 5 dirs): fog of war; removed .class files from repo - http://bit.ly/i5UkBs
+2011-03-14T08:32:02  *** UncleVasya <UncleVasya!kvirc@46.133.63.155> has joined #aichallenge
+2011-03-14T08:35:56  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-14T08:37:41  <Frontier> Fog of war can now be switched on in the visualizer: http://marco-leise.homedns.org/antgui/v4/visualizer.php?game_id=1#visualizer
+2011-03-14T08:44:59  <antimatroid> Frontier: I've been waiting for you!!!
+2011-03-14T08:45:10  <antimatroid> how do i get the greek alphabet?
+2011-03-14T08:45:14  <antimatroid> i've switched to ubuntu
+2011-03-14T08:45:37  <Frontier> γσμ αrε rεαllγ ςrαzγ αbσμτ τhιs :)
+2011-03-14T08:45:57  <antimatroid> it was the first thing i wanted to do after getting it installed :P
+2011-03-14T08:47:10  <Frontier> actually, I don't quite remember what i did
+2011-03-14T08:47:22  <antimatroid> D:
+2011-03-14T08:47:22  <Frontier> i think it was some file in /usr/share
+2011-03-14T08:49:32  <antimatroid> i'm a big fan so far though
+2011-03-14T08:50:46  <Frontier>  :) /usr/share/X11/xkb ... somewhere in there
+2011-03-14T08:51:23  <Frontier> ah there it is: /usr/share/X11/xkb/symbols
+2011-03-14T08:51:34  <antimatroid> want to paste bin it for me? :P
+2011-03-14T08:52:20  <Frontier> find your layout file there (en) and make a copy. then edit the keys you want to change. My keyboard is german, so you wont like the mix up of y and z :p
+2011-03-14T08:52:59  <Frontier> anyway here is my file: http://marco-leise.homedns.org/de_gr
+2011-03-14T08:53:05  <Frontier> You can use it for reference
+2011-03-14T08:53:12  <antimatroid> yeah that might be better
+2011-03-14T08:53:23  <antimatroid> cheers
+2011-03-14T08:54:28  <antimatroid> lol, my file for that is 1000 lines long
+2011-03-14T08:55:37  <antimatroid> oh wait, err
+2011-03-14T08:55:53  <Frontier> Have fun ! btw, you'll have to manually set the new layout, as it is unknown to Gnome. open gconf-editor and go to: /desktop/gnome/peripherals/keyboard/kbd/layouts
+2011-03-14T08:55:53  <antimatroid> Frontier: did you just set if for capslock?
+2011-03-14T08:56:16  <Frontier> antimatroid: I set it for AltGr+ combinations
+2011-03-14T08:56:27  <antimatroid> what is AltGr?
+2011-03-14T08:57:01  <Frontier> There is one default layout and one 'l33t' layout that changes some of the latin letters into greek
+2011-03-14T08:57:15  <Frontier> AltGr is Ctrl+Alt+
+2011-03-14T08:57:47  <Frontier> Most keyboards have a special key for that.
+2011-03-14T08:57:56  <antimatroid> altwin maybe?
+2011-03-14T08:58:13  <Frontier> no it has nothing to do with the windows key
+2011-03-14T08:58:28  <Naktibalda> it's right Alt on my keyboard
+2011-03-14T08:59:20  <Frontier> In /desktop/gnome/peripherals/keyboard/kbd/layouts edit the key 'layouts'.
+2011-03-14T09:00:14  <Frontier> I set the list to: [de_gr, de_gr	leet]  <- note the tab in front of the sub-layout name leet.
+2011-03-14T09:00:47  <Frontier> de_gr\tleet
+2011-03-14T09:01:33  <Frontier> Τhεη γσμ ςαη sωιτςh γσμr lαγσμτ εαsιlγ ωιτh α hστκεγ σr bγ ςlιςjιηg τhε lαγσμτ ιςση ιη τhε sγsτεm τrαγ.
+2011-03-14T09:01:48  <Frontier> *ςlιςκιηg
+2011-03-14T09:04:50  <Frontier> ε
+2011-03-14T09:05:55  <antimatroid> Frontier: so I could really just have leet as the second option in capslock and switch it from normal when i want?
+2011-03-14T09:06:47  <Frontier> You can set it up any way you want, yes.
+2011-03-14T09:07:12  <Frontier> I just left the original file unchanged so it doesn't get overwritten by updates.
+2011-03-14T09:08:29  <Frontier> My basic layout adds greek symbols to the RightAlt and RightAlt+Shift combinations, because I don't need RightAlt (or AltGr) for anything else.
+2011-03-14T09:09:32  <Frontier> Τhε lεετ lαγσμτ ωαs jμsτ mεαητ τσ mακε γσμ sωιτςh τσ Lιημχ.
+2011-03-14T09:10:23  <antimatroid> i get an error when i set that layouts key thing
+2011-03-14T09:10:47  <Frontier> does it work when you set my unchanged file?
+2011-03-14T09:10:48  <antimatroid> nevermind
+2011-03-14T09:10:57  <Frontier> kk
+2011-03-14T09:12:09  <antimatroid> oh wait, i don't think i'm doing this right, hang on
+2011-03-14T09:18:32  <antimatroid> i can't add files to that folder :\
+2011-03-14T09:18:38  <antimatroid> is that a file permissions thing?
+2011-03-14T09:21:27  <Frontier> sure, you need to right click the folder and select 'open as administrator#
+2011-03-14T09:22:28  <Frontier> In fact a user account should have write access to nothing more than /home/<username>
+2011-03-14T09:22:41  <Frontier> and some tmp directory of course
+2011-03-14T09:22:56  <antimatroid> open as admin isn't there 8|
+2011-03-14T09:23:53  <Frontier> then use either a terminal and the command line to get things done (look for the root-terminal in the gnome menu) or press Alt-F2
+2011-03-14T09:24:02  <Frontier> and enter gksu nautilus
+2011-03-14T09:25:31  <Frontier> This opens a new file explorer instance as the root user. It will also load any settings from the root account (options, layout, colors, ...)
+2011-03-14T09:26:32  <Frontier> well... or you can log into your system as the root user from the login prompt :)
+2011-03-14T09:27:09  <antimatroid> okaz thatäs done and this is me tzping with it
+2011-03-14T09:27:11  <Frontier> Hint: When you select log out... from the menu there is an option to switch the user without actually logging out.
+2011-03-14T09:27:27  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-14T09:27:34  <Frontier> Haha, it seems to work as expected
+2011-03-14T09:27:41  <Frontier> try right alt keys
+2011-03-14T09:27:48  <antimatroid> η€λλο
+2011-03-14T09:27:50  <Frontier> like α or β
+2011-03-14T09:27:54  <antimatroid> α β
+2011-03-14T09:28:26  <antimatroid> τηανκσ, ι σηαλλ πλαυ αροθνδ¹
+2011-03-14T09:28:52  <antimatroid> first things first, time to see if i can compile and run this
+2011-03-14T09:32:33  <antimatroid> :
+2011-03-14T09:32:35  <antimatroid> :(
+2011-03-14T09:32:36  <antimatroid> no love
+2011-03-14T09:34:16  <antimatroid> Frontier: "σr bγ ςlιςjιηg τhε lαγσμτ ιςση ιη τhε sγsτεm τrαγ." what layout icon? :P
+2011-03-14T09:42:45  <antimatroid> meh, that'll do for tonight
+2011-03-14T09:43:17  <antimatroid> i finally managed to make my first github repository before too :D
+2011-03-14T09:47:49  *** kaemo <kaemo!~mad5ci@150.254.83.39> has quit IRC (Ping timeout: 246 seconds)
+2011-03-14T09:57:17  *** delt0r___ <delt0r___!~delt0r@188-22-170-116.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-03-14T09:57:26  *** delt0r___ <delt0r___!~delt0r@188-22-170-103.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-14T10:15:07  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-ektfmccnugauisrg> has joined #aichallenge
+2011-03-14T10:22:05  <Frontier> I have a small area in the tray saying "de_gr". It showed up when I set up more than one layout.
+2011-03-14T10:54:41  *** lavalamp <lavalamp!d82d8da2@gateway/web/freenode/ip.216.45.141.162> has joined #aichallenge
+2011-03-14T11:10:38  *** superflit_ <superflit_!~superflit@140.226.49.148> has joined #aichallenge
+2011-03-14T11:20:33  <antimatroid> i just wrote my own rational struct
+2011-03-14T11:20:42  <antimatroid> it's a little rank, but will do if i ever want to use it
+2011-03-14T11:27:10  *** amstan <amstan!~alex@142.222.92.4> has joined #aichallenge
+2011-03-14T11:27:10  *** ChanServ sets mode: +o amstan
+2011-03-14T11:48:52  <amstan> how's it going?
+2011-03-14T11:49:00  <amstan> contestbot: seen j3camero
+2011-03-14T11:49:00  <contestbot> amstan: j3camero was last seen in #aichallenge 1 week, 5 days, 10 hours, 55 minutes, and 0 seconds ago: <j3camero> McLeopold: do you have a magic main-server-setup script, or did you manually do a bunch of stuff to create a test server?
+2011-03-14T11:49:17  <amstan> antimatroid: anything new?
+2011-03-14T11:49:33  <antimatroid> amstan: i'm on ubuntu now
+2011-03-14T11:49:39  <amstan> antimatroid: decent.. decent..
+2011-03-14T11:49:41  <antimatroid> and i can make my own git repositories
+2011-03-14T11:49:47  <amstan> lol
+2011-03-14T11:49:55  <antimatroid> https://github.com/antimatroid/GTL
+2011-03-14T11:50:06  <antimatroid> still a bit messy and lacking me putting in much :P
+2011-03-14T11:50:26  <antimatroid> we sort of worked out how to do symmetric food spawning in something more relevant to what you were asking about
+2011-03-14T11:51:43  <amstan> antimatroid: you were asking about jeff, what do you need from him?
+2011-03-14T11:52:15  <antimatroid> nothing major atm i don't think
+2011-03-14T11:52:31  <antimatroid> we need to get things running for tests before we really need him again
+2011-03-14T11:52:51  <amstan> antimatroid: tests? i can set that up on hypertriangle
+2011-03-14T11:53:18  <antimatroid> nah, i mean once the engine gets set up with the visualiser so we can test different parameters/rules
+2011-03-14T11:54:19  <amstan> contestbot: topic
+2011-03-14T11:54:19  <contestbot> amstan: Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge || Launch Checklist: https://github.com/aichallenge/aichallenge/issues/labels/launch
+2011-03-14T11:54:46  <amstan> antimatroid: do you know anything about mcleopold's starter packages? how complete are they?
+2011-03-14T11:55:08  <amstan> jmcarthur: ping
+2011-03-14T11:55:38  <amstan> antimatroid: also.. how's the visualizer going?
+2011-03-14T11:55:45  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 255 seconds)
+2011-03-14T11:55:50  <antimatroid> Frontier: ^^?
+2011-03-14T11:56:02  <antimatroid> amstan: not sure sorry
+2011-03-14T11:56:16  <amstan> bss03: you were working on matchmaking based on trueskill, is that integrated yet?
+2011-03-14T11:56:42  <amstan> ok.. seems like everyone's afk
+2011-03-14T11:57:10  <amstan> contestbot: later tell Frontier how finished is the visualizer? both of them(canvas+ie).
+2011-03-14T11:57:10  <contestbot> amstan: Yep.
+2011-03-14T11:57:28  <amstan> contestbot: later tell jmcarthur how's it going with your haskell starter pack?
+2011-03-14T11:57:28  <contestbot> amstan: Ready to serve, my lord.
+2011-03-14T11:57:37  <Frontier> amstan: Take a look: http://marco-leise.homedns.org/antgui/v4/visualizer.php?game_id=1#visualizer
+2011-03-14T11:59:06  <amstan> Frontier: worked the first time, but then i got: https://gist.github.com/869360
+2011-03-14T12:00:20  <Frontier> :-(
+2011-03-14T12:01:20  <Frontier> amstan: Do we have a fixed date yet? That would be helpful to know.
+2011-03-14T12:01:31  <amstan> Frontier: try for 2 weeks
+2011-03-14T12:02:01  <amstan> a figure that has been circulating around
+2011-03-14T12:04:14  <amstan> antimatroid: what about mcleopold's starter packs?
+2011-03-14T12:06:17  <CIA-33> aichallenge: Daniel Smith epsilon * rcb64553 / (3 files):
+2011-03-14T12:06:17  <CIA-33> aichallenge: Fixed compile bug introduced in last change. Added more convienient
+2011-03-14T12:06:17  <CIA-33> aichallenge: image debugging. Added Map.DoInRad for doing something in a circular
+2011-03-14T12:06:39  <CIA-33> aichallenge: Alexandru Stan epsilon-new-schema * r35f6ce8 / (61 files in 9 dirs): Merge branch 'epsilon' into epsilon-new-schema (+7 more commits...) - http://bit.ly/efKvtX
+2011-03-14T12:06:50  <antimatroid> amstan: not sure sorry, i think they're fairly up to date
+2011-03-14T12:07:29  <amstan> sigh.. i haven't closed any of these: https://github.com/aichallenge/aichallenge/issues/labels/launch
+2011-03-14T12:08:10  <amstan> antimatroid: have you noticed sigh's branch about sym food spawning?
+2011-03-14T12:08:31  <antimatroid> nope, how old is it?
+2011-03-14T12:08:38  <antimatroid> we only just came up with the newest method earlier
+2011-03-14T12:08:48  <antimatroid> i haven't really been happy with a method till that
+2011-03-14T12:09:14  <amstan> antimatroid: i have no idea, i just know there's a branch in sigh's repo: https://github.com/sigh/aichallenge/commits/sym-food
+2011-03-14T12:09:42  <antimatroid> yeah i think that's older
+2011-03-14T12:10:08  <antimatroid> the new method might actually do a pretty good job at keeping it symmetric from starting positions in a "fair" way
+2011-03-14T12:10:15  <amstan> ok
+2011-03-14T12:10:27  <amstan> antimatroid: how's the code separated right now?
+2011-03-14T12:10:35  <amstan> antimatroid: is there anything in manager/ that's ants related?
+2011-03-14T12:10:47  <antimatroid> i haven't touched that code
+2011-03-14T12:11:01  <antimatroid> i can tell you exactly how it should work, but i haven't actually looked at it
+2011-03-14T12:11:04  <CIA-33> aichallenge: Marco Leise epsilon * r0d3d58a / ants/www/visualizer/js/Application.js : fixed double parsing of replays - http://bit.ly/hRRMVn
+2011-03-14T12:11:05  <CIA-33> aichallenge: Marco Leise epsilon * r9e700f4 / (7 files in 2 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/hCuYYf
+2011-03-14T12:11:24  <antimatroid> well, except a few functions here and there when asked to verify them
+2011-03-14T12:11:39  <amstan> antimatroid: i would just like to keep the ants stuff separated from manager
+2011-03-14T12:11:51  <amstan> so.. no mapgens, tournament engines, food spawners in there
+2011-03-14T12:12:33  <amstan> antimatroid: what's manager/map_analyzer.py?
+2011-03-14T12:12:51  <antimatroid> it's to help throw out stupid asymmetric maps
+2011-03-14T12:13:09  <antimatroid> i placed that where mcleopold told me to, you'll need to talk to him about where stuff is meant to be going
+2011-03-14T12:13:31  <antimatroid> it shouldn't be much of an issue to move it i don't think
+2011-03-14T12:13:45  <amstan> antimatroid: see if something calls it, if not, move it
+2011-03-14T12:14:02  <amstan> antimatroid: also.. this is planet wars, right? https://github.com/aichallenge/aichallenge/blob/epsilon/manager/map_generator.py
+2011-03-14T12:14:21  <antimatroid> that's planet wars
+2011-03-14T12:14:33  <amstan> ok.. going to delete it if nothing calls it
+2011-03-14T12:15:05  <antimatroid> i'm going to just leave the analyser there for the moment
+2011-03-14T12:15:12  <antimatroid> i'm going to bed in a minute, it's after 3am
+2011-03-14T12:15:26  <antimatroid> i'll mention it to mcleopold later though and get it moved
+2011-03-14T12:15:47  <amstan> antimatroid: ok, cool
+2011-03-14T12:15:49  <janzert> amstan: I wouldn't bother doing a whole lot with the epsilon branch right now
+2011-03-14T12:15:59  <amstan> janzert: why not?
+2011-03-14T12:16:15  <janzert> Mcleopold already did a lot of major cleaning and changing but it's still all sitting in the new schema branch
+2011-03-14T12:16:26  <janzert> so will be cleaned up when he merges back in
+2011-03-14T12:16:30  <janzert> or someone does
+2011-03-14T12:16:59  <amstan> janzert: darn.. ok.. so.. should i just rename epsilon-new-schema?
+2011-03-14T12:17:00  <CIA-33> aichallenge: Marco Leise epsilon * r4f3cfad / (ants/bots/d/MyBot.d ants/bots/d/ants.d): made D bot conform to the starter pack rules - http://bit.ly/ev5UA1
+2011-03-14T12:17:30  * janzert shrugs
+2011-03-14T12:17:34  <janzert> I was ready to last week :P
+2011-03-14T12:17:48  <janzert> well don't just rename it I suppose
+2011-03-14T12:17:50  <amstan> janzert: well.. why did you put it in new-schema? lol
+2011-03-14T12:18:06  <janzert> I haven't touched new-schema
+2011-03-14T12:18:20  <amstan> janzert: oh.. nvm, you said mcleopold
+2011-03-14T12:18:48  <amstan> janzert: ok, i'll have to talk to him then to see what's happening
+2011-03-14T12:19:01  <amstan> any idea when he goes online?
+2011-03-14T12:19:20  <janzert> usually late afternoon or evening
+2011-03-14T12:19:28  <janzert> he's in pacific time I believe
+2011-03-14T12:19:33  <amstan> oh, decent
+2011-03-14T12:19:58  <amstan> contestbot: later tell mcleopold wanna dev tonight? i'm in EST
+2011-03-14T12:19:58  <contestbot> amstan: Ready to serve, my lord.
+2011-03-14T12:21:23  <Frontier> McLeopold has 9:18 AM right now
+2011-03-14T12:22:55  <amstan> Frontier: if he's pst he should have 10:18, daylight savings was this weekend
+2011-03-14T12:23:07  <amstan> wait.. no, i can't do math
+2011-03-14T12:23:09  <amstan> 9 is right
+2011-03-14T12:23:32  <jbroman> amstan: Yeah, we have DST, too.
+2011-03-14T12:23:53  <amstan> jbroman: somehow i did 12-3=10
+2011-03-14T12:24:25  <jbroman> amstan: Time math is hard. I always read 1530 as 2:30 PM. (For some reason, 1430 is also 2:30 in my mind.)
+2011-03-14T12:24:41  <amstan> lol
+2011-03-14T12:34:38  <Frontier> hehe, I just assume Gnome can do the math if I set the right time zone in the clock applet.
+2011-03-14T12:34:41  <amstan> janzert: what about the simple-json stuff? you say that it's a pretty simple process to convert them? will i be able to do that myself?
+2011-03-14T12:35:15  <janzert> should be able to, if mcleopold hasn't already
+2011-03-14T12:35:36  <janzert> I'm pretty sure everywhere it is used currently the import is done as "import simplejson as json"
+2011-03-14T12:35:46  <janzert> in which case the conversion is "import json"
+2011-03-14T12:35:50  <janzert> :)
+2011-03-14T12:36:23  <janzert> and it might only be used in one place, the worker tournament manager
+2011-03-14T12:36:27  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-14T12:36:36  <janzert> in which case I think mcleopold did a full rewrite
+2011-03-14T12:36:44  <amstan> janzert: you have it in the install script too: https://github.com/aichallenge/aichallenge/blame/epsilon-new-schema/setup/server_setup.py
+2011-03-14T12:37:12  <janzert> ahh, not using it just installing it though right?
+2011-03-14T12:37:22  <janzert> it can just be dropped from the list of install packages
+2011-03-14T12:38:09  <janzert> but I'm mostly waiting for the grand merge to take place before doing much more on the setup scripts since a lot of things have changed
+2011-03-14T12:38:45  <amstan> yeah, i think we should merge, there's no point to not do it, neither branches work anyway
+2011-03-14T12:38:57  <janzert> yep
+2011-03-14T12:39:15  <amstan> and some people started to apply unrelated changes in the new-schema branch
+2011-03-14T12:39:24  <amstan> the only way to have those in the normal branch is to merge
+2011-03-14T12:39:42  <janzert> the new-schema branch has much more than the name implies yes
+2011-03-14T12:39:52  <amstan> that shouldn't be the case
+2011-03-14T12:40:17  <amstan> contestbot: later tell bss03 Please look over this: https://github.com/aichallenge/aichallenge/issues/#issue/7/comment/869773
+2011-03-14T12:40:17  <contestbot> amstan: I think that worked...
+2011-03-14T12:40:32  <janzert> it's really the de facto main line of development for the last couple weeks
+2011-03-14T12:40:57  <amstan> janzert: i've been trying to merge starter packages and Frontier has been working on the visualizer in the epsilon branch
+2011-03-14T12:41:21  <amstan> ok.. oppening an issue
+2011-03-14T12:41:21  <janzert> yeah, then compare that too all the changes going on in new-schema
+2011-03-14T12:41:30  <janzert> :)
+2011-03-14T12:41:49  <Frontier> who have i caused trouble ? :)
+2011-03-14T12:42:33  <janzert> ahh, manager/ec2-check.py uses simplejson as well at the momement
+2011-03-14T12:42:51  <janzert> conversion there should be a simple import line change as well
+2011-03-14T12:44:40  <amstan> Frontier: no trouble
+2011-03-14T12:44:42  <Frontier> amstan: You once said that a Makefile can compile the Java applet and combine JavaScript files. I know little about Makefiles, but I would give it a try as it has to do with the visualizer. Now my question is, is there already a Makefile or where would I link it in?
+2011-03-14T12:45:35  <amstan> Frontier: feel free to make a new one; we don't have a way to connect the makefiles yet. ask me for help if you need any; i like makefiles.
+2011-03-14T12:47:16  <amstan> Frontier: my schedule for the day: class from 3:00 to 4:00, then driving home for about 25 min, other than that free
+2011-03-14T12:47:18  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has quit IRC (Read error: Operation timed out)
+2011-03-14T12:47:21  <Frontier> Is there a keyword in use, like 'install' that copies the compiled files from the source tree into the destination directory?
+2011-03-14T12:47:36  <amstan> Frontier: sure
+2011-03-14T12:47:59  <amstan> janzert: feel free to comment on the merge issue: https://github.com/aichallenge/aichallenge/issues/24
+2011-03-14T12:55:16  <Frontier> amstan: There is no Makefile in epsilon that installs anything. Or maybe I'm blind.
+2011-03-14T12:55:33  <janzert> I believe all the makefiles were removed
+2011-03-14T12:55:36  <amstan> Frontier: nope, they were all out of date, i deleted them, there's one makefile in the starter package folder
+2011-03-14T12:56:48  <lavalamp> amstan: thanks for merging my stuff. I still plan at looking at the worker setup script to update the go installation process. I think I may be able to switch it to using a premade package now (I saw on the go mailing list that someone is now making those) instead of building the source.
+2011-03-14T12:57:14  <amstan> lavalamp: decent
+2011-03-14T12:58:38  *** readncode <readncode!~closedbra@152.15.206.22> has joined #aichallenge
+2011-03-14T12:58:57  <amstan> awww, my awesome makefile that made gifs is gone: https://github.com/aichallenge/aichallenge/commit/56f606b750854e560c8d3879ed901fb4123a7c06
+2011-03-14T12:59:18  <amstan> i made that for jeff's simpleants prototype
+2011-03-14T13:00:06  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-ektfmccnugauisrg> has quit IRC (Ping timeout: 255 seconds)
+2011-03-14T13:01:26  <amstan> oh man.. as far as i can see, only the first few commits in new-schema are actually about the new schema
+2011-03-14T13:01:52  <amstan> but it looks pretty mergeable
+2011-03-14T13:03:44  <amstan> darn, i hate cherry picks for downstream changes
+2011-03-14T13:03:45  <amstan> https://github.com/aerique/aichallenge/commit/594e977897b0ef03dee06a1992fb44910c40c27a
+2011-03-14T13:03:54  <amstan> janzert: can you help me locate where he cherry picked that from?
+2011-03-14T13:05:34  <amstan> Frontier: darn.. correction on my schedule, my class is from 2-3
+2011-03-14T13:05:45  <janzert> https://github.com/aerique/aichallenge/commit/594e977897b0ef03dee06a1992fb44910c40c27a
+2011-03-14T13:06:04  <amstan> janzert: nope, that's the cherry-pick, where's the original
+2011-03-14T13:06:07  <janzert> heh oops
+2011-03-14T13:06:18  <janzert> just noticed
+2011-03-14T13:06:29  <amstan> janzert: i'm just interested in the branch it's from
+2011-03-14T13:06:45  <janzert> epsilon
+2011-03-14T13:06:46  <janzert> https://github.com/aichallenge/aichallenge/commit/5f867e18eb58f9cb1865255572ef1c4651619d7f
+2011-03-14T13:07:01  <janzert> gah
+2011-03-14T13:07:13  <janzert> https://github.com/aichallenge/aichallenge/commit/dc10af08be58e150b4f6df0e51449ec121d26ff7
+2011-03-14T13:07:26  <janzert> there
+2011-03-14T13:07:38  <amstan> janzert: darn, why did he cherry-pick instead of pull?
+2011-03-14T13:08:03  <janzert> no idea
+2011-03-14T13:08:26  <amstan> maybe it doesn't matter actually
+2011-03-14T13:08:58  <Frontier> amstan: I'll wait with the Makefile until you created some of them. When I merge the JavaScript files I have to replace either the main js file or visualizer.php. Without an output or destination directory that's no good :p
+2011-03-14T13:09:35  <amstan> Frontier: well.. i have some time, i can work on this
+2011-03-14T13:09:52  <janzert> why not just make a script that takes the output location as an argument?
+2011-03-14T13:10:29  <amstan> Frontier: what do you mean by replace at merge? why?
+2011-03-14T13:10:50  *** bhasker <bhasker!~bhasker@nat/yahoo/x-lupxvoluyxizfwvb> has joined #aichallenge
+2011-03-14T13:11:17  <amstan> Frontier: also, is there a way to not include jquery in the repo? this makes javascript be the most used language: https://github.com/aichallenge/aichallenge/graphs/languages
+2011-03-14T13:12:02  <amstan> Frontier: we could link it from google's servers: http://code.google.com/apis/libraries/devguide.html#jquery
+2011-03-14T13:12:03  <Frontier> either i create a 'visualizer-min.js' and have to update the reference in visualizer.php or I replace the main js file 'visualizer.js' with the combined version
+2011-03-14T13:12:20  *** readncode <readncode!~closedbra@152.15.206.22> has quit IRC (Remote host closed the connection)
+2011-03-14T13:12:39  <Frontier> amstan: I do not use jquery. Is it in the repo?
+2011-03-14T13:12:56  <amstan> Frontier: yes, i saw it for the visualizer somewhere
+2011-03-14T13:13:06  <amstan> or viewer: https://github.com/aichallenge/aichallenge/tree/epsilon/ants/viewer
+2011-03-14T13:13:09  <amstan> that's mcleopold then
+2011-03-14T13:13:29  <Frontier> To answer your question in PlanetWars the file was requested from google and if not found there, loaded locally.
+2011-03-14T13:13:55  <Frontier> So the local jquery copy was meant as a fallback
+2011-03-14T13:14:18  <amstan> Frontier: ic, idk if it should be in the repo though, maybe make the installer script take care of downloading it
+2011-03-14T13:14:48  <Frontier> As I said, I don't use it so... yeah
+2011-03-14T13:14:56  <amstan> Frontier: anyway, so what were you saying about the -min? that you have to change the referrences when you make one?
+2011-03-14T13:16:40  <amstan> Frontier: how about visualizer.full.js(your original from the repo), visualizer.min.js(compiled) visualizer.js(softlink to either of them, git will have it pointed to full)
+2011-03-14T13:16:43  <Frontier> I have a script tag in the php file saying src="visualizer/js/visualizer.js". If I store the combined JavaScript in a different file I have to overwrite the php to make the change. Otherwise I have to overwrite the js to keep the php file as is
+2011-03-14T13:16:57  <amstan> Frontier: and add gitignore for min and the softlink
+2011-03-14T13:17:12  <amstan> ok.. i g2g for noms
+2011-03-14T13:17:27  <Frontier> kk
+2011-03-14T13:22:05  *** amstan <amstan!~alex@142.222.92.4> has quit IRC (Ping timeout: 248 seconds)
+2011-03-14T13:24:45  <Frontier> @later tell amstan: For the starter bots there has to be some install command anyway to copy them into the target www directory. And there is also the Java applet which needs to be compiled. I have the sources for that right next to the JavaScript sources in the www directory (bad idea?). I'm not sure what 'www' should actually contain. php, images and css only? unminimized JavaScript? Java sources? Java .class files?
+2011-03-14T13:24:45  <contestbot> Frontier: As you wish.
+2011-03-14T13:31:02  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-14T13:31:48  <McLeopold> amstan: you're willing to dev?
+2011-03-14T13:36:35  <McLeopold> Frontier: want to organize your visualizer?
+2011-03-14T13:38:21  <Frontier> McLeopold: Yes, I have split the JS files and a few Java classes.
+2011-03-14T13:38:57  <McLeopold> did you push lately?
+2011-03-14T13:39:16  <Frontier> just today. I added fog of war
+2011-03-14T13:39:38  <McLeopold> You're working on epsilon, right?
+2011-03-14T13:39:58  <Frontier> yep
+2011-03-14T13:42:23  <McLeopold> I'm reading your readme...
+2011-03-14T13:42:36  <Frontier> oh man ... that one is old ^^
+2011-03-14T13:42:49  <McLeopold> did you ever use the visualize_locally.py file from the last contest?
+2011-03-14T13:44:20  <Frontier> no, but if that uses the html visualizer through a python script that might be what people meant when they were using the 'html visualizer locally'
+2011-03-14T13:45:57  <McLeopold> that was part of it
+2011-03-14T13:46:12  <McLeopold> it would create a temp html file and write the replay output directly into the html
+2011-03-14T13:46:18  <McLeopold> I'd like to avoid that this time
+2011-03-14T13:46:29  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T13:46:39  <McLeopold> it also had a neat feature that would launch your default browser with the page
+2011-03-14T13:46:57  <Frontier> I would like to avoid writing the replay into the html through the php script as well ^^
+2011-03-14T13:47:14  <McLeopold> I think your paste option is nice.
+2011-03-14T13:47:22  <McLeopold> We can add a file open option as well
+2011-03-14T13:48:36  <Frontier> That's right. I'm still dreaming of using Rhino, the Java JavaScript interpreter/compiler to get an executable .jar out of the JavaScript.
+2011-03-14T13:48:46  <McLeopold> And I'm hoping we can implement the engine to launch the browser automatically after a test game as well
+2011-03-14T13:49:41  <McLeopold> what would that get you?
+2011-03-14T13:50:24  <Frontier> McLeopold: Imagine having the visualizer in a Java app, just the way the IE version works now. That would mean a HTML/JavaScript version, an applet and an application all from the same code base :)
+2011-03-14T13:51:07  <McLeopold> cool
+2011-03-14T13:51:18  <McLeopold> so, locally I would launch a java app?
+2011-03-14T13:51:38  <Frontier> Yes, that's the point :)  I never took the time to dive deeper into Rhino to see if that was possible.
+2011-03-14T13:51:55  <McLeopold> how does ie version work now?
+2011-03-14T13:52:22  <Frontier> You can define 'ScriptableObjects' or something like that, that are visible to the script engine like the 'window' object in web implementations of JavaScript
+2011-03-14T13:53:05  <McLeopold> so, you created an object that acts like the canvas, but the javascript is still outside of the java applet?
+2011-03-14T13:53:07  <Frontier> Currently the IE version uses an applet that communicates with JavaScript through LiveConnect. It really is a wrapper around the canvas api
+2011-03-14T13:54:27  <Frontier> With Rhino I could move the JavaScript engine into the applet as well. That may be faster as well. LiveConnect works horribly slow.
+2011-03-14T13:54:29  <McLeopold> so, is the java running the javascript, or the other way around?
+2011-03-14T13:54:54  <Frontier> The current applet is only a drawing surface
+2011-03-14T13:55:53  <Frontier> But it integrates transparently into my drawing routines. context.fillRect(0,0,10,10) means the same for the html canvas and the applet
+2011-03-14T13:56:21  <McLeopold> is the context object the piece that is different?
+2011-03-14T13:57:13  <Frontier> You can put it that way, yes. The canvas version and the applet version share the same interface when it comes to the rendering context, but implement it differently.
+2011-03-14T13:57:45  <Frontier> of course I only had to write the Java implementation ^^
+2011-03-14T13:58:48  <Frontier> I could reuse that Java implementation if I used Rhino. In the end it just means moving the JS engine out of the browser into the applet as well.
+2011-03-14T13:59:01  <McLeopold> can you point me to the section that does the detect of the browser, and switches the objects?
+2011-03-14T14:00:33  <Frontier> The canvas detection happens here: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/www/visualizer/js/Application.js#L146
+2011-03-14T14:01:19  <Frontier> and the objects are created here: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/www/visualizer/js/Application.js#L373
+2011-03-14T14:03:59  <Frontier> The applet takes some time to initialize and I must not access it during that time, so it has to call back after it is initialized. But this call back again can break the single-threadedness of JavaScript on some browsers. It just stops the current execution there and executes the callback. To avoid any race conditions I wrap every Java-to-JS call in a window.setTimeout() call. These timeouts work as expected in all browsers. T
+2011-03-14T14:04:15  <McLeopold> Frontier: do you have more than 1 canvas?
+2011-03-14T14:04:44  <Frontier> I have loads of them. They are ideal offscreen buffers for stuff that never changes, like the map
+2011-03-14T14:04:50  <McLeopold> and, shouldn't you only have to worry about IE browsers?
+2011-03-14T14:06:39  <Frontier> Sure, but I develop under Linux and had to test the applet there before I reboot into windows.
+2011-03-14T14:07:18  <Frontier> Anyway I wanted to go sure that my code is clean and just works with all browsers.
+2011-03-14T14:07:35  <Frontier> It's Java, it has to.
+2011-03-14T14:07:40  <McLeopold> ture
+2011-03-14T14:07:41  <McLeopold> true
+2011-03-14T14:07:52  <McLeopold> so, for organization, I would just remove the www dir
+2011-03-14T14:08:15  <McLeopold> a make file can combine the js, compile the java and move both over to the website dir
+2011-03-14T14:08:36  <Frontier> remove the www dir? Literally everything is in there
+2011-03-14T14:08:47  <Frontier> oh wait.. you mean the ants www dir
+2011-03-14T14:08:51  <McLeopold> yes
+2011-03-14T14:09:01  <McLeopold> 1 extra layer too many
+2011-03-14T14:09:23  <McLeopold> and, hopefully, we can get rid of that php file
+2011-03-14T14:09:27  <Frontier> what about visualizer.js. It is really a typical www candidate
+2011-03-14T14:09:35  <Frontier> hmm
+2011-03-14T14:09:48  <McLeopold> the makefile will know where to put it
+2011-03-14T14:11:21  <McLeopold> if we concat all your files, will it still work?
+2011-03-14T14:12:54  <Frontier> no that is too simple though. The rule would be: Take visualizer.js and replace this file by the content of all files referenced by "import('xyz')" lines, but remove the import lines and don't concatenate any duplicate imports.
+2011-03-14T14:13:54  <Frontier> I don't have any duplicate imports, and they aren't needed at some point, so that rule could be ignored.
+2011-03-14T14:14:38  <Frontier> I think a Python script could do that.
+2011-03-14T14:14:41  <McLeopold> so, you want to be able for it to run split and combined?
+2011-03-14T14:16:22  <Frontier> I need the split version while I am working on the files. And for the web it would be better if they were combined and minified with http://developer.yahoo.com/yui/compressor/
+2011-03-14T14:17:07  <jbroman> Closure Compiler might be cool, too.
+2011-03-14T14:17:47  <Frontier> jbroman: Isn't that a native compiler?
+2011-03-14T14:18:36  <jbroman> Frontier: Hmm?
+2011-03-14T14:18:41  <jbroman> Closure Compiler is JS to JS.
+2011-03-14T14:18:51  <jbroman> JS to smaller/faster/optimized JS.
+2011-03-14T14:18:56  <jbroman> http://code.google.com/closure/compiler/
+2011-03-14T14:19:05  <Frontier> ah ok, I thought that was an executable code compiler
+2011-03-14T14:19:55  <jbroman> It will do inlining, dead code removal and other stuff I don't think YUIC does (haven't looked at it lately though).
+2011-03-14T14:20:01  <McLeopold> Frontier: I'd probably refactor it so you're not doing document.write stuff.  Just create a debug html file that has a bunch of script tags.
+2011-03-14T14:20:41  <McLeopold> Then we can just concat the files at it will mostly be the same
+2011-03-14T14:21:27  *** choas <choas!~lars@p578F6902.dip.t-dialin.net> has joined #aichallenge
+2011-03-14T14:23:36  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.15/20110303024726])
+2011-03-14T14:27:05  <Frontier> hmm, I debug in both the offline.html and visualizer.php.
+2011-03-14T14:29:50  <janzert> a js minimizer generally does much more than just concat files together
+2011-03-14T14:30:09  <janzert> using a real minimizer of some sort is probably a good idea
+2011-03-14T14:32:41  <Frontier> McLeopold: I haz idea: http://www.linuxtopia.org/online_books/linux_tool_guides/the_sed_faq/sedfaq4_025.html
+2011-03-14T14:32:55  <Frontier> runs directly from the Makefile I assume
+2011-03-14T14:34:43  <McLeopold> janzert: my thought was to concat, and then minimize
+2011-03-14T14:34:53  <McLeopold> we only want minimized for the official site
+2011-03-14T14:35:06  <McLeopold> as a local tool, we want the full thing
+2011-03-14T14:35:16  <janzert> right, but let something like closure do all of it
+2011-03-14T14:36:08  <McLeopold> okay, but it's not going to factor out the document.write
+2011-03-14T14:36:21  <McLeopold> if it does, then great!
+2011-03-14T14:37:30  <janzert> it won't change how the code works, no
+2011-03-14T14:42:49  *** bhasker <bhasker!~bhasker@nat/yahoo/x-lupxvoluyxizfwvb> has quit IRC (Ping timeout: 250 seconds)
+2011-03-14T14:42:59  *** bhasker <bhasker!~bhasker@nat/yahoo/x-uhrqasncgnsndeej> has joined #aichallenge
+2011-03-14T14:50:19  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-14T14:52:20  *** contestbot <contestbot!~supybot@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T14:52:20  *** ChanServ sets mode: +o contestbot
+2011-03-14T14:52:57  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 240 seconds)
+2011-03-14T14:57:05  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-ilpsbhtaoyylenfe> has joined #aichallenge
+2011-03-14T15:04:45  *** lavalamp <lavalamp!d82d8da2@gateway/web/freenode/ip.216.45.141.162> has quit IRC (*.net *.split)
+2011-03-14T15:16:40  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2011-03-14T15:18:13  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-03-14T15:28:05  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T15:28:05  *** ChanServ sets mode: +o amstan
+2011-03-14T15:30:06  <amstan> Frontier: ok so..
+2011-03-14T15:30:08  <amstan> Frontier: still there?
+2011-03-14T15:30:36  <amstan> McLeopold: yay, you're here too
+2011-03-14T15:31:47  * amstan is waiting for either
+2011-03-14T15:32:53  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-03-14T15:32:53  <Frontier> i have 20 minutes
+2011-03-14T15:33:06  <amstan> Frontier: what www folder are you talking about?
+2011-03-14T15:33:09  <amstan> ants/www?
+2011-03-14T15:33:34  <McLeopold> yeah
+2011-03-14T15:33:40  <amstan> McLeopold: so.. merge?
+2011-03-14T15:33:43  <McLeopold> I suggest it was 1 layer 2 much
+2011-03-14T15:34:43  <amstan> McLeopold: what?
+2011-03-14T15:35:05  <Frontier> and I only really care about too many ad layers
+2011-03-14T15:35:14  <amstan> what ads?
+2011-03-14T15:35:41  <Frontier> sorry, I was trying to be funny. McLeopold wants to move stuff from ants/www into ants
+2011-03-14T15:36:13  <amstan> how about `mv ants/www ants/visualizer`
+2011-03-14T15:36:55  <Frontier> then you get ants/visualizer/visualizer/js/visualizer.js :)
+2011-03-14T15:37:08  <McLeopold> well, more like 'mv ants/www/visualizer ants/visualizer'
+2011-03-14T15:37:24  <amstan> McLeopold: +1 for that
+2011-03-14T15:37:47  <Frontier> ok, but then the php file doesn't work any longer
+2011-03-14T15:37:51  <McLeopold> amstan: so, you really want to get rid of epsilon-new-schema?
+2011-03-14T15:38:11  <amstan> the ants/visualizer/*.php files are not ants specific and should be included in the /website/ folder
+2011-03-14T15:38:12  <amstan> McLeopold: yes
+2011-03-14T15:38:14  *** bhasker <bhasker!~bhasker@nat/yahoo/x-uhrqasncgnsndeej> has quit IRC (Quit: bhasker)
+2011-03-14T15:38:35  <McLeopold> amstan: okay, give me a few hours, I'm in the middle of some stuff, then we can merge
+2011-03-14T15:39:06  <amstan> Frontier: i was thinking more about the makefiles.. i think we should go with what the others are doing and getting a python install script
+2011-03-14T15:39:17  *** bhasker <bhasker!~bhasker@nat/yahoo/x-fpomvfwawudhzyvi> has joined #aichallenge
+2011-03-14T15:40:29  <Frontier> allright, I don't know Python so I can relax and let others do the work
+2011-03-14T15:40:40  <amstan> Frontier: yes, but you should tell us what you need to be done
+2011-03-14T15:40:58  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Read error: Connection reset by peer)
+2011-03-14T15:41:36  <Frontier> cool. i can make an issue for that or just explain it here.
+2011-03-14T15:42:03  <amstan> Frontier: makefile or .sh script could work for now, and actually be functional
+2011-03-14T15:42:17  <amstan> in case nobody gets to it
+2011-03-14T15:42:54  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-14T15:43:25  <Frontier> In the visualizer/java is the code base for the applet. It has to be compiled into classes.
+2011-03-14T15:43:36  <amstan> so.. javac *.java
+2011-03-14T15:44:16  <Frontier> I used com.aicontest.... package names, but you are right
+2011-03-14T15:44:36  <amstan> i'm not that familiar with java packages
+2011-03-14T15:45:22  <Frontier> javac visualizer/java/com/aicontest/visualizer/*.java may actually work
+2011-03-14T15:45:48  <Frontier> I always use Eclipse for that, so I must check that myself
+2011-03-14T15:45:49  <amstan> Frontier: it should be s/aicontest/aichallenge
+2011-03-14T15:46:06  <amstan> wait..
+2011-03-14T15:46:15  <amstan> does it have to be a fqdn?
+2011-03-14T15:46:54  <Frontier> no, it doesn't have to be anything real, but it is common practice to use the company's web site
+2011-03-14T15:47:45  <Frontier> and http://aichallenge.com/ would be utterly wrong ^^
+2011-03-14T15:48:12  <amstan> yeah
+2011-03-14T15:50:14  <Frontier> amstan: the command is slightly more complex. It needs the Java Web Plugin jar on the classpath. On my computer it would be:
+2011-03-14T15:50:15  <Frontier> javac java/com/aicontest/visualizer/*.java -classpath /opt/sun-jdk-1.6.0.24/jre/lib/plugin.jar
+2011-03-14T15:51:01  <amstan> ok, i'll it
+2011-03-14T15:51:14  <amstan> on my own though, you don't have to wait for me
+2011-03-14T15:51:28  <Frontier> Or if the system uses java-config-2 it is independent from the sdk version and can use:
+2011-03-14T15:51:29  <Frontier> javac java/com/aicontest/visualizer/*.java -classpath /etc/java-config-2/current-system-vm/jre/lib/plugin.jar
+2011-03-14T15:54:05  <Frontier> Then there is the visualizer/js folder. The would be a good job for a python script. Collect all lines with "import('...');" in *.js files, make a unique list out of it and write a new file from the content of the imports.
+2011-03-14T15:54:13  <Frontier> *That
+2011-03-14T15:55:01  <amstan> Frontier: sure
+2011-03-14T15:55:48  <Frontier> Closure Compiler can be used on the result to minimize the file size.
+2011-03-14T15:57:16  <janzert> just give closure each of the js files separately
+2011-03-14T15:58:03  <Frontier> janzert: Why would that be better? A browser waits for each separate .js file as far as I know.
+2011-03-14T15:58:11  <janzert> and rewrite them so they aren't using the dynamic js loading
+2011-03-14T15:58:19  <janzert> it'll compile all the js files into one
+2011-03-14T15:59:08  *** boegel <boegel!~boegel@boegel.ugent.be> has joined #aichallenge
+2011-03-14T15:59:17  <Frontier> hmm, ok. if I write one js file containing all the imports (and nothing else) it could work like that.
+2011-03-14T15:59:28  * janzert nods
+2011-03-14T16:00:20  <janzert> or just statically put all the separate script tags needed into the html when working with the unminified "development" version
+2011-03-14T16:00:49  <janzert> that's probably what I would do myself, but it probably doesn't really matter
+2011-03-14T16:02:56  <Frontier> janzert: I prefer to use the visualizer.php and offline.html as is. I think the solution with one import file is quite a good compromise.
+2011-03-14T16:04:07  <janzert> yeah, I wouldn't use a visualizer.php for testing at all myself. just a plain test_visualizer.html
+2011-03-14T16:04:14  <Frontier> I keep the name visualizer.js for this import file and when we install the www files we compile the other js files into a file with the same name. the web files can remain untouched
+2011-03-14T16:04:43  <janzert> yep, that would probably work
+2011-03-14T16:05:49  <Frontier> It is nice to have a database with sample replays in the background. A change to the game_id parameter and I can test a different replay. :)
+2011-03-14T16:07:04  <Frontier> ok, i'm out for tonight. cu tomorrow
+2011-03-14T16:09:20  <janzert> later
+2011-03-14T16:11:07  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-14T16:16:11  * amstan is just waiting for McLeopold
+2011-03-14T16:20:47  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-03-14T16:21:27  *** amstan <amstan!~alex@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T16:21:27  *** ChanServ sets mode: +o amstan
+2011-03-14T16:24:53  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-ilpsbhtaoyylenfe> has quit IRC (Read error: Connection reset by peer)
+2011-03-14T16:25:07  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-eurffbpzpdmjnuff> has joined #aichallenge
+2011-03-14T16:27:54  *** readncode <readncode!~closedbra@152.15.206.19> has joined #aichallenge
+2011-03-14T16:29:50  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-eurffbpzpdmjnuff> has quit IRC (Ping timeout: 255 seconds)
+2011-03-14T16:30:33  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-14T16:36:54  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-mnwqaxjypslsmcif> has joined #aichallenge
+2011-03-14T16:38:09  *** readncode <readncode!~closedbra@152.15.206.19> has quit IRC (Read error: Operation timed out)
+2011-03-14T16:41:16  *** amstan <amstan!~alex@69-165-150-184.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-03-14T16:41:24  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T16:41:24  *** ChanServ sets mode: +o amstan
+2011-03-14T17:04:56  *** boegel <boegel!~boegel@boegel.ugent.be> has quit IRC (Quit: Leaving)
+2011-03-14T17:24:19  *** UncleVasya <UncleVasya!kvirc@46.133.63.155> has quit IRC ()
+2011-03-14T17:54:12  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-14T17:58:04  *** delt0r_ <delt0r_!~delt0r@188-22-175-12.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-14T17:59:29  *** delt0r___ <delt0r___!~delt0r@188-22-170-103.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-03-14T18:09:46  *** superflit_ <superflit_!~superflit@140.226.49.148> has quit IRC (Quit: superflit_)
+2011-03-14T18:17:02  <amstan> McLeopold: ping
+2011-03-14T18:17:39  <McLeopold> ping
+2011-03-14T18:18:33  <McLeopold> amstan
+2011-03-14T18:18:43  <amstan> McLeopold: so.. when are you available to code then? should i make other plans for today?
+2011-03-14T18:19:12  <McLeopold> not till late for you
+2011-03-14T18:19:39  <amstan> McLeopold: as in 10pm?
+2011-03-14T18:20:44  <McLeopold> I'll be around then
+2011-03-14T18:21:32  <amstan> ok
+2011-03-14T18:21:34  <amstan> cool
+2011-03-14T18:21:46  <McLeopold> tomorrow is better, if you want to try and work together
+2011-03-14T18:21:50  <amstan> ok
+2011-03-14T18:21:59  <McLeopold> tonight, I plan to merge, so that would give you time to go over my changes
+2011-03-14T18:24:40  <amstan> ok, decent
+2011-03-14T18:40:44  *** choas <choas!~lars@p578F6902.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-14T18:55:55  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-14T18:59:21  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-14T19:07:19  *** bhasker <bhasker!~bhasker@nat/yahoo/x-fpomvfwawudhzyvi> has quit IRC (Ping timeout: 240 seconds)
+2011-03-14T19:09:00  *** bhasker <bhasker!~bhasker@nat/yahoo/x-fmiehyxlgcmtaiug> has joined #aichallenge
+2011-03-14T19:10:26  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-14T19:11:21  *** bhasker <bhasker!~bhasker@nat/yahoo/x-fmiehyxlgcmtaiug> has quit IRC (Client Quit)
+2011-03-14T19:20:20  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-mnwqaxjypslsmcif> has quit IRC (Remote host closed the connection)
+2011-03-14T19:32:48  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 248 seconds)
+2011-03-14T20:01:20  *** Meatkat <Meatkat!~bovard@217.113.66.228> has joined #aichallenge
+2011-03-14T20:13:59  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-14T20:21:06  <bss03> amstan: pong
+2011-03-14T20:21:25  <bss03> contestbot: Thanks, already there.
+2011-03-14T20:21:26  <contestbot> bss03: User error, it's not my fault.
+2011-03-14T20:36:30  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-14T20:40:31  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 255 seconds)
+2011-03-14T21:02:03  *** amstan <amstan!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has joined #aichallenge
+2011-03-14T21:02:03  *** ChanServ sets mode: +o amstan
+2011-03-14T21:15:50  <antimatroid> bloody c++ templates
+2011-03-14T21:15:54  <antimatroid> i want them back, but i don't
+2011-03-14T21:23:33  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-14T21:28:40  *** amstan <amstan!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has quit IRC (Ping timeout: 255 seconds)
+2011-03-14T21:46:33  *** amstan <amstan!~alex@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T21:46:33  *** ChanServ sets mode: +o amstan
+2011-03-14T21:47:48  *** amstan_ <amstan_!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-14T21:47:48  *** ChanServ sets mode: +o amstan_
+2011-03-14T21:50:22  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-14T21:56:43  *** amstan <amstan!~alex@69-165-150-184.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-03-14T21:56:43  *** amstan__ <amstan__!~alex@69.165.150.184> has joined #aichallenge
+2011-03-14T21:56:43  *** ChanServ sets mode: +o amstan__
+2011-03-14T22:10:47  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 252 seconds)
+2011-03-14T22:24:07  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.15/20110303170601])
+2011-03-14T22:31:41  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-dybtxhwdeexrkgfi> has joined #aichallenge
+2011-03-14T22:52:33  <amstan_> McLeopold: ping
+2011-03-14T23:09:41  <antimatroid> templates are back
+2011-03-14T23:13:04  <amstan_> hmm?
+2011-03-14T23:13:06  <amstan_> aww
+2011-03-14T23:13:15  *** amstan_ is now known as amstan
+2011-03-14T23:17:44  <sigh> what's with the temaples?
+2011-03-14T23:18:29  *** amstan__ <amstan__!~alex@69.165.150.184> has quit IRC (Ping timeout: 255 seconds)
+2011-03-14T23:36:40  <antimatroid> sigh: for my game theory library
+2011-03-14T23:38:46  <antimatroid> without: https://github.com/antimatroid/GTL/blob/master/ngame/NGame.h
+2011-03-14T23:38:46  <antimatroid> with: http://pastebin.com/asZHbsgW
+2011-03-14T23:39:02  <antimatroid> sure without has all that in the .cc, but it was nice to have it separated

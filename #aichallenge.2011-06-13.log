@@ -1,0 +1,1686 @@
+2011-06-13T00:21:35  *** UncleVasya <UncleVasya!kvirc@46.133.207.147> has joined #aichallenge
+2011-06-13T00:49:29  <antimatroid> McLeopold: with damage you can block corridors with more than 3 width :\
+2011-06-13T00:49:45  *** delt0r- <delt0r-!~delt0r@188-22-175-245.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-13T00:50:29  *** znutar <znutar!~znutar@69.164.197.143> has left #aichallenge
+2011-06-13T00:51:11  *** delt0r_ <delt0r_!~delt0r@188-22-171-116.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-06-13T00:53:18  *** _flag <_flag!~flag@69.165.173.172> has quit IRC (Quit: Lost terminal)
+2011-06-13T00:55:26  <UncleVasya> antimatroid: Maybe you can solve blocking with rule like in the Life Game:  if many ants stay near each other for a long time than some of them die.
+2011-06-13T00:55:40  <antimatroid> rules should be stateless
+2011-06-13T00:55:51  <antimatroid> as in, it should only depend on the current location of ants etc.
+2011-06-13T01:01:53  <janzert> I'm thinking we need a radius with both a nib and a convex shoulder (completely unexplained terms I know ;) )
+2011-06-13T01:05:58  <janzert> i.e. only the shape in the top middle of this image is immune from blocking by either a diagonal or straight line of ants http://dl.dropbox.com/u/9140666/ant-blocking-shapes.png
+2011-06-13T01:06:43  <antimatroid> i like the idea of going back to attack2 = 5
+2011-06-13T01:06:49  <antimatroid> i think that makes the blocking harder
+2011-06-13T01:06:49  <janzert> I don't know if any actual radius as currently defined fulfills that shape ;)
+2011-06-13T01:07:30  <antimatroid> janzert: try the attack2 = 5 radius, you have the first one with knight moves
+2011-06-13T01:09:00  * janzert isn't understanding the second half of that sentence
+2011-06-13T01:09:21  <antimatroid> the top right image in your link, you have that, plus where a "knight" could move from red in chess
+2011-06-13T01:09:50  <antimatroid> or the bottom one without the edges :P
+2011-06-13T01:09:54  <antimatroid> corners***
+2011-06-13T01:11:14  <janzert> so the top right one without the "nibs" points at the very tip north, east, south and west
+2011-06-13T01:12:02  <janzert> the top right already contains the knight moves from chess
+2011-06-13T01:12:48  <antimatroid> ah yes
+2011-06-13T01:12:54  <antimatroid> that without the n,e,s,w tips
+2011-06-13T01:13:10  <janzert> reload the image, should show it in the bottom left now
+2011-06-13T01:13:29  <antimatroid> yep, that's what it was previously set at
+2011-06-13T01:13:58  <janzert> I think the problem with that shape, is a vertical or horizontal line will block right?
+2011-06-13T01:14:14  <antimatroid> don't think so, could be wrong
+2011-06-13T01:14:35  <janzert> i.e. you need the nibs to break a straight line and the convex shoulder to break a diagnol
+2011-06-13T01:14:38  <antimatroid> oh wait yeah?
+2011-06-13T01:14:47  <antimatroid> but the ants can walk onto each other
+2011-06-13T01:15:18  <antimatroid> McLeopold: would love to have you chime in on this :P
+2011-06-13T01:16:06  <janzert> i.e. when radius2=5 approaches a line of ants at a right angle to the direction of travel it will step into the radius of 3 enemy ants at once
+2011-06-13T01:16:36  <antimatroid> yeah
+2011-06-13T01:17:01  <antimatroid> alright, i think i like your top middle one too then
+2011-06-13T01:17:09  <janzert> which is where I can to the conclusion about needing both nibs and convex shoulders
+2011-06-13T01:17:18  <antimatroid> that is view2 = 9 yeah?
+2011-06-13T01:17:27  <antimatroid> attack2*
+2011-06-13T01:17:41  <janzert> let me figure it out, not sure if any radius with euclidean distance provides it or not
+2011-06-13T01:18:19  <antimatroid> yeah, it's just attack2 = 9
+2011-06-13T01:18:24  <janzert> yep
+2011-06-13T01:18:49  <janzert> so that is the smallest radius that works out to prevent trivial blocking
+2011-06-13T01:28:00  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-13T01:50:13  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-13T01:53:24  *** noid36586 <noid36586!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-13T01:53:27  *** noid36586 is now known as Accoun
+2011-06-13T02:02:38  <antimatroid> games go for too long
+2011-06-13T02:02:40  <antimatroid> it gets boring :\
+2011-06-13T02:02:49  <antimatroid> and there's too many ants
+2011-06-13T02:03:45  <janzert> it takes that many ants to end a game with the current skill level of bots, if you reduce the spawn rate it just means the game will take even longer for these bots to eliminate each other
+2011-06-13T02:05:14  <janzert> btw, with attack2=9 blocking of 1 and 2 width corridors are still possible of course but it looks like a 3 width gets 3 ants for 2 is the best a static block can do
+2011-06-13T02:05:36  <janzert> working out the 4 width now, will post a picture when I'm done :)
+2011-06-13T02:06:16  <antimatroid> :)
+2011-06-13T02:06:30  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has joined #aichallenge
+2011-06-13T02:07:00  <antimatroid> surely some of the better bots are at least able to search out and attack enemy ants, even if not very strategically
+2011-06-13T02:07:30  <antimatroid> i prefer the idea of a game where there are way less ants, because it's more interesting and easier computationally :P
+2011-06-13T02:08:27  <janzert> or it just takes longer to get to the density of ants you see now for interesting things to happen
+2011-06-13T02:08:35  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-06-13T02:10:36  <Zaphus> I've seen one bot that has a good attack algorithm right now, can't recall which one though.
+2011-06-13T02:10:57  <Zaphus> would be interesting to try other sizes of attack
+2011-06-13T02:12:33  <janzert> http://dl.dropbox.com/u/9140666/ants-r2-9-corridors.png
+2011-06-13T02:13:05  <janzert> looks like 1 and 2 width block, 3 width gets 3 for 2 and 4 width is 1 to 1
+2011-06-13T02:13:23  <janzert> want to look it over for the obvious errors?
+2011-06-13T02:14:30  <janzert> ugh, no
+2011-06-13T02:14:38  <janzert> 3 width is completely blocked?
+2011-06-13T02:15:15  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-06-13T02:16:11  <janzert> yeah, 3 width is still blocked by top right configuration
+2011-06-13T02:18:49  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-06-13T02:20:25  *** Pyronaut <Pyronaut!7962dd5e@gateway/web/freenode/ip.121.98.221.94> has joined #aichallenge
+2011-06-13T02:24:35  <Zaphus> janzert:  is the bottom left 4 width correct ?
+2011-06-13T02:25:03  <Zaphus> where do the 1's come from in that ?
+2011-06-13T02:27:58  <UncleVasya> Zaphus: Hi. I have something to you :)
+2011-06-13T02:28:34  <Pyronaut> Zaphus, if you don't mind me asking, what happened buddy? One moment you are the kingpin, and next you are at the bottom of the ladder?
+2011-06-13T02:28:43  <UncleVasya> The only thing I have to do before release is to make good bot names in the visualizer.
+2011-06-13T02:28:54  <janzert> Zaphus: the ones come from the ants at the end of the walls
+2011-06-13T02:29:29  <janzert> they are a distance 2 rows and cols away
+2011-06-13T02:29:32  <Zaphus> Pyronaut:  we're just testing, my current bot is testing timeout code - purposefully timing at
+2011-06-13T02:29:57  <Zaphus> janzert: but the 1's are 3 cols away
+2011-06-13T02:30:34  <janzert> oops, I read bottom right 4 column for some reason
+2011-06-13T02:31:02  <janzert> and you're right the 1's are wrong there
+2011-06-13T02:32:01  <Zaphus> UncleVasya: I have to leave in a few minutes - will be back in a couple of hours (you may see me online on my phone inbetween)
+2011-06-13T02:32:49  <janzert> fixed now
+2011-06-13T02:33:40  <janzert> so a 4 width corridor can get 2 for 1
+2011-06-13T02:33:53  <UncleVasya> Zaphus: When you'll be at home, tell me and I'll give you a link.
+2011-06-13T02:36:03  <Zaphus> UncleVasya: if you have it right now I can grab it, otherwise I'll be back
+2011-06-13T02:36:20  <UncleVasya> Zaphus: http://www.filefactory.com/file/ccc84cf/n/AntsTesting_0.3_beta_6.7z
+2011-06-13T02:40:42  <Zaphus> UncleVasya: I still get   "" is not a valid integer value  - and nothing interesting happens after that
+2011-06-13T02:41:02  <UncleVasya> wow
+2011-06-13T02:41:22  <UncleVasya> ok, we've talk about it when you have a time.
+2011-06-13T02:41:30  <Zaphus> ok, see you in a few hours
+2011-06-13T02:41:32  <UncleVasya> *we'd  ?
+2011-06-13T02:41:32  <Zaphus> cya all
+2011-06-13T02:41:42  <janzert> UncleVasya: We'll
+2011-06-13T02:41:58  <janzert> contraction of "we will"
+2011-06-13T02:42:22  <UncleVasya> thanks
+2011-06-13T02:45:52  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T03:01:17  *** Zaphus <Zaphus!~Zaphus@120.153.216.238> has joined #aichallenge
+2011-06-13T03:08:31  *** Zaphus <Zaphus!~Zaphus@120.153.216.238> has quit IRC (Quit: Bye)
+2011-06-13T03:11:59  *** okayzed is now known as okay
+2011-06-13T03:13:33  *** BrykBot <BrykBot!4dfd0f59@gateway/web/freenode/ip.77.253.15.89> has joined #aichallenge
+2011-06-13T03:13:40  <BrykBot> Error message:    replaydata.ants.6.6.length should be within [499 .. 500], but was found to be 498!
+2011-06-13T03:18:08  *** BrykBot <BrykBot!4dfd0f59@gateway/web/freenode/ip.77.253.15.89> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T03:22:59  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-13T03:26:41  *** noid36586 <noid36586!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-13T03:26:42  *** noid36586 is now known as Accoun
+2011-06-13T03:30:01  *** berak <berak!~chatzilla@89.204.137.137> has joined #aichallenge
+2011-06-13T03:33:24  *** berak <berak!~chatzilla@89.204.137.137> has quit IRC (Client Quit)
+2011-06-13T03:33:34  *** okay is now known as okayzed
+2011-06-13T03:37:22  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-13T03:57:02  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-13T03:57:47  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-06-13T04:01:19  *** nux67 <nux67!56439097@gateway/web/freenode/ip.86.67.144.151> has joined #aichallenge
+2011-06-13T04:19:18  <CIA-79> aichallenge: janzert epsilon * rcc0acba / worker/engine.py : Fix incorrect indentation after removing except clause - http://bit.ly/kqKP4X
+2011-06-13T04:26:18  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-13T04:26:37  *** boegel <boegel!~boegel@91.182.229.125> has joined #aichallenge
+2011-06-13T04:29:05  *** locutus2 <locutus2!~locutus2@89.204.153.123> has joined #aichallenge
+2011-06-13T04:38:26  *** Pyronaut <Pyronaut!7962dd5e@gateway/web/freenode/ip.121.98.221.94> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T04:46:23  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 4.0.1/20110518052719])
+2011-06-13T04:46:42  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-13T04:47:36  <Zaphus> UncleVasya: I'm back - let me know if you want to figure out the problem with the AntsTesting program
+2011-06-13T04:47:55  <UncleVasya> I want.
+2011-06-13T04:49:29  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-06-13T04:49:52  <Zaphus> UncleVasya:  :-)  ok - first thing to note is that I'm running the live version of the playgame.py plus engine.py etc, the ones directly from git not the ones in the tools zip
+2011-06-13T04:49:57  <UncleVasya> Everything is done for version 0.3 but I can't upload it to the forum until I'm sure it works on the any another computer but my.
+2011-06-13T04:50:23  <Zaphus> can you give me a version that logs what commands it is doing to a file, or the screen or something ?
+2011-06-13T04:51:57  <smiley1983> UncleVasya: I saw the conversation yesterday about timeouts, and had a look at the time_remaining function; it turns out that the Sys.time function is wrong, I should be using Unix.gettimeofday. However, this requires an extra argument in ocamlbuild, so I need to update compiler.py first. Just letting you know.
+2011-06-13T04:53:01  <UncleVasya> I haven't such a version.
+2011-06-13T04:53:02  <UncleVasya> You get error message when you just pressed Start button?
+2011-06-13T04:53:03  <UncleVasya> Is map name added to the table?
+2011-06-13T04:54:08  <antimatroid> what are your guys thoughts on increasing the attack radius?
+2011-06-13T04:54:16  <UncleVasya> smiley1983: ok
+2011-06-13T04:54:17  <antimatroid> i like attack2 = 9
+2011-06-13T04:54:31  <antimatroid> as per janzerts analysis
+2011-06-13T04:55:02  <Zaphus> UncleVasya:  ok, I'll start with the first noticable bug:  If I open it a second time, it is in the Testing tab, and the map and bot lists are blank, I need to flip between the tabs to waken it up
+2011-06-13T04:55:40  <Zaphus> antimatroid:  I'm willing to give it a try.   9 means up to 3 squares away in a straight line, right ?  and vision is still way more than that
+2011-06-13T04:55:53  <antimatroid> yep
+2011-06-13T04:56:12  <antimatroid> it makes blocking way harder
+2011-06-13T04:56:28  <antimatroid> i don't mind defensive structures, but it's lame if they can't even be broken down with largish corridors
+2011-06-13T04:56:45  <UncleVasya> Zaphus: I think there are only few places in my code where your error can happen. I'll add some checks and message explaining where problem is.
+2011-06-13T04:56:50  <smiley1983> was the conversation with janzert's analysis earlier today (about to go and read the log)
+2011-06-13T04:56:57  <Zaphus> antimatroid:  How hard is it to flip the Beta over to 9 and we give it a try ?
+2011-06-13T04:56:58  <smiley1983> ?
+2011-06-13T04:57:18  <antimatroid> smiley1983: trying to work out what makes blocking the least trivial/hardest
+2011-06-13T04:58:03  <Zaphus> antimatroid:  it also makes attacking different, because you can now attack from a larger circumfrance  (thats not how it's spelt!)
+2011-06-13T04:58:16  <antimatroid> Zaphus: it's a matter of changing the parameters on the server
+2011-06-13T04:58:32  <antimatroid> i'd mcleopold to chime in before that happens
+2011-06-13T04:58:38  <antimatroid> i'd like*
+2011-06-13T04:58:54  <antimatroid> i think attacking might become more strategic?
+2011-06-13T04:58:55  <janzert> smiley1983: the attack radius conversation start was ~4 hours ago
+2011-06-13T04:59:02  <antimatroid> it also makes it harder to do anything like game trees
+2011-06-13T04:59:12  <Zaphus> antimatroid: I'll do a local test - I assume the starter bots are not hardcoded for the radius ?
+2011-06-13T04:59:19  <antimatroid> they aren't
+2011-06-13T04:59:35  <Zaphus> where do I make that change locally ?
+2011-06-13T04:59:54  <Zaphus> one of the playgame parameters ?
+2011-06-13T05:00:05  <janzert> --attackradius2
+2011-06-13T05:00:16  <antimatroid> ^^ that's easiest
+2011-06-13T05:00:23  <antimatroid> i was trying to find where the default value is :P
+2011-06-13T05:00:24  <Zaphus> and currently it's 4, by default, right
+2011-06-13T05:00:25  <smiley1983> janzert: thankyou, found it now :)
+2011-06-13T05:00:35  <antimatroid> 4 is the default yes
+2011-06-13T05:01:00  <janzert> antimatroid: the default for playgame.py is set at line 149
+2011-06-13T05:01:41  *** UncleVasya <UncleVasya!kvirc@46.133.207.147> has quit IRC (Ping timeout: 260 seconds)
+2011-06-13T05:02:14  <Zaphus> ok, my first test - going to run my gauntlet of bots with 4, then change to 9 - but my code assumes 4 so I should find I'm doing worse than before - then I'll make the latest aware of the change and see if it behaves
+2011-06-13T05:02:55  <smiley1983> janzert: do you know if there's been any update on whether makefiles will be useable? I want to add a flag to ocamlbuild so that the timer function can work properly, but if makefiles are likely to be added then I'll wait.
+2011-06-13T05:02:58  *** sir_macelon <sir_macelon!c06482ee@gateway/web/freenode/ip.192.100.130.238> has joined #aichallenge
+2011-06-13T05:03:05  <sir_macelon> hi
+2011-06-13T05:03:26  *** mcstar <mcstar!~mcstar@adsl-89-132-21-167.monradsl.monornet.hu> has joined #aichallenge
+2011-06-13T05:03:31  <mleise> I just realized how useful it is, not to deactivate the laptop panel when an external monitor is connected. There is so much more space in my IDE suddenly
+2011-06-13T05:03:33  <sir_macelon> so i guess the launch is delayed right? the milestone has passed yesterday
+2011-06-13T05:03:46  <janzert> smiley1983: no, I doubt makefiles for submissions of any sort will be added for this contest
+2011-06-13T05:03:56  <janzert> at least I've not heard of anyone working on it
+2011-06-13T05:04:15  <smiley1983> okay, I should be submitting another pull request later this evening... sorry :|
+2011-06-13T05:05:58  <janzert> sir_macelon: my best guess is that time till launch is still measured in weeks not days
+2011-06-13T05:07:09  <Zaphus> Perhaps July 1st should be the new target date ?
+2011-06-13T05:07:26  <Zaphus> (choosing an arbitrary date thats easy to remember)
+2011-06-13T05:07:59  <mleise> HELP! My bot errors out on the test server. It tries to convert 5,346,615,871 to an unsigned int
+2011-06-13T05:08:06  <sir_macelon> are you sure the ranking is working right? it's hard to test it with all those java bot crashes
+2011-06-13T05:08:25  <sir_macelon> there are too big oscillations and it's hard to detect possible bugs
+2011-06-13T05:08:25  *** MuTa-ofd00m <MuTa-ofd00m!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-06-13T05:08:58  <smiley1983> mleise: is that from the player_seed value still being passed into the bot, or something else?
+2011-06-13T05:09:09  <sir_macelon> mleise: you have to add proper parsing of the player_seed value
+2011-06-13T05:09:20  <Zaphus> sir_macelon: I'd agree... it does make it hard - but the top 4-5 have consistantly been up there in similar order (apart from me tanking my latest version on purpose to test timeouts)
+2011-06-13T05:09:35  <mleise> So the seed is a 64 bit int?
+2011-06-13T05:09:58  <smiley1983> however, player_seed is scheduled for removal (if I understand correctly)
+2011-06-13T05:10:18  <janzert> player_seed is the replacement for the old seed
+2011-06-13T05:10:29  <smiley1983> oh, I was wrong, sorry
+2011-06-13T05:10:46  <janzert> player_seed is different for each player unlike the old seed parameter was
+2011-06-13T05:11:07  <smiley1983> So the bot should actually parse this value and make it available to the player somehow?
+2011-06-13T05:11:47  <janzert> if they want, it would mostly be to seed the bots random number generator so it could replay the game the same way later
+2011-06-13T05:12:03  <smiley1983> great, that's very useful :)
+2011-06-13T05:12:10  <mleise> ok, I simply relied on 32 bit ints as game parameters that was my fault.
+2011-06-13T05:12:22  <janzert> or just make your bot deterministic :)
+2011-06-13T05:12:36  <smiley1983> mleise: I did too, and I think for all the others it's okay...
+2011-06-13T05:14:24  <Zaphus> janzert: Wait, what ?   so you're saying you're going to hand the bots the seed for the random number generator.. plus the code to do the map+food ?   i.e. the bot has all the info to predict where the food and enemies will be ?
+2011-06-13T05:14:24  <janzert> hmm, actually it looks like every player is given the same player_seed, it just differs from the engine seed
+2011-06-13T05:14:35  <mleise> btw, I changed my nick from my Planet Wars bot name 'Frontier' since I frequent other channels on freenode now :)
+2011-06-13T05:14:45  *** boegel <boegel!~boegel@91.182.229.125> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-13T05:14:46  <janzert> Zaphus: no, that was the problem with the seed parameter before
+2011-06-13T05:14:55  <antimatroid> what is the seed parameter for?
+2011-06-13T05:15:01  <janzert> player_seed is not the same as the engine seed
+2011-06-13T05:15:07  <antimatroid> but what's it for?
+2011-06-13T05:15:19  <janzert> so players can seed their rng with it I assume
+2011-06-13T05:15:28  <janzert> so they can replay the game the same way later on
+2011-06-13T05:15:37  <janzert> but not use a fixed seed for every game
+2011-06-13T05:15:41  <Zaphus> very odd.. since it wont replay the same because they aren't told the engine seed
+2011-06-13T05:15:45  *** UncleVasya <UncleVasya!kvirc@178-133-78-165.dialup.umc.net.ua> has joined #aichallenge
+2011-06-13T05:15:58  <smiley1983> but it will be the same if the engine uses the same seed it used last time
+2011-06-13T05:16:02  <janzert> but the replay has it so you can set the engine to use the same seed
+2011-06-13T05:16:24  <janzert> or at least the replay is suppose to record it, I haven't verified that
+2011-06-13T05:16:26  <Zaphus> seems far fetched in usefulness, you dont have the other bots either :-)
+2011-06-13T05:17:01  <janzert> the other thing you can do is simply reconstruct the input to your bot from the replay
+2011-06-13T05:17:16  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-06-13T05:17:16  <janzert> which is the more realistic useful scenario
+2011-06-13T05:19:55  <janzert> of course from my experience with arimaa even this is often not enough to get a bot to replay things the same since small differences in processing power and timing will change a moderately complex bot's decision for a move
+2011-06-13T05:20:37  <Zaphus> janzert:  You made the image for the attack2=9 blocking, right ?
+2011-06-13T05:20:44  <janzert> yes
+2011-06-13T05:21:00  <janzert> at least this one http://dl.dropbox.com/u/9140666/ants-r2-9-corridors.png
+2011-06-13T05:21:10  <Zaphus> the 1 corridoor case can remove the ant sitting further back, it's not required
+2011-06-13T05:21:20  <janzert> true
+2011-06-13T05:21:59  <Zaphus> in fact, no matter what the radius is, that combo of two on the end is always going to block a 1-corridoor
+2011-06-13T05:22:16  <antimatroid> smiley1983: i worked out how to do a* with multiple sources/targets, just not sure if it will be more efficient than normal bfs
+2011-06-13T05:22:21  <Zaphus> apart from being attacked from the side/back obviously, which is where he increased radius really kicks in
+2011-06-13T05:22:25  <janzert> yep
+2011-06-13T05:22:26  <antimatroid> or more importantly when it will/wont
+2011-06-13T05:23:18  <UncleVasya> Zaphus: You're getting error when you press Start or when appliacation starts?
+2011-06-13T05:23:27  *** boegel <boegel!~boegel@91.182.229.125> has joined #aichallenge
+2011-06-13T05:23:39  <Zaphus> UncleVasya: Press start, wait a short time, then the error
+2011-06-13T05:23:46  <janzert> we've known for a long time that the current attack method blocks 1 and 2 wide corridors
+2011-06-13T05:23:48  <Zaphus> probably the end of the first game they play
+2011-06-13T05:24:47  <Zaphus> attackradius2=9 will mean you are more likely to get snipered across the water from the side, which is good.   There will always be some places that can be defended more strongly than others
+2011-06-13T05:24:58  <smiley1983> antimatroid: I still haven't worked out exactly what I
+2011-06-13T05:25:16  <smiley1983> 'll be doing for pathfinding, but I'm pretty sure it will be based on bfs
+2011-06-13T05:25:18  <janzert> what didn't become apparent until the last few days was that for many radius settings almost any width corridor could be blocked
+2011-06-13T05:27:39  <antimatroid> smiley1983: i was intending to just use bfs, but same paper examples last night convinced me otherwise i think
+2011-06-13T05:30:40  <smiley1983> I'd be curious to know what the examples illustrated :)
+2011-06-13T05:30:43  <janzert> you could simply store a complete distance map, it's less than 270MB for a 128*128 map ;)
+2011-06-13T05:30:45  <antimatroid> http://pastebin.com/pJ95bqfC
+2011-06-13T05:30:53  <antimatroid> it's hard to do example illistrations
+2011-06-13T05:31:47  <antimatroid> g(x) := distance from a to x, h(x) := min dist(x, *) for all *, f := g + h
+2011-06-13T05:32:25  <antimatroid> i think i'd be inclined to order my queue of searchable squares by min f, then min h for a draw
+2011-06-13T05:33:03  <antimatroid> the calculation of h is what might make it less efficient than normal bfs, depending on number of targets
+2011-06-13T05:33:16  <antimatroid> and to some degree the number of sources
+2011-06-13T05:33:56  <janzert> actually if you store the distances in nibbles, you can fit a 200x200 map in ~800MB
+2011-06-13T05:34:18  <antimatroid> i thought that was to me :P
+2011-06-13T05:34:28  <antimatroid> i was like where the hell am i going to get 800mb of memory
+2011-06-13T05:34:41  <antimatroid> for a part of my bots move making :P
+2011-06-13T05:35:01  <Zaphus> janzert:  halve that, because the distance from A-B is the same as B-A
+2011-06-13T05:35:04  <janzert> I'm being rather facetious but it was to you :)
+2011-06-13T05:35:19  <janzert> Zaphus: ahh, yes
+2011-06-13T05:35:35  <antimatroid> you calculate h once you come across a square, and you can just traverse the target set to find the min distance
+2011-06-13T05:35:36  <janzert> so you're down to 400MB less than half of your bots limit :P
+2011-06-13T05:35:50  <Zaphus> and, you dont need to include the ones that start or end in water, that will save some too :-)
+2011-06-13T05:36:19  <antimatroid> you don't calculate h for all locations before the search, as you might not search all locations, so why bother?
+2011-06-13T05:36:20  <janzert> well, then you need a more complex representation and probably can't do a simple table lookup to get your distances
+2011-06-13T05:36:20  <smiley1983> antimatroid: that makes sense. I think I'm going to be wanting to use bfs for other reasons anyway, and it will incidentally cover most of the pathfinding I need - but it might be useful to implement A* for some special cases
+2011-06-13T05:36:46  <antimatroid> no, that's my point, h could be expensive, there's some trade off to when bfs would actually be better i think
+2011-06-13T05:37:03  <antimatroid> smiley1983: i want to speed food collection up
+2011-06-13T05:37:14  <antimatroid> and "matching up" my ants to enemy ants
+2011-06-13T05:37:52  <antimatroid> i want to maximise teh time i have for working out battle moves basically :P
+2011-06-13T05:38:45  <smiley1983> I'm still deciding about whether I can cover food and enemy matching with one search, or if I need two (or more) separate searches.
+2011-06-13T05:39:00  <antimatroid> meh, i want to collect food first
+2011-06-13T05:39:12  <antimatroid> otherwise just make your target set the food/enemies
+2011-06-13T05:39:43  <antimatroid> it's a bit more complicated once you add in reusing already moved/future ants, but it still works
+2011-06-13T05:40:01  <smiley1983> I'm curious; if 3 of 4 bots return their orders within 100ms, does the 4th bot get more processing time than it would have if the other three had used 900ms?
+2011-06-13T05:40:16  <antimatroid> previously yes
+2011-06-13T05:40:18  <antimatroid> currently yes
+2011-06-13T05:40:29  <antimatroid> on the proper server once we launch, no
+2011-06-13T05:40:49  <janzert> antimatroid: for that exact scenario it would still be yes ;)
+2011-06-13T05:41:03  <janzert> well, slightly possibly yes
+2011-06-13T05:41:09  <smiley1983> I thought so :) My planetwars bot was very fast, I think it would never have used more than 300ms on the maps in that contest.
+2011-06-13T05:41:15  <antimatroid> janzert: aren't we going to be pausing the processes of bots while others make their moves?
+2011-06-13T05:41:35  <antimatroid> smiley1983: i used > 0.9 seconds every turn :P
+2011-06-13T05:41:38  <janzert> we'll be running one bot per core on the machine
+2011-06-13T05:41:39  <smiley1983> they are multi-core machines...
+2011-06-13T05:42:02  <Zaphus> how many cores ?
+2011-06-13T05:42:06  <antimatroid> 2
+2011-06-13T05:42:07  <janzert> so while much better, there will still be a bit of 'interference'
+2011-06-13T05:42:15  <antimatroid> okay sure
+2011-06-13T05:42:18  <janzert> Zaphus: probably 2, maybe 8
+2011-06-13T05:42:19  <antimatroid> i'm still much happier
+2011-06-13T05:42:28  <Zaphus> barely 'mult-core' at 2 :-)
+2011-06-13T05:43:00  <Zaphus> so a 10-bot map will have some cores with 1 bot and some with 2,  hope I get lucky!
+2011-06-13T05:43:29  <janzert> ? it will have 5 pairs of two to start with
+2011-06-13T05:43:41  <janzert> the pairs are shuffled on each move
+2011-06-13T05:43:57  <smiley1983> that is a good feature :)
+2011-06-13T05:43:59  <Zaphus> oh, so it wont go 4 pairs of 2 and 4 singles
+2011-06-13T05:44:27  <janzert> no
+2011-06-13T05:44:42  <antimatroid> smiley1983: http://pastebin.com/6Dh9Jdxg i think that's the order of searching squares
+2011-06-13T05:44:56  <antimatroid> note the .'s adjacent to numbers are in the search queue
+2011-06-13T05:45:37  <antimatroid> that's the order of squares being pulled off the search queue ***
+2011-06-13T05:45:38  <Zaphus> antimatroid: what happened to #3 ?
+2011-06-13T05:45:43  <antimatroid> i did 2 twice
+2011-06-13T05:45:47  <antimatroid> because it was a draw
+2011-06-13T05:45:47  <janzert> of not though, the correct pairing and dispatching isn't quite completely implemented yet
+2011-06-13T05:45:52  <Zaphus> ah
+2011-06-13T05:46:01  <janzert> and not in use on the beta server at all
+2011-06-13T05:47:22  <janzert> current code will continue to schedule all bots throughout the game even after they've been eliminated so as the game goes on the likelihood is the remaining bots will be paired with a bot that is eliminated and won't actually be run for the time slot
+2011-06-13T05:47:52  <Zaphus> should there be some beta testing on the real server (once it's close to launch time)?   given that it's going to have different behaviour/code ?
+2011-06-13T05:48:02  <janzert> the engine code around this part is really icky right now and I'm slowly refactoring it to be nicer :)
+2011-06-13T05:48:20  <antimatroid> Zaphus: there's a point where you've gotta just go for it and clean up any necessities
+2011-06-13T05:48:24  <janzert> Zaphus: I agree or at least the beta server needs to slowly change to match the real settings
+2011-06-13T05:48:44  * antimatroid shuts up
+2011-06-13T05:48:48  <Zaphus> antimatroid:  Yes, but that point should be after you've tried at least once to see if it works !
+2011-06-13T05:48:55  <antimatroid> janzert is much more knowledgeable about this stuff :P
+2011-06-13T05:49:00  <janzert> btw, current game settings are completely unworkable from a resource use point of view
+2011-06-13T05:49:13  <antimatroid> ?
+2011-06-13T05:49:20  <smiley1983> yes, I thought the 2000 turn games, while nice, were not sustainable
+2011-06-13T05:49:29  <antimatroid> oh resource constraints?
+2011-06-13T05:49:33  <janzert> right
+2011-06-13T05:49:35  <antimatroid> yeah, i want less food and shorter games
+2011-06-13T05:49:38  <antimatroid> possibly smaller maps
+2011-06-13T05:49:52  <antimatroid> i like the idea of ants getting to somewhat choose where in the map their battles take place
+2011-06-13T05:49:59  <janzert> less food means the natural game length is longer though :P
+2011-06-13T05:50:06  <antimatroid> not necessarily
+2011-06-13T05:50:17  <janzert> in almost all cases I've seen
+2011-06-13T05:50:18  <antimatroid> lots of bots continually growing takes ages
+2011-06-13T05:50:39  <antimatroid> i haven't seen any games with way less food?
+2011-06-13T05:50:49  <Zaphus>   2000 turns x 10 bots x 1000ms each means up to 5.5 CPU hours per game  (if I did that math correctly)
+2011-06-13T05:51:32  <antimatroid> so how do we make the games go for less time?
+2011-06-13T05:51:38  <antimatroid> reduce the map size? is that it?
+2011-06-13T05:51:49  <janzert> I'm hoping max turns can go way down
+2011-06-13T05:51:58  <antimatroid> we want the number of turns to allow for games to reasonably play out
+2011-06-13T05:52:01  <janzert> it seems like it can from looking at games with better bots
+2011-06-13T05:52:01  <Zaphus> no, if you let people have 1000 ms for 2000 turns, they can take that long on a 3x3 map if they want
+2011-06-13T05:52:06  <janzert> antimatroid: right
+2011-06-13T05:52:26  <Zaphus> (was answering the map size question)
+2011-06-13T05:52:28  <antimatroid> Zaphus: the point is to make it so that max turns can reasonably be reduced
+2011-06-13T05:52:32  <janzert> but most of the good bots seem to often wrap things up in less than 1000 turns
+2011-06-13T05:52:40  <antimatroid> does a smaller map size allow the game to play out faster?
+2011-06-13T05:52:46  <antimatroid> if the amount of food doesn't
+2011-06-13T05:52:47  <janzert> someone needs to really make a few histograms from the beta server games
+2011-06-13T05:52:59  <antimatroid> a1k0n_ : i believe you have been summoned!
+2011-06-13T05:53:05  <janzert> yeah, smaller bots would generally shorten game length as well
+2011-06-13T05:53:09  <janzert> smaller maps rather
+2011-06-13T05:53:11  <janzert> :)
+2011-06-13T05:53:15  <Zaphus> janzert: agreed, are there different map sizes on the Beta ?
+2011-06-13T05:53:44  <Zaphus> the ones I have seen seem to range from 80x100 to 110x120 or something like that
+2011-06-13T05:54:03  <janzert> a histogram showing the game lengths and a histogram showing the move number that all bots would have finished in their actual final rankings from the beta server games would be really nice
+2011-06-13T05:54:21  <janzert> I'm not sure what the map size range is on beta
+2011-06-13T05:54:26  <antimatroid> alright, things to do 1. change attack2 to 9, 2. add more variety in the map sizes, 3. add more variety in the amount of food spawned?
+2011-06-13T05:54:39  <antimatroid> i'm guessing it's like 80-120 dimensions?
+2011-06-13T05:54:47  <antimatroid> that rings a bell as the dimensions i used with the example map gen
+2011-06-13T05:55:29  <janzert> food spawn settings really should change to be relative to number of players or map area instead of the absolute range it is now
+2011-06-13T05:55:46  <antimatroid> agreed
+2011-06-13T05:55:49  <Zaphus> 60*60 has 1/3 the squares of 100*100 - might be worth making some down that direction (even down to 40x40 for craziness)
+2011-06-13T05:55:54  <antimatroid> mcleopold made some new function for spawning the other week
+2011-06-13T05:56:24  <antimatroid> anyway, i should get back to my exam :P
+2011-06-13T05:57:07  <Zaphus> there will always be the case where two similar bots get half the map each (regardless of size) and the lead flip-flops about, they'll always want more turns
+2011-06-13T05:57:52  <janzert> yep, but in that case of course it basically doesn't matter what the actual length is
+2011-06-13T05:58:04  <antimatroid> hence the existence of max turns
+2011-06-13T05:58:40  <janzert> that's where a histogram of move the final ranking is achieved on would be great, so we can see what the max move could be cut down to without effecting outcomes too often
+2011-06-13T05:58:42  <Zaphus> janzert: agreed.  just settle on the max before things start, or have variable max - dont have live server running at 2000 and then changing to 500 for the finals (or vice versa)
+2011-06-13T05:58:58  <antimatroid> a1k0n_: you're the graphs man if i recall correctly :P
+2011-06-13T05:59:08  <janzert> the settings definitely have to stay the same for the finals
+2011-06-13T05:59:19  <antimatroid> yes
+2011-06-13T05:59:36  <janzert> and we'll here endless complaining if they change much into the actual contest too
+2011-06-13T05:59:36  <antimatroid> we need to be clear as to what they are too
+2011-06-13T05:59:46  <Zaphus> do what you like to the poor Beta bots though, thats their job :-)
+2011-06-13T05:59:48  <antimatroid> yep
+2011-06-13T06:01:45  <Zaphus> if you are looking at the graphs, - maybe just graphs with at least 2 from the top end of the table ?  assume that thats where the issues will arise (or at least the major arguments!)  possibly ignore matches with several bots crashing too
+2011-06-13T06:02:49  <UncleVasya> Zaphus: maybe there are some changes in the replay-file format.  I can't imagine another cause of the problem.
+2011-06-13T06:03:10  <Zaphus> FYI - my testing which is running right now (doing hundreds of games) is set to 1000 turns, and almost never has a result between my various bots, the lead is often less than 10% (i.e. 20 when their score is 200, 80 when it is 800)   then again, they are all very similar
+2011-06-13T06:03:26  <smiley1983> I think actually it would be great to add a small variable to the number of turns between games - just 5 or 10, so that people don't get the idea that they can hardcode the defaults at the time
+2011-06-13T06:03:42  <Zaphus> UncleVasya: want me to zip up my environment and send it ?  it should be self contained
+2011-06-13T06:03:43  <UncleVasya> Zaphus: Here is version wich may show message to you about problem's place: http://www.filefactory.com/file/ccc9178/n/AntsTesting_0.3_RC_2_testing.7z
+2011-06-13T06:06:07  <Zaphus> smiley1983:  there were arguments in PW that people would code for the end of the game, and for some reason that was regarded as bad.  if you supply the number of turns to the bot (which we do) then some people will code for it.   endgame, so be it
+2011-06-13T06:06:53  <antimatroid> i wont games in planet wars because my bot knew when the game would end
+2011-06-13T06:06:55  <smiley1983> Oh, I'm entirely in support of bots knowing that the game will end
+2011-06-13T06:07:08  <antimatroid> the other bot would claim a neutral when it wouldn't payoff in a close match, and i would win
+2011-06-13T06:07:17  <smiley1983> What happened last time, though, was that some people hardcoded the "fact" that there were 28 planets
+2011-06-13T06:07:24  <smiley1983> or 29, or whatever the number was
+2011-06-13T06:07:41  <janzert> in PW I think the problem was that we didn't give the bot a way to know the max turn limit so people had to assume it would stay the same
+2011-06-13T06:07:47  <Zaphus> UncleVasya:  "Retrieving places info:                   "
+2011-06-13T06:08:11  *** UncleVasya <UncleVasya!kvirc@178-133-78-165.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-06-13T06:08:38  <smiley1983> yes, it made sense with max turns... I was a bit confused about making the number of planets a constant, though
+2011-06-13T06:09:08  *** carlop <carlop!~chatzilla@5418D6B8.cm-5-1d.dynamic.ziggo.nl> has joined #aichallenge
+2011-06-13T06:09:29  <Zaphus> Do we pass in the total number of players in the init info to the bots, or do they have to get lucky and find them all (or the highest numbered one) ?
+2011-06-13T06:09:50  <smiley1983> they aren't told, and bot numbers are set in the order you encounter them
+2011-06-13T06:10:10  <smiley1983> so the first enemy you encounter is always player 1
+2011-06-13T06:10:26  <Zaphus> interesting
+2011-06-13T06:10:31  *** hjax <hjax!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-06-13T06:10:38  <carlop> Zaphus: the bot should reverse the map generator from the column/row pair....
+2011-06-13T06:10:54  <Zaphus> so you never really know how many (until you can see every square simultaneously)
+2011-06-13T06:11:20  <janzert> so just came across a different distance metric, "octagonal distance" it seems to be a combination of chebyshev and manhattan distance
+2011-06-13T06:11:35  <Zaphus> carlop:  thats a big assumption :-)
+2011-06-13T06:12:10  <carlop> no, I think that if you see an enemy ant his team is numbered 1, the you see another enemy ant and his team numbered 2
+2011-06-13T06:12:40  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T06:12:41  <carlop> so sooner or later you can see all the enemy team (if they are connected to you and not already death)
+2011-06-13T06:13:44  *** locutus2 <locutus2!~locutus2@89.204.153.123> has quit IRC (Ping timeout: 241 seconds)
+2011-06-13T06:14:49  <carlop> I think that the map generator can be a problem, cause I can be able to know information for square out of sight, but this is another problem, I don't think i'm going to do assumption, but on later stage can be a good thing
+2011-06-13T06:15:38  <Zaphus> carlop:  match the water pattern to a known map, load your "best settings for this map" values.  it could be a smart move
+2011-06-13T06:15:48  <antimatroid> carlop: we're going to add more symmetries
+2011-06-13T06:16:05  <antimatroid> and you don't necessarily know row and column translate or the number of players at the start of the game
+2011-06-13T06:16:35  <Zaphus> I had rules like that for my PW bot,  not exact matches but "if we both start within X moves of each other, use totally different heuristics to a normal game"  (same for really really far apart)
+2011-06-13T06:19:58  *** olexs <olexs!~Leviathan@drms-4d01447a.pool.mediaWays.net> has joined #aichallenge
+2011-06-13T06:20:29  <carlop> i think more something like: "hey, this map has rotational symmetry (given the square that i can see), so maybe i can assume that is likely that the whole map have rotational symmetry, so I can made some tactical decision (better go with my army there) without having information"
+2011-06-13T06:21:10  *** UncleVasya <UncleVasya!kvirc@31.144.176.30> has joined #aichallenge
+2011-06-13T06:24:03  <Zaphus> carlop:  well, everyone has that info, so at least it's fair.   we all know the exact attack radius as well, but only some will properly use that to their advantage
+2011-06-13T06:24:16  <smiley1983> Does anyone know if player_seed is guaranteed to be a 64-bit integer, or is it just an int which is sometimes on a 64-bit system?
+2011-06-13T06:24:20  <UncleVasya> Zaphus: I have one replay from the site and it has another format. If this is the only problem than app should work if you download a tools.zip. Can you chek it please?
+2011-06-13T06:24:34  <janzert> smiley1983: I would assume the latter
+2011-06-13T06:25:03  <smiley1983> great, thanks
+2011-06-13T06:25:21  <Zaphus> UncleVasya:  ok, I'll have to set up another set of directories - tools.zip is out of date and should be updated in the near future to map to the Beta servers data
+2011-06-13T06:25:25  <janzert> actually I'm rather positive it is currently the latter
+2011-06-13T06:29:21  <UncleVasya> Zaphus: I'm going to work on the correct replay processing so app will be able to retrieve info from different replay formats.
+2011-06-13T06:32:08  <CIA-79> aichallenge: janzert epsilon * r49c1298 / worker/engine.py : Eliminate separate code path for serial mode in the engine - http://bit.ly/j2VGXC
+2011-06-13T06:32:08  <CIA-79> aichallenge: janzert epsilon * rc1f97fc / worker/engine.py : Don't send eliminated bots to get_moves function - http://bit.ly/jpBq1H
+2011-06-13T06:33:57  <Zaphus> UncleVasya:  It does even worse using the tools.zip download, that latest one you gave me (with the popups) at least stepped through the games in my tools directory, it doenst get that far in the old tools - it just sits there eating the CPU
+2011-06-13T06:34:55  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-13T06:35:27  <stocha> janzert: nice of you to have found rad2=9  let's put the info somewhere people can see it. So people will be able to proofread your conclusions.
+2011-06-13T06:36:33  <stocha> Also you guys should activate the strong java bots, so we can look at some real games. if you don't like getting bored :p
+2011-06-13T06:36:35  <janzert> feel free ;)
+2011-06-13T06:37:03  <Zaphus> what strong java bots ?
+2011-06-13T06:37:06  <stocha> i though you could put it in the message up there in the irc channel ? and then also the forum. Could be still someone read it.
+2011-06-13T06:37:19  <stocha> there are four or five java bot that seem acceptable
+2011-06-13T06:37:27  <stocha> i didn't dig to much into it though.
+2011-06-13T06:37:45  <stocha> but i think currently they would provide some good opponents.
+2011-06-13T06:38:00  <Zaphus> where are they ?
+2011-06-13T06:38:33  <stocha> stocha is not there anymore for sure. i didn't find any use to have it there, when it just go "jvm no loaded" about 70% of the games :p
+2011-06-13T06:39:10  <stocha> i don't know for the other, let's say sir_macelon and greentea
+2011-06-13T06:39:41  <stocha> and parsley
+2011-06-13T06:39:42  <janzert> http://aichallengebeta.hypertriangle.com/language_profile.php?language=Java
+2011-06-13T06:39:50  <janzert> they're playing
+2011-06-13T06:40:23  <stocha> so let's assume stocha, sir_macelon, parsley, greentea are good bots.
+2011-06-13T06:40:28  <UncleVasya> Zaphus: ok, I'll go to my relatives soon and there I'll be able to download ants from github.
+2011-06-13T06:40:50  <Zaphus> ah, yes - they are good bots, if they get to play :-)
+2011-06-13T06:40:59  <stocha> java bots i mean. there may be other, using vm, i didn't dig too much into it.
+2011-06-13T06:41:35  <Zaphus> they are still crashing out, heres one from a couple of hours ago:   http://aichallengebeta.hypertriangle.com/visualizer.php?game=22419&user=21
+2011-06-13T06:42:02  <stocha> i know for sure stocha has nasty bug. but i don't feel like i'll fix them when i can't see it play :p
+2011-06-13T06:42:48  <stocha> Zaphus: is the jvm load crashing supposed to be cared for yet ?
+2011-06-13T06:43:14  <janzert> the jvm crashing won't change until the beta server is changed
+2011-06-13T06:43:28  <janzert> most likely anyway
+2011-06-13T06:44:02  <stocha> it would suffice to put in a normal jvm, that can launch with -Xmx=100m
+2011-06-13T06:44:07  <stocha> -Xmx100m
+2011-06-13T06:44:25  <janzert> that is already done
+2011-06-13T06:44:29  <janzert> didn't fix it
+2011-06-13T06:44:45  <stocha> they are loaded with 100m and still crash ? damn
+2011-06-13T06:45:06  <janzert> actually I believe it is 500 but yes
+2011-06-13T06:45:15  <stocha> 500 is too much then
+2011-06-13T06:45:17  <janzert> 100 was tried as well I believe
+2011-06-13T06:45:19  <stocha> try with 100.
+2011-06-13T06:45:22  <stocha> okay.
+2011-06-13T06:45:31  <stocha> forbid jvm based bots then :
+2011-06-13T06:45:51  <stocha> so at least we can look at the ranking system. if some bot are left after that :p
+2011-06-13T06:46:07  <janzert> might as well let them play what they can if people want to play around with them, there will always be bots that crash randomly
+2011-06-13T06:46:19  <stocha> unless you want to see how the ranking goes with wild bot with vastly varying strength
+2011-06-13T06:46:31  <Zaphus> thats pretty insane.  I know nothing about JVM, but they can't manage to run in 500mb ?!
+2011-06-13T06:46:34  *** UncleVasya <UncleVasya!kvirc@31.144.176.30> has quit IRC ()
+2011-06-13T06:46:36  <janzert> that will always be there
+2011-06-13T06:46:48  <stocha> Zaphus: they can.
+2011-06-13T06:46:51  <janzert> Zaphus: or less than about 15 threads
+2011-06-13T06:47:07  <stocha> janzert: console mode shouldn't have many threads
+2011-06-13T06:47:11  <Zaphus> can java be compiled or something, to not require the jvm ?
+2011-06-13T06:47:17  <janzert> stocha: it does though
+2011-06-13T06:47:31  <stocha> it can be compiled once it is in bytecode form
+2011-06-13T06:47:40  <stocha> i've seen it done with comercial programes at least.
+2011-06-13T06:48:00  <janzert> gcj can be used to compile it but has lots of problems from what I understand
+2011-06-13T06:48:19  <stocha> (bytecode is a compile form, that can execute pretty fast with just in time native compilation of the bytecode)
+2011-06-13T06:48:19  <Zaphus> how did it work on PW ?  truckloads more resources ?
+2011-06-13T06:48:33  <janzert> stocha: yes, that is what the jvm runs
+2011-06-13T06:48:34  <stocha> it was 2 player
+2011-06-13T06:48:42  <stocha> there they are trying with 10 players.
+2011-06-13T06:48:50  <janzert> Zaphus: yes, the ec2 servers have much more ram available
+2011-06-13T06:49:23  <Zaphus> of course, 10 players...  that compounds it (if there happens to be a lot of java ones)
+2011-06-13T06:49:24  <stocha> 10 players need 5 time more ressources. not to mention that ant is a quite bigger game than pw was.
+2011-06-13T06:49:33  <janzert> and yes for PW it didn't have as many players at once, although still 8 per server
+2011-06-13T06:49:52  <janzert> or rather it was 4 I guess
+2011-06-13T06:50:40  <stocha> i'm trying to port buggy stocha to a c version. but i'm quite lazy lately. it goes very slow. (it did made me find some very severe bugs though :p)
+2011-06-13T06:50:54  *** olexs <olexs!~Leviathan@drms-4d01447a.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-13T06:51:16  <stocha> c seems so dangerous with silent write overflow looming at making your life miserable
+2011-06-13T06:52:05  <Zaphus> yep, C is riding a motorbike without a helmet.   Java is more like you are wrapped in bubble wrap, can barely move but you are safe :-)    of course I'm biased :-)
+2011-06-13T06:52:56  <stocha> i like java for two things : write overflow safety. And then they have a huge ubiquitous standard library.
+2011-06-13T06:53:10  <stocha> i think write overflow safety is paramount though.
+2011-06-13T06:54:01  <stocha> in c, depending where you compile your stuff, you might have or not have write overflow. think of *int for example.
+2011-06-13T06:54:03  <Zaphus> yes, it is pretty good.   of course I just write code not to do write overflows myself, and have compilers that put checks into the code as well
+2011-06-13T06:54:56  <stocha> my nightmare is writing into a *int only to silently overflow it because of 32bits 64bits confusion.
+2011-06-13T06:55:00  <stocha> C is lame.
+2011-06-13T06:55:52  <Zaphus> yeah, that will get you...  32 v 64 v 128   does Java define each of those ints seperately ?
+2011-06-13T06:56:10  <stocha> yeah java has fixed sizes.
+2011-06-13T06:56:12  <janzert> if you're overflowing a pointer because of 32/64 bit confusion there are probably larger issues
+2011-06-13T06:56:19  <stocha> there are drawback to it.
+2011-06-13T06:56:40  <stocha> some silly guys said a int[] could only have 2^32 elements.
+2011-06-13T06:56:59  <stocha> it will make life miserable in twenty years :p
+2011-06-13T06:57:25  <stocha> unless mankind bomb/overheat itself to death before that.
+2011-06-13T06:57:27  <Zaphus> of course in C a quick  sizeof(int) test in your code will alert you to if you are on different hardware/env.  and there are __int64 and __int128 keywords on most platforms
+2011-06-13T06:57:54  <stocha> Zaphus: "most platform"
+2011-06-13T06:58:09  <stocha> then you have to add a #include too ?
+2011-06-13T06:58:14  <stocha> different for each platform ?
+2011-06-13T06:58:44  <stocha> you need a whole library only to have an idea with operand size you are using :p
+2011-06-13T06:58:50  <Zaphus> I'm older than C, so I'm stuck in my ways  (I do write some java, it's just too fiddly to get simple code up and running)
+2011-06-13T06:59:06  <stocha> fiddly ?
+2011-06-13T06:59:25  <stocha> i don't now the english meaning of it
+2011-06-13T06:59:30  <stocha> what's fiddly ?
+2011-06-13T06:59:38  <stocha> i find java very good for quick prototyping.
+2011-06-13T06:59:38  <Zaphus> i.e. I don't know it as well as I know C, so anything I forget is annoying even if it's small...
+2011-06-13T06:59:57  <stocha> mm. java is pretty friendly to c users.
+2011-06-13T07:00:06  <stocha> especially with a ice ide :p
+2011-06-13T07:00:09  <Zaphus> fiddly == "small and awkward to do or handle"
+2011-06-13T07:00:12  <stocha> but maybe you don't need ide.
+2011-06-13T07:00:27  <janzert> btw, sizeof is actually an unary operator in C. no library involved :)
+2011-06-13T07:00:31  <stocha> ide are maybe the biggest revolution in 50 years of programming.
+2011-06-13T07:00:44  <stocha> sizeof is standard yes :)
+2011-06-13T07:00:48  <Zaphus> Oh, I need an IDE !   I just hate eclipse with a passion, which is a problem when I do Android/Java code :-)
+2011-06-13T07:01:10  <stocha> try to write something for iphone then.
+2011-06-13T07:01:23  <stocha> apple is a developer nightmare i think.
+2011-06-13T07:01:53  <stocha> i bought a macbook, in order to toy with iphone/ipad. i don't want to by an apple any more in my *** life
+2011-06-13T07:01:54  <Zaphus> Nothing compared to Sony,   PS2/PS3 were nightmares to work on (at least initially)
+2011-06-13T07:02:11  <stocha> i doubt it's nastyer than macos
+2011-06-13T07:02:20  <stocha> in macos : 1/ keyboard is wrong
+2011-06-13T07:02:46  <stocha> 2/ all you usual keybinding are already used by the system, for useless junk functions.
+2011-06-13T07:02:59  <stocha> 3/ all binding will use other keys.
+2011-06-13T07:03:11  <stocha> 4/ you usual thing like gcc, will have peculiarities
+2011-06-13T07:03:26  *** mcstar <mcstar!~mcstar@adsl-89-132-21-167.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-13T07:03:38  *** sir_macelon <sir_macelon!c06482ee@gateway/web/freenode/ip.192.100.130.238> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T07:03:44  <stocha> 5/ you don't have access to standard usefull free programes (try to used a ftps client with keys)
+2011-06-13T07:03:56  <stocha> 6/ i stoped there, but it's enough for me
+2011-06-13T07:04:05  <stocha> 7/ everything need to by paid for
+2011-06-13T07:04:51  <stocha> for example, you pay your iphone. you need a mac for writing application to it. Their developpement environnement is not free anymore. When you want to install your program into iphone, you have to pay a annual fee for that also.
+2011-06-13T07:04:56  <stocha> it's really madness.
+2011-06-13T07:05:18  <stocha> in 10 years, apple will not exists anymore.
+2011-06-13T07:06:00  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-06-13T07:06:09  <stocha> if they loose customers as efficiently they lost me :p  But maybe only people who write code will hate them hard.
+2011-06-13T07:06:59  <stocha> I built an archive .zip with standard mac stuff. it would add an unasked directory that would make compilation on the test server failed
+2011-06-13T07:07:19  <stocha> i had to go with the jar maker utility in order to provide a clean zip. madness i tell you.
+2011-06-13T07:07:50  <george1914> stocha:  hi, so how has your c experimentation gone?
+2011-06-13T07:08:12  <george1914> sounds like you should have followed my advice and gone with c++?
+2011-06-13T07:08:19  <stocha> george1914: i spent a whole day trying to build a shared lib, for linking with my java ant tester.
+2011-06-13T07:08:40  <stocha> george1914: i'm quite lazy lately also :p
+2011-06-13T07:09:07  <stocha> george1914: so far i found two killer bug. so in some way it's going well. (the bug are inside the java version)
+2011-06-13T07:09:24  <george1914> ah well, hopefully you learned some stuff ...
+2011-06-13T07:09:53  <stocha> i guess if stocha bot plays on a 65 width or 129 width, it will suddenly drop serverly in strength :p
+2011-06-13T07:10:18  <stocha> george1914: i have still quite some work. and am worrying like hell about write overflows
+2011-06-13T07:10:20  <george1914> i agree with you about not liking using apple for coding ...  but for sure the company will keep doing well ...
+2011-06-13T07:10:54  <stocha> george1914: i'm not conviced. look what happened to internet explorer. and it was not as broken as apple is for developpers.
+2011-06-13T07:11:30  <stocha> arguably ie still have some market share. but it doesn't look to good from the perspective of having had 99% :)
+2011-06-13T07:11:55  <george1914> well, we will see...   but it will take longer for me to say 'i told you so...' in this case  :)        (though i'd like to be wrong)
+2011-06-13T07:12:04  <stocha> then apple has the steve job problem. if the guy dies, what will become of the thing ?
+2011-06-13T07:12:48  <stocha> maybe 10 years is a bit optimistic for it to disapear. especially since it's one of the powefullest hightech brand right now.
+2011-06-13T07:13:21  <stocha> but i don't want to by any share. steve jobs dies, you loose half your money in less than a week.
+2011-06-13T07:13:43  <stocha> then it will continually drop possibly to 0.01 dollars.
+2011-06-13T07:14:04  <stocha> unless the christ himself become ceo or something.$
+2011-06-13T07:14:45  <stocha> it's fully headed at short term.
+2011-06-13T07:14:56  <george1914> anyway, back to ants ...             i was about to write some 'combat' code,  but it seems the fight-radius will change?
+2011-06-13T07:15:08  <stocha> it will go to 9 it seems.
+2011-06-13T07:15:16  <george1914> hm
+2011-06-13T07:15:22  <stocha> radius2=9
+2011-06-13T07:15:28  <stocha> so radius = 3 i guess.
+2011-06-13T07:15:47  <george1914> i think i will get better results from hardcoding for a certain range, than trying to be ok-ish at any range
+2011-06-13T07:16:36  <stocha> george1914: same goes for me
+2011-06-13T07:17:02  <stocha> george1914: i want most probably to spot/build some premade (possibly handmade) patterns.
+2011-06-13T07:17:18  <stocha> if i'm not lazy as to skip combat all together :p
+2011-06-13T07:17:36  <stocha> first thing would be to see how my old stocha greedy bot do.
+2011-06-13T07:18:16  <stocha> then i would have to remake most tests i did, when i'll have corected the deadly bugs. (wich i can't do, because i ran out of found for my hosting server :p )
+2011-06-13T07:18:21  <george1914> well, i will always have some 'free parameters'  for eg when to enact combat function - i cant hope to optimise for several ranges simultaneously ...
+2011-06-13T07:19:08  <stocha> george1914: i always advocated for everything to bet set in stone when the game launch. And then for any freedom to be fully present in real cases
+2011-06-13T07:19:43  <george1914> well, it is good to be clear what the rules are at the start of competition ...
+2011-06-13T07:19:43  <stocha> for example, let's say there is a maximum of 4000 ants per player. Then constests will HAVE to provide situations where it happens that some players have 4000 ants.
+2011-06-13T07:20:07  <george1914> but i guess they want/need tyo be able to change small things if they find changes are needed
+2011-06-13T07:20:11  <stocha> and i want the map generation rules to be final when contest start also.
+2011-06-13T07:20:20  <Zaphus> I want to see what happens on a totally blank map (or one that is an 'arena' - all the four walls are water)
+2011-06-13T07:20:30  <stocha> then there is the beta test for twinking small values.
+2011-06-13T07:20:51  <stocha> Zaphus: i think they accept map generators right now.
+2011-06-13T07:21:03  <george1914> Zaphus: i think that in arena, you really want to start in a corner - fewer enemies ...
+2011-06-13T07:21:28  <stocha> george1914: what about a round arena ?
+2011-06-13T07:21:30  <george1914> and in general, you want to start next to weaker enemies, and your main opponents to start next to each other ....
+2011-06-13T07:21:40  <Zaphus> stocha: problem with changing the rules during the live version is it is unfair on those people who don't find out about the rule change, or do not update after the rule change.  a bot submitted on day 1 should be capable of competing in the finals (if coded well)
+2011-06-13T07:21:46  <george1914> round?  still on the edge is best
+2011-06-13T07:22:14  <stocha> Zaphus: i agree with that.
+2011-06-13T07:22:22  <george1914> me too -
+2011-06-13T07:22:48  *** UncleVasya <UncleVasya!5c707e0e@gateway/web/freenode/ip.92.112.126.14> has joined #aichallenge
+2011-06-13T07:22:49  <stocha> george1914: you can make them all spawned on edge, then. you can have quite efficent radial symetry also :p
+2011-06-13T07:22:56  <stocha> even with a bit of water.
+2011-06-13T07:23:04  <george1914> but i think the organisers are busy, and will be needed to test/change small things during the competition - not ideal, but i imagine it will happen a little?
+2011-06-13T07:23:19  <george1914> stocha: i guess so
+2011-06-13T07:23:54  <stocha> george1914: organisers are simply absent. But there a beta period. It should settle everything from my point of view. So it has to go for a while if needed.
+2011-06-13T07:24:27  <stocha> some people like antimatroid, janzert, etc are mandated to make decisions.
+2011-06-13T07:24:40  <stocha> but they are not organizers i think.
+2011-06-13T07:24:56  <antimatroid> george1914: i think you mean my advice!
+2011-06-13T07:25:00  <stocha> they will participate.
+2011-06-13T07:25:55  <stocha> a lot of people like me have strong feeling about the game, but don't want to participate beside the chat :p
+2011-06-13T07:25:56  <antimatroid> :p
+2011-06-13T07:26:05  <stocha> it's too much arguing.
+2011-06-13T07:26:18  <george1914> anyway, just want to ask yours opinions on my opinion .... :   i think that once competition starts, and good bots are written, the game will become like this ... :  people will have fronts, and framland in their safe areas.    then there will be fighting just on the 'front' regions
+2011-06-13T07:26:25  <antimatroid> i don't understand why people dislike arguments so much
+2011-06-13T07:26:29  <george1914> and then it will become strategic game theory ...
+2011-06-13T07:26:40  <george1914> do i target the weakest of my neightbours?
+2011-06-13T07:26:55  <george1914> (i dont want to fight the same against all neighbours - would just weaken me)
+2011-06-13T07:27:06  <stocha> my hope is : once there will be strong bots, they will astonish everyone.
+2011-06-13T07:27:06  <antimatroid> george1914: I would go for the weaker neighbours first
+2011-06-13T07:27:12  <george1914> do i just sit, and let the others weaken each other?
+2011-06-13T07:27:17  <antimatroid> and that
+2011-06-13T07:27:23  <antimatroid> but that's a balancing act
+2011-06-13T07:27:43  <antimatroid> george1914: what do you think about attack2 = 9?
+2011-06-13T07:27:49  <george1914> the game might well change from an   'exploring ant' game    into a diplomacy/strategic game
+2011-06-13T07:27:50  <stocha> george1914: i think you are right for some map settings. But depending on maps, things will differs.
+2011-06-13T07:28:14  <george1914> as long as i face more than 1 enemy, i think it will probably come up
+2011-06-13T07:28:30  <george1914> antimatroid:  9?  i am just drawing a grid...
+2011-06-13T07:28:36  <george1914> looks interesting
+2011-06-13T07:28:40  <stocha> there computer ressources of bots are very limited. I will bet for all agressive bot to be the most stable strategy overall.
+2011-06-13T07:28:48  <george1914> i guess you did it to remove blocking?
+2011-06-13T07:28:57  <antimatroid> it doesn't remove blocking
+2011-06-13T07:28:59  <antimatroid> makes it harder though
+2011-06-13T07:29:06  <george1914> does it allow for cleverer tactics in multiant combat as well?  i hope so
+2011-06-13T07:29:16  <antimatroid> i think it makes fighting more strategic
+2011-06-13T07:29:16  <stocha> it renders blocking acceptable (back to 2-width corridor block)
+2011-06-13T07:29:21  <antimatroid> as more ants can end up in the same battle
+2011-06-13T07:29:21  <george1914> i guess it will be an improvement
+2011-06-13T07:29:42  <antimatroid> it makes evaluating states more expensive though
+2011-06-13T07:30:01  <george1914> sounds good - you guys seem to make good choices (eg on the games etc)  so i would anyway believe you that it improves it  :)
+2011-06-13T07:30:16  <antimatroid> we're only really guessing that it improves anything
+2011-06-13T07:30:30  <antimatroid> but yeah, generally the rules/etc. are picked to make the game more interesting
+2011-06-13T07:30:34  <stocha> it's mainly a wild guess, seeing that there was so much easy ways to block large corridor with 4 and 5
+2011-06-13T07:30:52  <george1914> so, when will the beta server change to 9?
+2011-06-13T07:30:58  <antimatroid> dunno
+2011-06-13T07:31:05  <antimatroid> i want to talk to mcleopold about it
+2011-06-13T07:31:12  <stocha> it won't change the bot strength to much anyway.
+2011-06-13T07:31:34  <george1914> (for my beta bot, it is irrelevent atm - it doesnt know about fighting ...)
+2011-06-13T07:31:35  <stocha> clustering might become more efficient though (4 is really small)
+2011-06-13T07:32:33  <stocha> so full spreaders might be hit quite hard on their ranking. While bloby low ant count bots might do slitly better.
+2011-06-13T07:32:49  <stocha> i think i saw both sort of bots.
+2011-06-13T07:33:43  <george1914> i am spreader ...   but i seem to do ok because i kill 1for1
+2011-06-13T07:42:28  <antimatroid> george1914: have you got a good food collection heuristic yet?
+2011-06-13T07:42:50  <george1914> er, my bot is dead simple:
+2011-06-13T07:43:09  <george1914> every ant the same instructions:
+2011-06-13T07:43:32  <stocha> m
+2011-06-13T07:43:35  <george1914> if you see food nearby:  use breadthfirstsearch to pick the closest (in terms of moves), and go there
+2011-06-13T07:43:41  <george1914> else
+2011-06-13T07:43:46  <george1914> move randomly
+2011-06-13T07:43:52  <antimatroid> will you collect the same piece of food with more than one ant?
+2011-06-13T07:43:52  <george1914> BUT i weight the moves
+2011-06-13T07:44:00  <george1914> i have a 'potential'
+2011-06-13T07:44:03  <stocha> grape of ants will go at the same food then ?
+2011-06-13T07:44:15  <george1914> and random moves are weighted to move to lower 'energies'
+2011-06-13T07:44:20  <antimatroid> and will you use ants that have already collected food or will spawn once you've  collected food to collect food?
+2011-06-13T07:44:24  <george1914> yes - all to the same :(
+2011-06-13T07:44:42  <antimatroid> ah, i'm surprised your bot is first :P
+2011-06-13T07:44:59  <stocha> what i call the greedy strategy is : closest ant to food go to that food, then remove the ant and the food, rince and repeat.
+2011-06-13T07:45:03  <george1914> the 'potential' is:  move away from own ants
+2011-06-13T07:45:07  <antimatroid> george1914: i worked out how to do a* with multiple sources/targets
+2011-06-13T07:45:11  <george1914> move towards enemy ants
+2011-06-13T07:45:12  <antimatroid> http://pastebin.com/6Dh9Jdxg
+2011-06-13T07:45:23  <george1914> move towards open space
+2011-06-13T07:45:25  <stocha> spreading is a powerfull heuristic. especially if you get the 1:1 ratio.
+2011-06-13T07:45:31  <george1914> move towards unexplored space
+2011-06-13T07:45:41  <antimatroid> that somewhat shows an example, the numbers are the order in which that location is taken out of the search queue, the search queue has any . squares adjacent to numbers
+2011-06-13T07:46:00  <george1914> i was pleasantly surprised that this quick hack could compete with the other bots ...    :)
+2011-06-13T07:46:12  <george1914> reading it ...
+2011-06-13T07:46:20  <stocha> greedy gathering. not strategy.
+2011-06-13T07:46:28  <antimatroid> it has g(x) = current search distance from a to x, h(x) = min edist(x, *) for all *, f = g + h
+2011-06-13T07:46:42  <stocha> i don't think you would do well against buggy stocha with radius 9
+2011-06-13T07:46:56  <antimatroid> and you sort the search queue first by min f, and then min h if there is a tie
+2011-06-13T07:47:08  <george1914> yes - i have no 'central controller'   and no messaging (except that ants avoid crashing into each otehr)
+2011-06-13T07:47:12  <stocha> but then most bot won't do well against it until fighting kicks in :p
+2011-06-13T07:47:25  <antimatroid> the question is, does the calculation of h for every search square added to the queue cost more than the saving in searching less squares
+2011-06-13T07:47:54  <george1914> but eg liviathan has fighting - he slaughters my ants :(   but my weight of numbers (from good production) seems to overwhelm him ...
+2011-06-13T07:49:05  <george1914> antimatroid: hm - so i saw you talking about a* and wondered ...   i thought it just found a 'computationally efficient' path.  (ie quick search)   but not always the shortest path ...   ?
+2011-06-13T07:49:14  <antimatroid> it finds the shortest
+2011-06-13T07:49:23  <george1914> BFS would guarantee shortest
+2011-06-13T07:49:24  <antimatroid> it's a heuristic that is bfs in the worst case
+2011-06-13T07:49:58  <antimatroid> it's still an algorthm for the shortest path pretty sure
+2011-06-13T07:50:19  <stocha> empty map path finding doesn't take that much ressources in all my tests.
+2011-06-13T07:50:42  <antimatroid> george1914: it uses heuristics to increase the speed of bfs, not heuristics to get the shortest path
+2011-06-13T07:50:43  <george1914> how you mean pretty sure?   the algo is 'pretty sure' it is usually shortest path?
+2011-06-13T07:50:54  <george1914> or you are pretty sure it is always shortest path?  :)
+2011-06-13T07:50:57  <antimatroid> nah, i'm pretty sure my thoughts are right
+2011-06-13T07:51:04  <george1914> oh
+2011-06-13T07:51:07  <antimatroid> i'm pretty sure that it does give the shortest path always
+2011-06-13T07:51:13  <george1914> ok
+2011-06-13T07:51:21  <george1914> then that is interesting and useful
+2011-06-13T07:51:48  <antimatroid> yes, i originally dismissed it because i thought you needed a single source and destination
+2011-06-13T07:52:00  <antimatroid> but it seems i can generalise it with a bit of cost
+2011-06-13T07:52:19  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-06-13T07:52:31  <antimatroid> for each square added to the search queue, you need to cycle through your set of target squares and find the smallest manhatten distance, otherwise the heuristic isn't admissible
+2011-06-13T07:53:01  <antimatroid> there is a potential way to speed that up, but the heuristic function could be WAY off
+2011-06-13T07:53:52  <antimatroid> hash the min distance between rows/cols to the target squares from a given row/col, then have your h(x) = min dist(x_row, *_row) + min dist(x_col, *_col) for all *
+2011-06-13T07:53:55  <antimatroid> if that makes sense?
+2011-06-13T07:53:56  <george1914> ah, ok, having re-read a* in book, you are right that it is always shorest path (at least in our case here)
+2011-06-13T07:54:05  <antimatroid> http://en.wikipedia.org/wiki/A*_search_algorithm
+2011-06-13T07:54:19  <antimatroid> i learnt what a* is from the description paragraph there
+2011-06-13T07:54:27  <antimatroid> then just did a couple of examples with pacer and paper
+2011-06-13T07:54:44  <george1914> so your new part is that you find the shortest of 2 shortest paths - 1 to each nearby food?
+2011-06-13T07:55:02  <antimatroid> no, i find one of the shortest paths from one of the sources to one of the targets
+2011-06-13T07:55:12  <antimatroid> oh, so yeah? :P
+2011-06-13T07:55:21  <antimatroid> here you have a single source and 2 targets
+2011-06-13T07:55:25  <george1914> you find the shortest of the 2 ?
+2011-06-13T07:55:31  <antimatroid> yes
+2011-06-13T07:55:41  <george1914> ok, nice work  :)
+2011-06-13T07:55:46  <antimatroid> generally i find one of the shortest paths from one of the sources to one of the targets
+2011-06-13T07:56:51  <antimatroid> you can tweak it to have sources that are available in the future
+2011-06-13T07:57:09  *** guyverthree <guyverthree!519182e7@gateway/web/freenode/ip.81.145.130.231> has joined #aichallenge
+2011-06-13T07:57:10  <antimatroid> and to find the shortest path to a square that maximises the number of adjacent targets :P
+2011-06-13T07:58:03  <antimatroid> that is, take the set of shortest paths to squares adjacent to targets, then the shortest path that maximises the number of adjacent targets (food squares)
+2011-06-13T07:59:16  <guyverthree> hello all
+2011-06-13T07:59:28  <george1914> hi guy
+2011-06-13T07:59:30  <guyverthree> so your thinking about targets ahead of time
+2011-06-13T07:59:33  <antimatroid> there's so many neat problems with this game
+2011-06-13T07:59:39  <antimatroid> yes of course :P
+2011-06-13T07:59:51  <guyverthree> I'm still figuring out simple path solving
+2011-06-13T08:00:10  <guyverthree> i mean i have the most basic algorithm
+2011-06-13T08:00:47  <antimatroid> are you doing a bfs with a queue?
+2011-06-13T08:00:57  <antimatroid> that's where you should be starting with path finding
+2011-06-13T08:00:59  <guyverthree> bfs ???
+2011-06-13T08:01:08  <george1914> if it finds you the shortest path, then that is all you need for now -
+2011-06-13T08:01:12  <antimatroid> breadth first search
+2011-06-13T08:01:26  <antimatroid> yeah, but bfs is simple and semi decent
+2011-06-13T08:02:32  <antimatroid> guyverthree: a bfs would place all source locations onto a queue of locations, then while the queue isn't empty, remove the front location, check it's adjacent non-checked locations for a target, adding non-targets to the end of the queue
+2011-06-13T08:03:54  <antimatroid> sources and targets can really be interchanges, you can search from the targets back to the sources if you really want
+2011-06-13T08:06:41  <guyverthree> so create a queue of all ants
+2011-06-13T08:06:59  <guyverthree> then check the first ant for all the grid squares next to it for food
+2011-06-13T08:07:06  <antimatroid> of their locations yeah
+2011-06-13T08:07:31  <guyverthree> and add non-food to the end of the queue
+2011-06-13T08:07:48  <antimatroid> you can either mark a grid of integers the number of moves it took to get there in your search and track the path back from that, or store in your queue items the path
+2011-06-13T08:07:59  <antimatroid> but yeah, that's the general idea
+2011-06-13T08:07:59  <guyverthree> so you end up with moves that will take your ants closer to food
+2011-06-13T08:08:05  <antimatroid> yep
+2011-06-13T08:08:19  <guyverthree> right i see
+2011-06-13T08:08:23  <antimatroid> you can just keep track of the move for the queue items instead of the path too :P
+2011-06-13T08:08:36  <antimatroid> then once you've got that start considering a*
+2011-06-13T08:08:49  <antimatroid> but bfs is sufficient imo
+2011-06-13T08:09:02  <antimatroid> a* is if you're really wanted to squeeze every last bit of time for other things
+2011-06-13T08:09:11  <guyverthree> i have some preprocessing ideas for the map
+2011-06-13T08:09:31  <guyverthree> that will cut down processing of some locations
+2011-06-13T08:09:51  <antimatroid> bear in mind your bot receives parameters once the process has started
+2011-06-13T08:10:00  <antimatroid> post compilation
+2011-06-13T08:10:42  <antimatroid> you have 3 seconds "start up time" before the game even starts though where you are given the map dimensions and game parameters, so use that time to calculate stuff if you want to
+2011-06-13T08:10:51  <guyverthree> yeah
+2011-06-13T08:11:03  <antimatroid> like the translations to get locations in the attack radius etc.
+2011-06-13T08:11:28  <guyverthree> i was going to look at the map and consider dead ends
+2011-06-13T08:15:07  <guyverthree> and then remove them from possible movement locations
+2011-06-13T08:15:19  <guyverthree> as you should never mvoe there
+2011-06-13T08:15:28  <guyverthree> there is no need to ever
+2011-06-13T08:16:14  <antimatroid> you might want to go back and see if food has spawned there
+2011-06-13T08:18:00  <guyverthree> yeah true but you have a spawn distance and an attack distance and a vision distance
+2011-06-13T08:18:40  <guyverthree> so if you only ever go around thing at the smallest distance you'll reap the benfits without havign to move alot
+2011-06-13T08:19:42  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T08:33:10  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-13T08:34:12  *** olexs <olexs!~Leviathan@drms-4d01447a.pool.mediaWays.net> has joined #aichallenge
+2011-06-13T08:38:43  <guyverthree> antimatroid: would it be sensible to do the breadth first search starting across and along towards you destination ???
+2011-06-13T08:39:39  <guyverthree> because a normal breadth first search on a large game map migt be huge
+2011-06-13T08:48:06  *** guyverthree <guyverthree!519182e7@gateway/web/freenode/ip.81.145.130.231> has quit IRC (Quit: Page closed)
+2011-06-13T08:49:45  *** delt0r_ <delt0r_!~delt0r@188-22-172-73.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-13T08:51:13  *** delt0r- <delt0r-!~delt0r@188-22-175-245.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-06-13T08:56:57  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC ()
+2011-06-13T09:03:01  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Quit: Page closed)
+2011-06-13T09:05:38  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 276 seconds)
+2011-06-13T09:21:04  <carlop> I've red now the discussion about change attackrange2 to 9. seem better to me, still possible to do huge block (5-corridor perfect block) but 4-5 block are possible only in rare setting (they require a lot of space, so it's difficult to find map where is possible to do a 5-block) and they require a lot of ant
+2011-06-13T09:21:42  <carlop> i love the discussion, and the requirement of non-convex pattern for attack
+2011-06-13T09:23:27  <carlop> brilliant intuition from janzert
+2011-06-13T09:28:07  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T09:28:36  *** locutus2 <locutus2!~locutus2@89.204.137.71> has joined #aichallenge
+2011-06-13T09:33:14  *** UncleVasya <UncleVasya!5c707e0e@gateway/web/freenode/ip.92.112.126.14> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T09:44:54  *** locutus2 <locutus2!~locutus2@89.204.137.71> has quit IRC (Ping timeout: 255 seconds)
+2011-06-13T09:59:03  *** UncleVasya <UncleVasya!kvirc@46.133.139.2> has joined #aichallenge
+2011-06-13T10:44:12  *** sigh <sigh!~sigh@67.218.107.132> has joined #aichallenge
+2011-06-13T10:54:17  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 250 seconds)
+2011-06-13T10:55:31  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-13T11:02:18  <Ice_Harley> what is default spawnradius2?
+2011-06-13T11:03:50  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T11:05:40  <carlop> i think 1
+2011-06-13T11:06:34  <carlop> so you should be adjacent to the food cell
+2011-06-13T11:06:51  <Ice_Harley> you mean 2?
+2011-06-13T11:07:05  <Ice_Harley> spawnradius2 not spawnradius
+2011-06-13T11:07:26  <UncleVasya> parser.add_option("--spawnradius2", dest="spawnradius2",
+2011-06-13T11:07:27  <UncleVasya>                       default=1, type="int",
+2011-06-13T11:07:41  <carlop> no, <=1, so only the 4 cell NSWE to the food cell
+2011-06-13T11:07:50  <Ice_Harley> ok, spasibo UncleVasya )
+2011-06-13T11:08:19  *** sigh <sigh!~sigh@67.218.107.132> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-13T11:08:35  <UncleVasya> Ice_Harley: your welcome :)
+2011-06-13T11:08:45  *** sigh <sigh!~sigh@67.218.107.132> has joined #aichallenge
+2011-06-13T11:09:25  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-06-13T11:09:39  *** sigh <sigh!~sigh@67.218.107.132> has joined #aichallenge
+2011-06-13T11:11:09  <UncleVasya> UncleVasya: You are using tools.zip or github source?
+2011-06-13T11:11:20  *** sigh <sigh!~sigh@67.218.107.132> has quit IRC (Client Quit)
+2011-06-13T11:11:25  <antimatroid> lol
+2011-06-13T11:11:29  <antimatroid> did you just ask yourself a question?
+2011-06-13T11:12:46  <Ice_Harley> if you ask me - I don't use anything for now. Just using unit tests
+2011-06-13T11:12:55  <a1k0n_> 02:52 < antimatroid> a1k0n_ : i believe you have been summoned!
+2011-06-13T11:12:56  <a1k0n_> haha
+2011-06-13T11:13:02  <a1k0n_> i failed to materialize at 3am but i am here now
+2011-06-13T11:15:03  <antimatroid> a1k0n_: did you see the comment above it from janzert
+2011-06-13T11:15:13  <antimatroid> something about histograms from beta server data
+2011-06-13T11:15:18  <a1k0n_> a histogram of game lengths?  yeah
+2011-06-13T11:15:32  <a1k0n_> i did indeed make one of those for planetwars
+2011-06-13T11:15:50  <antimatroid> i remember multiple lots of graphs from you :P
+2011-06-13T11:16:11  *** amstan <amstan!~alex@142.222.30.72> has joined #aichallenge
+2011-06-13T11:16:11  *** ChanServ sets mode: +o amstan
+2011-06-13T11:16:42  <antimatroid> amstan: who updates default parameters on the beta server?
+2011-06-13T11:16:57  <amstan> define default parameters
+2011-06-13T11:17:12  <antimatroid> i/we want to try out attack2 = 9
+2011-06-13T11:17:20  <antimatroid> i haven't been able to chat to mcleopold yet though
+2011-06-13T11:17:30  <amstan> where is this setting?
+2011-06-13T11:17:38  <antimatroid> in playgame.py
+2011-06-13T11:18:17  <antimatroid> some smaller maps and more variation (less) in the spawn rate would be cool too
+2011-06-13T11:18:29  <amstan> playgame.py is identical to the git index
+2011-06-13T11:18:49  <antimatroid> yes, i haven't changed anything
+2011-06-13T11:18:58  <amstan> oh.. ok
+2011-06-13T11:19:00  <amstan> i see
+2011-06-13T11:19:04  <a1k0n_> stupid question: what's the beta server again?
+2011-06-13T11:19:07  <amstan> well.. what about pushing it in the repo
+2011-06-13T11:19:09  <antimatroid> @topic
+2011-06-13T11:19:09  <contestbot> antimatroid: Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge || Beta testers needed: http://aichallengebeta.hypertriangle.com/ (amstan)
+2011-06-13T11:19:10  <amstan> @beta
+2011-06-13T11:19:11  <contestbot> amstan: I do not know about 'beta', but I do know about these similar topics: 'http://aichallengebeta.hypertriangle.com/'
+2011-06-13T11:19:23  <a1k0n_> haha thx
+2011-06-13T11:19:27  <antimatroid> :p
+2011-06-13T11:19:41  <a1k0n_> the topic at the top of my screen only goes to the "channel logs" part
+2011-06-13T11:19:57  <amstan> antimatroid: we shouldn't really edit stuff directly on the server, since it'll be harder to pull any changes
+2011-06-13T11:20:09  <amstan> antimatroid: if you want something changed, you should do it through git
+2011-06-13T11:20:34  <amstan> or.. the setting that you want to change should be in server_info
+2011-06-13T11:20:51  <antimatroid> okay, well i'll play with stuff wednesday
+2011-06-13T11:20:53  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: Lost terminal)
+2011-06-13T11:21:39  <antimatroid> a1k0n_: maybe you will find this interesting.. have you every played with a* when you have multiple sources and targets in the one search?
+2011-06-13T11:21:59  <a1k0n_> not with A* but dijkstra, certainly
+2011-06-13T11:22:02  <antimatroid> and you want a path that minimises the distance from a source to a destination
+2011-06-13T11:22:10  <antimatroid> http://pastebin.com/6Dh9Jdxg
+2011-06-13T11:22:32  <antimatroid> if you define h(x):= min dist (x, target) for all targets, then that is admissible
+2011-06-13T11:23:00  <antimatroid> the numbers there are the order in which the location would be taken off the search queue
+2011-06-13T11:23:04  <a1k0n_> if it's admissible, then why didn't you get the right answer?
+2011-06-13T11:23:09  <antimatroid> i did
+2011-06-13T11:23:17  <antimatroid> oh erm
+2011-06-13T11:23:18  <a1k0n_> isn't the * on top 8 steps away from a?
+2011-06-13T11:23:21  <antimatroid> i copied it from paper
+2011-06-13T11:23:22  <UncleVasya> amstan: Do you know when tools.zip will be updated?
+2011-06-13T11:23:30  <antimatroid> let me see what i messed up :P
+2011-06-13T11:23:34  <antimatroid> you're the first to point that out
+2011-06-13T11:23:39  <amstan> UncleVasya: updated how?
+2011-06-13T11:23:52  <antimatroid> hmmm crap
+2011-06-13T11:24:15  <a1k0n_> i agree, in general it should work but in my experience having a discontinuous A* heuristic doesn't necessarily work
+2011-06-13T11:24:37  <a1k0n_> though minimum of distance should be continuous, it just has flat spots
+2011-06-13T11:25:01  <antimatroid> a1k0n_: it is the correct answer
+2011-06-13T11:25:04  <McLeopold> antimatroid: let's try radius 9
+2011-06-13T11:25:05  <antimatroid> the numbers are deceiving
+2011-06-13T11:25:16  <antimatroid> McLeopold: :)
+2011-06-13T11:25:20  <a1k0n_> oh, duh, you're right
+2011-06-13T11:25:30  <a1k0n_> that's the order it's searching, not the distance
+2011-06-13T11:25:35  <UncleVasya> amstan: In the latest version of ants repository on the github some cganges can be found: no --seed comand, but --player_seed and --engine_seed, also a little different replay format.
+2011-06-13T11:25:45  <antimatroid> it's the order it's taking locations off the search queue to be precise
+2011-06-13T11:25:56  <amstan> UncleVasya: you know you can make your own tools.zip right?
+2011-06-13T11:26:07  <a1k0n_> yeah, ok.  so it reaches the goal in 10 steps.
+2011-06-13T11:26:20  <antimatroid> one has to cycle through all targets to calculate h when adding a location to the search queue, which is where i'm not sure if it's better/worse than normal bfs
+2011-06-13T11:26:28  <amstan> UncleVasya: updated\
+2011-06-13T11:26:41  <janzert> playgame.py defaults are not used on the server
+2011-06-13T11:26:44  <a1k0n_> yes, it's O(X*Y) to solve for the whole map
+2011-06-13T11:26:50  <carlop> antimatroid: the h(x) if you have multiple target should be min (distance(x, target)) over each target
+2011-06-13T11:26:58  <a1k0n_> (with regular bfs i mean)
+2011-06-13T11:27:10  <janzert> I believe for game settings what is actually used are the settings in website/server_info.php
+2011-06-13T11:27:23  * antimatroid is terrible at complexity/whatever stuff :P
+2011-06-13T11:27:44  <McLeopold> actually, changing the beta server to 9 won't really tell us much, since there are no blocking bots yet
+2011-06-13T11:27:48  <antimatroid> there is an alternative heurstic function that can severely underestimate the distance
+2011-06-13T11:28:02  <a1k0n_> let me put it this way: if you "expand" from each food source using two lists (one to pop from, one to push onto), you will visit every square only once
+2011-06-13T11:28:04  <UncleVasya> amstan: if people use my testing app with tools.zip from the site it's working. But if they use the updates it doesn't.
+2011-06-13T11:28:19  <amstan> ic
+2011-06-13T11:28:20  <antimatroid> (min dist(x_row, target_row)) + (min dist(x_col, target_col)
+2011-06-13T11:28:23  <amstan> well.. i just updated it
+2011-06-13T11:28:27  <antimatroid> but you could hash information to make it faster
+2011-06-13T11:28:28  <amstan> should be in sync with the git over there
+2011-06-13T11:28:37  <UncleVasya> So I need to do one of these things:  1. ask users to define which format to use  and  2. support only one format.
+2011-06-13T11:29:24  <McLeopold> janzert: for worker games, it comes from the task info, which comes from server_info.php, otherwise it comes from server_info.py in the worker dir
+2011-06-13T11:29:56  <antimatroid> a1k0n_: I don't get your last comment?
+2011-06-13T11:30:12  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T11:30:28  <McLeopold> janzert: fyi, I won't have time this week to do much of anything
+2011-06-13T11:30:37  <a1k0n_> the point is, you can solve the problem of routing every square to its nearest food by visiting every square on the map once
+2011-06-13T11:30:40  <carlop> antimatroid: i think distance should be dist(x_row, target_row)+dist(y_row, target_row)  (manhattan metric, the same of movement), but H function should be computed as minimum over each possible target
+2011-06-13T11:30:54  <a1k0n_> so it doesn't matter how many ants you have
+2011-06-13T11:31:01  <antimatroid> a1k0n_: I have to restart my search for every food item i collect
+2011-06-13T11:31:12  <antimatroid> because the availability information of ants changes every time i collect food
+2011-06-13T11:31:14  <a1k0n_> OMG: http://aichallengebeta.hypertriangle.com/visualizer.php?game=22745&user=27
+2011-06-13T11:31:26  <UncleVasya> amstan: so i'll make a version for new tools.zip and make a note for users that they should update their own tools.zip.
+2011-06-13T11:31:26  <a1k0n_> that is a lot of ants
+2011-06-13T11:32:01  <a1k0n_> antimatroid: well, yes; that's true.  it should be possible to do local fixups though.
+2011-06-13T11:32:35  <amstan> lol
+2011-06-13T11:32:38  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-06-13T11:33:00  *** astevenson <astevenson!4000c10f@gateway/web/freenode/ip.64.0.193.15> has joined #aichallenge
+2011-06-13T11:34:10  <antimatroid> carlop; I think you accidentally your x's and row,cols :P:
+2011-06-13T11:34:13  <astevenson> Hello all,  I signed up on the beta site, but never got a confirmation email.  Is there a way to get it resent?
+2011-06-13T11:35:10  <antimatroid> a1k0n_: I don't understand how you can collect food with one pass of the map :\
+2011-06-13T11:35:30  <antimatroid> particularly when you collect a piece of food you just gained an extra ant
+2011-06-13T11:35:42  *** computerwiz_222 <computerwiz_222!~andrew@142.222.30.64> has joined #aichallenge
+2011-06-13T11:35:49  <a1k0n_> well, i never said anything about looking ahead in time
+2011-06-13T11:36:03  <antimatroid> ah, well that's my intention
+2011-06-13T11:36:18  <antimatroid> it works really well when making use of future information
+2011-06-13T11:36:33  <a1k0n_> i still think local fixups would work for that
+2011-06-13T11:36:36  *** carlop <carlop!~chatzilla@5418D6B8.cm-5-1d.dynamic.ziggo.nl> has quit IRC (Remote host closed the connection)
+2011-06-13T11:36:42  <antimatroid> what do you mean by that?
+2011-06-13T11:36:43  <a1k0n_> removing food is just another bfs
+2011-06-13T11:37:04  <a1k0n_> i'm not sure yet :)
+2011-06-13T11:37:05  *** sigh <sigh!~sigh@nat/google/x-xizpqhvuqbsxzktz> has joined #aichallenge
+2011-06-13T11:37:10  *** computerwiz_222 <computerwiz_222!~andrew@142.222.30.64> has quit IRC (Client Quit)
+2011-06-13T11:37:16  <antimatroid> i'll play around with that idea
+2011-06-13T11:37:29  <antimatroid> but after my exam
+2011-06-13T11:37:31  *** locutus2 <locutus2!~locutus2@82.113.99.52> has joined #aichallenge
+2011-06-13T11:37:41  <a1k0n_> but i think you could expand from the removed food out until the distance from the food > the closest-food distance on the map, and then fill in backwards
+2011-06-13T11:38:27  *** carlop <carlop!~chatzilla@5418D6B8.cm-5-1d.dynamic.ziggo.nl> has joined #aichallenge
+2011-06-13T11:39:38  <astevenson> Is the beta server by invite only?
+2011-06-13T11:39:52  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-13T11:39:58  <UncleVasya> astevenson: no
+2011-06-13T11:40:20  <UncleVasya> astevenson: instead of waiting for e-mail just click on the link below the page.
+2011-06-13T11:40:28  <antimatroid> atevenson: when you register you need to click the link to activate it
+2011-06-13T11:40:38  <antimatroid> just create another account for now, the beta server is just for testing nayway
+2011-06-13T11:40:47  <antimatroid> bah, bedtime :)
+2011-06-13T11:40:52  <astevenson> ok I'll try that, thanks
+2011-06-13T11:41:00  <antimatroid> a1k0n_: cheers :)
+2011-06-13T11:41:35  <a1k0n_> antimatroid: night
+2011-06-13T11:41:38  *** amstan <amstan!~alex@142.222.30.72> has quit IRC (Ping timeout: 276 seconds)
+2011-06-13T11:41:51  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-13T11:42:35  <a1k0n_> i'm also not getting my registration email
+2011-06-13T11:43:04  <a1k0n_> Confirmation emails are not being sent!
+2011-06-13T11:43:09  <a1k0n_> haha, that would be why
+2011-06-13T11:43:52  *** amstan <amstan!~alex@142.222.24.42> has joined #aichallenge
+2011-06-13T11:43:52  *** ChanServ sets mode: +o amstan
+2011-06-13T11:44:00  <CIA-79> aichallenge: Nick Ham epsilon * r94df23d / ants/playgame.py : updated the attack radius - http://bit.ly/mzukQZ
+2011-06-13T11:44:04  <antimatroid> .. now bed :P
+2011-06-13T11:44:07  <antimatroid> amstan: ^^ :)
+2011-06-13T11:44:16  <amstan> antimatroid: am i supposed to pull?
+2011-06-13T11:44:18  <antimatroid> amstan: also, the c++ bot has changed to what's on the beta server
+2011-06-13T11:44:41  <antimatroid> amstan: i dunno, didn't you want the default parameter updated there to trickle through to beta?
+2011-06-13T11:45:15  <UncleVasya> antimatroid: so my c++-friend must update his starter pack?
+2011-06-13T11:45:48  <antimatroid> UncleVasya: yeah, they can just alter stuff themselves if they want
+2011-06-13T11:46:21  <amstan> k, everything is updated
+2011-06-13T11:46:29  <antimatroid> UncleVasya: tell them to get the new timer.h file, get rid of processing 'r' lines in the input function, mark isFood = 0 in Square::reset, and food.clear in State::reset
+2011-06-13T11:46:50  <antimatroid> or alternatively just grab the new one
+2011-06-13T11:46:52  <sigh> oh, why did the attack radius go up?
+2011-06-13T11:47:00  <antimatroid> sigh: blocking
+2011-06-13T11:47:02  <sigh> ahh
+2011-06-13T11:47:11  * sigh has invaded google HQ :D
+2011-06-13T11:47:12  <antimatroid> hopefully this will make it less trivial to block
+2011-06-13T11:47:17  <antimatroid> sigh: :D
+2011-06-13T11:47:22  <antimatroid> keeping busy i take it?
+2011-06-13T11:47:25  <amstan> antimatroid: k, it's doing stuff
+2011-06-13T11:47:34  <antimatroid> oh, you mean mv don't you?
+2011-06-13T11:47:39  <antimatroid> amstan: :)
+2011-06-13T11:47:41  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T11:47:42  <sigh> mtv, yes
+2011-06-13T11:47:51  <sigh> flew in yesterday
+2011-06-13T11:48:09  <UncleVasya> antimatroid: he already did fixes that you was talking about near week ago. timer.h is a new fix he have to do?
+2011-06-13T11:48:12  <antimatroid> nice, my brother flew from christchurch back to melbourne via brisbane over night, that didn't go well :P
+2011-06-13T11:48:35  <antimatroid> UncleVasya: the timer isn't important, the "r" lines being removed is
+2011-06-13T11:48:35  <sigh> haha... I'm feeling fine, plus I gained almost a day :P
+2011-06-13T11:48:41  <amstan> antimatroid: this game might have the updated settings: http://aichallengebeta.hypertriangle.com/visualizer.php?game=22797
+2011-06-13T11:48:44  *** locutus2 <locutus2!~locutus2@82.113.99.52> has quit IRC (Read error: Connection reset by peer)
+2011-06-13T11:48:53  <antimatroid> time traveler
+2011-06-13T11:49:30  <sigh> hmmm... Zannick is from here, yeah?
+2011-06-13T11:49:37  <amstan> antimatroid: have you seen what janzert said about the settings?
+2011-06-13T11:49:55  <antimatroid> amstan: yes, i don't think that game has the new settings though?
+2011-06-13T11:49:57  <amstan> antimatroid: i don't think we use the defaults from playgame
+2011-06-13T11:50:04  <antimatroid> oh, crap :P
+2011-06-13T11:50:08  <amstan> i see this:
+2011-06-13T11:50:10  <amstan> 2011-06-13 19:47:13,599 - 22250 - INFO - Received task: {u'task': u'game', u'submissions': [u'465', u'415', u'316', u'266', u'799'], u'map_filename': u'symmetric_maps/symmetric_9.map', u'matchup_id': u'69842', u'game_options': {u'spawnradius2': 1, u'viewradius2': 55, u'loadtime': 3000, u'food_rate': [2, 8], u'turns': 2000, u'attackradius2': 4, u'food_visible': [1, 3], u'food': u'symmetric', u'turntime': 500, u'food_turn': [12, 30], u'location': u'
+2011-06-13T11:50:11  <amstan> aichallengebeta.hypertriangle.com', u'attack': u'damage', u'serial': False, u'food_start': [75, 175]}}
+2011-06-13T11:50:27  <antimatroid> sigh: where are the default parameters set? :P
+2011-06-13T11:50:35  <a1k0n_> does everyone else work for google now?
+2011-06-13T11:50:42  <amstan> except me :(
+2011-06-13T11:50:46  * antimatroid is still a poor student
+2011-06-13T11:50:47  <sigh> I'm not sure what the worker uses
+2011-06-13T11:51:01  <sigh> a1k0n_, nah facebook is where everyone is going now :P
+2011-06-13T11:51:06  <a1k0n_> haha, no doubt
+2011-06-13T11:51:21  <a1k0n_> that or linkedin, but i think that one has played out now
+2011-06-13T11:51:32  <amstan> antimatroid: there's some stuff here: https://github.com/aichallenge/aichallenge/blob/epsilon/setup/server_info.php.template
+2011-06-13T11:51:40  <sigh> antimatroid, playgame defaults are in playgame.py, but it would be silly for the tourney doesn't use playgame
+2011-06-13T11:51:44  <amstan> antimatroid: is this a test or something?
+2011-06-13T11:51:52  <amstan> antimatroid: or is it a permanent change?
+2011-06-13T11:52:09  <antimatroid> amstan: semi test
+2011-06-13T11:52:13  <antimatroid> hopefully it can be used
+2011-06-13T11:52:25  <sigh> sorry, my last comment didn't make any sense
+2011-06-13T11:52:26  <antimatroid> we've discovered blocking is a hell of a lot easier than we expected for the old radiuses
+2011-06-13T11:52:38  <amstan> ok.. so.. ...
+2011-06-13T11:52:40  <amstan> yeah
+2011-06-13T11:52:44  <amstan> i'll just change the settings file
+2011-06-13T11:52:49  <sigh> I meant to say: the tourney doesn't use playgame, it would be silly for the tounrey to use the default there
+2011-06-13T11:53:40  <sigh> antimatroid, does the new radius still have blocking?
+2011-06-13T11:54:00  <CIA-79> aichallenge: Alexandru Stan epsilon * r6d139c9 / ants/playgame.py :
+2011-06-13T11:54:00  <CIA-79> aichallenge: Revert "updated the attack radius"
+2011-06-13T11:54:00  <CIA-79> aichallenge: This reverts commit 94df23df591ff4a6892cc60dc295bc249f69fe1d.
+2011-06-13T11:54:00  <CIA-79> aichallenge: And this is how we discovered the extra stuff in server_info.php - http://bit.ly/lwo8EW
+2011-06-13T11:54:01  <antimatroid> sigh: i think so, but it's harder and requires more space to do it
+2011-06-13T11:54:03  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Ping timeout: 255 seconds)
+2011-06-13T11:54:15  <sigh> i see
+2011-06-13T11:54:18  <antimatroid> i've lost my link to the example blocking 5 or whatever
+2011-06-13T11:54:21  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 240 seconds)
+2011-06-13T11:54:28  <antimatroid> http://pastebin.com/CjKYcN5J
+2011-06-13T11:54:29  <amstan> antimatroid: umm.. why is the param name called attackradius2?
+2011-06-13T11:54:29  <antimatroid> there we go
+2011-06-13T11:54:32  <amstan> what's with the 2?
+2011-06-13T11:54:35  <sigh> squared
+2011-06-13T11:54:38  <antimatroid> amstan: it's the attack radius squared
+2011-06-13T11:54:42  <antimatroid> so the parameter is an integer
+2011-06-13T11:54:47  <amstan> oh, ok
+2011-06-13T11:54:50  <antimatroid> i just squared the distance metric with my bot
+2011-06-13T11:54:59  <antimatroid> no sqrt calculations = win
+2011-06-13T11:55:56  <antimatroid> sigh: the middle a's are in range of the top/bottom b's
+2011-06-13T11:56:08  <sigh> antimatroid, what about the plan to adjust maps so they don't have blockable points
+2011-06-13T11:56:13  <mleise> hehe, amstan you haven't looked into the dirty details for a while, right?
+2011-06-13T11:56:18  *** amstan <amstan!~alex@142.222.24.42> has quit IRC (Read error: Connection reset by peer)
+2011-06-13T11:56:25  *** amstan <amstan!~alex@142.222.24.42> has joined #aichallenge
+2011-06-13T11:56:25  *** ChanServ sets mode: +o amstan
+2011-06-13T11:56:26  <antimatroid> that was when we thought blocking was just <=3 width corridors
+2011-06-13T11:56:41  <antimatroid> i still will try to do that to open maps up, but i don't want regions to just be completely blocked off
+2011-06-13T11:56:51  <antimatroid> defensive structures are good, but it should be possible to break them down
+2011-06-13T11:57:11  <sigh> yeah, fair enough
+2011-06-13T11:57:19  <amstan> there we go: u'attackradius2': 9
+2011-06-13T11:57:28  <antimatroid> amstan: :)
+2011-06-13T11:57:29  <mleise> How much do we hate the "permanent damage to ants" idea?
+2011-06-13T11:57:38  <antimatroid> mleise: LOTS
+2011-06-13T11:57:57  <antimatroid> i want stuff like that to be "stateless"
+2011-06-13T11:58:13  <antimatroid> says the kid who had hp and still prefers that game
+2011-06-13T11:58:24  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:00:36  <Zannick> sigh: o/
+2011-06-13T12:00:48  <antimatroid> UncleVasya: your friend might like this function http://pastebin.com/XwrDEBui , I call it after updateVisionInformation and oldFood is made food before it is cleared in State::reset
+2011-06-13T12:00:58  *** amstan_ <amstan_!~alex@142.222.95.6> has joined #aichallenge
+2011-06-13T12:00:58  *** ChanServ sets mode: +o amstan_
+2011-06-13T12:01:00  <amstan_> antimatroid: when you're happy about the default settings, you have to change both ants/playgame.py(for the ppl downloading tools) and setup/server_info.php.template
+2011-06-13T12:01:05  <antimatroid> sigh: I managed to do my 'r' line stuff not too badly ^^ :)
+2011-06-13T12:01:16  <sigh> it's not that hard :P
+2011-06-13T12:01:16  <antimatroid> amstan_: noted
+2011-06-13T12:01:28  <antimatroid> sigh: no, that is easy, but before i was trying to do it all messily
+2011-06-13T12:01:35  <sigh> Zannick, I'm on mtv campus :P
+2011-06-13T12:01:42  *** amstan <amstan!~alex@142.222.24.42> has quit IRC (Ping timeout: 255 seconds)
+2011-06-13T12:01:46  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T12:01:50  <Zannick> sigh: what for?
+2011-06-13T12:01:56  <sigh> noogler stuffs
+2011-06-13T12:02:03  <Zannick> oh nice
+2011-06-13T12:02:05  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Remote host closed the connection)
+2011-06-13T12:02:06  <UncleVasya> antimatroid: I've told him, thank you.
+2011-06-13T12:02:31  <sigh> Zannick, you are in mtv too, yeah?
+2011-06-13T12:02:51  <Zannick> yes, i work in 2000
+2011-06-13T12:03:05  * antimatroid wishes he was there for beeries :(
+2011-06-13T12:03:07  <sigh> cool, I'll come find you sometime... I'm here for 2 weeks
+2011-06-13T12:03:22  <Zannick> cool
+2011-06-13T12:04:50  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:04:58  <antimatroid> UncleVasya: they will need to alter it, that's for "my starter bot" which is not exactly the same as the c++ starter bot
+2011-06-13T12:06:11  <carlop> antimatroid: this link ? http://pastebin.com/vTJjJfKk
+2011-06-13T12:06:16  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Client Quit)
+2011-06-13T12:06:24  <UncleVasya> hmm, I think I'll send him to you when you both are online.
+2011-06-13T12:06:44  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:07:35  <antimatroid> carlop: who made that?
+2011-06-13T12:07:41  <antimatroid> i want to see one with attack2 = 9
+2011-06-13T12:07:55  <carlop> this: http://pastebin.com/uU05vnqc
+2011-06-13T12:08:27  <antimatroid> that's way better
+2011-06-13T12:08:42  <antimatroid> that's a lot of ants and not so trivial to make on the fl
+2011-06-13T12:08:44  <antimatroid> fly*
+2011-06-13T12:09:24  <carlop> these two block are perfect, but it's hard to find a lot of space where put all these ant
+2011-06-13T12:09:33  <antimatroid> yep
+2011-06-13T12:10:05  <antimatroid> and even if you have a good defensive structure that isn't perfectly blocked, after some smart suicides it might/should be possible to break it down
+2011-06-13T12:10:25  <antimatroid> depending on how many ants they have ready to rebuild the defensive strucutre
+2011-06-13T12:11:01  <carlop> so it's almost impossible to do perfect block, in normal situation perfect defense vs perfect attack have a huge boost (eg 1:3, 1:2 instead of 1:1) but an huge army should win in the end
+2011-06-13T12:11:03  <carlop> yes
+2011-06-13T12:12:04  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Quit: Konversation terminated!)
+2011-06-13T12:12:24  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:13:13  <mleise> antimatroid: Don't you want to proof if any corridor width is blockable if the attack radius is larger?
+2011-06-13T12:13:47  <antimatroid> mleise: http://pastebin.com/uU05vnqc
+2011-06-13T12:13:53  <antimatroid> it's still blockable, just way harder
+2011-06-13T12:14:07  <antimatroid> mleise: you are frontier yeah?
+2011-06-13T12:14:16  <antimatroid> i'm 99% sure of that :P
+2011-06-13T12:14:24  <mleise> you are right ;)
+2011-06-13T12:14:24  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-06-13T12:14:38  <antimatroid> just making sure I wasn't wrong :P
+2011-06-13T12:15:14  <amstan_> antimatroid: http://aichallengebeta.hypertriangle.com/visualizer.php?game=22817
+2011-06-13T12:15:16  <mleise> So what will the next map generator look like? What size will the corridors be?
+2011-06-13T12:15:20  <amstan_> uses attackradius = 9
+2011-06-13T12:15:24  <antimatroid> amstan_: thanks, i was looking for one
+2011-06-13T12:15:36  <amstan_> just view the homepage.. it's always the latest map
+2011-06-13T12:15:49  <antimatroid> well i want to add in the symmetries amstan wanted
+2011-06-13T12:16:03  <antimatroid> then i want to make the random walks be of nxn blocks rather than 1x1, where n varies
+2011-06-13T12:16:04  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Client Quit)
+2011-06-13T12:16:16  <antimatroid> and i like smiley1983's new maps
+2011-06-13T12:16:18  <antimatroid> and mcleopolds maps
+2011-06-13T12:16:24  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:16:32  <antimatroid> and mcleopold will make map gens with me at some point, once everything else is better sorted
+2011-06-13T12:17:01  <antimatroid> amstan: is that a new map?
+2011-06-13T12:17:02  <antimatroid> it
+2011-06-13T12:17:06  <antimatroid> it's smaller
+2011-06-13T12:18:07  <amstan_> antimatroid: idk, what new map?
+2011-06-13T12:18:17  <antimatroid> nevermind
+2011-06-13T12:18:30  <antimatroid> i'll make some smaller maps wednesday
+2011-06-13T12:18:41  <antimatroid> i have to hand my exam in on wednesday
+2011-06-13T12:19:08  <amstan_> i really think we should integrate the food spawner into the mapgenerator
+2011-06-13T12:19:10  <mleise> antimatroid: Classical symmetries will be nice and the attack radius of 3 seems to be acceptable. I expected it to look wrong
+2011-06-13T12:19:24  <antimatroid> i have been asking for that for ages
+2011-06-13T12:19:35  <amstan_> antimatroid: well.. it's your department, why don't you do it?
+2011-06-13T12:19:38  <antimatroid> not the food spawner, but the maps should have a parameter indicating the type of symmetry
+2011-06-13T12:19:53  <antimatroid> i just need the engine to read the symmetric type and use the right spawn method
+2011-06-13T12:20:08  <antimatroid> then the default can be set back to asymmetric
+2011-06-13T12:20:28  <mleise> We have map generators in Java and OCaml, so it would be nice if it didn't have to be coupled with Python directly.
+2011-06-13T12:20:42  <antimatroid> does that mean I can finally write my map gens in c++ :P
+2011-06-13T12:20:51  <amstan_> mleise: and we're not using either..
+2011-06-13T12:21:13  <mleise> amstan_: Someone asked for the Java one to be used. Wasn't that you amstan?
+2011-06-13T12:21:25  <amstan_> probably
+2011-06-13T12:21:28  <antimatroid> i really like smiley's maps
+2011-06-13T12:21:36  <antimatroid> amstan_: have you seen them?
+2011-06-13T12:21:40  <amstan_> nope
+2011-06-13T12:21:41  <amstan_> link?
+2011-06-13T12:21:44  <antimatroid> they're like mazes, but the corridors are more than one wide
+2011-06-13T12:21:57  <antimatroid> smiley1983: hook us up with a link to images of your maps :P
+2011-06-13T12:22:06  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Quit: Konversation terminated!)
+2011-06-13T12:22:26  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:22:42  <mleise> "amstan: I would like to see ants/mapgen/SymmetricMapgen.java used as well" :p
+2011-06-13T12:22:51  <mleise> issue 150
+2011-06-13T12:23:28  <amstan_> mleise: yes, because we're only using the translation symmetry so far
+2011-06-13T12:24:00  *** sigh <sigh!~sigh@nat/google/x-xizpqhvuqbsxzktz> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-13T12:24:05  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Client Quit)
+2011-06-13T12:24:26  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:24:44  <antimatroid> i think the larger attack radius will allow for more interesting roaming patterns
+2011-06-13T12:26:12  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-13T12:26:18  <amstan_> antimatroid: can you make sure the game specs page is up to date?
+2011-06-13T12:26:29  <amstan_> more people are referring to it now
+2011-06-13T12:26:55  <carlop> just a suggestion, I don't have read a lot of map generation/food spawning code, but a possible solution is that the map file should have a list of group of cell that are all symmetrical, eg: rotational symmetry the four corner are in the same group, and so on, so the spawing code should only choose between a group of cell, then spawning in all cell of that group
+2011-06-13T12:28:11  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-13T12:29:39  <antimatroid> amstan_: I'll do that wednesday
+2011-06-13T12:30:03  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Quit: Konversation terminated!)
+2011-06-13T12:30:15  <smiley1983> I was elsewhere: http://ants.zeroviz.us/I1hCP/
+2011-06-13T12:30:18  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:30:42  <CIA-79> aichallenge: McLeopold epsilon * r62a749c / website/sql.php : fix to dropping unranked players from game info - http://bit.ly/jAFuNo
+2011-06-13T12:30:42  <antimatroid> smiley1983: that's a normal maze map :(
+2011-06-13T12:30:50  <smiley1983> http://ants.zeroviz.us/8ZU9b/
+2011-06-13T12:30:59  <antimatroid> there we go
+2011-06-13T12:31:02  <antimatroid> amstan_: ^^
+2011-06-13T12:31:34  <amstan_> smiley1983: neat, can you make the deadends round?
+2011-06-13T12:31:40  <antimatroid> hehe
+2011-06-13T12:31:42  <antimatroid> that's what i said
+2011-06-13T12:32:03  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Client Quit)
+2011-06-13T12:32:20  <smiley1983> they're not meant for use in this state :)
+2011-06-13T12:32:24  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:32:27  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has joined #aichallenge
+2011-06-13T12:32:32  <smiley1983> And yes, they can be made less ugly
+2011-06-13T12:32:32  *** sigh <sigh!~sigh@nat/google/x-ynywcwadexawrxum> has joined #aichallenge
+2011-06-13T12:32:44  <McLeopold> antimatroid: you still awake?
+2011-06-13T12:32:48  <antimatroid> i am
+2011-06-13T12:33:39  <McLeopold> Let's solve the food symmetry problem right now
+2011-06-13T12:33:50  <antimatroid> oh god, alright
+2011-06-13T12:33:56  <antimatroid> what do you want me to do?
+2011-06-13T12:33:56  <McLeopold> Maps need to give each starting ant an orientation
+2011-06-13T12:33:59  * amstan_ has to go at the next exact hour
+2011-06-13T12:34:02  <McLeopold> agree with me
+2011-06-13T12:34:04  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Client Quit)
+2011-06-13T12:34:13  <amstan_> orientation?
+2011-06-13T12:34:19  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has joined #aichallenge
+2011-06-13T12:34:25  <McLeopold> for symmetric food spawning
+2011-06-13T12:34:34  <McLeopold> I suggest this
+2011-06-13T12:34:38  <antimatroid> why can't the maps just have a paramater "symmetry none/tiled/radial"
+2011-06-13T12:34:46  <antimatroid> then the engine uses that to pick the spawn method?
+2011-06-13T12:34:49  <McLeopold> s row col [ns][ew]
+2011-06-13T12:35:03  <McLeopold> s for symmetry
+2011-06-13T12:35:21  <amstan_> antimatroid: no... bad terms
+2011-06-13T12:35:27  <antimatroid> terms are irrelevant
+2011-06-13T12:35:30  <antimatroid> the method is important
+2011-06-13T12:35:53  <amstan_> antimatroid: translation(yours), rotation(like smiley), mirror(like the java one)
+2011-06-13T12:36:04  <antimatroid> yep sure
+2011-06-13T12:36:09  <antimatroid> McLeopold: ?
+2011-06-13T12:36:14  <McLeopold> right now the current one assumes (correctly) that all ants face the same way, so when spawning food 2 squares above, it does 2 squares above all starting spots
+2011-06-13T12:36:39  <McLeopold> this would allow the engine to know 2 squares above one ant is 2 below another, and 2 right of yet another, etc
+2011-06-13T12:36:40  <antimatroid> it's more complicated than that
+2011-06-13T12:36:57  <antimatroid> it partitions the squares on "first access" for a basis to one ant then orders them randomly
+2011-06-13T12:37:02  <antimatroid> then spawns those locations symmetrically
+2011-06-13T12:38:10  <McLeopold> my info would still work for describing the symmetric, regardless of the type of symmetry
+2011-06-13T12:38:13  <carlop> for me the simpler option should be that the map file should be:
+2011-06-13T12:38:15  <carlop> rows #row
+2011-06-13T12:38:17  <carlop> cols #col
+2011-06-13T12:38:19  <carlop> player #player
+2011-06-13T12:38:21  <carlop> m .......
+2011-06-13T12:38:23  <carlop> m ......
+2011-06-13T12:38:25  <carlop> m .....
+2011-06-13T12:38:27  <carlop> (other map line)
+2011-06-13T12:38:29  <carlop> 1: (1,1) (1+row/2, 1) (1, 1+col/2) (1+row/2, 1+col/2)
+2011-06-13T12:38:30  <carlop> 2: other cell that are symmetrical to each other
+2011-06-13T12:38:32  <carlop> 3: other cell that are symmetrical
+2011-06-13T12:38:34  <carlop> ....
+2011-06-13T12:38:35  <carlop> so the food spawning code should only choose one of the group of cell
+2011-06-13T12:38:56  <McLeopold> carlop: use pastebin.com next time
+2011-06-13T12:39:41  <carlop> sorry, my idea is that the map should not tell what kind of symmetry have, only what cell are symmetrical to each other
+2011-06-13T12:39:42  <antimatroid> making the maps files complicated makes it really hard to make simple test maps
+2011-06-13T12:40:02  <amstan_> McLeopold: i think we should merge the mapgen and the food spawner, then we get to have 2 types of classes, one for generating a part of the map, and the other for keeping stuff symmetric(either kind)
+2011-06-13T12:40:10  *** computerwiz_222 <computerwiz_222!~andrew@142.222.24.41> has quit IRC (Ping timeout: 258 seconds)
+2011-06-13T12:40:11  <amstan_> McLeopold: then you can hook up the food spawner to use the symmetry class
+2011-06-13T12:40:49  <McLeopold> the map still needs the symmetric info in it
+2011-06-13T12:40:56  <antimatroid> i don't get what's unideal about my method?
+2011-06-13T12:41:07  <antimatroid> imo it's ideal in every way
+2011-06-13T12:41:08  <amstan_> yes
+2011-06-13T12:41:21  *** bhasker <bhasker!~bhasker@nat/yahoo/x-tdkelvyxfajcdrvr> has joined #aichallenge
+2011-06-13T12:41:29  <antimatroid> bhasker: morning
+2011-06-13T12:41:34  <bhasker> morning
+2011-06-13T12:41:36  <bhasker> how goes it
+2011-06-13T12:41:42  <antimatroid> good, you?
+2011-06-13T12:41:42  <amstan_> antimatroid: by your way you mean just a keyword specifioing the method, i agree with that
+2011-06-13T12:41:51  <antimatroid> amstan_: yes
+2011-06-13T12:41:58  <amstan_> we just have to make sure we have semantic terms so it's not confusing
+2011-06-13T12:42:05  <antimatroid> yes, your terms are good
+2011-06-13T12:42:09  <McLeopold> I've got more complicated symmetry in the works in which it doesn't work
+2011-06-13T12:42:13  <antimatroid> i never have been one for giving accurate names
+2011-06-13T12:42:29  <antimatroid> McLeopold: add another symmetry function to the engine?
+2011-06-13T12:42:32  <bhasker> going good, just got into work busy day ahead:)
+2011-06-13T12:42:42  <McLeopold> many more symmetries
+2011-06-13T12:42:46  <smiley1983> one more map paste before I go to sleep (just to show it makes non-maze maps as well): http://ants.zeroviz.us/twZub/
+2011-06-13T12:42:47  <amstan_> i still strongly advise to make the symmetry code a common component between the mapgen and the food spawner
+2011-06-13T12:42:57  *** amstan_ <amstan_!~alex@142.222.95.6> has quit IRC (Quit: Konversation terminated!)
+2011-06-13T12:43:17  <McLeopold> amstan: if we go with symmetric food and maps, we only need one generator
+2011-06-13T12:43:37  *** amstan <amstan!~alex@142.222.95.6> has joined #aichallenge
+2011-06-13T12:43:37  *** ChanServ sets mode: +o amstan
+2011-06-13T12:43:58  <antimatroid> if we have a more complicated map file, can we have a parameter indicating as such?
+2011-06-13T12:44:07  <antimatroid> so it's still possible to make simple test maps by hand
+2011-06-13T12:44:31  <amstan> McLeopold: how does only one generator work?
+2011-06-13T12:44:33  <antimatroid> smiley1983: :D
+2011-06-13T12:44:42  <antimatroid> amstan: one generator that can do many symmetries
+2011-06-13T12:44:50  <McLeopold> How about just giving each starting ant an orientation?  No need for bad terms or creating new ones.
+2011-06-13T12:44:59  <UncleVasya> McLeopold: For what game_seed and player_seed are needed? playgame's help didn't gave me an expanation of it.
+2011-06-13T12:45:29  <amstan> McLeopold: what about the mirror/rotational symmetry? i don't think you can use the current food spawner for them
+2011-06-13T12:45:39  <UncleVasya> I mean, I know these are a seeds for random generator but what is the difference?
+2011-06-13T12:46:29  <McLeopold> amstan: we can if we give each starting ant an orientation
+2011-06-13T12:46:43  <antimatroid> what if we write the food spawning as a separate class outside the engine, but also separate to the map gens?
+2011-06-13T12:47:02  <amstan> antimatroid: and with the symmetry as a common component to both!
+2011-06-13T12:47:03  <antimatroid> then extra symmetries require an extra food spawning method if required, then the engine knows how to handle the different types of symmetries?
+2011-06-13T12:47:21  <McLeopold> UncleVasya: engine_seed is for the engine only and used for food_spawning, player_seed is passed to the bots and they can use it to make their bot deterministic
+2011-06-13T12:47:54  <antimatroid> i'm not commiting any time to anything until wednesday, and barely any until after next thursday
+2011-06-13T12:47:56  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-06-13T12:47:59  <antimatroid> but that's my last exam next thursday
+2011-06-13T12:48:15  <McLeopold> HOLY CRAP!  Have you guys *read* the food spawn code?  We can do *all* symmetries with one function!  We just need ant orientations!
+2011-06-13T12:48:46  <antimatroid> i haven't :P
+2011-06-13T12:48:52  <amstan> lol.. he lost it
+2011-06-13T12:48:56  <antimatroid> alright, what do i need to do to give orientation?
+2011-06-13T12:49:14  <amstan> antimatroid: for your translation types, you don't care, they're all pointed the same way
+2011-06-13T12:49:19  <McLeopold> for each starting ant, add a line:
+2011-06-13T12:49:21  <antimatroid> yep
+2011-06-13T12:49:28  <McLeopold> s row col [nw][ew]
+2011-06-13T12:49:32  *** sigh <sigh!~sigh@nat/google/x-ynywcwadexawrxum> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-13T12:49:40  <McLeopold> uh, [ns]
+2011-06-13T12:49:56  <antimatroid> McLeopold: maybe a pastebin example? :P
+2011-06-13T12:50:01  <McLeopold> ok
+2011-06-13T12:50:22  <McLeopold> give me a few minutes....
+2011-06-13T12:51:59  <amstan> k, i g2g
+2011-06-13T12:52:01  <amstan> cya
+2011-06-13T12:52:16  * janzert is leaving town for at least 2 days possibly through the end of the week in about half an hour, so may not accomplish anything with the contest this week either
+2011-06-13T12:52:42  <antimatroid> enjoy the whatever :P
+2011-06-13T12:52:49  <antimatroid> i'd say holiday, but i'm guessing work? :P
+2011-06-13T12:52:54  <UncleVasya> McLeopold: I thnk I understand. Is player_seed number comes to the bot in the way water info does?
+2011-06-13T12:54:06  <UncleVasya> And every starter pack must be updated to read this value?
+2011-06-13T12:54:24  <antimatroid> why?
+2011-06-13T12:54:33  <antimatroid> people can read it if they want it
+2011-06-13T12:54:59  <antimatroid> the starter bots (at least my one does :P) ignore unknown lines
+2011-06-13T12:55:21  <antimatroid> UncleVasya: why aren't you using c++?
+2011-06-13T12:55:41  <antimatroid> nevermind, you're using ocaml
+2011-06-13T12:56:36  *** amstan <amstan!~alex@142.222.95.6> has quit IRC (Ping timeout: 255 seconds)
+2011-06-13T12:57:55  <antimatroid> who is leviathan?
+2011-06-13T12:57:58  <antimatroid> i want to talk to them!
+2011-06-13T12:58:04  <UncleVasya> antimatroid: My answer will consist of many words. And I think it will be hard to understand what I am saying. But if you'll be able to understand I think my reason is interesting a little.
+2011-06-13T12:58:11  <UncleVasya> It's nothing about speed.
+2011-06-13T12:58:30  <antimatroid> i'm about to get a functional rant aren't i? :P
+2011-06-13T12:58:47  <antimatroid> i'm very keen on haskell, just haven't taken enough time to learn it yet
+2011-06-13T12:58:50  <UncleVasya> no :)
+2011-06-13T12:58:57  <UncleVasya> It's about game theory.
+2011-06-13T12:58:59  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 276 seconds)
+2011-06-13T12:59:03  <antimatroid> oh, i'm all ears :)
+2011-06-13T12:59:35  <UncleVasya> It's a long story that begins in the early september...
+2011-06-13T12:59:59  *** amstan <amstan!~alex@142.222.224.44> has joined #aichallenge
+2011-06-13T12:59:59  *** ChanServ sets mode: +o amstan
+2011-06-13T13:00:12  * mleise listens hidden behind a newspaper
+2011-06-13T13:00:40  <mleise> the autumn winds were blowing...
+2011-06-13T13:00:42  <UncleVasya> I found ai-contest while reading the site about chess programming.
+2011-06-13T13:00:47  *** berak <berak!~chatzilla@89.204.153.238> has joined #aichallenge
+2011-06-13T13:01:25  <antimatroid> the site?
+2011-06-13T13:01:28  <antimatroid> there is but one? :P
+2011-06-13T13:03:42  <McLeopold> http://pastebin.com/yUBZTdpj
+2011-06-13T13:03:46  <mleise> shh antimatroidm, if you piss him off I'll never learn about that game theory secret
+2011-06-13T13:04:36  <antimatroid> i'm not trying to piss anyone off :P
+2011-06-13T13:04:45  <UncleVasya> I am not doing chess programming, just like to read sites where smart people have their conversation. I can't understand much from this conversations but it's makes me proud of myself like "I don't play online games, I am reading smar sites *cool_boy*"
+2011-06-13T13:05:55  <McLeopold> antimatroid: okay, does the ant orientation stuff make sense in that paste?
+2011-06-13T13:06:05  <antimatroid> McLeopold: no :P
+2011-06-13T13:06:10  <mleise> no
+2011-06-13T13:06:19  <UncleVasya> So, I found the contest very interesting. I had watching replays and reading talking about different strategies.
+2011-06-13T13:06:22  * McLeopold facepalm
+2011-06-13T13:06:39  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T13:06:41  <antimatroid> why are there large gaps of no dots?
+2011-06-13T13:06:49  <UncleVasya> But I didn't think about participiating because I didn't think I can do something.
+2011-06-13T13:07:06  <antimatroid> and what if the other ants aren't perfectly n/e/s/w/ne/nw/se/sw?
+2011-06-13T13:07:06  <McLeopold> so you can see the 4 sections of the map, just assume the map is correctly defined
+2011-06-13T13:07:44  <McLeopold> the orientation describes how food will spawn, not a true direction, you always need 2 components
+2011-06-13T13:07:59  <antimatroid> oh
+2011-06-13T13:08:08  <antimatroid> that is the +ve direction when translating?
+2011-06-13T13:08:13  <McLeopold> for a ant, spawn a food and then determine the n/s distance and the e/w distance
+2011-06-13T13:08:39  <McLeopold> yes, i think
+2011-06-13T13:08:43  <antimatroid> yeah i think i'm with you now
+2011-06-13T13:08:46  <McLeopold> ok
+2011-06-13T13:09:03  <antimatroid> yeah okay
+2011-06-13T13:09:16  <antimatroid> i'll do that to my map gen on wednesday
+2011-06-13T13:09:20  <UncleVasya> Also, from all these languages I had touch only to c++. A very very little touch like "define the maximal element of this 1-dimentional array of integers".
+2011-06-13T13:09:20  <janzert> couldn't you land on water sometimes on a rotational symmetry map, with that method?
+2011-06-13T13:09:22  <McLeopold> you always need 1 of [ns] and 1 of [ew], which can be in either order
+2011-06-13T13:09:24  <carlop> 2 direction are right, but some of your example seem wrong
+2011-06-13T13:09:40  <antimatroid> janzert: yes, the engine deals with that
+2011-06-13T13:09:44  <janzert> ok
+2011-06-13T13:09:48  <McLeopold> antimatroid: all you have to do is add nw for everythine :p
+2011-06-13T13:09:57  <carlop> es rotation should be NW, EN, SE, WS
+2011-06-13T13:10:04  <antimatroid> McLeopold: yeah, but i'll be doing other symmetries at some point
+2011-06-13T13:10:35  <McLeopold> carlop: yes, you're right
+2011-06-13T13:10:36  <antimatroid> UncleVasya: where's the game theory? :)
+2011-06-13T13:10:37  <UncleVasya> Once I found unofficial Delphi starter pack on the forums. I decided: "It's destiny!"
+2011-06-13T13:10:47  <UncleVasya> In the end of the story :)
+2011-06-13T13:10:49  <McLeopold> what I did was 4 player mirror, oops
+2011-06-13T13:12:24  <amstan> what about a mirror that's diagonal?
+2011-06-13T13:12:47  <carlop> my major problem why we should limit the symmetry type ? why just not integrate map and spawing code OR make the map file contain every possible information ?
+2011-06-13T13:12:49  <McLeopold> janzert: we could do a check to match the starting orientation with the map to ensure it was properly symmetric, according to the maps own definition
+2011-06-13T13:13:01  <UncleVasya> I've started to improve starter bot. I had found it not so hard how I had to think before.
+2011-06-13T13:13:27  <McLeopold> amstan: I think nw on one ant and wn on another would work
+2011-06-13T13:13:46  <amstan> ok
+2011-06-13T13:13:50  <UncleVasya> But Delphi package didn't became an officialone so I could play only locally.
+2011-06-13T13:14:13  <McLeopold> actually nw ws
+2011-06-13T13:14:46  <mleise> UncleVasya: Do you want to buy my Turbo Delphi 2006?
+2011-06-13T13:15:05  <antimatroid> lol
+2011-06-13T13:15:13  <antimatroid> oh, it's pie time
+2011-06-13T13:15:15  <antimatroid> pi*
+2011-06-13T13:15:18  <antimatroid> 3 14
+2011-06-13T13:15:20  <McLeopold> carlop: I think this method doesn't limit symmetry type
+2011-06-13T13:15:35  <amstan> antimatroid: nope.. 1 minute late
+2011-06-13T13:15:56  <antimatroid> (03:14:51) antimatroid: 3 14
+2011-06-13T13:15:57  <McLeopold> 7 hours late...
+2011-06-13T13:16:10  <amstan> [13:15] <antimatroid> oh, it's pie time
+2011-06-13T13:16:14  <UncleVasya> I have a friend who likes C++. I've downloaded a C++ starter pack and with a lot of questions to this friend started to translate Delphi bot into the c++ one.
+2011-06-13T13:16:15  <antimatroid> flip that 51 to 15
+2011-06-13T13:16:18  <antimatroid> then we're good
+2011-06-13T13:16:42  <janzert> McLeopold: yeah, that might be a good double check in any case
+2011-06-13T13:16:49  <antimatroid> why not just use the current c++ starter bot?
+2011-06-13T13:16:56  <McLeopold> okay, let's bake this into the spec then
+2011-06-13T13:17:19  <mleise> anyway 13:37 is the leetest time of day
+2011-06-13T13:17:28  <antimatroid> nah, 3:26
+2011-06-13T13:17:39  <McLeopold> janzert: I hope to have the manager generate a set of about 20 new maps per day after we launch.  It can to the symmetric check.
+2011-06-13T13:18:33  <UncleVasya> Then goes very-very interesting time of participiating to the Planet Wars. Loved it. It's definitely one of the best 1.5 monthes of my life.
+2011-06-13T13:18:39  <UncleVasya> STL is cool.
+2011-06-13T13:19:06  <UncleVasya> I've ended previous contest on the place 310.
+2011-06-13T13:19:43  <UncleVasya> Which I think very good for me since it was my first serious program.
+2011-06-13T13:19:44  <mleise> McLeopold: Btw, I'm glad we still store the maps in the replay. I think it was the right decision.
+2011-06-13T13:20:21  <antimatroid> tron was my first serious program, did not finish :(
+2011-06-13T13:20:42  <a1k0n_> that is pretty good.  it beat my planetwars entry
+2011-06-13T13:21:03  <antimatroid> a1k0n_: like that was hard :P
+2011-06-13T13:21:07  <a1k0n_> haha
+2011-06-13T13:21:11  <UncleVasya> I can say I've learned programming while was developing bot for Planed Wars (almost everything before - simple Delphi programs for studying).
+2011-06-13T13:21:20  <mleise> Was noone of the regulars below 479 in Planet Wars?
+2011-06-13T13:21:39  <antimatroid> i beat smiley, that's what I cared about
+2011-06-13T13:22:13  <antimatroid> it's nice being able to link this http://ai-contest.com/country_profile.php?country_id=25 to people (particularly in australia) :P
+2011-06-13T13:22:47  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110413222027])
+2011-06-13T13:23:02  <janzert> see you all in a few, don't have too much fun without me ;)
+2011-06-13T13:23:09  <antimatroid> party time
+2011-06-13T13:23:09  <janzert> few days that is
+2011-06-13T13:23:16  *** janzert <janzert!~janzert@24-247-70-35.dhcp.trcy.mi.charter.com> has left #aichallenge
+2011-06-13T13:23:33  <UncleVasya> My bot was a garden of if..else statements. While reading official forums and topic about contest on that chess programming site I've learned that scripting sucks and game theory is the right way.
+2011-06-13T13:24:02  *** sigh <sigh!~sigh@216.239.45.19> has joined #aichallenge
+2011-06-13T13:24:20  <antimatroid> UncleVasya: http://www.sifflez.org/misc/tronbot/index.html that's a very nice tutorial on minimax trees
+2011-06-13T13:24:21  <UncleVasya> I've decided to learn it before next contest begins.
+2011-06-13T13:24:56  *** sigh <sigh!~sigh@216.239.45.19> has quit IRC (Client Quit)
+2011-06-13T13:25:08  <a1k0n_> it was very difficult to apply search trees to planetwars, though
+2011-06-13T13:25:13  <a1k0n_> tron was a better one for that
+2011-06-13T13:25:34  <antimatroid> yep
+2011-06-13T13:25:41  <antimatroid> my bot used a game tree, but it was REALLY messy
+2011-06-13T13:25:44  <UncleVasya> I've downloaded some bots sources.
+2011-06-13T13:25:44  *** computerwiz_222 <computerwiz_222!~andrew@142.222.2.14> has joined #aichallenge
+2011-06-13T13:25:50  <a1k0n_> so did bocsimacko
+2011-06-13T13:26:20  <UncleVasya> btw, antimatroid's one was easest to read from the strongest ones.
+2011-06-13T13:26:28  <antimatroid> my bot?
+2011-06-13T13:26:37  <antimatroid> the tree had a HUGE bug
+2011-06-13T13:26:37  <UncleVasya> yep
+2011-06-13T13:26:40  <antimatroid> like memory leak worthy
+2011-06-13T13:27:11  <UncleVasya> I've downloaded only C++ bots because I couldn't understand another languages that time.
+2011-06-13T13:27:15  <mleise> congrats for not writing obfuscated code ... well with lisp that was a first ((((grade (((problem)) (i guess))))))
+2011-06-13T13:27:57  <antimatroid> i wouldn't describe my planet wars code as readable, it's nice to hear someone else describe it as such, thanks :)
+2011-06-13T13:28:14  <antimatroid> i guess it was just saying it was more readable than the others, which isn't necessarily saying it was readable
+2011-06-13T13:28:34  <UncleVasya> yes, comparing to other's code.
+2011-06-13T13:28:48  <UncleVasya> And only comparing to the strong bots.
+2011-06-13T13:29:58  <UncleVasya> But I'm too lazy! Very soon I'd returned to my usual life: serial movies, videogames, etc.
+2011-06-13T13:30:22  <UncleVasya> So to the Ants I come without any skill improvemennts.
+2011-06-13T13:30:53  <UncleVasya> Without any game thery stuff. :(
+2011-06-13T13:31:37  <antimatroid> you don't really need much game theory for these contests
+2011-06-13T13:31:43  <carlop> a possible problem of food spawning code is that if someone keep his ant waiting (if they have nothing to do) he lose food that can't be placed, so this code favor ant that keep moving (maybe only back and forth)
+2011-06-13T13:32:01  <antimatroid> carlop: you say that like it's a bad thing :P
+2011-06-13T13:32:17  <antimatroid> well known problem, it's the best symmetric spawning method we could come up with
+2011-06-13T13:32:28  <mleise> carlop: Unnessecary movement is bad
+2011-06-13T13:32:33  <UncleVasya> So my bot will be weak and very likely I'll end Ants competition in the worse position than PW one.
+2011-06-13T13:32:38  <antimatroid> otherwise ants positions can affect the spawn location of food at another part of the map
+2011-06-13T13:32:53  <antimatroid> mleise: this encourages you to keep moving
+2011-06-13T13:32:54  <mleise> But doesn't the food just get held back until the square is free?
+2011-06-13T13:32:59  <antimatroid> yes
+2011-06-13T13:33:01  <UncleVasya> I found a justification for myself:
+2011-06-13T13:33:11  <carlop> maybe food can be spawned in the nearest unoccupied land
+2011-06-13T13:33:18  <carlop> almost symmetric
+2011-06-13T13:33:26  <UncleVasya> My bot will be weak because I'll write it in the very hard language :)
+2011-06-13T13:33:29  <antimatroid> i'm not a fan of almost symmetric
+2011-06-13T13:33:38  <antimatroid> even though this is as well
+2011-06-13T13:33:41  <antimatroid> but i prefer this
+2011-06-13T13:33:54  <UncleVasya> This is the end.
+2011-06-13T13:33:56  <mleise> carlop: Your ants build up a grid, right? :p
+2011-06-13T13:34:05  <antimatroid> UncleVasya: :)
+2011-06-13T13:35:02  <carlop> can be a good to favor moving ant, just I noticed that thing only reading the code
+2011-06-13T13:35:03  <UncleVasya> Not much game theory in my story but I wanted someone to hear it :)
+2011-06-13T13:35:23  <UncleVasya> antimatroid:  Do you regret you'd listeningto it?
+2011-06-13T13:36:03  *** sigh <sigh!~sigh@nat/google/x-uysjjveqiluwwnok> has joined #aichallenge
+2011-06-13T13:36:13  <antimatroid> no point in regrets :P
+2011-06-13T13:36:16  <antimatroid> anyway, bed time
+2011-06-13T13:36:50  *** Margusja <Margusja!~margus@39.21.50.84.dyn.estpak.ee> has joined #aichallenge
+2011-06-13T13:36:59  <UncleVasya> So tthis was kind of a bed fairy-tale?
+2011-06-13T13:37:41  <george1914> UncleVasya's fireside stories ...
+2011-06-13T13:37:41  <UncleVasya> You'll dream about UncleVasya who trie to talk with you in the ugly English:)
+2011-06-13T13:37:41  <george1914> should there not be a moral to the tale?
+2011-06-13T13:39:24  <UncleVasya> george1914:  Are you asking me to add morale or to call that a story instead of a tale?
+2011-06-13T13:39:48  <a1k0n_> so is there a uniform distribution of food-spawning throughout the map?  or does it depend on where ants are?
+2011-06-13T13:40:15  <george1914> i was just asking ...    nice story btw.
+2011-06-13T13:40:21  <a1k0n_> cool story bro
+2011-06-13T13:40:41  <UncleVasya> I'll try to talk less until learn some language :)
+2011-06-13T13:40:56  <a1k0n_> ants has plenty of game theory to it.
+2011-06-13T13:41:06  <carlop> if you keep moving all your ant, there is uniform distribution
+2011-06-13T13:41:21  <a1k0n_> i don't understand why it matters whether your ants are moving
+2011-06-13T13:41:56  <antimatroid> a1k0n_: what game theory?
+2011-06-13T13:41:57  <carlop> cause if food should spawn in an occupied cell, spawn when this cell become free
+2011-06-13T13:42:12  <mleise> Isn't it best to seperate your ants as much as possible without losing sight on some squares?
+2011-06-13T13:42:14  <george1914> a1k0n_ it does?   - i see GT for combat i guess.    and for global strategy (who/should i choose to attack).  these are what you refer to?
+2011-06-13T13:42:22  <antimatroid> mleise: not for battles
+2011-06-13T13:42:45  <a1k0n_> george1914/antimatroid: not only that, but just where to station your ants so as to provide the maximum likelihood of obtaining food next turn
+2011-06-13T13:42:45  <sigh> antimatroid, I remember you saying you were going to sleep when I first logged in :P
+2011-06-13T13:42:49  <carlop> so if you have a large portion of your territory always occupied you lose a lot of food
+2011-06-13T13:42:51  <mleise> antimatroid: Sure, not for battles, but the rest? I see a lot of ants still going around in bunches ;p
+2011-06-13T13:43:03  <antimatroid> sigh: you should know me better
+2011-06-13T13:43:27  <Margusja> Hi, some day ago I had a problem. If I upload my c++ package to the http://aichallengebeta.hypertriangle.com/submit.php it won't compile. The answer is Compile Error: error while compiling submission. Did not find a recognized MyBot.* file. I am sure that my package contains MyBot.cc file. It compiles in my machine. If someone would help the package is in address http://margus.roo.ee/wp-content/uploads/2011/06/margusjaAntBot.zip
+2011-06-13T13:43:33  <mleise> carlop: You could use an alternating pattern
+2011-06-13T13:44:24  <UncleVasya> george1914 , a1k0n_:  If you're so condescending to me because you think I am a young guy, I must to disillusion you: I am 20 years old already :(
+2011-06-13T13:44:37  <mleise> x.x.x <- move this pattern forth and back each turn to have a max delay of 1 turn on food spawn
+2011-06-13T13:44:38  <mleise> .x.x.
+2011-06-13T13:44:38  <mleise> x.x.x
+2011-06-13T13:44:40  <antimatroid> UncleVasya: they're just messing
+2011-06-13T13:44:44  <antimatroid> not condescending
+2011-06-13T13:44:45  <a1k0n_> UncleVasya: lol
+2011-06-13T13:44:48  <george1914> Margusja: hm, maybe putt all files in the zip,  BUT NOT in dirwectories?
+2011-06-13T13:45:01  <a1k0n_> i'm not being condescending at all
+2011-06-13T13:45:06  <carlop> mleise: yes, I know this can be a solution
+2011-06-13T13:45:10  <george1914> me neither
+2011-06-13T13:45:17  <a1k0n_> but i'm laughing that you think 20 isn't young
+2011-06-13T13:45:25  <a1k0n_> so now i *am* being condescending
+2011-06-13T13:45:30  <antimatroid> you shut up, i'm 22 and young!
+2011-06-13T13:45:36  <berak> Margusja, you had an MyBot.o file in that zip, the compiler got confused there, upload the cc and h files only
+2011-06-13T13:46:05  *** boegel <boegel!~boegel@91.182.229.125> has quit IRC (Quit: Leaving)
+2011-06-13T13:46:39  <antimatroid> a1k0n_: to be fair, their comment more implies 20 isn't young :P
+2011-06-13T13:46:41  <UncleVasya> I mean that programmer at 20 already should know programming and English.
+2011-06-13T13:46:42  <Margusja> berak, so I have to remove all .o files? Or only MyBot.o ?
+2011-06-13T13:47:26  <antimatroid> margusja: just select the .h and .cc files and zip those
+2011-06-13T13:47:28  <berak> better stick to only the cc and h files
+2011-06-13T13:47:29  <antimatroid> not in a filder
+2011-06-13T13:47:31  <antimatroid> folder*
+2011-06-13T13:47:37  <Margusja> Ok, I;ll try only with cc and h. files.
+2011-06-13T13:47:53  <Margusja> tnx, I'll try
+2011-06-13T13:48:14  <antimatroid> Margusja: have you got the newest c++ starter bot?
+2011-06-13T13:48:31  <antimatroid> if the timer file has two structs, you're good, otherwise download it again ;)
+2011-06-13T13:48:38  <a1k0n_> UncleVasya: anyways, i think applying for instance alpha-beta search, which is what i think you wanted to do when you said game theory is the way to go, will be very difficult for ants as it was difficult for planetwars; but it was easy for Tron, and it might be fun for you to try making a Tron-playing bot
+2011-06-13T13:48:57  <a1k0n_> UncleVasya: not that you should give up on ants!
+2011-06-13T13:49:03  <antimatroid> a1k0n_: did you use alpha-beta while generating your tree?
+2011-06-13T13:49:07  <antimatroid> or only when evaluating it?
+2011-06-13T13:49:20  <Margusja> antimatroid: I dont now. I have that one i downloaded from http://aichallengebeta.hypertriangle.com/starter_packages.php
+2011-06-13T13:49:27  <a1k0n_> antimatroid: er.. alpha-beta implies a cutoff when generating the tree
+2011-06-13T13:49:33  <antimatroid> Margusja: it changed recently
+2011-06-13T13:49:49  <antimatroid> a1k0n_: i don't trust that at all
+2011-06-13T13:49:54  <a1k0n_> ?!
+2011-06-13T13:50:11  <Margusja> Ok, I'll download i again.
+2011-06-13T13:50:17  <a1k0n_> well, if your evaluation function is to be believed then you don't lose anything by doing it.  i guess that's the rub.
+2011-06-13T13:50:23  <UncleVasya> a1k0n_: I didn't think about alpha-beta because I thought it is better for board games and games with not simulultaneously moves.
+2011-06-13T13:50:34  <a1k0n_> UncleVasya: it doesn't actually matter very much for tron.
+2011-06-13T13:50:35  <antimatroid> yeah but your evaluation of a state is not complete :P
+2011-06-13T13:50:39  *** computerwiz_222 <computerwiz_222!~andrew@142.222.2.14> has quit IRC (Read error: Operation timed out)
+2011-06-13T13:50:46  <antimatroid> it's possible for it to miss an optimal move
+2011-06-13T13:51:02  <a1k0n_> well then, how do you deal with the complexity?
+2011-06-13T13:51:12  <antimatroid> i cry
+2011-06-13T13:51:34  <antimatroid> games have a ridiculous state size
+2011-06-13T13:51:53  <george1914> i did full tree, simultaneous moves, and calculated the Nash payoff matrix +mixed strategy at each node
+2011-06-13T13:51:59  <george1914> (for tron)
+2011-06-13T13:52:01  <a1k0n_> and, in the case of planet wars and ants, a ridiculous action cardinality
+2011-06-13T13:52:08  <george1914> it seem sthat this wasnt the best option
+2011-06-13T13:52:13  <CIA-79> aichallenge: Scott Hamilton epsilon * r02b14a3 / (3 files in 2 dirs):
+2011-06-13T13:52:13  <CIA-79> aichallenge: Merge pull request #186 from smiley1983/epsilon
+2011-06-13T13:52:13  <CIA-79> aichallenge: OCaml and compiler.py: added -lib unix to ocamlbuild to enable Unix.gettimeofday - http://bit.ly/k4vHEi
+2011-06-13T13:52:26  <a1k0n_> george1914: wow
+2011-06-13T13:52:28  <UncleVasya> For know everything with words "tree", "moves matrix", "Braun-Robinsone method", "saddle point" immediately becames a game theory to me :)
+2011-06-13T13:52:30  <CIA-79> aichallenge: Scott Hamilton epsilon * re75ac90 / (4 files):
+2011-06-13T13:52:30  <CIA-79> aichallenge: Merge pull request #185 from sir-macelon/epsilon
+2011-06-13T13:52:30  <CIA-79> aichallenge: removed r lines support - http://bit.ly/la8dnU
+2011-06-13T13:53:03  <george1914> well, i got only 1/2 the search depth of alpha-beat,
+2011-06-13T13:53:27  <antimatroid> george1914: a complete game tree?
+2011-06-13T13:53:30  <antimatroid> erm?
+2011-06-13T13:53:31  <george1914> and the cost of finding mixed strategy reduced the depth possible also
+2011-06-13T13:54:04  <george1914> so, i had some state evaluation function,  and then i searchd to some depth, eg 10moves (each) ahead
+2011-06-13T13:54:21  <antimatroid> i can't wait to redo tron
+2011-06-13T13:54:51  <a1k0n_> never!
+2011-06-13T13:55:06  <McLeopold> amstan: Is your graphic designer going to do stuff?  If he's not doing it now, let's not bother and I'll close the issue.
+2011-06-13T13:55:13  <a1k0n_> there should be a mode in ants where your ants leave a trail of water behind
+2011-06-13T13:55:20  <antimatroid> it'll be the first game up on zeta
+2011-06-13T13:55:30  <amstan> McLeopold: well.. we need to tell him what to do
+2011-06-13T13:55:39  <antimatroid> a1k0n_: i considered a variation where every move left an ant
+2011-06-13T13:55:47  <McLeopold> we need people that just do
+2011-06-13T13:56:00  <a1k0n_> that would be insane; you'd have 2^n ants on turn n
+2011-06-13T13:56:06  <antimatroid> yes
+2011-06-13T13:56:11  <a1k0n_> (except you wouldn't)
+2011-06-13T13:56:13  <antimatroid> i also want to play flood fill wars
+2011-06-13T13:56:19  <a1k0n_> heh
+2011-06-13T13:56:22  <antimatroid> not sure how to do it, but it'd be awesome
+2011-06-13T13:56:49  <antimatroid> start with a randomly partitioned grid, then flood fill wars on that would make sense
+2011-06-13T13:59:19  <a1k0n_> that would be... tron
+2011-06-13T14:03:29  <antimatroid> how?
+2011-06-13T14:04:01  *** olexs <olexs!~Leviathan@drms-4d01447a.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-13T14:04:46  <antimatroid> you pick a square and that and every connected square of that character becomes your player number
+2011-06-13T14:05:03  <antimatroid> then the winner is the person to get the entire grid covered with their characters
+2011-06-13T14:05:19  <antimatroid> i imagine it might end up being isomorphic to nim
+2011-06-13T14:05:22  <antimatroid> or being quite similar
+2011-06-13T14:13:11  *** carlop <carlop!~chatzilla@5418D6B8.cm-5-1d.dynamic.ziggo.nl> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 3.6.12/20101027124959])
+2011-06-13T14:17:20  <Margusja> Next try. http://margus.roo.ee/wp-content/uploads/2011/06/Archive.zip. No problem in my machine. If uploaded I got: ./__MACOSX/._Bot.cc:1:1: warning: null character(s) ignored, ./__MACOSX/._Bot.cc:1:2: error: stray '\5' in program.. and so on. Any ideas?
+2011-06-13T14:17:53  <Margusja> Downloaded a new starter package too.
+2011-06-13T14:18:58  <george1914> Margusja: i dont know your problem - but why include the directory?
+2011-06-13T14:19:48  <george1914> btw the latest starter bot is the one on github (the one on beta website is not the latest, last i heard...)
+2011-06-13T14:20:05  <Margusja> hmm :( still directory? My bad :( I only selected files. Ok, max os built in archiver is grap.
+2011-06-13T14:20:10  *** okayzed is now known as okay
+2011-06-13T14:21:01  <george1914> i generallt unzip after making .zip- just to be sure i have not messed up
+2011-06-13T14:21:24  <Margusja> ok, i'll try again
+2011-06-13T14:21:35  <george1914> good luck :)
+2011-06-13T14:21:39  <Margusja> tnx :)
+2011-06-13T14:22:16  <McLeopold> Has anyone seen an invalid replay error in the last 4 days?
+2011-06-13T14:22:22  <george1914> sure, np.  i have such problems often myself ...
+2011-06-13T14:23:32  <UncleVasya> McLeopold: me
+2011-06-13T14:23:59  <UncleVasya> Do you mean the ones where I need to add &debug=true?
+2011-06-13T14:24:07  <McLeopold> yeah, do you have links?
+2011-06-13T14:24:51  <UncleVasya> 3-4 minutes.
+2011-06-13T14:27:44  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has joined #aichallenge
+2011-06-13T14:29:16  <UncleVasya> Cannot find now but I saw one today.
+2011-06-13T14:29:39  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has quit IRC (Client Quit)
+2011-06-13T14:31:26  <berak> McLeopold, i had some of those, playing locally. didn't keep those unfortunately, but it was always due to missing player chars in the map part of the replay, truncating the map
+2011-06-13T14:31:39  <UncleVasya> McLeopold: http://aichallengebeta.hypertriangle.com/visualizer.php?game=22333&user=26
+2011-06-13T14:31:45  <Margusja> Yes, if I used comand line zip - Success: ready to play :)
+2011-06-13T14:33:31  <george1914> Margusja: good :)
+2011-06-13T14:34:25  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-13T14:34:50  <stocha> two identical aggressive bot can hardly get an enduring draw i think.
+2011-06-13T14:34:58  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Client Quit)
+2011-06-13T14:38:09  *** Margusja <Margusja!~margus@39.21.50.84.dyn.estpak.ee> has left #aichallenge
+2011-06-13T14:42:28  *** boegel <boegel!~boegel@91.182.229.125> has joined #aichallenge
+2011-06-13T14:42:47  *** UncleVasya <UncleVasya!kvirc@46.133.139.2> has quit IRC ()
+2011-06-13T14:44:13  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-06-13T14:49:46  <CIA-79> aichallenge: Alexandru Stan epsilon * r9575486 / (4 files in 2 dirs): Merged aeter/aichallenge. Sorry that it's so late, i tought someone had to review it or something. - http://bit.ly/j5ylQg
+2011-06-13T14:50:19  <amstan> awww, janzert left
+2011-06-13T14:50:25  * amstan misses him already
+2011-06-13T14:52:46  *** olexs <olexs!~Leviathan@drms-4d01447a.pool.mediaWays.net> has joined #aichallenge
+2011-06-13T14:59:33  *** amstan <amstan!~alex@142.222.224.44> has quit IRC (Ping timeout: 250 seconds)
+2011-06-13T15:05:38  *** locutus2 <locutus2!~locutus2@89.204.153.96> has joined #aichallenge
+2011-06-13T15:12:43  *** locutus2 <locutus2!~locutus2@89.204.153.96> has quit IRC (Ping timeout: 260 seconds)
+2011-06-13T15:15:01  *** berak <berak!~chatzilla@89.204.153.238> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-06-13T15:15:33  *** locutus2 <locutus2!~locutus2@89.204.153.96> has joined #aichallenge
+2011-06-13T15:16:57  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-06-13T15:19:49  *** locutus2 <locutus2!~locutus2@89.204.153.96> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T15:24:27  *** locutus2 <locutus2!~locutus2@89.204.153.96> has joined #aichallenge
+2011-06-13T15:31:13  *** olexs1 <olexs1!~Leviathan@drms-590c4c11.pool.mediaWays.net> has joined #aichallenge
+2011-06-13T15:31:28  *** Snellface <Snellface!c10b70e5@gateway/web/freenode/ip.193.11.112.229> has joined #aichallenge
+2011-06-13T15:33:11  <Snellface> damn alot of people :O, Anyone wanna help me figure out why my bot crashes after a game in the offline visualizer ends? (I just dont know how to end the program, because ending main seems to make it crash for some reason and i havn't found any faults in my code, (which doesn't mean there isn't one. :).. ))
+2011-06-13T15:33:40  <Snellface> Anything special to send to the game client before exiting?
+2011-06-13T15:34:04  *** boegel <boegel!~boegel@91.182.229.125> has quit IRC (Quit: Leaving)
+2011-06-13T15:34:20  *** olexs <olexs!~Leviathan@drms-4d01447a.pool.mediaWays.net> has quit IRC (Ping timeout: 276 seconds)
+2011-06-13T15:37:07  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has joined #aichallenge
+2011-06-13T15:37:07  *** ChanServ sets mode: +o amstan
+2011-06-13T15:38:27  *** locutus2 <locutus2!~locutus2@89.204.153.96> has quit IRC (Ping timeout: 240 seconds)
+2011-06-13T15:43:37  *** sigh <sigh!~sigh@nat/google/x-uysjjveqiluwwnok> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-13T15:52:44  *** nux67 <nux67!56439097@gateway/web/freenode/ip.86.67.144.151> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T15:59:49  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-13T16:02:47  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-dubfsqtfpnoteiyv> has joined #aichallenge
+2011-06-13T16:03:21  *** bhasker <bhasker!~bhasker@nat/yahoo/x-tdkelvyxfajcdrvr> has quit IRC (Ping timeout: 240 seconds)
+2011-06-13T16:03:58  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 4.0.1/20110518052719])
+2011-06-13T16:04:35  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Read error: Connection reset by peer)
+2011-06-13T16:15:59  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-06-13T16:18:38  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-13T16:29:55  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T16:34:51  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-dubfsqtfpnoteiyv> has quit IRC (Ping timeout: 244 seconds)
+2011-06-13T16:39:23  *** sigh <sigh!~sigh@nat/google/x-zcseqyrvgfpfvffg> has joined #aichallenge
+2011-06-13T16:48:50  <McLeopold> @later tell antimatroid we can combine some logic from the closest iterative to damage to solve the blocking issue
+2011-06-13T16:48:50  <contestbot> McLeopold: Job's done.
+2011-06-13T16:50:11  *** delt0r- <delt0r-!~delt0r@188-22-167-18.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-13T16:51:20  <McLeopold> @later tell antimatroid the issue with blocking is that an attacking ant can't focus its 1 damage on a single ant, if it tried to place all damage on the closest ants first, and expand, we might be able to stop the blocking, and we still have the ability to save ants by having 2 at the same distance
+2011-06-13T16:51:20  <contestbot> McLeopold: Job's done.
+2011-06-13T16:52:08  *** delt0r_ <delt0r_!~delt0r@188-22-172-73.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-06-13T16:53:24  *** sigh <sigh!~sigh@nat/google/x-zcseqyrvgfpfvffg> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-13T17:02:02  *** astevenson <astevenson!4000c10f@gateway/web/freenode/ip.64.0.193.15> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T17:02:13  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has quit IRC (Remote host closed the connection)
+2011-06-13T17:18:24  *** bhasker <bhasker!~bhasker@nat/yahoo/x-mqfntibqumssonad> has joined #aichallenge
+2011-06-13T17:20:38  *** sigh <sigh!~sigh@nat/google/x-utszryzazsblleid> has joined #aichallenge
+2011-06-13T17:21:10  *** sigh <sigh!~sigh@nat/google/x-utszryzazsblleid> has quit IRC (Client Quit)
+2011-06-13T17:24:06  *** astevenson <astevenson!4000c10f@gateway/web/freenode/ip.64.0.193.15> has joined #aichallenge
+2011-06-13T17:34:30  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-13T17:36:59  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 276 seconds)
+2011-06-13T17:38:38  *** guyverthree <guyverthree!5770767e@gateway/web/freenode/ip.87.112.118.126> has joined #aichallenge
+2011-06-13T17:38:44  <guyverthree> evening all
+2011-06-13T17:42:23  *** locutus2 <locutus2!~locutus2@89.204.153.86> has joined #aichallenge
+2011-06-13T17:48:38  *** guyverthree <guyverthree!5770767e@gateway/web/freenode/ip.87.112.118.126> has quit IRC (Quit: Page closed)
+2011-06-13T17:50:46  *** Snellface <Snellface!c10b70e5@gateway/web/freenode/ip.193.11.112.229> has quit IRC (Quit: Page closed)
+2011-06-13T17:52:55  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T17:58:15  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-13T18:00:50  *** guyverthree <guyverthree!5770767e@gateway/web/freenode/ip.87.112.118.126> has joined #aichallenge
+2011-06-13T18:05:55  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-yurrclyqhyyurjza> has joined #aichallenge
+2011-06-13T18:06:07  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has left #aichallenge
+2011-06-13T18:07:08  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-yurrclyqhyyurjza> has quit IRC (Client Quit)
+2011-06-13T18:08:41  *** bhasker <bhasker!~bhasker@nat/yahoo/x-mqfntibqumssonad> has quit IRC (Ping timeout: 258 seconds)
+2011-06-13T18:10:29  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-13T18:17:41  *** okay is now known as okayzed
+2011-06-13T18:26:18  *** jbroman <jbroman!~jbroman@taurine.csclub.uwaterloo.ca> has quit IRC (Ping timeout: 246 seconds)
+2011-06-13T18:26:39  *** jbroman <jbroman!~jbroman@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-06-13T18:40:16  <guyverthree> hey guys this might seem like a stupid question but how do you tell what ant is your ant ???
+2011-06-13T18:40:36  <olexs1> when you get an "a" line with ID 0, it's yours
+2011-06-13T18:40:48  <olexs1> any other ID is enemy
+2011-06-13T18:41:03  <guyverthree> ah i see
+2011-06-13T18:41:18  <olexs1> first enemy you encounter in a game gets ID 1, second 2, and so on
+2011-06-13T18:41:28  <guyverthree> thanks very much i was having an odd case of ants smacking into each other
+2011-06-13T18:42:08  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: this used to be the life, but I don't need another one)
+2011-06-13T18:42:27  <george1914> olexs1: hi - you're leviathan right?  i'm enjoying watching your bot exchange places with mine alll the time ...    :)
+2011-06-13T18:42:43  <george1914> seems yo-u have implemented fighting tactics?
+2011-06-13T18:42:56  <olexs1> some fairly simple ones, yes
+2011-06-13T18:43:23  <george1914> well, i've watched your ants slaughter my ants many times ...
+2011-06-13T18:43:24  <george1914> :/
+2011-06-13T18:43:26  <olexs1> they'll probably break if attack radius gets changed, as people discuss around here
+2011-06-13T18:43:27  <Zaphus> yeah, cool to see some smart fighting, I have none of it :-)
+2011-06-13T18:43:49  <guyverthree> me either i just push ants together
+2011-06-13T18:43:58  <Zaphus> wow, nice to see my BlockTest program has leapt up the leaderboards to 7th now that it is attackradius2=9
+2011-06-13T18:44:00  <guyverthree> your close i kil you
+2011-06-13T18:44:07  <olexs1> so far the "tactics" are just hardcoded situations and responses
+2011-06-13T18:44:11  <george1914> aye - i was/am aiming to add it, but might delay until after radius etc is fixed ...
+2011-06-13T18:44:15  <guyverthree> attack radius 9 ??
+2011-06-13T18:44:44  <george1914> 9 was the latest story, but doesnt seem to be quite fixed yet, and isnt in production ...
+2011-06-13T18:44:45  <Zaphus> well, squared=9
+2011-06-13T18:44:52  <olexs1> so 3
+2011-06-13T18:45:09  <Zaphus> that's live on the beta server right now, isnt it ?
+2011-06-13T18:45:30  <george1914> olexs1: hardcoded?  i am impressed/surprised - i had assumed it was eg a 2 more lookahead
+2011-06-13T18:45:48  <george1914> plus a 'retreat and get the enemy to follow into a trap'  :)
+2011-06-13T18:46:04  <olexs1> george1914: I don't do any simulation yet. retreat is implemented, yes :)
+2011-06-13T18:46:12  <george1914> ...checking latest games ....
+2011-06-13T18:46:31  <olexs1> retreating to safest direction and crying for help is what my ants will do a lot
+2011-06-13T18:46:39  <george1914> :)
+2011-06-13T18:47:05  <Zaphus> I'm waking 'Zaphus' up again, should be more competitive, I'm done with timeout testing for now
+2011-06-13T18:47:14  <olexs1> and when help comes, a formation will spring up most of the times, a predefined situation comes up, and the killing begins :)
+2011-06-13T18:47:17  <george1914> ok, see you at the top :)
+2011-06-13T18:47:39  <Zaphus> website isnt responding for me right now...
+2011-06-13T18:47:48  <olexs1> I must go now, will work on my bot some more this week. see you guys around
+2011-06-13T18:47:55  <Zaphus> cya
+2011-06-13T18:48:03  <george1914> hm.  i am really looking forwqard to seeing the bots evolve and improve - we will likely look back at this simple stage with nostalgia, in a few weeks/months   :)
+2011-06-13T18:48:10  *** olexs1 <olexs1!~Leviathan@drms-590c4c11.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-13T18:48:19  <george1914> ok, i look forward to seeing it in action, bye.
+2011-06-13T18:48:50  <george1914> website was slow, but i go it eventually
+2011-06-13T18:49:26  <Zaphus> yep, current server has attackradius at 3 (i.e. attackradius2=9), at least thats what I'm seeing in the battles, kills from 3 squares away
+2011-06-13T18:50:17  <george1914> you are right   (a few hours ago it wasnt in)   tyhanks for the info, i should start coding ...
+2011-06-13T18:50:54  <Zaphus> I just modified mine to check the radius and use it, for simple avoidance - it's a shy bot :-)
+2011-06-13T18:51:07  <george1914> btw, you dont happen to know who owns the beta website do you?  and whether he will read my code and get ideas from it?   :)
+2011-06-13T18:51:39  <george1914> (nothing secreat in my current bot, but there might be soon)
+2011-06-13T18:51:50  <Zaphus> no idea, I hope he doesnt, I like to think I've got some smarts in there that others wont think of and I'd hate for it to be stolen.   was trying to find a free obfuscator just to be safe but found nothing so far
+2011-06-13T18:52:19  <Zaphus> crap, gotta go sorry, just saw the time !   see you on the leaderboard!
+2011-06-13T18:52:39  <george1914> see you
+2011-06-13T18:56:48  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T19:10:50  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 260 seconds)
+2011-06-13T19:11:35  *** guyverthree <guyverthree!5770767e@gateway/web/freenode/ip.87.112.118.126> has quit IRC (Quit: Page closed)
+2011-06-13T19:15:10  *** sigh <sigh!~sigh@nat/google/x-addtbsratheoymcv> has joined #aichallenge
+2011-06-13T19:16:00  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-13T19:22:05  *** okayzed is now known as okay
+2011-06-13T19:23:42  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-06-13T19:24:01  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-13T19:32:02  *** locutus2 <locutus2!~locutus2@89.204.153.86> has quit IRC (Ping timeout: 276 seconds)
+2011-06-13T19:35:45  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 255 seconds)
+2011-06-13T19:39:56  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-06-13T19:44:01  *** sigh <sigh!~sigh@nat/google/x-addtbsratheoymcv> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-13T20:04:45  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Read error: Connection reset by peer)
+2011-06-13T20:05:34  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-13T20:07:41  *** okay <okay!~okay@98.158.22.181> has quit IRC (Ping timeout: 240 seconds)
+2011-06-13T20:07:45  *** okay <okay!~okay@98.158.22.181> has joined #aichallenge
+2011-06-13T20:12:19  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-06-13T20:14:37  <mleise> amstan: It came to my ears that Facebook is using a tool called hiphop to convert PHP into C++ code and compile that.
+2011-06-13T20:15:17  <amstan> mleise: yes, i know
+2011-06-13T20:17:15  <jbroman> mleise: In fact, they wrote it themselves. It's useful on Facebook's scale, but I don't think most people would benefit as much from HPHP.
+2011-06-13T20:23:15  <mleise> I just talked with someone who is writing a persistence framework that uses the compiler to create prepared statements for db table <-> struct associations. It even supports limiting the result set through 'LIMIT' when you use only a slice of the db table rows.
+2011-06-13T20:24:50  <mleise> It looks awesome. You just instanciate the Persistence template with your struct and can do "posts[9..0]" to query the posts table for the first 10 entries in reverse order.
+2011-06-13T20:25:54  <mleise> If I had that in Java a few years ago that would have helped me some.
+2011-06-13T20:53:47  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-13T21:37:47  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-06-13T21:38:03  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-13T21:38:06  *** sigh <sigh!~sigh@173-164-174-193-SFBA.hfc.comcastbusiness.net> has joined #aichallenge
+2011-06-13T21:42:02  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC ()
+2011-06-13T22:06:50  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-06-13T22:31:05  *** antimatroid <antimatroid!~nick@71.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-13T22:31:16  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-06-13T22:47:02  *** mleise <mleise!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Read error: Operation timed out)
+2011-06-13T23:11:14  *** janzert <janzert!~janzert@12.150.59.130> has joined #aichallenge
+2011-06-13T23:13:32  <janzert> contestbot: later tell McLeopold I'm pretty sure the bugged replays in the last day were caused by my messing up the indentation in engine when removing an extraneous except block
+2011-06-13T23:13:32  <contestbot> janzert: As you wish.
+2011-06-13T23:14:16  <janzert> contestbot: later tell McLeopold should be fixed in one of my later commits on monday morning
+2011-06-13T23:14:16  <contestbot> janzert: Yep.
+2011-06-13T23:14:44  <janzert> so if people are still seeing new ones produced then it's something else
+2011-06-13T23:15:21  <janzert> ok, empathy is a really bad irc client
+2011-06-13T23:15:30  *** janzert <janzert!~janzert@12.150.59.130> has left #aichallenge
+2011-06-13T23:31:39  *** janzert <janzert!~brian@12.150.59.130> has joined #aichallenge

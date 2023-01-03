@@ -1,0 +1,1703 @@
+2011-12-08T00:00:43  *** delt0r_ <delt0r_!~bob@178-191-176-120.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T00:08:49  *** b0rder <b0rder!~b0rder@114.246.86.110> has quit IRC (Quit: 离开)
+2011-12-08T00:09:09  *** besh <besh!835e7324@gateway/web/freenode/ip.131.94.115.36> has quit IRC (Quit: Page closed)
+2011-12-08T00:13:31  *** delt0r_ <delt0r_!~bob@178-191-251-92.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-08T00:14:30  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-12-08T00:16:03  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has quit IRC (Quit: Leaving.)
+2011-12-08T00:18:47  *** AntDroid_ <AntDroid_!781c39b6@gateway/web/freenode/ip.120.28.57.182> has joined #aichallenge
+2011-12-08T00:20:20  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T00:24:52  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-08T00:25:19  *** Areks <Areks!~Areks@rs.gridnine.com> has joined #aichallenge
+2011-12-08T00:29:30  *** replore_ <replore_!~replore@203.152.213.161.static.zoot.jp> has joined #aichallenge
+2011-12-08T00:30:28  <greghaynes> Influence maps ftw!
+2011-12-08T00:30:36  <McLeopold> \o/
+2011-12-08T00:31:43  <greghaynes> Someone posted collaborative diffusion, but its really just an influence map
+2011-12-08T00:32:49  <McLeopold> it seems like the second best method to me
+2011-12-08T00:33:51  <greghaynes> Whats the first?
+2011-12-08T00:34:09  <McLeopold> something that controls individual ants toward the best path
+2011-12-08T00:34:31  <McLeopold> or, something where 2 ants coordinate together
+2011-12-08T00:34:41  *** welterde <welterde!welterde@thinkbase.srv.welterde.de> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T00:34:47  *** nickjohnson <nickjohnson!u789@gateway/web/irccloud.com/x-aiybqyxjhkugfabt> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T00:34:51  <greghaynes> You can do that with most methods, thats basically the end goal
+2011-12-08T00:34:51  *** Fluxid <Fluxid!~fluxid@schranz.io> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T00:35:07  *** modafinil <modafinil!u515@gateway/web/irccloud.com/x-anxmulfgmqjstajz> has quit IRC (Ping timeout: 255 seconds)
+2011-12-08T00:35:07  <greghaynes> I find influence mapping to coordinate much easier than per ant searching
+2011-12-08T00:36:54  *** Fluxid <Fluxid!~fluxid@schranz.io> has joined #aichallenge
+2011-12-08T00:36:59  <McLeopold> hmm, I think for exploring or finding chokepoints, they have their place, but not for effecient food gathering
+2011-12-08T00:37:21  *** Fluxid is now known as Guest86987
+2011-12-08T00:39:09  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-12-08T00:39:55  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-12-08T00:40:14  *** modafinil <modafinil!u515@gateway/web/irccloud.com/x-zfhsthufluhjbduu> has joined #aichallenge
+2011-12-08T00:46:25  *** amstan <amstan!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (Quit: Konversation terminated!)
+2011-12-08T00:46:28  *** amstan_ <amstan_!~amstan@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T00:46:28  *** ChanServ sets mode: +o amstan_
+2011-12-08T00:51:08  *** welterde <welterde!welterde@thinkbase.srv.welterde.de> has joined #aichallenge
+2011-12-08T00:55:45  <greghaynes> Its pretty simple to make influene mapping generate equivilent data to a* or any of the similar searches
+2011-12-08T00:56:11  <greghaynes> So not sure why its inefficient for food gathering
+2011-12-08T00:56:50  <McLeopold> making sure 2 ants don't go for a pile when 1 ant would do
+2011-12-08T00:57:23  <greghaynes> Yea, so you decrement your map based on occupancy
+2011-12-08T00:57:30  <greghaynes> that is basically its strongpoint
+2011-12-08T00:59:50  <greghaynes> The downside is that you dont get as quick response time for fast changing maps
+2011-12-08T01:00:12  <greghaynes> but when the food and ant count grows it doesnt lose efficiency which is win
+2011-12-08T01:00:42  <BenJackson> food count is never high
+2011-12-08T01:01:14  <BenJackson> it never gets very high as an absolute value and it never gets very high relative to ant count after the beginning
+2011-12-08T01:01:59  <greghaynes> ah, well the problem ive noticed with a*/etc is you are doing an exponential algo * num ants which doesnt work out well
+2011-12-08T01:02:19  <BenJackson> if you search from food to ants it works fine
+2011-12-08T01:02:25  <BenJackson> and food is important enough to handle specifically
+2011-12-08T01:02:27  <greghaynes> sure, but then you have to collaborate
+2011-12-08T01:02:28  <McLeopold> yeah, I'm working on bfs, search from food
+2011-12-08T01:02:49  <BenJackson> well that *is* how i do it so I think it works ok :)
+2011-12-08T01:02:56  <greghaynes> and food * num_ants is just as bad as num_ants * food ;)(
+2011-12-08T01:03:22  <BenJackson> yes but you're searching from food to any ant
+2011-12-08T01:03:24  <BenJackson> not every ant
+2011-12-08T01:03:35  <McLeopold> BenJackson: how do you explorer? last seen? influece map?
+2011-12-08T01:03:36  <antimatroid> any moveable ant*
+2011-12-08T01:03:37  <BenJackson> and the distance is capped anyway
+2011-12-08T01:03:39  <greghaynes> but you dont want the n closest ants?
+2011-12-08T01:03:54  <BenJackson> McLeopold: various ways
+2011-12-08T01:04:08  <BenJackson> primarily an influence-type map based on finding the unexplored frontier
+2011-12-08T01:04:19  <McLeopold> do you detect dead ends?
+2011-12-08T01:04:28  <antimatroid> i do iterative bfs from uncollected food to moveable ants, and atm i'm not collecting food that doesn't have a seen path to it from a hill
+2011-12-08T01:04:34  <BenJackson> if you saw my multi-source bfs that was the basis of almost everything I did in my first decent version
+2011-12-08T01:04:38  <antimatroid> well, i'm not searching over unseen land
+2011-12-08T01:04:43  <BenJackson> you mean cul-de-sacs?
+2011-12-08T01:05:13  <McLeopold> cul-de-sac implies a loop?
+2011-12-08T01:05:38  <BenJackson> a path with no outlet
+2011-12-08T01:05:52  <greghaynes> BenJackson: so you are doing an influence map?
+2011-12-08T01:05:59  <BenJackson> in french literally "bott of bag"
+2011-12-08T01:06:04  <BenJackson> +om
+2011-12-08T01:06:19  <BenJackson> greghaynes: yes, but how I'm using it has varied considerably
+2011-12-08T01:06:34  <BenJackson> originally I just did things like multi-source bfs sets of interesting things
+2011-12-08T01:06:37  <BenJackson> food, enemy hills, etc
+2011-12-08T01:06:47  <BenJackson> and then each ant went to the closest one of those
+2011-12-08T01:06:50  <greghaynes> Makes sense, I couldnt see a better way to aggregate map data though
+2011-12-08T01:06:59  <BenJackson> then that got modulated by scaling the closeness
+2011-12-08T01:07:10  <BenJackson> eg so "hill defense" was only interesting very locally
+2011-12-08T01:07:16  <BenJackson> while attacking was interesting far away
+2011-12-08T01:07:34  <BenJackson> now I have those maps but I use them indirectly in various ways
+2011-12-08T01:08:01  <BenJackson> since I can immediately ask "how many steps is this ant to *any* enemy ant"
+2011-12-08T01:08:03  <BenJackson> not *every*
+2011-12-08T01:13:18  <BenJackson> McLeopold: Anyway if you see a dead end then the frontier extends beyond the back wall of it and thus the influence for exploring no longer eminates from inside
+2011-12-08T01:13:27  <BenJackson> in fact the gradient immediately flips around
+2011-12-08T01:13:51  <BenJackson> exploring is not that hard
+2011-12-08T01:13:57  <BenJackson> you just need some attractive force on unseen squares
+2011-12-08T01:14:05  <BenJackson> what's harder is maintaining vision long term
+2011-12-08T01:14:18  <BenJackson> that's a different problem from most in the game:
+2011-12-08T01:14:23  <BenJackson> it's not "somewhere to go"
+2011-12-08T01:23:49  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-12-08T01:28:32  <BenJackson> once again brute force seems fast enough
+2011-12-08T01:34:25  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has quit IRC (Quit: Page closed)
+2011-12-08T01:40:12  *** alc <alc!~nek@61.135.165.159> has joined #aichallenge
+2011-12-08T01:46:03  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-08T01:46:05  *** LouisMartin <LouisMartin!6017820a@gateway/web/freenode/ip.96.23.130.10> has joined #aichallenge
+2011-12-08T01:55:54  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-12-08T01:57:26  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-12-08T01:57:58  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-08T02:01:45  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T02:01:54  *** alc <alc!~nek@61.135.165.159> has quit IRC (Remote host closed the connection)
+2011-12-08T02:02:47  *** ildarkaa <ildarkaa!5b90be69@gateway/web/freenode/ip.91.144.190.105> has joined #aichallenge
+2011-12-08T02:07:02  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-12-08T02:07:09  *** AntDroid_ <AntDroid_!781c39b6@gateway/web/freenode/ip.120.28.57.182> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T02:11:47  *** cuda <cuda!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-12-08T02:13:19  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-12-08T02:13:26  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T02:16:34  *** cuda <cuda!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T02:35:45  <BenJackson> http://paste.aichallenge.org/Xz0Gl/
+2011-12-08T02:35:50  <BenJackson> don't know why I didn't just do that sooner
+2011-12-08T02:37:56  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-08T02:38:16  <BenJackson> bmh: I just pasted http://paste.aichallenge.org/Xz0Gl/
+2011-12-08T02:38:39  <bmh> BenJackson: what am I looking for?
+2011-12-08T02:38:45  <BenJackson> show orange's vis
+2011-12-08T02:39:19  <bmh> it isn't showing anything?
+2011-12-08T02:40:22  <BenJackson> that doesn't bring up a viewer?
+2011-12-08T02:40:23  <BenJackson> works for me
+2011-12-08T02:40:54  <bmh> It brings up a viewer, but showing the AI state doesn't do anything
+2011-12-08T02:41:15  <bmh> it certainly doesn't like to kill hills
+2011-12-08T02:41:45  <BenJackson> not ai state, just the fog of war
+2011-12-08T02:42:10  <BenJackson> that bot isn't doing anything but optimizing fog of war with a minute interest in exploration
+2011-12-08T02:42:24  <bmh> looks efficient :)
+2011-12-08T02:42:58  <bmh> wow that looks efficient
+2011-12-08T02:43:08  <bmh> BenJackson: can you run a bot on my tcp server? I'm waiting for an opponent
+2011-12-08T02:43:21  <BenJackson> I think that's it
+2011-12-08T02:43:30  <BenJackson> I set the font size for those windows so small I can't read them
+2011-12-08T02:43:37  <bmh> thanks. I told it to play 15 games. Back in 10.
+2011-12-08T02:43:40  <bmh> (minutes)
+2011-12-08T02:48:44  *** darkf <darkf!~darkf_dix@unaffiliated/darkf> has quit IRC (Quit: Leaving)
+2011-12-08T02:49:48  *** Conorach <Conorach!~cono@90.170.78.100> has joined #aichallenge
+2011-12-08T02:52:32  <bmh> back -- BenJackson: my bot is a little... zergy.
+2011-12-08T02:52:46  *** amstan__ <amstan__!~alex@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T02:52:46  *** ChanServ sets mode: +o amstan__
+2011-12-08T02:53:00  <BenJackson> sorry I quit running it earlier -- the tcpclient leaks some resoruces
+2011-12-08T02:53:06  <BenJackson> so I was killing them all because I was having major other problems
+2011-12-08T02:53:13  *** GeorgeJ <GeorgeJ!~GeorgeJ@86.124.203.104> has joined #aichallenge
+2011-12-08T02:53:13  *** GeorgeJ <GeorgeJ!~GeorgeJ@unaffiliated/georgej> has joined #aichallenge
+2011-12-08T02:57:08  <bmh> I am so psyched to have a bot that doesn't crash
+2011-12-08T02:57:12  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Quit: sleep)
+2011-12-08T03:01:32  *** amstan__ <amstan__!~alex@69-196-130-230.dsl.teksavvy.com> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T03:01:55  <McLeopold> BenJackson: influence map?
+2011-12-08T03:02:21  <BenJackson> only for the slight interest in exploring
+2011-12-08T03:02:38  <BenJackson> ending up with vision of the whole map is just literally optimizing having vision of the whole map
+2011-12-08T03:02:44  <BenJackson> which somehow I always assumed would be too expensive
+2011-12-08T03:03:51  <McLeopold> hmm
+2011-12-08T03:16:51  *** aerique <aerique!310225@xs8.xs4all.nl> has joined #aichallenge
+2011-12-08T03:17:47  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has joined #aichallenge
+2011-12-08T03:18:10  *** mj41 <mj41!~mj41_nby@195.39.106.218> has joined #aichallenge
+2011-12-08T03:18:58  *** Thinq <Thinq!~qq@84-253-243-204.bb.dnainternet.fi> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T03:33:32  *** Thinq <Thinq!~qq@84-253-243-204.bb.dnainternet.fi> has joined #aichallenge
+2011-12-08T03:38:13  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-08T03:45:32  *** praveen_ <praveen_!cf2e371d@gateway/web/freenode/ip.207.46.55.29> has joined #aichallenge
+2011-12-08T03:52:38  *** Fandekasp <Fandekasp!~Fandekasp@p26153-ipngn100102yosemiya.okinawa.ocn.ne.jp> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T03:56:42  *** jon1 <jon1!~Adium@2001:67c:90:764:fa1e:dfff:fedf:5943> has joined #aichallenge
+2011-12-08T04:06:23  *** team_9 <team_9!a869085c@gateway/web/freenode/ip.168.105.8.92> has joined #aichallenge
+2011-12-08T04:06:27  *** olexs <olexs!~Leviathan@drms-4d01513d.pool.mediaWays.net> has joined #aichallenge
+2011-12-08T04:10:19  *** Guest86987 is now known as Fluxid
+2011-12-08T04:11:27  *** team_9 <team_9!a869085c@gateway/web/freenode/ip.168.105.8.92> has quit IRC (Quit: Page closed)
+2011-12-08T04:18:25  *** ikaros <ikaros!~ikaros@studpool-wlan-74-83.fs.fbi.h-da.de> has joined #aichallenge
+2011-12-08T04:22:41  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-12-08T04:32:21  *** FatboyPunk <FatboyPunk!d57d47b2@gateway/web/freenode/ip.213.125.71.178> has joined #aichallenge
+2011-12-08T04:35:07  *** antimatroid1 <antimatroid1!~nick@098.014.dsl.vic.iprimus.net.au> has joined #aichallenge
+2011-12-08T04:35:07  *** antimatroid <antimatroid!~nick@098.014.dsl.vic.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-12-08T04:37:15  *** olexs <olexs!~Leviathan@drms-4d01513d.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-12-08T04:44:21  *** mviel_ <mviel_!~mviel@213.163.164.204> has joined #aichallenge
+2011-12-08T04:48:01  *** mviel__ <mviel__!~mviel@213.163.164.204> has quit IRC (Ping timeout: 255 seconds)
+2011-12-08T04:49:10  *** retybok <retybok!~retybok@gw.theralys.com> has quit IRC (Quit: leaving)
+2011-12-08T05:00:27  *** replore_ <replore_!~replore@203.152.213.161.static.zoot.jp> has quit IRC (Remote host closed the connection)
+2011-12-08T05:05:01  *** praveen_ <praveen_!cf2e371d@gateway/web/freenode/ip.207.46.55.29> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T05:18:04  *** Areks <Areks!~Areks@rs.gridnine.com> has quit IRC (Ping timeout: 268 seconds)
+2011-12-08T05:30:09  *** Areks <Areks!~Areks@rs.gridnine.com> has joined #aichallenge
+2011-12-08T05:45:59  *** antimatroid1 <antimatroid1!~nick@098.014.dsl.vic.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T05:46:44  *** antimatroid <antimatroid!~nick@098.014.dsl.vic.iprimus.net.au> has joined #aichallenge
+2011-12-08T05:49:34  *** Mystret <Mystret!~Mystret@188.142.37.201> has joined #aichallenge
+2011-12-08T05:52:25  *** antimatroid <antimatroid!~nick@098.014.dsl.vic.iprimus.net.au> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T05:53:05  *** antimatroid <antimatroid!~nick@098.014.dsl.vic.iprimus.net.au> has joined #aichallenge
+2011-12-08T06:04:49  *** ikaros <ikaros!~ikaros@studpool-wlan-74-83.fs.fbi.h-da.de> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T06:08:01  *** antimatroid <antimatroid!~nick@098.014.dsl.vic.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T06:14:19  *** antimatroid <antimatroid!~nick@141.114-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-08T06:19:24  *** antimatroid <antimatroid!~nick@141.114-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T06:19:57  *** antimatroid <antimatroid!~nick@141.114-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-08T06:21:07  *** mviel_ <mviel_!~mviel@213.163.164.204> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T06:21:21  *** mviel_ <mviel_!~mviel@213.163.164.204> has joined #aichallenge
+2011-12-08T06:22:24  *** mviel__ <mviel__!~mviel@236.227.73.86.rev.sfr.net> has joined #aichallenge
+2011-12-08T06:24:12  *** mviel_ <mviel_!~mviel@213.163.164.204> has quit IRC (Read error: Operation timed out)
+2011-12-08T06:24:17  *** imp5imp5 <imp5imp5!5e9f065a@gateway/web/freenode/ip.94.159.6.90> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T06:31:35  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T06:36:43  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T06:37:46  *** UncleVasya <UncleVasya!~UncleVasy@46-133-242-153.dialup.umc.net.ua> has joined #aichallenge
+2011-12-08T06:44:47  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T06:46:09  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-08T07:02:36  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T07:08:48  *** g0llum <g0llum!~g0llum@82.113.99.35> has joined #aichallenge
+2011-12-08T07:22:58  *** ikaros <ikaros!~ikaros@studpool-wlan-74-83.fs.fbi.h-da.de> has joined #aichallenge
+2011-12-08T07:23:45  *** nfn <nfn!~nfn@vs0205.flosoft-servers.net> has joined #aichallenge
+2011-12-08T07:36:27  *** amstan_ <amstan_!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T07:40:24  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-12-08T07:45:43  *** Anilm3 <Anilm3!~anil@4.Red-79-146-241.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-08T07:51:11  *** mviel_ <mviel_!~mviel@213.163.164.204> has joined #aichallenge
+2011-12-08T07:51:30  *** zoli1 <zoli1!~zoli@catv-80-98-34-34.catv.broadband.hu> has joined #aichallenge
+2011-12-08T07:55:01  *** mviel__ <mviel__!~mviel@236.227.73.86.rev.sfr.net> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T08:00:17  *** ildarkaa <ildarkaa!5b90be69@gateway/web/freenode/ip.91.144.190.105> has quit IRC (Quit: Page closed)
+2011-12-08T08:00:56  *** delt0r_ <delt0r_!~bob@178-191-251-92.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T08:08:26  *** mviel_ is now known as vielmath
+2011-12-08T08:08:42  *** vielmath is now known as mviel_
+2011-12-08T08:10:33  *** Surya <Surya!58b273ad@gateway/web/freenode/ip.88.178.115.173> has joined #aichallenge
+2011-12-08T08:12:17  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-08T08:14:57  *** delt0r_ <delt0r_!~bob@178-190-41-115.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-08T08:19:14  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has quit IRC (Quit: WeeChat 0.3.6)
+2011-12-08T08:32:42  *** imp5imp5 <imp5imp5!5e9f065a@gateway/web/freenode/ip.94.159.6.90> has joined #aichallenge
+2011-12-08T08:38:27  *** jeff_ <jeff_!75fdb999@gateway/web/freenode/ip.117.253.185.153> has joined #aichallenge
+2011-12-08T08:38:53  *** jeff_ is now known as Guest78989
+2011-12-08T08:42:58  <Guest78989> contestbot: hi
+2011-12-08T08:42:59  <contestbot> Guest78989: User error, it's not my fault.
+2011-12-08T08:43:32  <Guest78989> contestbot: ranking 10
+2011-12-08T08:43:33  <contestbot> Guest78989: I'm sorry Dave, err Guest78989; I cannot 'ranking'.
+2011-12-08T08:43:47  <Guest78989> contestbot: rankings 10
+2011-12-08T08:43:48  <contestbot> Guest78989: Top 10 players: pguillory(92.6), xathis(91.1), ChrisH(89.6), ThisIsNotABug(87.7), lazarant(87.6), delineate(87.5), RVeerdonk(87.0), GreenTea(86.9), Migi32(86.2), BenJackson(85.9)
+2011-12-08T08:43:50  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has joined #aichallenge
+2011-12-08T08:43:59  <Guest78989> contestbot: bye
+2011-12-08T08:44:00  <contestbot> Guest78989: I do not know about 'bye', but I do know about these similar topics: 'beta'
+2011-12-08T08:44:10  *** Guest78989 <Guest78989!75fdb999@gateway/web/freenode/ip.117.253.185.153> has quit IRC (Quit: Page closed)
+2011-12-08T08:49:22  <pairofdice> ...derp
+2011-12-08T08:49:32  <pairofdice> @rankdings
+2011-12-08T08:49:33  <contestbot> pairofdice: I'm sorry Dave, err pairofdice; I cannot 'rankdings'.
+2011-12-08T08:49:36  <pairofdice> @rankings
+2011-12-08T08:49:37  <contestbot> pairofdice: Top 10 players: pguillory(92.6), xathis(91.1), ChrisH(89.6), ThisIsNotABug(87.7), lazarant(87.6), delineate(87.5), RVeerdonk(87.0), GreenTea(86.9), Migi32(86.2), BenJackson(85.9)
+2011-12-08T08:52:13  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-12-08T08:57:12  *** keithroe <keithroe!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-08T08:59:29  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T09:04:34  *** amstan_ <amstan_!~amstan@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T09:04:35  *** ChanServ sets mode: +o amstan_
+2011-12-08T09:11:02  *** imp5imp5 <imp5imp5!5e9f065a@gateway/web/freenode/ip.94.159.6.90> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T09:11:47  *** Areks <Areks!~Areks@rs.gridnine.com> has quit IRC (Ping timeout: 268 seconds)
+2011-12-08T09:14:54  *** FatboyPunk <FatboyPunk!d57d47b2@gateway/web/freenode/ip.213.125.71.178> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T09:20:07  *** goffrie <goffrie!~goffrie@206-248-186-123.dsl.teksavvy.com> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T09:20:36  *** goffrie <goffrie!~goffrie@69-196-176-93.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T09:22:49  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T09:29:17  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T09:30:48  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Quit: Leaving.)
+2011-12-08T09:32:54  *** tobym <tobym!~tobym@pool-71-183-248-125.nycmny.fios.verizon.net> has joined #aichallenge
+2011-12-08T09:34:03  *** modafinil is now known as BEASTMODE
+2011-12-08T09:34:28  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-12-08T09:38:06  *** keithroe <keithroe!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T09:38:15  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T09:51:14  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T09:54:48  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-12-08T10:00:08  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T10:05:31  *** olexs <olexs!~Adium@s0527.dyn.hrz.tu-darmstadt.de> has joined #aichallenge
+2011-12-08T10:05:52  <olexs> what's up with aichallenge workers? game rate is near zero since yesterday...
+2011-12-08T10:08:32  *** NightExcessive <NightExcessive!~nightexce@unaffiliated/nightexcessive> has joined #aichallenge
+2011-12-08T10:08:42  <Minthos> they scale up and down according to price fluctuations in the cloud
+2011-12-08T10:12:42  <rwest> http://aichallenge.org/server_stats.php
+2011-12-08T10:12:47  <rwest> only one server currently
+2011-12-08T10:14:09  *** ikaros <ikaros!~ikaros@studpool-wlan-74-83.fs.fbi.h-da.de> has quit IRC (Quit: Ex-Chat)
+2011-12-08T10:19:08  <olexs> not very nice scaling the workers down now this much, when the challenge is nearly over and people want to see current ranking of their latest bots before final submissions...
+2011-12-08T10:19:57  <amstan_> olexs: when this happens price is usually 20 times more than normal
+2011-12-08T10:20:09  <amstan_> it's really stupid to be playing games at that price
+2011-12-08T10:20:22  <pairofdice> 20 times the price isn't nice either
+2011-12-08T10:20:25  *** olexs <olexs!~Adium@s0527.dyn.hrz.tu-darmstadt.de> has quit IRC (Quit: Leaving.)
+2011-12-08T10:20:37  <amstan_> yeah, i think it's like 5c/hour on average
+2011-12-08T10:20:43  <amstan_> our limit is $1
+2011-12-08T10:21:15  <rwest> amstan_: will the final tournament have more servers for more games in that week?
+2011-12-08T10:21:33  <amstan_> yes, we conserved money to play much more games for the finals
+2011-12-08T10:21:41  <pairofdice> Easier would be to cut away the low mu low sigma bots
+2011-12-08T10:21:49  <amstan_> pairofdice: that too
+2011-12-08T10:26:11  *** olexs <olexs!~Adium@s0823.dyn.hrz.tu-darmstadt.de> has joined #aichallenge
+2011-12-08T10:28:54  *** jon1 <jon1!~Adium@2001:67c:90:764:fa1e:dfff:fedf:5943> has quit IRC (Quit: Leaving.)
+2011-12-08T10:33:10  *** Karlis <Karlis!d5af6a0f@gateway/web/freenode/ip.213.175.106.15> has joined #aichallenge
+2011-12-08T10:36:20  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has quit IRC (Quit: Page closed)
+2011-12-08T10:37:56  *** NightExcessive <NightExcessive!~nightexce@unaffiliated/nightexcessive> has quit IRC (Quit: This computer has gone to sleep)
+2011-12-08T10:45:11  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T10:46:31  <olexs> wow, the prices fluctuate so much? then I remove my inquiry :)
+2011-12-08T10:46:42  *** mviel__ <mviel__!~mviel@236.227.73.86.rev.sfr.net> has joined #aichallenge
+2011-12-08T10:46:52  <olexs> I thought it's a few percent more or less
+2011-12-08T10:47:09  <rwest> google should sponser by giving servers!
+2011-12-08T10:47:25  *** aerique <aerique!310225@xs8.xs4all.nl> has quit IRC (Quit: ...)
+2011-12-08T10:47:26  <amstan_> rwest: that wouldn't be as easy as amazon
+2011-12-08T10:48:32  <rwest> doesn't google have some scaling cloud service? I coulda swore I read about it
+2011-12-08T10:49:50  <amstan_> rwest: yes, but it was probably not intended for outside use
+2011-12-08T10:50:08  *** mviel_ <mviel_!~mviel@213.163.164.204> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T10:50:17  <Minthos> they have something called Google Apps which is public
+2011-12-08T10:50:20  <rwest> Well it looks like it could be, but you couldn't compile and the like on the server
+2011-12-08T10:50:31  <amstan_> Minthos: that's only for python and go
+2011-12-08T10:50:35  <rwest> it seems it's web apps only
+2011-12-08T10:50:40  <rwest> yea that's what I just read
+2011-12-08T10:51:15  <Minthos> so unless you could virtualize a worker in a python or go process you're screwed :p
+2011-12-08T10:51:19  <amstan_> we need real linux servers for all the 25 languages we have
+2011-12-08T10:51:31  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has joined #aichallenge
+2011-12-08T10:51:35  <amstan_> and main server frontend is in php
+2011-12-08T10:51:40  <amstan_> and even if it was in python
+2011-12-08T10:51:54  <amstan_> last time i checked google apps only liked python 2.5
+2011-12-08T10:52:08  <amstan_> which is like 3 years old
+2011-12-08T10:53:18  <rwest> it's nuts that amazon prices fluctuate so much
+2011-12-08T10:53:50  <amstan_> if you think about it, it's supercheap
+2011-12-08T10:53:59  <Minthos> seems reasonable to me
+2011-12-08T10:54:12  <amstan_> we spent 2000 bucks for like 7 servers running at the same time on average, with 100% cpu usage
+2011-12-08T10:54:28  <Surya> Thx a lot for this awesome challenge anyway amstan :] I enjoy it too much (literally, my professionnal productivity & personal life get fucked up :])
+2011-12-08T10:54:42  <Minthos> amstan_: 2k/7 servers for how long?
+2011-12-08T10:54:49  <amstan_> the length of the contest
+2011-12-08T10:55:00  <Minthos> two-three months?
+2011-12-08T10:55:05  <amstan_> yeah
+2011-12-08T10:55:30  <Minthos> I think 7 regular vpses would have been cheaper
+2011-12-08T10:55:37  <Minthos> with similar resources
+2011-12-08T10:55:52  <amstan_> similar resources? 17GB of ram each and dual core xeons?
+2011-12-08T10:55:59  <Minthos> hmm.. perhaps not
+2011-12-08T10:56:05  <Minthos> but the memory seems overkill
+2011-12-08T10:56:09  <amstan_> and an interface to start and stop them at will?
+2011-12-08T10:56:12  <amstan_> not really
+2011-12-08T10:56:18  <amstan_> you have 1.5B limit per bot
+2011-12-08T10:56:27  <amstan_> you have at most 8 bots running at the same time
+2011-12-08T10:56:34  <amstan_> 1.5GB*
+2011-12-08T10:56:46  <Minthos> yeah 1.5 GB per bot seems overkill
+2011-12-08T10:56:47  <amstan_> so that's 12GB
+2011-12-08T10:56:55  <amstan_> Minthos: java doesn't start otherwise
+2011-12-08T10:57:13  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-08T10:57:14  <Minthos> huh?
+2011-12-08T10:57:33  <rwest> I think being lent 1 of google's server for the contest would have been better ^^
+2011-12-08T10:57:47  <rwest> some quad octeon or better with 64 cores
+2011-12-08T10:57:49  <Minthos> java doesn't require 1.5 GB
+2011-12-08T10:58:01  <amstan_> Minthos: well, idk, ask janzert for more details
+2011-12-08T10:58:43  *** ikaros <ikaros!~ikaros@dslb-084-059-073-057.pools.arcor-ip.net> has joined #aichallenge
+2011-12-08T10:58:45  <amstan_> also.. being able to bring up or down the servers at will and reverting to the blank ubuntu to reinstall the worker is a very nice feature
+2011-12-08T10:58:46  <Minthos> ok but anyway, it's not unreasonably priced
+2011-12-08T10:58:56  *** besh <besh!835e7324@gateway/web/freenode/ip.131.94.115.36> has joined #aichallenge
+2011-12-08T10:59:10  <Minthos> and cloud computing is popular for people who have workloads that flucutate a lot
+2011-12-08T10:59:23  <Minthos> so amazon needs to have capacity to handle peak demand
+2011-12-08T10:59:41  <Minthos> so they price resources higher when there is much demand, and lower when there is less
+2011-12-08T10:59:57  <Minthos> makes perfect sense :)
+2011-12-08T11:00:09  <pairofdice> Pretty much
+2011-12-08T11:00:36  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-08T11:01:55  <Minthos> my bot uses 24 megs on a 120x120 map
+2011-12-08T11:02:23  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T11:02:49  <rwest> Minthos: that's about what mine uses
+2011-12-08T11:03:12  <rwest> well actually
+2011-12-08T11:03:16  <rwest> less
+2011-12-08T11:04:08  *** Surya <Surya!58b273ad@gateway/web/freenode/ip.88.178.115.173> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T11:06:04  *** decaz <decaz!4a71ee12@gateway/web/freenode/ip.74.113.238.18> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T11:11:30  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has quit IRC (Quit: mikewintermute)
+2011-12-08T11:12:12  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T11:16:42  <besh> can't you move to a food location ? I got a move blocked error
+2011-12-08T11:17:00  <pairofdice> You can't
+2011-12-08T11:17:15  <thestinger> food spawns at the end of the turn, and you're told about it at the start of the turn
+2011-12-08T11:17:19  <thestinger> so it can be next to your ants
+2011-12-08T11:17:33  <rwest> don't you automatically collect them when near?
+2011-12-08T11:17:40  <rwest> I have never had this problem and I should
+2011-12-08T11:17:42  <thestinger> yes, during the turn - not in between them
+2011-12-08T11:17:58  <besh> well i thought so too but food can be dropped close to your ant I think..
+2011-12-08T11:18:01  <rwest> unless!
+2011-12-08T11:18:14  <rwest> maybe the java start package calls i occupied
+2011-12-08T11:18:16  <thestinger> food can spawn next to one of your ants at the end of the turn (when food spawns :P)
+2011-12-08T11:18:18  <rwest> it
+2011-12-08T11:18:32  <thestinger> and then it will be 1 distance from your ant at the start of the turn
+2011-12-08T11:18:38  <thestinger> and movement happens before food is gathered
+2011-12-08T11:18:42  <besh> thestinger: yes
+2011-12-08T11:19:40  <rwest> hmm I have never seen the issue yet I have nothing preventing it
+2011-12-08T11:20:00  <thestinger> it doesn't really matter, your move will just be blocked and you'll gather the food
+2011-12-08T11:20:33  <rwest> well still a wast of a turn
+2011-12-08T11:20:33  <thestinger> I wrote a special case to deal with it just to get rid of the warnings though
+2011-12-08T11:20:42  <besh> yes that is what happened.
+2011-12-08T11:20:58  <rwest> I can just modify the check to see if it's unoccupied
+2011-12-08T11:21:01  <besh> thestinger: wow too cautions :)
+2011-12-08T11:21:09  <besh> cautious*
+2011-12-08T11:21:35  <thestinger> well, if 2 ants are next to a food I only want one to stay
+2011-12-08T11:21:54  <thestinger> well I guess that would happen anyway if I ignored food blocking movement...
+2011-12-08T11:22:48  <thestinger> I think I might improve my bot again today, for the first time in over a week :P
+2011-12-08T11:23:28  <besh> good for u. mine seem to go down every week..
+2011-12-08T11:23:51  <thestinger> just going to make combat _really_ per battle and keep generating moves until time runs out
+2011-12-08T11:23:57  <thestinger> atm I never use more than 35ms
+2011-12-08T11:24:31  <rwest> return ((this == LAND || this == DEAD) && this != FOOD);
+2011-12-08T11:24:32  <rwest> there
+2011-12-08T11:24:48  <rwest> actually
+2011-12-08T11:24:48  <rwest> nvm
+2011-12-08T11:24:51  <rwest> thats dumvb
+2011-12-08T11:24:54  <rwest> it already did it
+2011-12-08T11:25:35  * rwest realizes it was an enum and did it anyway
+2011-12-08T11:25:54  <thestinger> which language are you using?
+2011-12-08T11:26:00  <rwest> java
+2011-12-08T11:26:05  *** QuirionPT <QuirionPT!~quirion@gyf5.kyla.fi> has joined #aichallenge
+2011-12-08T11:26:15  <rwest> if it's labeled land it has no food on it
+2011-12-08T11:26:19  <thestinger> ah
+2011-12-08T11:26:31  <besh> yes it excludes that but my A* excludes only water. Got to fix that
+2011-12-08T11:26:52  <thestinger> the food won't be there once gathered though
+2011-12-08T11:27:08  <thestinger> so you might as well pathfind through it
+2011-12-08T11:27:14  <rwest> add it to the isPassible() if you are using java besh
+2011-12-08T11:27:26  <rwest> assuming you use that to check for water
+2011-12-08T11:28:00  <besh> I assume food is passable for A*
+2011-12-08T11:28:01  <McLeopold> I think the only time food would block a path is if it spawned next to an ant
+2011-12-08T11:28:13  <thestinger> McLeopold: yeah :)
+2011-12-08T11:28:15  <McLeopold> otherwise walking "through" it will gather it and not slow you down
+2011-12-08T11:28:27  <rwest> I check my moves right before do them
+2011-12-08T11:28:36  <thestinger> if I didn't handle food spawning next to ants, I think it would end up being the same behavior as what I do now
+2011-12-08T11:28:40  <rwest> as a secondary check
+2011-12-08T11:28:48  <thestinger> because I would try to have one of the ants it spawned next to move onto it
+2011-12-08T11:28:50  <thestinger> and they would stay there
+2011-12-08T11:29:05  <thestinger> which is exactly what I do now (I make one of the ants next to it stay there to gather it)
+2011-12-08T11:29:59  <matthewd> thestinger: Though if you think they're moving, you'd risk a collision
+2011-12-08T11:30:23  <thestinger> ah yeah, that's why I fixed it :)
+2011-12-08T11:30:25  <rwest> if it happens, my ant will stay there or move a space along in it the direction of it's next target
+2011-12-08T11:30:27  <thestinger> now I remember xD
+2011-12-08T11:30:44  <rwest> it in
+2011-12-08T11:38:03  *** olexs <olexs!~Adium@s0823.dyn.hrz.tu-darmstadt.de> has quit IRC (Quit: Leaving.)
+2011-12-08T11:38:57  *** analyst74 <analyst74!~analyst74@96.53.97.142> has joined #aichallenge
+2011-12-08T11:42:53  <besh> new combat strategy memetix using influence maps http://forums.aichallenge.org/viewtopic.php?f=24&t=2083
+2011-12-08T11:48:54  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T11:50:38  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T11:56:45  <besh> Anyone understood why he said the influence map should be computed after 1 move ? why not just compute it  from where the ants are now
+2011-12-08T11:59:27  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T12:00:09  <pairofdice> Well, you don't want to know what happened but what will happen if I move there or here
+2011-12-08T12:00:33  <besh> so is it attack_radius + 2 ?
+2011-12-08T12:00:55  *** mleise <mleise!~marco@dslb-088-070-148-091.pools.arcor-ip.net> has joined #aichallenge
+2011-12-08T12:01:11  <a1k0n> it's more like, all possible moves convolved with attack_radius
+2011-12-08T12:01:24  <pairofdice> ^
+2011-12-08T12:01:25  <a1k0n> you could precompute this in a 16-entry table
+2011-12-08T12:02:18  <pairofdice> That's what I did, but didn't bother with water blocking movement or any other details either so it's... yeah
+2011-12-08T12:03:08  *** SimonT <SimonT!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-12-08T12:03:29  <a1k0n> i figured this sort of approach would be smarter and better than what i did but i never worked out the details
+2011-12-08T12:03:51  <pairofdice> It's simple and cheap
+2011-12-08T12:03:58  <besh> yes that is what I do too.
+2011-12-08T12:04:17  <besh> second questions: enemies = total[row][col] - influence[player][row][col]
+2011-12-08T12:04:45  <besh> "We can now work out the best ant in each combat zone"
+2011-12-08T12:04:49  *** tobel <tobel!~user@pD9E8A32A.dip.t-dialin.net> has joined #aichallenge
+2011-12-08T12:04:59  <besh> best for what ?
+2011-12-08T12:05:11  *** analyst74 <analyst74!~analyst74@96.53.97.142> has quit IRC (Quit:  Want to be different? Try HydraIRC -> http://www.hydrairc.com <-)
+2011-12-08T12:05:20  *** Simon14 <Simon14!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-12-08T12:06:02  *** nplus <nplus!~chatzilla@unaffiliated/simont> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T12:06:04  *** Simon14 is now known as nplus
+2011-12-08T12:06:09  <pairofdice> " the best ant being the one that is fighting the least number of other ants"
+2011-12-08T12:06:23  <pairofdice> Roght after your text
+2011-12-08T12:06:27  <pairofdice> :p
+2011-12-08T12:07:41  <besh> we are making coordinated moves of ant which doesn't require selection
+2011-12-08T12:07:44  <besh> brb..
+2011-12-08T12:08:08  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has joined #aichallenge
+2011-12-08T12:08:36  *** SimonT <SimonT!~chatzilla@unaffiliated/simont> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T12:10:43  *** olexs <olexs!~Leviathan@drms-4d01513d.pool.mediaWays.net> has joined #aichallenge
+2011-12-08T12:14:31  <thestinger> I obviously overcomplicated combat...
+2011-12-08T12:14:35  <thestinger> lemme try this way and compare
+2011-12-08T12:15:56  *** Karlis <Karlis!d5af6a0f@gateway/web/freenode/ip.213.175.106.15> has quit IRC (Quit: Page closed)
+2011-12-08T12:17:10  *** mj41 <mj41!~mj41_nby@195.39.106.218> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T12:18:41  *** Hexren <Hexren!~hexren@46.59.196.52> has joined #aichallenge
+2011-12-08T12:18:43  *** Hexren <Hexren!~hexren@46.59.196.52> has left #aichallenge
+2011-12-08T12:19:44  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has joined #aichallenge
+2011-12-08T12:22:32  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T12:23:18  *** RedTurtle <RedTurtle!48c24371@gateway/web/freenode/ip.72.194.67.113> has joined #aichallenge
+2011-12-08T12:23:57  <rwest> my combat that I am working on is very similar to what memetix posted
+2011-12-08T12:25:56  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-12-08T12:25:56  *** mviel__ <mviel__!~mviel@236.227.73.86.rev.sfr.net> has quit IRC (Read error: Connection timed out)
+2011-12-08T12:26:25  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-08T12:26:40  *** mviel__ <mviel__!~mviel@213.163.164.204> has joined #aichallenge
+2011-12-08T12:30:57  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-08T12:33:06  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (Remote host closed the connection)
+2011-12-08T12:34:43  *** GarfTop <GarfTop!~Garf@78-22-80-252.access.telenet.be> has joined #aichallenge
+2011-12-08T12:34:54  <Scryer> @rwest Mine will be too, soon. :)  It fits better into my structure than a1k0n's.
+2011-12-08T12:34:55  <contestbot> Scryer: An error occured while trying to show the previous error.
+2011-12-08T12:35:06  *** GarfTop <GarfTop!~Garf@78-22-80-252.access.telenet.be> has quit IRC (Read error: Connection reset by peer)
+2011-12-08T12:35:43  *** GarfTop <GarfTop!~Garf@78-22-80-252.access.telenet.be> has joined #aichallenge
+2011-12-08T12:36:15  *** Garf <Garf!~Garf@78-22-80-252.access.telenet.be> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T12:36:37  *** JorgeB <JorgeB!~textual@209.66.74.34> has joined #aichallenge
+2011-12-08T12:36:56  <rwest> Scryer: I am using influence maps for my entire bot hah
+2011-12-08T12:37:06  <thestinger> hm, I think memetix does things a bit differently than how I coded it
+2011-12-08T12:37:50  <rwest> too... much... kfc...
+2011-12-08T12:37:50  <rwest> ugh
+2011-12-08T12:38:53  <thestinger> so for the "best ant", he just means ant within attackradius+1 with the minimum number of enemies in range, right?
+2011-12-08T12:39:04  <thestinger> I already do that
+2011-12-08T12:39:43  <thestinger> oh well, time to figure out why my bot isn't nearly that good :P
+2011-12-08T12:42:00  <a1k0n> his method seems like it works well in mazes and confined areas but is too conservative in open spaces
+2011-12-08T12:43:09  <BenJackson> I might implement it just to have it to fight against
+2011-12-08T12:43:23  <thestinger> yeah, I'm implementing it right now just so I can compare
+2011-12-08T12:43:37  <a1k0n> it's similar to what you're doing anyway Ben isn't it?  at last for enemy ants?
+2011-12-08T12:43:45  <a1k0n> s/last/least/
+2011-12-08T12:44:59  <BenJackson> mine is probably more similar to what I've heard peopel describe here where they assume all enemies are stationary
+2011-12-08T12:45:10  <BenJackson> i just multiply all enemies by everywhere they could go
+2011-12-08T12:45:13  <thestinger> ah
+2011-12-08T12:45:16  <BenJackson> and fight against all those at once
+2011-12-08T12:45:19  <thestinger> I just move them towards me (without collisions)
+2011-12-08T12:45:29  <thestinger> and pretend they are staying still (so 2 scenarios)
+2011-12-08T12:45:30  <a1k0n> that's pretty much what the influence map is
+2011-12-08T12:45:41  <BenJackson> yes, I agree
+2011-12-08T12:46:02  <BenJackson> but then I consider individual sets of moves against that
+2011-12-08T12:46:08  <thestinger> this influence map method is a lot more cautious than mine
+2011-12-08T12:46:20  <BenJackson> if my code lacks anything it's probabilities for where the enemies would go
+2011-12-08T12:46:21  <thestinger> because it basically multiplies ants in all directions
+2011-12-08T12:46:29  <BenJackson> so I might implement his combat to weight the probabilities of the enemy ants
+2011-12-08T12:46:49  <a1k0n> the thing is, it's equally cautious and reckless cause he multiplies his own ants the same way
+2011-12-08T12:46:56  <rwest> lol implement his combat so you can predict his moves
+2011-12-08T12:47:01  <BenJackson> http://paste.aichallenge.org/Xz0Gl/
+2011-12-08T12:47:07  <BenJackson> rwest: well if he can do it in a few ms in java...
+2011-12-08T12:47:26  <BenJackson> btw that's what I finally did last night
+2011-12-08T12:47:41  <BenJackson> I was inspired by the fog of war at the end of a pguillory game to just go ahead and directly maximize vis
+2011-12-08T12:47:53  <BenJackson> so if you slide to the end there and hit fog you can see how nicely it works out
+2011-12-08T12:47:56  <rwest> I have a similar combat on my bot and I couldn't figure out why it sucked
+2011-12-08T12:48:03  <rwest> I need to separate it out from my main map
+2011-12-08T12:48:07  <BenJackson> didn't cost any more than my other method which was far more dense
+2011-12-08T12:48:12  <a1k0n> that's pretty much what i've been doing all along
+2011-12-08T12:48:14  <rwest> since I spread the values too much
+2011-12-08T12:48:24  <a1k0n> my ants don't bother scouting over known water either
+2011-12-08T12:48:56  <BenJackson> my currently submitted bot tried to be within some number of steps (4? 5? I forget) of everything
+2011-12-08T12:49:03  <BenJackson> it works well for some things
+2011-12-08T12:49:10  <BenJackson> but it's too dense far from teh fight
+2011-12-08T12:49:15  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has quit IRC (Read error: Operation timed out)
+2011-12-08T12:49:32  <a1k0n> yeah it's a tradeoff.  just getting full map coverage with a minimum number of ants works really well, except your ants are extremely vulnerable
+2011-12-08T12:49:56  <pairofdice> If you have ants moving from hills you don't have to have stationary ants at all, if you keep track of the perimeter
+2011-12-08T12:50:04  *** ademar_ <ademar_!~ademar@174.117.80.15> has quit IRC (Read error: Connection reset by peer)
+2011-12-08T12:50:18  <BenJackson> I only worked out yesterday that it really takes 4v1 with ideal placement to beat a lone ant "in space"
+2011-12-08T12:50:35  *** Garf <Garf!~Garf@78-22-80-252.access.telenet.be> has joined #aichallenge
+2011-12-08T12:50:35  *** GarfTop <GarfTop!~Garf@78-22-80-252.access.telenet.be> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T12:50:56  *** ademar_ <ademar_!~ademar@CPE0026f3379398-CM0026f3379395.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-12-08T12:50:58  <pairofdice> Yeah, in unbostructed map
+2011-12-08T12:50:59  <a1k0n> not 3?
+2011-12-08T12:51:19  <BenJackson> you can force the lone ant to die with 3 but it can trade you
+2011-12-08T12:51:59  <BenJackson> anyway my point being that my vision of my dense web of ants being like white blood cells didn't pan out
+2011-12-08T12:52:03  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-12-08T12:52:11  <thestinger> stupid freenode servers :(
+2011-12-08T12:55:50  <olexs> gah, some bot on fluxid is using ~3s per turn... game's been running since ages
+2011-12-08T12:56:22  <thestinger> yeah
+2011-12-08T12:56:32  <thestinger> games take so long now, so I'm unable to test things on tcp
+2011-12-08T12:56:48  <pairofdice> How are the other servers?
+2011-12-08T12:56:51  <thestinger> Fluxid just needs to get the server to tell bots the turntime is 500ms :P
+2011-12-08T12:57:00  <pairofdice> tc-pants and bhickey?
+2011-12-08T12:57:38  <BenJackson> bhickey is for lower level competition
+2011-12-08T12:58:00  <pairofdice> How low?
+2011-12-08T12:58:10  <BenJackson> really low
+2011-12-08T12:58:16  <BenJackson> sub-combat
+2011-12-08T12:58:26  <pairofdice> Hmph
+2011-12-08T12:58:26  <BenJackson> well, people developing new combat can certainly use it
+2011-12-08T12:58:34  <BenJackson> but if you're playing there just to provide a bot, provide a weak bot
+2011-12-08T13:00:15  <thestinger> hmmmm
+2011-12-08T13:00:25  <thestinger> I don't really get how memetix's way works now
+2011-12-08T13:00:33  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has quit IRC (Quit: Page closed)
+2011-12-08T13:00:36  <thestinger> I guess he _always_ moves toward the enemy?
+2011-12-08T13:01:41  <pairofdice> He masks the tiles on which ants can attack on the next turn
+2011-12-08T13:02:03  <pairofdice> just adds up the number of ants that a tile can be attacked by
+2011-12-08T13:02:20  <thestinger> yeah, I get that
+2011-12-08T13:02:24  <thestinger> I've been doing it all along
+2011-12-08T13:02:38  <thestinger> but then he's pretending all his ants are moving towards the enemy, before he decides to do that
+2011-12-08T13:02:41  <thestinger> basically
+2011-12-08T13:02:44  <pairofdice> oh
+2011-12-08T13:02:59  <BenJackson> I don't think so
+2011-12-08T13:03:03  <BenJackson> he's pretending all ants move everywhere
+2011-12-08T13:03:18  <thestinger> yeah, so lets say he has 2 ants out of range of an enemy
+2011-12-08T13:03:21  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-08T13:03:26  <thestinger> he's pretending the enemy moves every direction, and his own ants do
+2011-12-08T13:03:29  <thestinger> so he can kill the enemy
+2011-12-08T13:03:40  <thestinger> but he must be forcing both his ants to then move towards the enemy
+2011-12-08T13:03:51  <thestinger> otherwise one might think 'hey!, it's safe!', but it's not
+2011-12-08T13:03:58  <thestinger> unless all ants attack if possible
+2011-12-08T13:04:06  <pairofdice> Yeah, that's an issue
+2011-12-08T13:04:14  <thestinger> I can easily work this into what I already do
+2011-12-08T13:04:16  *** Israfel <Israfel!~jeff@99-0-14-82.lightspeed.frokca.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T13:04:25  <thestinger> but I just don't see how it can actually be a complete combat implementation
+2011-12-08T13:04:41  <thestinger> or even a big part of it :P
+2011-12-08T13:04:45  <pairofdice> It makes it hard to ignore enemy ants
+2011-12-08T13:05:06  <thestinger> well, you have to always attack or this way don't work (if I understand it correctly)
+2011-12-08T13:05:28  <pairofdice> Pretty much
+2011-12-08T13:05:38  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T13:05:56  <BenJackson> come on, we're all going to implement it to see what it does...
+2011-12-08T13:06:05  <BenJackson> if for no other reason than dozens of people in the forums will
+2011-12-08T13:06:10  <BenJackson> so we have to practice against it :)
+2011-12-08T13:06:11  <thestinger> I implemented it
+2011-12-08T13:06:17  <thestinger> I don't understand how it can possibly work though xD
+2011-12-08T13:06:25  <BenJackson> (no one can understand a1k0n's luckily ;-)
+2011-12-08T13:06:38  <pairofdice> I've had it for a month on the server now
+2011-12-08T13:08:55  *** Apophis <Apophis!~apophis@80-218-68-103.dclient.hispeed.ch> has joined #aichallenge
+2011-12-08T13:10:07  <thestinger> oh, now it makes more sense
+2011-12-08T13:10:17  <thestinger> or not x
+2011-12-08T13:10:19  <thestinger> xD
+2011-12-08T13:11:03  <ikaros> :)
+2011-12-08T13:11:12  *** olexs1 <olexs1!~Leviathan@drms-590c5f5b.pool.mediaWays.net> has joined #aichallenge
+2011-12-08T13:11:33  <thestinger> it's just around 10 lines of code since I already have generic radius utility stuff
+2011-12-08T13:11:52  *** Apophis <Apophis!~apophis@80-218-68-103.dclient.hispeed.ch> has quit IRC (Client Quit)
+2011-12-08T13:11:58  *** Apophis_ <Apophis_!~apophis@80-218-68-103.dclient.hispeed.ch> has quit IRC (Quit: Verlassend)
+2011-12-08T13:12:21  *** Apophis <Apophis!~apophis@80-218-68-103.dclient.hispeed.ch> has joined #aichallenge
+2011-12-08T13:13:29  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T13:14:03  <pairofdice> My bot won't be finished till long after the competition :<
+2011-12-08T13:14:07  <ikaros> just do it (c)
+2011-12-08T13:14:14  *** olexs <olexs!~Leviathan@drms-4d01513d.pool.mediaWays.net> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T13:14:52  <thestinger> http://sprunge.us/QQgU
+2011-12-08T13:14:55  <thestinger> I get something like this now
+2011-12-08T13:15:11  <besh> I am back. So did any one understand the method fully ?
+2011-12-08T13:15:15  <thestinger> 0 == "SAFE", 1 == "KILL", 2 == "DIE"
+2011-12-08T13:15:35  <thestinger> that blob is 2 enemy ants next to each other
+2011-12-08T13:15:38  <thestinger> with some of mine around them
+2011-12-08T13:15:49  <thestinger> well, mine are on the west
+2011-12-08T13:16:43  *** Israfel <Israfel!~jeff@99.0.14.82> has joined #aichallenge
+2011-12-08T13:17:38  <thestinger> anyway I don't really get how this turns into combat :)
+2011-12-08T13:18:02  <pairofdice> O_o
+2011-12-08T13:18:54  <thestinger> like, moving into tiles with 0 (SAFE) could be lethal if your other ants don't move where they are supposed to
+2011-12-08T13:19:23  <pairofdice> Yes, but you can control what your ants
+2011-12-08T13:19:30  <pairofdice> do
+2011-12-08T13:19:39  <thestinger> yeah, but lets say the enemy is on both sides of you
+2011-12-08T13:19:44  <thestinger> so if you attack one way, you can beat them
+2011-12-08T13:19:49  <thestinger> if you attack the other, you can too
+2011-12-08T13:19:54  <thestinger> but if you split up, you will die
+2011-12-08T13:19:58  *** anzen <anzen!75fdb999@gateway/web/freenode/ip.117.253.185.153> has joined #aichallenge
+2011-12-08T13:20:06  <besh> thestinger: agreed. Moves are coordinated and you can not infer on the outcome of making a move just by looking at influence table.
+2011-12-08T13:20:16  <rwest> thestinger: the side with better chances will get most of the weight
+2011-12-08T13:20:26  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T13:20:39  *** anzen <anzen!75fdb999@gateway/web/freenode/ip.117.253.185.153> has quit IRC (Client Quit)
+2011-12-08T13:20:49  <thestinger> rwest: ah, so you're pathfinding towards enemies then?
+2011-12-08T13:20:58  <thestinger> I don't see how it could work otherwise
+2011-12-08T13:21:08  <thestinger> like you need to turn this into an influence map and move towards the enemy
+2011-12-08T13:21:26  <thestinger> meh, I don't really get it xD
+2011-12-08T13:21:32  <pairofdice> heh
+2011-12-08T13:22:28  <rwest> thestinger: you have to diffuse the map
+2011-12-08T13:23:10  <rwest> I didn
+2011-12-08T13:23:16  <rwest> 't completely read the thread hah
+2011-12-08T13:23:29  <rwest> but I assume he is doing a typical influence map
+2011-12-08T13:23:36  <rwest> and diffusing the values afterwards
+2011-12-08T13:25:04  <besh> i don't think there is diffusion.
+2011-12-08T13:25:22  <rwest> ahh, then it is not exactly like mine heh
+2011-12-08T13:26:13  <thestinger> rwest: yeah, he just doesn't move into tiles marked as DIE (2 in my map)
+2011-12-08T13:26:16  <besh> so did you guys figure out what the best ant is used for ? In other words,how is fighting[p][r][c] determined ?
+2011-12-08T13:26:37  <thestinger> sec, I'll explain how I interpreted it
+2011-12-08T13:26:38  <thestinger> so
+2011-12-08T13:27:04  <thestinger> first of all, I'm putting all this in the Square struct the C++ starter has
+2011-12-08T13:27:16  <thestinger> so then I access stuff like grid[row][col].influence[player]
+2011-12-08T13:27:37  <thestinger> anyway, for each Square, I make an influence array that holds the number of ants within attackradius+1 for each player
+2011-12-08T13:27:53  <thestinger> and a total_influence int with the total number of ants
+2011-12-08T13:28:03  <besh> so far so good
+2011-12-08T13:28:29  <thestinger> then I make a 'fighting' array (for each player), which is 'total - influence[player]'
+2011-12-08T13:28:31  <thestinger> so
+2011-12-08T13:28:36  <thestinger> the number of enemies within attackradius+1
+2011-12-08T13:29:02  <thestinger> then I go through each tile to decide whether to mark them as DIE or KILL (they are all set to SAFE at the start of the turn)
+2011-12-08T13:29:33  <besh> wait
+2011-12-08T13:29:48  <besh> He said "enemies = total[row][col] - influence[player][row][col]"
+2011-12-08T13:29:52  <thestinger> yeah
+2011-12-08T13:30:00  <thestinger> so
+2011-12-08T13:30:17  <thestinger> enemies[player] = total - influence[player] for each tile
+2011-12-08T13:30:19  <besh> "the best ant being the one that is fighting the least number of other ants"
+2011-12-08T13:30:26  <thestinger> yes
+2011-12-08T13:30:33  <thestinger> so when I look around each tile (to mark them as DIE or KILL)
+2011-12-08T13:30:46  <thestinger> if I find an enemy ant in attackradius+1, I check the # of enemies that ant has
+2011-12-08T13:30:55  <besh> so fighting[p][r][c] is not same as number of enemies
+2011-12-08T13:31:42  *** zoli1 <zoli1!~zoli@catv-80-98-34-34.catv.broadband.hu> has left #aichallenge ("Konversation terminated!")
+2011-12-08T13:31:48  <thestinger> i.e. fighting[0][0][0] would contain the number of enemy ants an ant at (0,0) belonging to player 0 would be fighting.
+2011-12-08T13:31:51  <thestinger> that's what he says
+2011-12-08T13:31:53  <thestinger> so I just did that
+2011-12-08T13:32:04  <thestinger> I find the best ant based on that
+2011-12-08T13:32:14  <thestinger> 'best ant' meaning enemy with the lowest weakness
+2011-12-08T13:32:21  <thestinger> just like running a combat evaluation
+2011-12-08T13:32:56  <besh> yes that second statement makes sense.
+2011-12-08T13:33:24  <thestinger> I don't really think I interpreted what he said in the right way
+2011-12-08T13:33:37  <thestinger> anyway
+2011-12-08T13:33:42  *** dr-_ <dr-_!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has joined #aichallenge
+2011-12-08T13:33:46  <besh> I thought we are going to select our ant with the least number of enemy attacks.
+2011-12-08T13:33:59  <thestinger> fighting[row][col][player] is the number of enemies (of that player) within attackradius+1
+2011-12-08T13:34:09  <thestinger> besh: yeah, I do that with the fighting data later
+2011-12-08T13:34:19  <thestinger> so after I calculate all that stuff
+2011-12-08T13:34:22  <thestinger> I go through each tile
+2011-12-08T13:34:42  <thestinger> I get the fighting value of that tile (for player 0)
+2011-12-08T13:34:52  <thestinger> then I look at the tiles around it (within attackradius+1)
+2011-12-08T13:35:16  <thestinger> if there's an enemy ant, I check the value for it (# of enemies it has)
+2011-12-08T13:35:43  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has quit IRC (Ping timeout: 268 seconds)
+2011-12-08T13:35:52  <thestinger> then I compare to the value I got for the tile I'm checking - it's equal, I mark it KILL - if it's greater, I mark it DIE and break out of the loop
+2011-12-08T13:36:55  <besh> Ok thanks it is getting clearer now.
+2011-12-08T13:37:03  <thestinger> well, that's how I interpreted it
+2011-12-08T13:37:14  <thestinger> I think my interpretation must be wrong because this doesn't seem very useful :P
+2011-12-08T13:37:42  <besh> haha... it must be because his bot is very strong ;)
+2011-12-08T13:38:47  <besh> My combat scheme which I think a lot other use is simple
+2011-12-08T13:39:01  <besh> I just park my ants on attack_radius + 2 of enemy ants
+2011-12-08T13:39:13  <besh> then attack when I outnumber the enemy ant
+2011-12-08T13:39:31  <thestinger> so does it work if there's 1 enemy
+2011-12-08T13:39:38  <thestinger> and you have 1 ant on opposite sides?
+2011-12-08T13:40:19  <thestinger> meh, maybe I'll try the debug visualizer and take a screen of this crap :P
+2011-12-08T13:43:43  <BenJackson> wow I played a burst of games
+2011-12-08T13:43:56  <BenJackson> 5 between 3:16am and 3:23am
+2011-12-08T13:44:09  <BenJackson> previous gap was about 24h
+2011-12-08T13:44:19  <BenJackson> net skill change was -0.05
+2011-12-08T13:44:41  <besh> yes it works well but sometimes can suicide.
+2011-12-08T13:44:55  <besh> A little correction there. I park them at attack_radius + 1
+2011-12-08T13:45:04  <besh> and also attack_radius + 2
+2011-12-08T13:45:36  <besh> In 2 vs 1 it can never loose but doesn't mean it can always win.
+2011-12-08T13:46:22  <BenJackson> since my combat just maximizes certain heuristics I often don't understand what it does
+2011-12-08T13:46:27  <thestinger> oh
+2011-12-08T13:46:29  <thestinger> I think this works :D
+2011-12-08T13:46:31  <BenJackson> or not without significant thought
+2011-12-08T13:46:52  <thestinger> http://ompldr.org/vYm5jZw
+2011-12-08T13:46:58  <thestinger> so that orange ant near the enemies
+2011-12-08T13:47:05  <thestinger> if it moves down (into blue) it can trade 1 for 1
+2011-12-08T13:47:06  <BenJackson> it will sort of suck if after seeing everyone implement the same strategy function and clump up in the ranks now everyone implements the same combat
+2011-12-08T13:47:14  <thestinger> if it moves out of the red/blue ranges, it will be safe
+2011-12-08T13:47:40  <pairofdice> Why is the blue only south
+2011-12-08T13:47:53  <BenJackson> blue is trade
+2011-12-08T13:47:56  <BenJackson> if it moves east it can escape
+2011-12-08T13:48:42  <thestinger> yeah, this is somewhat different than what I do now
+2011-12-08T13:48:46  <thestinger> I think I could easily mix them together
+2011-12-08T13:48:54  <thestinger> but I don't think just doing it this way will work
+2011-12-08T13:49:15  <Fluxid> oh boy, i'm reading backscroll
+2011-12-08T13:49:23  <thestinger> Fluxid: just look at the pic :P
+2011-12-08T13:49:24  <Fluxid> and i do stuff totally different
+2011-12-08T13:49:29  <thestinger> yeah
+2011-12-08T13:49:35  <Fluxid> but at the same way totally inefficient
+2011-12-08T13:49:45  <Fluxid> time*
+2011-12-08T13:49:50  <thestinger> atm I come up with possible enemy locations
+2011-12-08T13:49:59  <thestinger> a simple version is just unmoving enemies, and enemies moving towards me
+2011-12-08T13:50:18  <thestinger> then I generate moves that optimize a "score" based on those enemy locations (I assume they will do the best thing, so I raise the minimum)
+2011-12-08T13:50:27  <thestinger> so like a payoff matrix, but only for enemy moves
+2011-12-08T13:51:43  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T13:51:51  <BenJackson> actually this combat is pretty much the exact inverse of what I do
+2011-12-08T13:52:01  <BenJackson> this method looks at how enemies could possibly threaten you
+2011-12-08T13:52:12  <BenJackson> and I look at how I could possibly threaten enemies
+2011-12-08T13:52:50  <Fluxid> those ideas look neat bu i think i'll stick with what i do
+2011-12-08T13:53:06  <antimatroid> thestinger: if you're only considering 1 set of moves from your opponents it's more like a decision matrix :P
+2011-12-08T13:53:29  <thestinger> antimatroid: no, I consider n sets of enemy moves
+2011-12-08T13:53:38  <thestinger> but I only test 1 set of moves against them and just keep optimizing it
+2011-12-08T13:53:54  <thestinger> so it's like a payoff matrix but I don't actually keep it around
+2011-12-08T13:54:14  <thestinger> anyway it doesn't work very well
+2011-12-08T13:55:23  <thestinger> http://aichallenge.org/visualizer.php?game=171150&user=2255
+2011-12-08T13:55:37  <thestinger> you can see that it gets the basics okay, but it falls apart for big battles
+2011-12-08T13:55:47  <BenJackson> which one is he?
+2011-12-08T13:55:55  <thestinger> because I don't form lines
+2011-12-08T13:55:55  <BenJackson> oh you mean YOU
+2011-12-08T13:56:06  <thestinger> and I don't really try to flank the enemy, even when I outnumber them
+2011-12-08T13:56:29  <thestinger> the lines that do form are just because my ants try to get around each other, but that's limited to ~3 tiles away
+2011-12-08T13:56:32  <BenJackson> neither do I, although it happens as an emergent behavior
+2011-12-08T13:57:00  <BenJackson> I used to use "step around" avoidance but it resulted in lines
+2011-12-08T13:57:10  <BenJackson> it's neat to see the current code moves 3-abreast snakes through mazes and stuff
+2011-12-08T13:57:40  <BenJackson> the other problem with 'stepping around' is that the ants that would step out of line would sometimes step right back in to be closer, followed by stepping out, etc
+2011-12-08T13:57:51  <Minthos> I saw one bot whose ants were just a flowing mass, like liquid
+2011-12-08T13:58:25  <antimatroid> thestinger: have you considered path finding to enemies not over friends to try and get them to surround the enemy?
+2011-12-08T13:59:33  <antimatroid> or vice versa
+2011-12-08T13:59:40  <antimatroid> from enemies to friends but not over friends
+2011-12-08T13:59:57  <thestinger> yeah
+2011-12-08T14:00:06  <thestinger> I have a few attempts in branches atm
+2011-12-08T14:00:19  <thestinger> such as pretending a layer thicker than 2 of my ants is not passable
+2011-12-08T14:00:21  <antimatroid> i haven't touched my bot in a few days
+2011-12-08T14:00:44  <antimatroid> been busy with other stuff, hopefully i have time again on the weekend, although i need to fix up the maze map gen before my bot again too
+2011-12-08T14:00:54  <thestinger> my bot is basically fine until there's a big battle, where it will just form a ball instead of a line
+2011-12-08T14:01:20  <antimatroid> because they're all either agressive or defensive?
+2011-12-08T14:01:45  *** UncleVasya <UncleVasya!kvirc@128-124-31-21.dialup.umc.net.ua> has joined #aichallenge
+2011-12-08T14:01:49  <thestinger> well, because they don't actually chase the enemy
+2011-12-08T14:02:00  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has joined #aichallenge
+2011-12-08T14:02:04  <antimatroid> i think my move selection is quite different to yours
+2011-12-08T14:02:12  <antimatroid> but i'm not willing to share how i'm picking out moves :P
+2011-12-08T14:02:22  <thestinger> basically, I have efficient movement to a target
+2011-12-08T14:02:42  <thestinger> so, they'll usually form a 3 or 4 width march towards it
+2011-12-08T14:02:49  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-12-08T14:03:10  <thestinger> but then they don't really spread out further when there's a battle
+2011-12-08T14:03:18  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-08T14:03:21  <thestinger> just as much as needed to get efficient movement (assuming there was no enemy)
+2011-12-08T14:04:24  <thestinger> meh, I think I misunderstood this new way of doing combat xD
+2011-12-08T14:04:43  <thestinger> http://ompldr.org/vYm5kOQ
+2011-12-08T14:04:47  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T14:04:49  <thestinger> red == "DIE"
+2011-12-08T14:04:56  <thestinger> so... it doesn't work like this
+2011-12-08T14:06:20  <thestinger> because the "best" enemy ant doesn't have any enemies within attackradius+1
+2011-12-08T14:07:27  <antimatroid> lol, you're still using attackradius +1?
+2011-12-08T14:07:30  <antimatroid> partition them properly!
+2011-12-08T14:07:39  <thestinger> no
+2011-12-08T14:07:45  <thestinger> this is to implement this http://forums.aichallenge.org/viewtopic.php?f=24&t=2083
+2011-12-08T14:07:50  <thestinger> I'm trying to understand it
+2011-12-08T14:08:21  <thestinger> I could just get attackradius with the ant moved in each possible direction
+2011-12-08T14:08:33  <thestinger> but there's no point doing it properly if it's not going to work at all :P
+2011-12-08T14:09:11  <antimatroid> hehe, that's a lot like what i do, except they missed a trick i'm using to get slightly more accurate info
+2011-12-08T14:09:42  <antimatroid> i use that kind of information to pick out offensive and defensive moves for my opponents and i then put it through a game tree
+2011-12-08T14:11:25  <UncleVasya> Offencive is where sum of  summes of distances every enemy to every your ant is minimal and defencive vise versa?
+2011-12-08T14:16:01  <antimatroid> thestinger: http://pastebin.com/a0tstdX5
+2011-12-08T14:16:08  <antimatroid> that's a hint towards improving the accuracy of your info
+2011-12-08T14:16:18  <antimatroid> only 1 enemy can really battle a if he remains statis
+2011-12-08T14:16:20  <antimatroid> static*
+2011-12-08T14:17:15  <thestinger> well, I know a better way would be tiles within attackradius of the tile the enemy ant is in, and also the tiles they could move to
+2011-12-08T14:18:01  <antimatroid> yeah, i just do min of those two numbers :P
+2011-12-08T14:18:10  <antimatroid> unique locations battled from and unique enemies
+2011-12-08T14:19:44  <antimatroid> you only need to work out this information for locations that can be moved into as well obviously
+2011-12-08T14:21:05  <antimatroid> and my state stores for each location the locations that (i) could battle it if it doesn't move and it's enemies do(don't) (ii) could battle if it does(n't) and it's enemies do(don't) move
+2011-12-08T14:21:50  <antimatroid> you can set them up with translation values in turn 0 then just update as you receive water info :P
+2011-12-08T14:26:06  *** vn971 <vn971!~vasya@77.232.28.15> has joined #aichallenge
+2011-12-08T14:26:16  <vn971> test
+2011-12-08T14:26:22  <rwest> ies
+2011-12-08T14:30:13  <thestinger> antimatroid: http://ompldr.org/vYm5kdw
+2011-12-08T14:30:28  <thestinger> blue == possible trade, red == possible death
+2011-12-08T14:31:24  <antimatroid> your info isn't right :P
+2011-12-08T14:31:32  <antimatroid> oh wait
+2011-12-08T14:31:33  <antimatroid> ignore me
+2011-12-08T14:31:48  <antimatroid> well, the top seems wrong
+2011-12-08T14:31:50  <antimatroid> but not important
+2011-12-08T14:31:58  <antimatroid> the top left red square?
+2011-12-08T14:32:04  <antimatroid> how is that a possible death? :P
+2011-12-08T14:32:17  <thestinger> if the ant moves north
+2011-12-08T14:32:22  <thestinger> they can attack 2 forwards and 1 west
+2011-12-08T14:32:22  <UncleVasya> antimatroid: don't you know where mcstar's gone?
+2011-12-08T14:32:27  <antimatroid> oh, by the time it gets there?
+2011-12-08T14:32:37  <antimatroid> UncleVasya: nope? how long has he been gone?
+2011-12-08T14:32:39  <antimatroid> @last seen mcstar
+2011-12-08T14:32:39  <contestbot> antimatroid: (last [--{from,in,on,with,without,regexp} <value>] [--nolimit]) -- Returns the last message matching the given criteria. --from requires a nick from whom the message came; --in requires a channel the message was sent to; --on requires a network the message was sent on; --with requires some string that had to be in the message; --regexp requires a regular expression the message must (1 more message)
+2011-12-08T14:32:53  <UncleVasya> @seen mcstar
+2011-12-08T14:32:53  <contestbot> UncleVasya: mcstar was last seen in #aichallenge 1 week, 3 days, 20 hours, 26 minutes, and 56 seconds ago: <mcstar> i dont agree
+2011-12-08T14:33:00  <antimatroid> hmmmm :\
+2011-12-08T14:33:05  <thestinger> antimatroid: well, it's "possible death once the enemies move"
+2011-12-08T14:33:19  <thestinger> or possible trade once they move
+2011-12-08T14:33:34  <antimatroid> thestinger: so the info is for when your ant could get to the location?
+2011-12-08T14:33:49  <thestinger> well, I really only need to calculate this for tiles next to my ants
+2011-12-08T14:33:53  <antimatroid> do you get my example from before right?
+2011-12-08T14:34:07  <antimatroid> http://pastebin.com/a0tstdX5
+2011-12-08T14:34:12  <thestinger> yeah, one of the blue ants couldn't move down
+2011-12-08T14:34:15  <antimatroid> ie. if you move 'a' down is it blue above him?
+2011-12-08T14:34:18  <thestinger> and they can't both move closer to a
+2011-12-08T14:34:19  <antimatroid> yeah
+2011-12-08T14:34:21  <thestinger> without colliding
+2011-12-08T14:34:29  <antimatroid> it took me a while to work out how to get that info
+2011-12-08T14:35:56  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (Remote host closed the connection)
+2011-12-08T14:36:16  *** JorgeB <JorgeB!~textual@209.66.74.34> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T14:39:33  *** hkraal_ <hkraal_!4dfa050f@gateway/web/freenode/ip.77.250.5.15> has joined #aichallenge
+2011-12-08T14:39:58  *** UncleVasya <UncleVasya!kvirc@128-124-31-21.dialup.umc.net.ua> has quit IRC ()
+2011-12-08T14:52:45  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T14:56:01  <besh> antimatroid: I take care of your example problem in my bot.
+2011-12-08T14:56:08  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-12-08T14:56:09  <antimatroid> :)
+2011-12-08T14:56:22  <McLeopold> antimatroid: http://paste.aichallenge.org/NidJk/?row ... 14&turn=33
+2011-12-08T14:56:29  <besh> ants on attack_radius + 1 are allowed to move only if they outnumber the opponent
+2011-12-08T14:56:58  <thestinger> if you're doing it that way you need attackradius+2
+2011-12-08T14:57:11  <thestinger> because the enemy can move towards you, in addition to you moving towards them
+2011-12-08T14:57:35  <besh> attack_radius + 2 ants are always moved closer unless it is always suicide ofcourse
+2011-12-08T14:57:45  <thestinger> ah
+2011-12-08T14:58:03  <McLeopold> http://paste.aichallenge.org/NidJk/?row=3&col=14&turn=33
+2011-12-08T14:58:07  <McLeopold> that's better
+2011-12-08T14:58:21  <antimatroid> what am i looking at though?
+2011-12-08T14:58:24  <McLeopold> I'm trying to implement Memetix's combat
+2011-12-08T14:58:41  <McLeopold> the highlighted ant is mine
+2011-12-08T14:58:52  <McLeopold> it thinks it can safely go south, but it can't
+2011-12-08T14:59:00  <Fluxid> http://paste.aichallenge.org/GpWxL/ go on, laugh at me
+2011-12-08T14:59:08  <antimatroid> it could when it did
+2011-12-08T14:59:37  <antimatroid> you mean west?
+2011-12-08T14:59:43  <McLeopold> no, south
+2011-12-08T14:59:54  <antimatroid> :s
+2011-12-08T15:00:15  <McLeopold> I think the ant at 6,12 is throwing it off
+2011-12-08T15:00:18  <besh> fluixd: what went wrong there? your combat is too cautious
+2011-12-08T15:00:29  <thestinger> McLeopold: draw the status for all the tiles
+2011-12-08T15:00:31  *** vn971 <vn971!~vasya@77.232.28.15> has left #aichallenge
+2011-12-08T15:00:34  <thestinger> not just the ones next to your ants
+2011-12-08T15:00:39  <thestinger> makes it easier to see what you're doing :P
+2011-12-08T15:00:39  <antimatroid> it realises that the enemy could be smarter
+2011-12-08T15:00:40  <McLeopold> ok
+2011-12-08T15:00:50  <pairofdice> McLeopold: Yeah, it thinks it has backup when it doesn't
+2011-12-08T15:00:56  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T15:00:57  <McLeopold> I know
+2011-12-08T15:00:59  <pairofdice> possibly
+2011-12-08T15:01:06  <McLeopold> but, I don't think I'm updating stuff right
+2011-12-08T15:01:38  * antimatroid doesn't see an ant at 6 12?
+2011-12-08T15:01:38  <Fluxid> besh: everything. I have in logs stuff like "I may kill something when going 2" but no ant actually go in direction which kills anything
+2011-12-08T15:02:04  <antimatroid> oh wait, wrong turn :P
+2011-12-08T15:02:12  <McLeopold> 2 of my ants *could* influence 4,14, and only 1 enemy *could* influence 4,14, but it should still be KILL
+2011-12-08T15:02:15  <thestinger> Fluxid: I'm just throwing out all my combat code for the 5th time and starting over :P
+2011-12-08T15:02:51  <pairofdice> I wonder if I get an update before the end
+2011-12-08T15:03:00  <Fluxid> thestinger: pasted the map here: http://paste.aichallenge.org/DVwbi/
+2011-12-08T15:03:13  <antimatroid> McLeopold: what I do is use that information to pick out offensive and defensive moves for each ant in my battle partition, those for my ants constitute 2 moves in a game tree and those of my enemies are 2 moves for them in a game tree, then i run minimax on that to work out whether to be offensive or defensive
+2011-12-08T15:03:15  <pairofdice> Would like to nudge my bot from #150 to top 100
+2011-12-08T15:04:07  <Fluxid> someone is posting lots of pastes
+2011-12-08T15:04:13  <antimatroid> i would suggest that one could perhaps try some hill climbing like heuristics once you've picked your move to improve it
+2011-12-08T15:04:16  <amstan_> McLeopold: how did you get rid of the spam on antpaste?
+2011-12-08T15:04:29  <antimatroid> has anyone tried that last suggestion?
+2011-12-08T15:04:33  <McLeopold> amstan_: I just looked for urls and denied the paste
+2011-12-08T15:04:47  <amstan_> doesn't the json have urls in it?
+2011-12-08T15:04:55  <McLeopold> yes
+2011-12-08T15:04:58  <McLeopold> I allow those
+2011-12-08T15:05:04  <amstan_> cool
+2011-12-08T15:05:15  <McLeopold> not really, spammers are just stupid, or lazy
+2011-12-08T15:05:56  <McLeopold> the php paster is really anoying...
+2011-12-08T15:06:15  <thestinger> Fluxid: my combat attacks in that map
+2011-12-08T15:06:46  <thestinger> wait nvm I have combat disabled because I'm testing this thing - it still attacks with it enabled though
+2011-12-08T15:07:00  <Fluxid> :|
+2011-12-08T15:07:20  <thestinger> the 4 ants at the front move forwards
+2011-12-08T15:07:26  <Fluxid> what's even more funny, my bot takes all the time every second turn on this time
+2011-12-08T15:07:33  <thestinger> the 2 ants near the 1 enemy in the easy move forwards and kill it
+2011-12-08T15:07:38  <Fluxid> like, one turn takes 10ms, and second 467ms
+2011-12-08T15:07:40  <Fluxid> wtf
+2011-12-08T15:07:50  *** delt0r_ <delt0r_!~bob@178-190-41-115.adsl.highway.telekom.at> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T15:07:50  <thestinger> and with the bottom part, one ant waits until the other gets there and they kill it
+2011-12-08T15:07:54  <thestinger> my bot handles unmoving enemies fine
+2011-12-08T15:08:00  <thestinger> it's the moving ones that screw it up
+2011-12-08T15:08:08  <thestinger> when they move sideways instead of towards me
+2011-12-08T15:09:54  *** Anilm3 <Anilm3!~anil@4.Red-79-146-241.dynamicIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-12-08T15:12:53  <thestinger> http://ompldr.org/vYm5lcg well, this does something
+2011-12-08T15:12:56  <thestinger> I'm not sure what though
+2011-12-08T15:13:13  <pairofdice> looks funky
+2011-12-08T15:13:20  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has joined #aichallenge
+2011-12-08T15:14:43  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T15:16:40  *** Kurnevsky <Kurnevsky!d91529cd@gateway/web/freenode/ip.217.21.41.205> has joined #aichallenge
+2011-12-08T15:20:43  *** delt0r_ <delt0r_!~bob@91-113-94-210.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-08T15:21:50  *** vn971 <vn971!~vasya@77.232.28.15> has joined #aichallenge
+2011-12-08T15:22:22  <Kurnevsky> Tell me please, where should I place my files so my bot can read them?
+2011-12-08T15:22:54  <McLeopold> at the root of the zip
+2011-12-08T15:23:15  <McLeopold> your bot's current directory will always be that
+2011-12-08T15:23:47  <Kurnevsky> ok, thank you
+2011-12-08T15:24:47  <thestinger> oh well, this method doesn't really work for me but it compliments my existing combat code well
+2011-12-08T15:24:57  <thestinger> I can generate a better initial set of offensive moves
+2011-12-08T15:25:16  <thestinger> http://ompldr.org/vYm5mOQ can just completely ignore moves into red zones
+2011-12-08T15:25:20  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Remote host closed the connection)
+2011-12-08T15:25:24  <thestinger> and do my combat the old way, but with a better start
+2011-12-08T15:25:33  *** Accoun <Accoun!~1@173.195.0.224> has joined #aichallenge
+2011-12-08T15:26:06  <Wraithan> I am looking forward to combat being my problem
+2011-12-08T15:27:50  <McLeopold> okay, I was updating the status wrong http://paste.aichallenge.org/puzdB/
+2011-12-08T15:28:26  <thestinger> McLeopold: so you just don't move into DIE zones?
+2011-12-08T15:28:28  <McLeopold> it makes me smile to watch the replay with visualizations and see the ants lock on to the hill :)
+2011-12-08T15:28:44  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T15:29:22  <McLeopold> thestinger: only when exploring and attacking
+2011-12-08T15:29:29  <McLeopold> when gathering food, I go for it
+2011-12-08T15:33:31  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Quit: leaving)
+2011-12-08T15:33:37  <McLeopold> okay, who's on what tcp server?
+2011-12-08T15:33:51  *** Accoun <Accoun!~1@173.195.0.224> has quit IRC ()
+2011-12-08T15:33:57  <thestinger> I think most people are on Fluxid's tcp server
+2011-12-08T15:34:09  <thestinger> http://ants.fluxid.pl/ranking
+2011-12-08T15:34:18  <McLeopold> that's the good one?
+2011-12-08T15:34:30  <McLeopold> anyone playing on the crappy one? :)
+2011-12-08T15:34:32  <thestinger> well, they're all good - but no one plays on the others :P
+2011-12-08T15:34:38  *** Hexren <Hexren!~hexren@46.59.196.52> has joined #aichallenge
+2011-12-08T15:34:46  <McLeopold> I'll give it a shot
+2011-12-08T15:35:16  *** Hexren <Hexren!~hexren@46.59.196.52> has left #aichallenge
+2011-12-08T15:35:44  *** vn971 <vn971!~vasya@77.232.28.15> has left #aichallenge
+2011-12-08T15:35:59  <besh> someone do something about the slow bots on tcp :(
+2011-12-08T15:36:40  <thestinger> Fluxid: change the turntime reported to the bots to 500ms :)
+2011-12-08T15:38:48  <besh> Yes. Then the server could wait for a response for 5000ms if it wants. But the bot the should know it only has 500ms
+2011-12-08T15:39:22  <McLeopold> does the tcpclient report status and turns?
+2011-12-08T15:39:45  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-12-08T15:39:47  <McLeopold> yep
+2011-12-08T15:40:01  <McLeopold> yeah! timeout!
+2011-12-08T15:45:31  <ronchaine> ...if someone has a faintest clue what is going on here, please help.
+2011-12-08T15:45:34  <ronchaine> http://pastebin.com/d7SyzCtf
+2011-12-08T15:45:54  <ronchaine> assert OK, call function, same assert -> fail.
+2011-12-08T15:49:42  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has quit IRC (Excess Flood)
+2011-12-08T15:50:30  <besh> ronchaine: are u sure about what you saw? It should behave the same as long as the same value is passed
+2011-12-08T15:50:38  <ronchaine> besh: Positive
+2011-12-08T15:50:43  <ronchaine> That is why I'm so baffled.
+2011-12-08T15:50:59  <g0llum> ronchaine, yo're shure the code yyou pasted is the only call to getloc ?
+2011-12-08T15:52:15  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has joined #aichallenge
+2011-12-08T15:52:51  <ronchaine> No, there are others, but if I comment out that one call, it won't crash.
+2011-12-08T15:53:53  <besh> what value does dir have when it fails ?
+2011-12-08T15:55:08  <ronchaine> a sec, I'll check.
+2011-12-08T15:56:21  <besh> if it is a garbage value then it is in the "else" block.
+2011-12-08T15:56:23  <g0llum> case of 'can't find my way home', lol
+2011-12-08T15:57:16  *** Kurnevsky <Kurnevsky!d91529cd@gateway/web/freenode/ip.217.21.41.205> has left #aichallenge
+2011-12-08T15:58:12  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has quit IRC (Quit: Page closed)
+2011-12-08T15:58:57  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-12-08T16:00:36  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-08T16:01:05  <BenJackson> McLeopold: http://paste.aichallenge.org/NidJk/?row=3&col=14&turn=33
+2011-12-08T16:01:10  <BenJackson> that doesn't look like ANY combat
+2011-12-08T16:01:16  <BenJackson> every meeting was a 1-1 trade
+2011-12-08T16:03:06  <ronchaine> besh: It's "1"
+2011-12-08T16:05:27  <besh> well that assert can not fail with a value of 1.
+2011-12-08T16:05:46  <ronchaine> ...yeah, when it comes to the function, it is suddenly 87.
+2011-12-08T16:06:18  <BenJackson> Fluxid: http://paste.aichallenge.org/xH1yL/
+2011-12-08T16:06:29  <ronchaine> Constantly 87, even.
+2011-12-08T16:07:54  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has quit IRC (Excess Flood)
+2011-12-08T16:08:21  <besh> try intitializing d to 0 i.e int d = 0;
+2011-12-08T16:08:48  <besh> line 3;
+2011-12-08T16:09:44  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has joined #aichallenge
+2011-12-08T16:10:55  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-12-08T16:11:26  <ronchaine> Tried, didn't help.  Also, if it doesn't hit any of the NSEW's (which initialise the value) it should fail in the assert(0) -block.
+2011-12-08T16:12:50  *** hkraal_ <hkraal_!4dfa050f@gateway/web/freenode/ip.77.250.5.15> has quit IRC (Quit: Page closed)
+2011-12-08T16:13:39  <BenJackson> ronchaine: I would guess that getLoc is being inlined (good) and the two identical asserts are being folded into one
+2011-12-08T16:13:43  <besh> maybe you should check for other getloc() calls as gollum suggested
+2011-12-08T16:13:47  <BenJackson> and the debug information happens to point at the getLoc one
+2011-12-08T16:13:56  <BenJackson> try with -O0
+2011-12-08T16:13:59  *** tobym <tobym!~tobym@pool-71-183-248-125.nycmny.fios.verizon.net> has quit IRC (Remote host closed the connection)
+2011-12-08T16:14:05  <BenJackson> then you will probably see it assert on the expected line
+2011-12-08T16:14:44  <besh> it is in debug mode right ?
+2011-12-08T16:14:48  <ronchaine> Yeah.
+2011-12-08T16:14:50  <besh> no optimization
+2011-12-08T16:14:56  <ronchaine> O.o
+2011-12-08T16:15:05  <ronchaine> Just tested, with no optimisation it works.
+2011-12-08T16:15:13  <thestinger> do you have warnings turned up?
+2011-12-08T16:15:15  *** tobym <tobym!~tobym@pool-71-183-248-125.nycmny.fios.verizon.net> has joined #aichallenge
+2011-12-08T16:15:24  <BenJackson> it works works or it asserts on line "16"?
+2011-12-08T16:15:34  <thestinger> bugs caused by optimization are pretty much always caught by a warning
+2011-12-08T16:16:03  <BenJackson> they're pretty much always mem smashing/initialization bugs too
+2011-12-08T16:16:23  *** nplus <nplus!~chatzilla@unaffiliated/simont> has quit IRC (Quit: ChatZilla 0.9.87-rdmsoft [XULRunner 1.9.0.17/2009122204])
+2011-12-08T16:16:50  <Minthos> use valgrind
+2011-12-08T16:17:02  <thestinger> libmudflap is better than valgrind :)
+2011-12-08T16:17:22  <Minthos> better than valgrind? blasphemy! :p
+2011-12-08T16:17:23  <ikaros> any hint on how much time i should reserver for sending outputs? .. this seems to vary pretty much
+2011-12-08T16:17:30  <thestinger> Minthos: much better, it's built into your program
+2011-12-08T16:17:31  <ikaros> reserve*
+2011-12-08T16:17:33  <thestinger> bounds checks for every array
+2011-12-08T16:17:34  <BenJackson> it's 10ms per 100 lines
+2011-12-08T16:17:41  <BenJackson> the engine enforces that
+2011-12-08T16:17:49  <thestinger> int a[4]; a[5] = 5;
+2011-12-08T16:17:53  <BenJackson> but you can send output early and be processing during the 10ms too
+2011-12-08T16:17:53  <ikaros> hmm
+2011-12-08T16:17:54  <thestinger> valgrind doesn't catch that, libmudflap does
+2011-12-08T16:18:14  <thestinger> well valgrind might if it actually accesses off the end of the stack
+2011-12-08T16:18:15  <ikaros> i buffered all outputs in a stringstream and send it completely at the end
+2011-12-08T16:18:37  <BenJackson> not a good idea
+2011-12-08T16:18:38  <thestinger> ikaros: the engine pauses for 10ms between every... 50 lines I think
+2011-12-08T16:18:39  <thestinger> maybe 100 lines
+2011-12-08T16:18:43  <thestinger> don't buffer it
+2011-12-08T16:18:48  <BenJackson> if you know what you want to do, do it early if you have >100 bots
+2011-12-08T16:18:56  <ikaros> hm ok i did that because i already had timeouts befor
+2011-12-08T16:18:59  <ikaros> which was strange
+2011-12-08T16:19:24  <ikaros> set turntime to 50ms and let 10% for output
+2011-12-08T16:19:28  <thestinger> so my new combat code is different
+2011-12-08T16:19:30  <ikaros> but it seemed to low
+2011-12-08T16:19:30  <thestinger> not sure if it's better
+2011-12-08T16:19:43  <thestinger> maybe I just have 1000 bugs to fix
+2011-12-08T16:20:12  <Minthos> same here.. I fixed last night's bug today
+2011-12-08T16:20:21  <Minthos> and made one ore more new ones
+2011-12-08T16:20:32  <Minthos> so now my bot is mental again
+2011-12-08T16:20:51  <Minthos> s/ore/or/
+2011-12-08T16:21:02  <besh> I do the same thning as Ikaros. What is wrong with buffering ?
+2011-12-08T16:21:14  <McLeopold> BenJackson: I had updated the status wrong.  And it's not really combat yet, just combat avoidance.
+2011-12-08T16:22:00  <ikaros> keep getting timeouts.. even with 10ms reserved for output.. very strange
+2011-12-08T16:22:07  <ikaros> and there are only 15 ants or so
+2011-12-08T16:22:12  <ikaros> meaning 15 lines..
+2011-12-08T16:22:19  <BenJackson> how is 15 ants taking 500ms anyway?
+2011-12-08T16:22:21  <besh> thestinger: is it better to send each move as you get it ?
+2011-12-08T16:22:23  <Minthos> buffering throws away computation time because the engine is slow at reading bot commands
+2011-12-08T16:22:35  <thestinger> besh: I dunno, it doesn't matter for me
+2011-12-08T16:22:39  <ikaros> BenJackson, i lowered turntime to 100ms
+2011-12-08T16:22:48  <ikaros> and i test how many calculations i can do
+2011-12-08T16:22:48  <thestinger> I output all moves near the end because I keep them around to change them with combat code
+2011-12-08T16:22:56  <ikaros> thats why it uses 90% time for simulation
+2011-12-08T16:23:00  <thestinger> but it would be better just to output them right away I guess
+2011-12-08T16:23:19  <McLeopold> just before I timed out, I had the highest ant count \o/ http://ants.fluxid.pl/replay.19470
+2011-12-08T16:24:03  <BenJackson> wow I wonder if the "_15lookahead" guy is really etc
+2011-12-08T16:24:28  <BenJackson> guess I've got to implement this new combat thing to see it in action
+2011-12-08T16:24:29  <thestinger> no way
+2011-12-08T16:24:43  <thestinger> it'
+2011-12-08T16:24:43  <BenJackson> thestinger: oh you'd know allll about fake suffixes
+2011-12-08T16:24:52  <thestinger> it's probably version 15, with lookahead
+2011-12-08T16:24:54  <BenJackson> strcat_misdirection
+2011-12-08T16:25:07  <thestinger> lol :)
+2011-12-08T16:25:19  <BenJackson> watch out for bj_complete_endgame_database
+2011-12-08T16:25:23  <besh> Minthos: we are talking about writing your moves. Is it better to write each move one by one as you get it doing computation in between OR write them all at the end ?
+2011-12-08T16:25:32  <Minthos> besh: the first
+2011-12-08T16:25:47  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has joined #aichallenge
+2011-12-08T16:25:49  <BenJackson> I do mine at the end for historical reasons
+2011-12-08T16:25:55  <BenJackson> but then I've never timed out
+2011-12-08T16:25:59  <BenJackson> and I don't even watch the time
+2011-12-08T16:26:13  <ikaros> yea there must something different be wrong
+2011-12-08T16:26:25  <ikaros> this is strange
+2011-12-08T16:26:35  <McLeopold> last contest waiting till the end was bad, because of the engine, now you can and it's ok
+2011-12-08T16:26:54  <besh> I don't understand why the first one is better ? Infact I deliberately changed to the second one in the hope it will be faster , silly me :(
+2011-12-08T16:27:27  *** Anilm3 <Anilm3!~anil@4.Red-79-146-241.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-08T16:27:31  *** nplus <nplus!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-12-08T16:27:46  <BenJackson> besh: the engine's main loop is:  while sleep 10ms: for all alive bots read up to 100 lines
+2011-12-08T16:28:13  <BenJackson> McLeopold: So I thought I had a clever idea to get better CPU utilization on the workers and then I saw it was already implemented
+2011-12-08T16:28:22  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has quit IRC (Excess Flood)
+2011-12-08T16:28:23  <Anilm3> can some one explain me how can make my antes go to objectives like lazarant on this match? http://aichallenge.org/visualizer.php?game=173325&user=589
+2011-12-08T16:28:24  <McLeopold> the 2 at a time?
+2011-12-08T16:28:24  <BenJackson> is the live setup actually using --serial or some variant?
+2011-12-08T16:28:47  <BenJackson> in the config template I see 'serial':2 but --serial 2 is not a valid cmd line (it's just a boolean)
+2011-12-08T16:28:48  <McLeopold> serial 2
+2011-12-08T16:29:00  <McLeopold> serial is only for the engine, not playgame
+2011-12-08T16:29:08  <McLeopold> the official contest doesn't use playgame
+2011-12-08T16:29:13  <McLeopold> that is local play only
+2011-12-08T16:29:14  <BenJackson> playgame does take it, ah
+2011-12-08T16:29:20  <BenJackson> ok, cool
+2011-12-08T16:29:32  <BenJackson> so maybe having CPU time controls vs wall clock is not that big a deal
+2011-12-08T16:29:38  <McLeopold> I could added... or you could do a pull request
+2011-12-08T16:29:39  <BenJackson> since it's not up to 9 bots waiting on the slowest
+2011-12-08T16:29:54  <McLeopold> right
+2011-12-08T16:29:56  <BenJackson> McLeopold: no, I don't need it locally, I was just brainstorming about the workers
+2011-12-08T16:30:06  <BenJackson> and then saw the code was there but didn't understand the playgame/engine distinction
+2011-12-08T16:30:17  <Fluxid> http://ants.fluxid.pl/replay.19470 great method, have 260 ants in hill so you're safe for 260 turns
+2011-12-08T16:30:26  <BenJackson> Fluxid: ChrisH does that
+2011-12-08T16:30:32  <BenJackson> I just implemented hive count
+2011-12-08T16:30:32  <BenJackson> but I'
+2011-12-08T16:30:36  <BenJackson> m not using for anything yet
+2011-12-08T16:30:54  <rwest> I used to do that on accident
+2011-12-08T16:30:56  <Fluxid> okay okay, lemme quickly hack constant "turntime 500"
+2011-12-08T16:31:00  <besh> bj: why doesn't it read everything in the socket buffer ?
+2011-12-08T16:31:05  <rwest> my record is 960 in the hill
+2011-12-08T16:31:08  <rwest> I think I was safe
+2011-12-08T16:31:15  <BenJackson> besh: unknown
+2011-12-08T16:31:41  <BenJackson> you're safe as soon as hive() > (state.turns - state.turn)
+2011-12-08T16:31:48  <BenJackson> as long as your logic doesn't move ants off your hill
+2011-12-08T16:32:08  <BenJackson> BUT your hills are only worth 1 point so you can probably still score higher if you bring more ants to the party
+2011-12-08T16:32:13  <BenJackson> once your hill is surrounded you won't be able to
+2011-12-08T16:32:14  <Fluxid> 12 games running on my tcp
+2011-12-08T16:32:22  <Fluxid> can i kill them?
+2011-12-08T16:32:28  <besh> fluxid: thumbs up for turntime 500
+2011-12-08T16:32:48  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has quit IRC (Quit: ... mains libres)
+2011-12-08T16:33:04  <BenJackson> fluxid: statistically speaking most people are not winning those 12 games
+2011-12-08T16:33:08  <BenJackson> so they all vote yet :)
+2011-12-08T16:33:08  <BenJackson> s
+2011-12-08T16:33:14  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has joined #aichallenge
+2011-12-08T16:33:16  <McLeopold> yets?
+2011-12-08T16:33:24  <BenJackson> nyet
+2011-12-08T16:33:32  <McLeopold> :)
+2011-12-08T16:33:55  <Fluxid> okay then!
+2011-12-08T16:34:00  <Fluxid> KILL ALL THE GAMES
+2011-12-08T16:34:07  <McLeopold> Fluxid: so, how about that turn time?
+2011-12-08T16:34:36  <Fluxid> McLeopold: now it should send turntime 500
+2011-12-08T16:34:40  <Fluxid> someone check
+2011-12-08T16:34:48  <thestinger> it's fast now
+2011-12-08T16:34:50  <thestinger> :)
+2011-12-08T16:35:10  <thestinger> my cpu load is way up which is a good sign
+2011-12-08T16:35:12  <BenJackson> mine won't be restarted until I get home
+2011-12-08T16:35:34  <besh> yes it seems to go faster but i have to wait till a new game starts ..
+2011-12-08T16:36:32  <besh> no it is still 5000
+2011-12-08T16:37:40  <Fluxid> besh: you mean you get 5000 or you see 5000 in game replay on site
+2011-12-08T16:38:00  <Fluxid> because it replaces turntime when sending to socket with 500
+2011-12-08T16:38:05  <Fluxid> not in engine itself
+2011-12-08T16:38:16  <Fluxid> at least it should
+2011-12-08T16:38:20  <ikaros> wasnt there a problem with the timer from the c++ starter pack?
+2011-12-08T16:38:30  <thestinger> ikaros: I think it was broken
+2011-12-08T16:38:40  <ikaros> ok.. best ill look into that first :)
+2011-12-08T16:39:06  <thestinger> the best way to do it is saving a timeval struct, and calculating a delta based on a new one
+2011-12-08T16:39:31  <thestinger> instead of trying to turn unix time seconds into milli/microseconds
+2011-12-08T16:39:59  <besh> fluxid: I see 5000 for both loadtime and turntime but the games to go much faster..
+2011-12-08T16:40:17  <Fluxid> i'll check myself with my bot then
+2011-12-08T16:40:43  <Fluxid> it's 500
+2011-12-08T16:40:46  <g0llum> fluxid, what did you do to achieve the 500 output t the bots ?
+2011-12-08T16:40:58  <Fluxid> g0llum: i'll commit and push in a second
+2011-12-08T16:41:03  <thestinger> ikaros: http://paste.pocoo.org/show/z5jGMzQw7jxcJkOOYa4B/ I just turned it into that (you can ignore the silly anonymous namespace)
+2011-12-08T16:41:30  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-08T16:41:33  <ikaros> thx i was just reading up clock_gettime .. no idea whats the better choice
+2011-12-08T16:41:37  <LouisMartin> greeting gentlemen  :)
+2011-12-08T16:41:56  <thestinger> ikaros: clock_gettime is the modern way (gettimeofday is deprecated according to the POSIX:2008 docs)
+2011-12-08T16:42:02  *** olexs <olexs!~Leviathan@drms-590c5f5b.pool.mediaWays.net> has joined #aichallenge
+2011-12-08T16:42:05  <thestinger> but I think you need -lrt passed to gcc to use the clock_ stuff
+2011-12-08T16:42:11  <Fluxid> g0llum: https://github.com/fluxid/ants-tcp/commit/4cdd4c7c293c46094271020b4b7f93858c2e62e3 here you are
+2011-12-08T16:42:11  <ikaros> ohh
+2011-12-08T16:42:19  <ikaros> ok thx i will try your version first
+2011-12-08T16:42:57  <thestinger> the new clock_ stuff lets you use CLOCK_MONOTONIC (based on an arbitrary time) instead of wall clock time, which can be changed by ntpd, etc.
+2011-12-08T16:43:17  <LouisMartin> as I'm about to begin the battle code for my post-nervous breakdown v2 bot, I was wondering if some of you would be kind enough to give me a few advices and tips? share some horror stories of what to avoid?
+2011-12-08T16:43:26  <thestinger> and I think it's more accurate (the struct uses nsec, not usec :P) and you can get the resolution with clock_getres
+2011-12-08T16:43:32  <thestinger> gettimeofday() is fine though
+2011-12-08T16:43:46  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (Remote host closed the connection)
+2011-12-08T16:44:25  <ikaros> gah still timouts.. so it wasnt the timers fault.. wtf
+2011-12-08T16:45:35  <besh> fluxid: I am getting 5000 for the third time even after I restarted ? Replay also says 5000
+2011-12-08T16:45:41  <LouisMartin> has anyone shared some scenarios maps to practice battle / battle aspect and such?   is there a map editor or any precious tool I should know about?
+2011-12-08T16:46:43  <McLeopold> LouisMartin: notepad...
+2011-12-08T16:47:13  <thestinger> I think there's an emacs mode for drawing ascii art...
+2011-12-08T16:47:20  <BenJackson> to be 100% accurate:  clock_gettime CLOCK_MONOTONIC's *rate* is affected by NTP, but not its offset
+2011-12-08T16:47:40  <BenJackson> but gettimeofday and clock_gettime use the same underlying mechanism
+2011-12-08T16:47:45  <thestinger> ah
+2011-12-08T16:47:48  <BenJackson> and linux actually stores the wall clock time and translates to monotonic
+2011-12-08T16:47:56  <BenJackson> so gettimeofday is microscopically faster
+2011-12-08T16:48:28  <McLeopold> oh wow, you drop all games when restarting?
+2011-12-08T16:48:48  <LouisMartin> McLeopold:  Yea, I was thinking of TheDraw (http://en.wikipedia.org/wiki/TheDraw)
+2011-12-08T16:49:17  <thestinger> http://www.lysator.liu.se/~tab/artist/
+2011-12-08T16:49:41  <thestinger> anyway I'm just doing it by hand in vim :P
+2011-12-08T16:50:37  <BenJackson> yeah, I have a template arena
+2011-12-08T16:50:43  <BenJackson> and I modify it in vim
+2011-12-08T16:50:54  <LouisMartin> thestinger: I like it
+2011-12-08T16:51:36  <g0llum> fluxid, still got turntime 5000fluxid, it's not the bot, that writes turntime, but the angine/ants.py(1542) i think, you mixed up bot read/write
+2011-12-08T16:52:13  <Fluxid> lemme check once more
+2011-12-08T16:53:09  <LouisMartin> so, no maps/bots to practice battle code has been shared?
+2011-12-08T16:53:30  <McLeopold> a few on paste
+2011-12-08T16:53:42  <Fluxid> hm, you're right
+2011-12-08T16:55:05  <thestinger> in vim, I just use block visual with ctrl-V and then r% to change to walls r. to change to land, etc.
+2011-12-08T16:55:20  <thestinger> the emacs artist mode thing is kind of neat though
+2011-12-08T16:55:28  *** _Lone_Wolf_ <_Lone_Wolf_!LW@bl10-78-112.dsl.telepac.pt> has joined #aichallenge
+2011-12-08T16:55:34  *** _Lone_Wolf_ is now known as flowenol
+2011-12-08T16:55:53  <LouisMartin> McLeopold: thanks
+2011-12-08T16:55:57  <BenJackson> thestinger: you'd like aacircuit
+2011-12-08T16:57:19  <thestinger> lol, my bot loses to an ancient pre-combat version on small maps
+2011-12-08T16:57:25  <thestinger> 15% win rate
+2011-12-08T16:57:48  <thestinger> on tiny random walks
+2011-12-08T16:58:20  <besh> do most people use the same name for different versions when playing on tcp ?
+2011-12-08T16:58:43  <flowenol> besh idk but i do
+2011-12-08T16:58:47  <thestinger> besh: I use strcat and strcat_next for my stable version and master branch
+2011-12-08T16:58:48  <McLeopold> just one http://ants.fluxid.pl/player/McLeopold_sucks
+2011-12-08T16:58:57  <thestinger> the random ones with suffixes are just branches I want to test
+2011-12-08T16:59:05  <besh> thestinger: yeah we know what you do :)
+2011-12-08T16:59:10  <thestinger> :P
+2011-12-08T16:59:25  <thestinger> adding a version number and starting at a high sigma again just seems like a waste
+2011-12-08T16:59:30  <besh> but i think what I do is bad practise as it could affect ratings
+2011-12-08T17:01:40  <BenJackson> on fluxid you can get 200 games a day
+2011-12-08T17:01:46  <BenJackson> restarting hardly matters
+2011-12-08T17:02:45  <Fluxid> one more chance
+2011-12-08T17:03:00  <BenJackson> with this fix mayb 400 games a day!
+2011-12-08T17:03:02  <thestinger> if all else fails, hardcode an iptables rule to edit the packet P
+2011-12-08T17:03:04  <thestinger> :P *
+2011-12-08T17:03:09  <Fluxid> OKAY
+2011-12-08T17:03:14  <Fluxid> now it should be good
+2011-12-08T17:03:37  <Fluxid> fucking python 2.6 on the server
+2011-12-08T17:03:38  <BenJackson> to make fluxid more like the main site I'm going to connect with 3500 starter kits
+2011-12-08T17:03:41  <besh> yes now it works
+2011-12-08T17:03:49  <Fluxid> good
+2011-12-08T17:04:00  <Fluxid> sorry for the restarts and enjoyyyyyyyy~~~
+2011-12-08T17:04:08  <besh> thanks: Now I should have 10x more games that I don't know what to do with :)
+2011-12-08T17:04:23  <Anilm3> do your ants give priority to fighting or gathering food?
+2011-12-08T17:04:27  <BenJackson> besh: I did a few statistical analyses of all my fluxid games
+2011-12-08T17:04:31  <BenJackson> looking at map sizes I was bad at
+2011-12-08T17:04:33  <BenJackson> particular maps, etc
+2011-12-08T17:04:37  <BenJackson> then using that to pick replays
+2011-12-08T17:04:47  <thestinger> http://ants.fluxid.pl/player/hedonismbot this is mine btw :P
+2011-12-08T17:04:54  <thestinger> ripped out 50% of the logic and made it only care about food
+2011-12-08T17:05:07  <thestinger> seems to be an improvement...
+2011-12-08T17:05:08  <BenJackson> gold-plated grape-eating chaise lounge robot?
+2011-12-08T17:05:10  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T17:05:23  *** mviel__ <mviel__!~mviel@213.163.164.204> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T17:05:42  <Fluxid> oh btw, i updated the maps
+2011-12-08T17:05:51  <BenJackson> http://images.wikia.com/en.futurama/images/1/18/Hedonismbot.jpg
+2011-12-08T17:05:58  <thestinger> BenJackson: yep
+2011-12-08T17:05:59  <besh> bj: that is interesting. I know my bot does bad at open maps but it is good to have a statistical check.
+2011-12-08T17:06:06  <BenJackson> Fluxid: did you have to buy new disks to hold them all?
+2011-12-08T17:06:14  <BenJackson> cell_maze_05p_9249249298.map
+2011-12-08T17:06:51  <Fluxid> uh, no, not really. i just copied them from aichallenge repo
+2011-12-08T17:07:05  <BenJackson> is that up to date?
+2011-12-08T17:07:09  <BenJackson> I did that recently and was still missing maps
+2011-12-08T17:07:13  <Fluxid> http://ants.fluxid.pl/maps i think so
+2011-12-08T17:07:33  *** mviel__ <mviel__!~mviel@213.163.164.204> has joined #aichallenge
+2011-12-08T17:07:54  <Fluxid> lots of... maps
+2011-12-08T17:07:56  <thestinger> aw crap, there are a bunch of random walks now
+2011-12-08T17:08:06  <BenJackson> 300 maps, wow
+2011-12-08T17:08:14  <Fluxid> you'll need to play for two days to make sure you played all of them...
+2011-12-08T17:08:26  <thestinger> BenJackson: all the random walks are basically the same though :P
+2011-12-08T17:08:30  <BenJackson> yeah that seems to be a big disparity for the finals
+2011-12-08T17:08:38  <Fluxid> now noone will will even try to hardcode map-dependent behaviour
+2011-12-08T17:08:39  <BenJackson> you and some other bot could play entirely disjoint sets of maps
+2011-12-08T17:08:55  <thestinger> well, this sucks
+2011-12-08T17:09:01  <BenJackson> thestinger: I found a unique feature of 1
+2011-12-08T17:09:13  <BenJackson> an ant could hide in a niche such that only one enemy ant could threaten it
+2011-12-08T17:09:20  <BenJackson> my code kept trying to send more ants to finish it off
+2011-12-08T17:09:26  <BenJackson> but none could get close enough
+2011-12-08T17:09:32  <thestinger> this map I'm testing on is silly, my bots raise each other's hill at the same turn
+2011-12-08T17:09:34  <BenJackson> so it boxed that one ant in with 10+ ants :(
+2011-12-08T17:09:38  <thestinger> almost every game
+2011-12-08T17:13:44  *** iglo <iglo!~xy@xdslaf024.osnanet.de> has joined #aichallenge
+2011-12-08T17:13:45  <BenJackson> in explore tests it turns out my bot with combat but no goals (like attacking hills) tends to kill all the holdbots anyway
+2011-12-08T17:13:52  <BenJackson> I'm not entirely sure why
+2011-12-08T17:14:06  <BenJackson> I think killing the holdbots must get me close enough to the hills that I accdientally step on them
+2011-12-08T17:14:19  <thestinger> lol
+2011-12-08T17:16:26  <BenJackson> part of the reason I added --forever to the game
+2011-12-08T17:16:31  <BenJackson> to shut off the endgame conditions
+2011-12-08T17:18:30  <thestinger> http://ompldr.org/vYm5oaw all my tests end like this...
+2011-12-08T17:18:49  <Fluxid> lol
+2011-12-08T17:19:01  <Fluxid> perfect tie
+2011-12-08T17:19:33  *** mleise <mleise!~marco@dslb-088-070-148-091.pools.arcor-ip.net> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T17:20:38  <thestinger> I think I fixed a bug
+2011-12-08T17:20:49  <thestinger> now my new version seems to win most of the time
+2011-12-08T17:22:04  <BenJackson> you know I keep meaning to figure out why I can run n versions of my bot on the same map
+2011-12-08T17:22:09  <Fluxid> like it didn't before
+2011-12-08T17:22:13  <BenJackson> without any rotations in the symmetry
+2011-12-08T17:22:18  <BenJackson> yet they won't do identical things
+2011-12-08T17:23:02  <thestinger> your direction choices are probably biased
+2011-12-08T17:23:08  <thestinger> mine are for sure
+2011-12-08T17:23:29  *** nplus <nplus!~chatzilla@unaffiliated/simont> has quit IRC (Read error: Connection reset by peer)
+2011-12-08T17:24:22  <thestinger> what's the max name length on tcp?
+2011-12-08T17:24:59  <thestinger> oh, apparently there is none
+2011-12-08T17:25:59  <Fluxid> inb4 exploit
+2011-12-08T17:26:02  <g0llum> depends on your will to cheat, since it's in the client ;)
+2011-12-08T17:28:28  <thestinger> I need to redo movement again, my ants think they are bees atm
+2011-12-08T17:28:45  <thestinger> I like how some bots move around like blobs of mercury
+2011-12-08T17:30:38  *** tobym <tobym!~tobym@pool-71-183-248-125.nycmny.fios.verizon.net> has quit IRC (Remote host closed the connection)
+2011-12-08T17:32:02  *** tobym <tobym!~tobym@pool-71-183-248-125.nycmny.fios.verizon.net> has joined #aichallenge
+2011-12-08T17:32:08  <besh> fluxid: I tried your idea about cost of path through ants for A* path finding, and it helps.
+2011-12-08T17:32:51  <besh> I increment the cost by +2 when the path is through an ant. Maybe too aggresive ?
+2011-12-08T17:33:17  <besh> I am wondering if I can manipulate the cost to include "unseen tile" information.
+2011-12-08T17:33:50  <thestinger> besh: I do +3 when going through an ant instead of the usual +1
+2011-12-08T17:34:09  <besh> Aha so we do similar things then.
+2011-12-08T17:34:11  <thestinger> well, I've tried like a hundred variations
+2011-12-08T17:34:40  <besh> It helps to avoid path through pile of your ants like at choke points.
+2011-12-08T17:35:13  <thestinger> yeah, they take alternate routes if it's not too much further
+2011-12-08T17:35:32  <thestinger> I need a better way of doing it though
+2011-12-08T17:36:34  <besh> I am thinking to use it for maximizing exploration as well. To prefer paths through less visited tiles more but getting the right weights may be difficult.
+2011-12-08T17:39:01  <besh> My A* paths are not really that optimal anyway. I use  weighted A* with a factor of 2
+2011-12-08T17:39:57  *** Paradoxial <Paradoxial!~Paradoxia@pool-108-28-22-94.washdc.fios.verizon.net> has joined #aichallenge
+2011-12-08T17:42:33  <besh> thestinger: someone has the same exact confusions as I have about the fighting[][] array http://forums.aichallenge.org/viewtopic.php?f=24&t=2083
+2011-12-08T17:43:24  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-12-08T17:47:04  *** nplus <nplus!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-12-08T17:47:38  <thestinger> antimatroid: heh, I actually dealt with your example (with the two ants not being able to go to the same place) already
+2011-12-08T17:48:14  <thestinger> because I put all possible locations into an unordered_set, then paint the info around them
+2011-12-08T17:48:48  <thestinger> oh nvm, I need to tweak it a tiny bit to deal with it properly
+2011-12-08T17:50:35  <besh> If there was no water, my code tries to order moves to get all ants closer to the target.
+2011-12-08T17:50:56  <besh> but that water tile forces them to move to the same location for his example.
+2011-12-08T17:53:25  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has quit IRC (Quit: Page closed)
+2011-12-08T17:54:04  *** ikaros <ikaros!~ikaros@dslb-084-059-073-057.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-12-08T17:54:10  <LouisMartin> hmm, what is --scenario used for?  playgame.py usage info doesn't tell
+2011-12-08T17:55:04  <BenJackson> to feed in a map with preexisting food and ants
+2011-12-08T17:55:06  <BenJackson> for testing
+2011-12-08T17:55:12  <McLeopold> and ignoring symmetry
+2011-12-08T17:55:14  <BenJackson> you will want --food none too in most cases
+2011-12-08T17:55:21  <McLeopold> or --food random
+2011-12-08T17:56:38  <LouisMartin> ah! that's what I thought. the engine doesn't like my idea of a scenario though..  "got 43 rows, expected none"
+2011-12-08T17:58:57  <LouisMartin>   File "C:\Local Workspace\AIC Ants\tools\ants.py", line 271, in parse_map     % (height, row)) Exception: ('map', 'Incorrect number of rows.  Expected None, got 43')
+2011-12-08T17:59:27  *** ikaros <ikaros!~ikaros@dslb-084-059-073-057.pools.arcor-ip.net> has joined #aichallenge
+2011-12-08T17:59:28  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T18:00:18  <LouisMartin> I'm an idiot, but why?  (in the context of this error, plz...)
+2011-12-08T18:01:25  <BenJackson> bad map?
+2011-12-08T18:01:44  <g0llum> LouisMartin, now the whole cmdline, please
+2011-12-08T18:01:46  <BenJackson> put your map on paste.aichallenge
+2011-12-08T18:02:16  <LouisMartin> perhaps.. I'll check again
+2011-12-08T18:03:36  <LouisMartin> I'll clean it first as it seems too loaded for nothing, g0llum. I'm recycling the same cmd line over and over and it probably ain't good for scenario map.
+2011-12-08T18:03:57  <LouisMartin> also, as Ben suggest, my map is probably just bad
+2011-12-08T18:05:24  <g0llum> maybe, you just forgot to say rows 20 and the like in the map
+2011-12-08T18:07:59  *** iglo <iglo!~xy@xdslaf024.osnanet.de> has quit IRC (Remote host closed the connection)
+2011-12-08T18:08:14  <LouisMartin> I'll paste it
+2011-12-08T18:08:31  <LouisMartin> I don't get it since the rows and cols declared in the map are okays
+2011-12-08T18:09:59  <LouisMartin> http://paste.aichallenge.org/v9IY1/
+2011-12-08T18:10:40  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-12-08T18:11:27  <LouisMartin> the command line is "python "%~dp0playgame.py" -So --engine_seed 62 --player_seed 59 --end_wait=0.25 --verbose --log_dir game_logs --loadtime 36000 --turntime 2000 --turns 36000 --  viewradius2 77 --food_rate 5 11 --food_turn 19 37 --food_start 75 175 --food_visible 3 5 --scenario --food none --map_file "%~dp0maps\cases\battledummy.map" %*   "python ""%~dp0sample_bots\python\LeftyBot.py""" """%~dp0mybots\realsmurfs.exe""" | j
+2011-12-08T18:11:31  <g0llum> i've seen that map before!
+2011-12-08T18:11:41  <thestinger> I made it to test my early combat :P
+2011-12-08T18:11:47  <thestinger> it's just the tutorial map with some ants
+2011-12-08T18:12:00  <LouisMartin> and yes, it needs a redesign to say the least  lol
+2011-12-08T18:12:09  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T18:12:15  <BenJackson> I found it somewhat useful to see how many ants my orange team could survive with
+2011-12-08T18:12:44  <LouisMartin> thestinger :)   yes, you're the one who gave it to me if I remember well.
+2011-12-08T18:12:57  <thestinger> http://ompldr.org/vYm5pcw red == die, blue == trade
+2011-12-08T18:13:09  <BenJackson> haha I thought this new code would be slower
+2011-12-08T18:13:10  <LouisMartin> or maybe it just got viral
+2011-12-08T18:13:12  <BenJackson> it's 10% faster
+2011-12-08T18:16:12  <LouisMartin> so this map is well known and tested; how could it fail on my side?
+2011-12-08T18:16:40  <LouisMartin> the starter pack "tutorial1.map" runs perfectly with the same cmd line
+2011-12-08T18:16:46  *** oddmunds <oddmunds!~oddmunds@s21-04214.dsl.no.powertech.net> has left #aichallenge
+2011-12-08T18:17:51  <g0llum> the empty line ? why not just diff those ?
+2011-12-08T18:20:03  <LouisMartin> I don't understand. which empty line?  in the map?  those are okay by the format, but I'll try
+2011-12-08T18:21:27  <g0llum> empty line between players 2 and actual map data, other maps don't have that
+2011-12-08T18:21:36  <LouisMartin> btw, what would be the parameter  -So  ?   I blindly copy/pasted it for a while without knowing. It's not in the playgame.py usage
+2011-12-08T18:22:28  <BenJackson> LouisMartin: bad line endings?
+2011-12-08T18:22:45  <LouisMartin> tried it, but it doesn't work
+2011-12-08T18:23:50  <LouisMartin> Ben: line endings?    I thought notepad was okay?
+2011-12-08T18:24:10  <LouisMartin> cr/lf  versus just lf  ?
+2011-12-08T18:25:07  <LouisMartin> I actually used Visual Studio to save it, not notepad
+2011-12-08T18:28:45  <LouisMartin> ...and that is it: saving maps under common windows editors adds the <Cr> and playgame.py dislike those. I opened and <saved as> a perfectly working map and now it's ruined.
+2011-12-08T18:29:18  <LouisMartin> thanks BenJackson and g0llum. mystery solved.
+2011-12-08T18:32:22  <LouisMartin> gotta love "not invented here syndrome":  Windows has <Cr/Lf>, Linux <Lf> and Apple/Mac <Cr>
+2011-12-08T18:33:46  <thestinger> OSX does it properly now iirc
+2011-12-08T18:33:49  <thestinger> some applications may not
+2011-12-08T18:33:53  <thestinger> \n is the one true way
+2011-12-08T18:33:56  <thestinger> who cares what windows does :P
+2011-12-08T18:34:00  <g0llum> yea, almost 2012, and we still splitting hairs on that
+2011-12-08T18:34:09  <thestinger> windows also doesn't use UTF-8 everywhere
+2011-12-08T18:34:25  <thestinger> and I think notepad/wordpad have broken unicode
+2011-12-08T18:34:36  <BenJackson> you could probably fix the engine to load crlf maps pretty easily
+2011-12-08T18:34:39  <thestinger> because they use UCS-2, not UTF-16
+2011-12-08T18:35:14  <Antimony> Wow, apparently my bot doesn't work on square maps
+2011-12-08T18:35:27  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T18:35:59  <thestinger> wikipedia says win8 actually uses LF (\n) line endings
+2011-12-08T18:36:00  <LouisMartin> BenJackson: indeed an option
+2011-12-08T18:36:06  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-08T18:36:06  <thestinger> might not be true
+2011-12-08T18:38:30  <a1k0n> ÿþhi i'm a windows unicode text file
+2011-12-08T18:38:39  <a1k0n> http://en.wikipedia.org/wiki/Byte_order_mark
+2011-12-08T18:40:31  *** tobel <tobel!~user@pD9E8A32A.dip.t-dialin.net> has quit IRC (Quit: ERC Version 5.3 (IRC client for Emacs))
+2011-12-08T18:40:39  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has joined #aichallenge
+2011-12-08T18:40:58  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Ping timeout: 268 seconds)
+2011-12-08T18:42:07  <LouisMartin> cause there's one thing Microsoft loves more than fair competition; standards
+2011-12-08T18:42:49  *** Conorach <Conorach!~cono@90.170.78.100> has quit IRC (Ping timeout: 268 seconds)
+2011-12-08T18:44:03  *** iglo <iglo!~xy@xdslaf024.osnanet.de> has joined #aichallenge
+2011-12-08T18:44:12  <thestinger> http://harmful.cat-v.org/standards/
+2011-12-08T18:45:29  <LouisMartin> thestinger: you seem well versed in text encoding, any idea what I should feed visual studio when saving?  it asks for encoding and page ending
+2011-12-08T18:46:34  <thestinger> page ending?
+2011-12-08T18:47:01  <thestinger> utf-8 is the only sane encoding
+2011-12-08T18:47:16  <thestinger> I think most text editors add an extra newline at the end
+2011-12-08T18:47:43  *** mviel_ <mviel_!~mviel@236.227.73.86.rev.sfr.net> has joined #aichallenge
+2011-12-08T18:48:24  <LouisMartin> 'Mediocrity finds safety in standardization.'       XML
+2011-12-08T18:48:36  <thestinger> there's also a great page on XML on there
+2011-12-08T18:48:47  <thestinger> http://harmful.cat-v.org/software/xml/
+2011-12-08T18:49:01  <LouisMartin> extra newline on the end?
+2011-12-08T18:49:12  <thestinger> it probably puts it there
+2011-12-08T18:49:19  <thestinger> you just can't see it in the editor
+2011-12-08T18:50:17  <thestinger> Java is a DSL to transform big XML documents into long exception stack traces. -- Scott Bellware
+2011-12-08T18:50:22  <thestinger> best quote ever :P
+2011-12-08T18:50:24  <LouisMartin> oh god, site is quite therapeutic
+2011-12-08T18:51:19  <thestinger> I think http://harmful.cat-v.org/ is done by uriel (one of the suckless.org people)
+2011-12-08T18:51:23  *** mviel__ <mviel__!~mviel@213.163.164.204> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T18:51:24  <BenJackson> ""XML combines the efficiency of text files with the readability of binary files" -- unknown
+2011-12-08T18:51:27  <BenJackson> nice
+2011-12-08T18:51:35  <LouisMartin> my stomach hurts good :D    truth win
+2011-12-08T18:51:36  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has joined #aichallenge
+2011-12-08T18:52:02  <McLeopold> LouisMartin: -So is the same as -S and -o
+2011-12-08T18:52:19  <McLeopold> stream output and output to stdout
+2011-12-08T18:52:48  <McLeopold> it is needed if playing a game live with the java visualizer
+2011-12-08T18:52:53  <thestinger> anyway uriel is a rob pike fanboy so there's lots of *nix, plan9, Go, C, etc. stuff on cat-v.org
+2011-12-08T18:53:02  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-08T18:53:14  <g0llum> go_ants_go!
+2011-12-08T18:53:44  <LouisMartin> ah okay. So I guess it I can leave it there without paranoia.
+2011-12-08T18:54:11  <LouisMartin> bookmarked
+2011-12-08T18:54:11  *** bluegaspode <bluegaspode!55b223f9@gateway/web/freenode/ip.85.178.35.249> has quit IRC (Client Quit)
+2011-12-08T18:59:37  <LouisMartin> I can't believe this. VS has 6 options for line ending and none - when combien with UTF-8 (with or without signature, whatever this means) saves the map correctly
+2011-12-08T19:00:47  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T19:01:28  *** bleh <bleh!a8698c48@gateway/web/freenode/ip.168.105.140.72> has joined #aichallenge
+2011-12-08T19:01:51  *** fourmidable <fourmidable!adb2c167@gateway/web/freenode/ip.173.178.193.103> has quit IRC (Quit: Page closed)
+2011-12-08T19:01:54  *** bleh is now known as Guest74161
+2011-12-08T19:04:00  <g0llum> LouisMartin, you won't guess how many bullshit you can pack into a ~200mb ide ;(   (still the best c++ one i've seen so far)
+2011-12-08T19:04:40  <BenJackson> haha, my play_one_game is modified to automatically supply the right number of opponents
+2011-12-08T19:04:51  <BenJackson> I did a run without my bot on the command line
+2011-12-08T19:04:54  <BenJackson> and didn't notice
+2011-12-08T19:05:03  <BenJackson> so I kept running my various test opponents against teach other
+2011-12-08T19:08:45  <LouisMartin> g0llum: exact.  this is what you deserve for insisting on being MS little b'tch after so many years of awesome open source nix dev efforts available instantly, open and free. I totally deserve this. fml
+2011-12-08T19:09:16  <LouisMartin> BenJackson: Who won? :}
+2011-12-08T19:09:41  <besh> "Next game could take a while" Almost a day now
+2011-12-08T19:10:03  <g0llum> LouisMartin, still stick to it, just don't insist topen 'map files' with that
+2011-12-08T19:10:42  *** Guest74161 <Guest74161!a8698c48@gateway/web/freenode/ip.168.105.140.72> has quit IRC (Quit: Page closed)
+2011-12-08T19:11:43  <LouisMartin> g0llum: until the end of the contest, sure.. no plan on getting excited on learning python in 10 days.
+2011-12-08T19:12:12  <_flag> Is it just me or has the game rate decreased?
+2011-12-08T19:12:18  <LouisMartin> also: I've succeeded with "US-ASCII codepage 20127" and "Unix LF" line ending
+2011-12-08T19:12:40  <_flag> There appears to only be one worker running, so that might be why
+2011-12-08T19:12:44  <BenJackson> LouisMartin: actually the "best" one (the highest submitted version)
+2011-12-08T19:12:52  <besh> _flag: it has decreased signifcantly. Yesterday was 0.0 games / minute for me
+2011-12-08T19:12:55  <g0llum> besh, we're all waiting for raspberryPi to deliver, -- the next contest will be run from 24 worker running out of a shoebox , poered by solar energy.
+2011-12-08T19:13:09  <BenJackson> I played 0 games overa bout 25 hours and then 5 or so in 10 minutes
+2011-12-08T19:13:25  <_flag> McLeopold: Not sure if you're aware, but 5 out of 6 workers are down
+2011-12-08T19:13:31  <_flag> janzert: ^
+2011-12-08T19:13:45  <Anilm3> I can't keep watching my bot suffer on Fluxid :(
+2011-12-08T19:14:57  <LouisMartin> _flag: I've seen something to the effect that the servers were currently costly and so they release a few to keep on budget.
+2011-12-08T19:15:52  <LouisMartin> It's currently 20x more costly than commonly. They're keeping the server budget for running the finals.
+2011-12-08T19:16:50  <McLeopold> _flag: yep, but I don't have access to revive them, that's janzert only
+2011-12-08T19:18:39  <LouisMartin> McLeopold: So the low rate of game played isn't related to the lowered number of servers as much as it's a technical problem (down workers) then?
+2011-12-08T19:20:27  *** g0llum <g0llum!~g0llum@82.113.99.35> has quit IRC (Read error: Connection reset by peer)
+2011-12-08T19:20:28  *** olexs <olexs!~Leviathan@drms-590c5f5b.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-12-08T19:23:29  <McLeopold> I don't see a price increase, so they should be running
+2011-12-08T19:23:51  <McLeopold> http://cloudexchange.org/charts/us-east-1.linux.m2.xlarge.html
+2011-12-08T19:26:34  <ronchaine> My ants!  They do something!
+2011-12-08T19:26:46  *** iglo <iglo!~xy@xdslaf024.osnanet.de> has quit IRC (Remote host closed the connection)
+2011-12-08T19:27:52  <BenJackson> wow win prices are a lot higher
+2011-12-08T19:29:05  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T19:30:31  <BenJackson> no wonder replay.html is taking a while to load across the internet... it's 50M with visualization
+2011-12-08T19:32:16  <thestinger> lol
+2011-12-08T19:32:18  <thestinger> yeah
+2011-12-08T19:33:50  *** Migi32 <Migi32!~migi@178-117-102-152.access.telenet.be> has joined #aichallenge
+2011-12-08T19:37:49  <Antimony> ug my symmetry detection is so slow that the bot has already found hills by the time it's done
+2011-12-08T19:39:04  <McLeopold> http://paste.aichallenge.org/37Zbn/
+2011-12-08T19:39:34  <McLeopold> I'd just like to say the visualization overlay is awesome
+2011-12-08T19:42:21  <besh> antimony: be glad you have symmetry detection at all.
+2011-12-08T19:42:30  <besh> i have none :(
+2011-12-08T19:43:05  <Anilm3> does symmetry detection really worth it?
+2011-12-08T19:43:32  <McLeopold> I guess it depends on how fast it is, in turns
+2011-12-08T19:43:32  <besh> I think it helps if you want to attack hills early
+2011-12-08T19:43:40  <McLeopold> it would get you hill locations
+2011-12-08T19:44:06  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T19:44:24  <besh> Food is spawned symmetrically but i think the tester takes care of that for us if I am not mistaken ..
+2011-12-08T19:45:20  <besh> wait that statement doesn't make sense if the engine recieves food in its _visible_ area
+2011-12-08T19:46:38  <besh> so i guess , foraging could also benefit from symmetry..
+2011-12-08T19:48:44  <LouisMartin> McLeopold: Amstan said sooner (~10h20) that he thought the workers were lowered because of the price. Maybe he didn't know about the tech problem.
+2011-12-08T19:51:00  <LouisMartin> McLeopold: the viewer layout is quite attractive. where can I find doc on how to make use of it?
+2011-12-08T19:54:17  *** Cyndre <Cyndre!~Cyndre@DOCSIS-182-133.cable-lynx.net> has quit IRC (Quit: Leaving)
+2011-12-08T19:55:26  *** bugnuts <bugnuts!~bugnuts@pool-74-108-37-233.nycmny.fios.verizon.net> has left #aichallenge ("Leaving")
+2011-12-08T19:55:39  <LouisMartin> Also, does the Java visualizer supports this debug layout?
+2011-12-08T19:58:11  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T20:05:52  *** Anilm3 <Anilm3!~anil@4.Red-79-146-241.dynamicIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-12-08T20:08:04  *** Anilm3 <Anilm3!~anil@4.Red-79-146-241.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-08T20:11:55  <BenJackson> I'm reworking my strategy layer
+2011-12-08T20:12:06  <BenJackson> so I took out almost all of my bot's motivations
+2011-12-08T20:12:22  <BenJackson> it doesn't even go toward hills for the most part
+2011-12-08T20:12:37  <BenJackson> it might step on one preferentially if it happens to be next to it
+2011-12-08T20:12:50  <BenJackson> then I added a slight interest in enemy ants
+2011-12-08T20:12:55  <BenJackson> now it's an ant extermination machine
+2011-12-08T20:13:16  <BenJackson> finished this 4 player game with total vision of the map and 2 surviving enemies
+2011-12-08T20:15:39  <besh> so it is more passive now ?
+2011-12-08T20:15:44  *** Migi32 <Migi32!~migi@178-117-102-152.access.telenet.be> has quit IRC (Remote host closed the connection)
+2011-12-08T20:16:48  <besh> well I need to add some motivation to my bot. Look at the end of the game here http://ants.fluxid.pl/replay.19863
+2011-12-08T20:16:56  <BenJackson> not really
+2011-12-08T20:16:58  <BenJackson> just less focused
+2011-12-08T20:17:44  <besh> I did the changes you made sometime back and it clearly improved strenght
+2011-12-08T20:18:12  <BenJackson> the changes I made?
+2011-12-08T20:18:18  <besh> viz a viz. Less attack hill , more exploration, and more enemy ant attacks
+2011-12-08T20:18:38  <besh> Hill attack was taking too many ants
+2011-12-08T20:18:51  <BenJackson> yeah
+2011-12-08T20:19:10  <BenJackson> my current version will do some interesting collapsing on an enemy hill when it's discovered
+2011-12-08T20:19:15  <BenJackson> which is great when it's the last
+2011-12-08T20:19:17  <BenJackson> and sucks when it's not
+2011-12-08T20:19:46  <besh> do you prioritize based on distance to targets ?
+2011-12-08T20:20:24  <BenJackson> on all kinds of things, but yes
+2011-12-08T20:20:29  <besh> For instance, when I find enemy hill with in 16 unit radius I go for it instead of attacking ants.
+2011-12-08T20:21:14  <besh> Also I prefer to attack ants close to my hills with more priority
+2011-12-08T20:21:20  <BenJackson> one bug that's fixed in V10 that I saw on aichallenge in V9 was where an ant that was NEXT TO an enemy hill ran off to get food
+2011-12-08T20:21:23  <BenJackson> oops
+2011-12-08T20:22:00  <besh> yes that could still happen for me
+2011-12-08T20:22:10  <BenJackson> I basically rely on finding nearby hills first to set the priority
+2011-12-08T20:22:17  <BenJackson> that's one reason I didn't use symmetry detection yet
+2011-12-08T20:22:22  <BenJackson> I "find" far away hills too early
+2011-12-08T20:22:48  <Anilm3> do the top bots use symmetry detection?
+2011-12-08T20:23:07  <besh> But if you have reduced priority for hills, it may come handy
+2011-12-08T20:24:19  <BenJackson> Anilm3: I haven't tried to figure it out
+2011-12-08T20:24:24  <BenJackson> like I said, I don't, and I was as high as 5th
+2011-12-08T20:24:26  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has joined #aichallenge
+2011-12-08T20:24:50  <Anilm3> good to know
+2011-12-08T20:25:01  <Anilm3> I don't even have a clue as to how that would be implemented
+2011-12-08T20:25:40  <BenJackson> I had to read a lot of code
+2011-12-08T20:25:44  <BenJackson> the map generators, the engine, etc
+2011-12-08T20:27:10  <besh> sysmmetry detection can also be used to reduce path finding _theoretically_
+2011-12-08T20:32:13  *** keith__ <keith__!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-08T20:32:23  <Anilm3> I'm still trying to make my bot go a little bit more packed to raze hills and to avoid exploring dead ends
+2011-12-08T20:33:23  <Anilm3> I don't even know where to start
+2011-12-08T20:33:33  <besh> I try to flock my ants when they are outnumbered by enemy.
+2011-12-08T20:34:08  <Anilm3> I see some of the top100 bots and they all go packed and don't get stuck
+2011-12-08T20:34:18  <Anilm3> I don't see how they do it
+2011-12-08T20:34:28  <thestinger> recursively changing moves
+2011-12-08T20:34:45  <Anilm3> what?
+2011-12-08T20:34:49  <Anilm3> :O
+2011-12-08T20:35:00  <besh> Anilms3: the snake like movements are sideeffects of path finding
+2011-12-08T20:35:24  <besh> the head of the snake moves leaving behind an empty space..and so on
+2011-12-08T20:36:07  <besh> then when you see an enemy you change course to put maximum attack
+2011-12-08T20:36:57  <Anilm3> but path finding usually needs a target doesn't it?
+2011-12-08T20:37:24  <besh> yes.
+2011-12-08T20:37:53  <Anilm3> In my case
+2011-12-08T20:37:57  <Anilm3> when there is no target
+2011-12-08T20:38:00  <Anilm3> ants roam freely
+2011-12-08T20:38:34  <Anilm3> searching for food and ignoring enemies
+2011-12-08T20:38:38  <besh> yes. But when you see a hill all move to one target
+2011-12-08T20:38:48  <besh> And they can even flock without any additional code
+2011-12-08T20:38:53  <Anilm3> but how can I do that?
+2011-12-08T20:39:06  <besh> All ants converge to the same location
+2011-12-08T20:39:18  *** keith__ <keith__!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T20:39:43  <Anilm3> so if I see a hill I have to move a large number of ants towards it?
+2011-12-08T20:39:50  <besh> For exploration (different targets) the ants disperse which is again the desired behaviour
+2011-12-08T20:40:05  <besh> yes
+2011-12-08T20:40:21  <Anilm3> but pathfinding from every ant to that same hill can be costly
+2011-12-08T20:40:34  <BenJackson> jeez there's a lot of spam in the forums
+2011-12-08T20:40:41  <BenJackson> I need a macro to report with fewer clicks
+2011-12-08T20:40:43  <besh> As a beginner,  infact I moved all my ants
+2011-12-08T20:40:59  <Anilm3> I tried that but my bot timed out
+2011-12-08T20:41:15  <besh> have you tried bfs ?
+2011-12-08T20:41:25  <Anilm3> I did A* from every ant to the target
+2011-12-08T20:41:30  <besh> thestinger uses that if I am not mistaken
+2011-12-08T20:41:51  <Anilm3> A*?
+2011-12-08T20:42:27  <besh> It is more like diffusion without coordination. You generate a bfs table from the hill outwards and then, you ants move towards the hill by minizing distance
+2011-12-08T20:43:22  <Anilm3> in order to move a subset of my ants
+2011-12-08T20:43:40  <Anilm3> I see
+2011-12-08T20:44:05  <besh> what language are you using ?
+2011-12-08T20:44:12  <thestinger> besh: I add +3 instead of +1 when going through a tile with one of my ants though
+2011-12-08T20:44:13  <Anilm3> c++
+2011-12-08T20:44:20  <ikaros> you could sort them by distance so they wont be blocked or implement a "push" system
+2011-12-08T20:44:44  <besh> Aha you do that to the bfs table too ?
+2011-12-08T20:44:50  <besh> thestinger: ^
+2011-12-08T20:45:18  <thestinger> yeah, makes ants spread out or take alternate routes (if they aren't much longer)
+2011-12-08T20:45:25  <Anilm3> ikaros: by distance to the hill you mean?
+2011-12-08T20:45:32  <ikaros> for example
+2011-12-08T20:45:44  <ikaros> or to whatever target you are heading
+2011-12-08T20:46:41  <ikaros> though all my bfs based exploration sucked but i guess thats just my fault
+2011-12-08T20:47:47  <ikaros> either my ants jittered or the clumped together.. no good distribution :)
+2011-12-08T20:48:23  <Anilm3> my exploration actually tends to separate ants too much
+2011-12-08T20:48:27  <Anilm3> except on mazes
+2011-12-08T20:48:29  <besh> ikaros: the ants do jitter but become straight when they see enemy
+2011-12-08T20:48:34  <Anilm3> on mazes they get stuck
+2011-12-08T20:48:54  <besh> The first ant to reach the target stops at attack_radius + 2
+2011-12-08T20:49:39  <besh> i wouldn't worry about how they move before reaching the target really
+2011-12-08T20:49:55  <ikaros> besh :)
+2011-12-08T20:50:42  <ikaros> how do you guys decide which tile should be explored?
+2011-12-08T20:50:59  <besh> To be honest, I was worried to and tried to make vertical/horizontal lines when i started :)
+2011-12-08T20:51:01  <ikaros> i use an times_not_seen attribute but its not so good
+2011-12-08T20:51:09  *** QuirionPT <QuirionPT!~quirion@gyf5.kyla.fi> has quit IRC (Quit: Leaving)
+2011-12-08T20:51:32  <Anilm3> I try to go to the tiles that haven't been visited in a while
+2011-12-08T20:51:44  *** Cyndre <Cyndre!~Cyndre@DOCSIS-182-133.cable-lynx.net> has joined #aichallenge
+2011-12-08T20:51:46  <besh> i have that array (visit_count) too but still don't use it
+2011-12-08T20:51:50  <ikaros> increasing a counter for each tile when i dont see it
+2011-12-08T20:52:21  <Anilm3> something like that
+2011-12-08T20:52:24  <ikaros> Anilm3, when i do that and set the period too short the run in circles
+2011-12-08T20:52:34  <besh> ikaros: it is better to incrment a counter when you see the tile.
+2011-12-08T20:52:44  <ikaros> hm
+2011-12-08T20:52:45  <Anilm3> besh: that's how I do it yes
+2011-12-08T20:52:52  <ikaros> i had that before
+2011-12-08T20:52:54  <ikaros> why is it?
+2011-12-08T20:53:06  <Anilm3> I don't increment viewrange
+2011-12-08T20:53:13  <Anilm3> just a smaller range
+2011-12-08T20:53:23  <Anilm3> arbitrarily picked (worked well)
+2011-12-08T20:53:28  <besh> well when I tested the idea, I wanted to move my ant to the least visited tile.
+2011-12-08T20:53:31  <ikaros> hm gotta try that
+2011-12-08T20:53:56  <Anilm3> ikaros: my ants walk very well on random walks and on some cells
+2011-12-08T20:54:03  <Anilm3> but on mazes they get stuck
+2011-12-08T20:54:04  <ikaros> besh which is not visible?
+2011-12-08T20:54:07  <ikaros> oh hehe
+2011-12-08T20:54:39  <Anilm3> I have tried taking into account not only the tiles I haven't visited but the number of ants near that tile
+2011-12-08T20:54:44  <Anilm3> but it gets worse somehow
+2011-12-08T20:55:22  <ikaros> for mazes this hill climbing thing from the forums was great
+2011-12-08T20:55:26  <besh> anilm3: number of enemy ants ?
+2011-12-08T20:55:39  <Anilm3> no, number of my own ants
+2011-12-08T20:55:39  *** Fandekasp <Fandekasp!~Fandekasp@nt10-ppp1812.west.sannet.ne.jp> has joined #aichallenge
+2011-12-08T20:55:43  <ikaros> my old version on the official servers still uses it
+2011-12-08T20:55:59  <ikaros> but on rando walks it didnt distribute well enough
+2011-12-08T20:56:13  <Anilm3> in ikaros it looks great how it avoids dead ends
+2011-12-08T20:56:21  <Anilm3> -in
+2011-12-08T20:56:26  <ikaros> yea
+2011-12-08T20:56:43  <Anilm3> today I tried some type of "learning"
+2011-12-08T20:56:49  <ikaros> but the version is very old and still has the bug: if it discovered the whole map they go all back to base lol
+2011-12-08T20:56:53  <Anilm3> but sucked
+2011-12-08T20:57:32  <besh> ikaros: i refill unseen tiles when the whole map is visited.
+2011-12-08T20:57:44  <ikaros> ok i tried that too
+2011-12-08T20:57:49  <besh> I want to replace that with the visit_count array later when I have time
+2011-12-08T20:58:04  <ikaros> but often ants went in lines into one direction..
+2011-12-08T20:58:13  <ikaros> from the hive
+2011-12-08T20:58:25  <besh> unfortunately they do
+2011-12-08T20:58:26  <ikaros> and didnt distribute enough.. no idea what i do wrong there
+2011-12-08T20:59:07  <besh> well i thought about adding some randomness to the closest tiles, instead of taking the single closest tile as target.
+2011-12-08T21:00:00  <ikaros> i used a "ring" of targets as queue for my bfs
+2011-12-08T21:00:05  <ikaros> but well
+2011-12-08T21:00:07  <ikaros> its 3am
+2011-12-08T21:00:11  <ikaros> gotta sleep :)
+2011-12-08T21:00:16  <ikaros> good night
+2011-12-08T21:00:21  <besh> gn
+2011-12-08T21:00:23  *** ikaros <ikaros!~ikaros@dslb-084-059-073-057.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-12-08T21:00:59  <Anilm3> me too
+2011-12-08T21:01:05  <besh> gn
+2011-12-08T21:01:06  <Anilm3> bye
+2011-12-08T21:01:12  *** Anilm3 <Anilm3!~anil@4.Red-79-146-241.dynamicIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-12-08T21:01:17  *** besh <besh!835e7324@gateway/web/freenode/ip.131.94.115.36> has quit IRC (Quit: Page closed)
+2011-12-08T21:06:46  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has joined #aichallenge
+2011-12-08T21:11:48  *** Mystret <Mystret!~Mystret@188.142.37.201> has quit IRC (Ping timeout: 252 seconds)
+2011-12-08T21:17:02  *** Paradoxial <Paradoxial!~Paradoxia@pool-108-28-22-94.washdc.fios.verizon.net> has quit IRC (Quit: :)
+2011-12-08T21:21:16  *** replore_ <replore_!~replore@203.152.213.161.static.zoot.jp> has joined #aichallenge
+2011-12-08T21:44:59  *** besh <besh!835e7324@gateway/web/freenode/ip.131.94.115.36> has joined #aichallenge
+2011-12-08T21:58:31  *** Paradoxial <Paradoxial!~Paradoxia@pool-108-28-22-94.washdc.fios.verizon.net> has joined #aichallenge
+2011-12-08T22:06:22  *** Paradoxial <Paradoxial!~Paradoxia@pool-108-28-22-94.washdc.fios.verizon.net> has quit IRC (Quit: :)
+2011-12-08T22:13:07  *** flowenol <flowenol!LW@bl10-78-112.dsl.telepac.pt> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T22:15:19  *** dmj111 <dmj111!~user@c-98-235-94-211.hsd1.pa.comcast.net> has joined #aichallenge
+2011-12-08T22:19:05  *** jeffymj <jeffymj!~scriptz@117.253.185.153> has joined #aichallenge
+2011-12-08T22:20:44  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has quit IRC (Quit: Leaving.)
+2011-12-08T22:22:13  *** bugnuts <bugnuts!~bugnuts@pool-74-108-37-233.nycmny.fios.verizon.net> has joined #aichallenge
+2011-12-08T22:25:01  <jeffymj> quit
+2011-12-08T22:25:09  *** jeffymj <jeffymj!~scriptz@117.253.185.153> has left #aichallenge ("Ex-Chat")
+2011-12-08T22:27:00  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T22:27:25  *** AntDroid_ <AntDroid_!781c39b6@gateway/web/freenode/ip.120.28.57.182> has joined #aichallenge
+2011-12-08T22:32:16  <LouisMartin> you know you could use a reboot when the ants visualizer has the Deus Ex: Human Revolution Icon in your taskbar
+2011-12-08T22:33:24  <besh> R R R _
+2011-12-08T22:33:30  <besh> - - - -
+2011-12-08T22:33:42  <besh> - - - -
+2011-12-08T22:33:59  <besh> - O - O
+2011-12-08T22:34:16  <besh> R = your ant  O = opponent ant
+2011-12-08T22:35:00  <besh> The correct attack would be to move the top left two ants south, but keep the right one static
+2011-12-08T22:35:16  <besh> Assuming static opponent ants. How to achieve this ?
+2011-12-08T22:37:19  <LouisMartin> pay them?  ants love money :)
+2011-12-08T22:38:34  <LouisMartin> I'm just beginning to develop my own battle system, so I'm afraid I can't afford way more than humor here
+2011-12-08T22:38:36  <besh> they love sugar :) My combat moves all three ants down and I think it can help to improve this
+2011-12-08T22:39:49  <besh> I wonder if the influence methods discussed would help here
+2011-12-08T22:39:57  <LouisMartin> well, what about less sugar where your ant is sure to get killed without gain?
+2011-12-08T22:41:37  <besh> The third ant will find no sugar by moving down, but two angry enemy attacks
+2011-12-08T22:42:04  <besh> You are right, i should start thinking interms of sugar :)
+2011-12-08T22:42:13  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-12-08T22:42:55  <thestinger> my latest attempt at combat involves lying to my ants about how many enemies there are :P
+2011-12-08T22:43:32  <besh> do you increase the sugar level so they would be motivated to attack ?
+2011-12-08T22:44:22  *** LouisMartin_ <LouisMartin_!6017820a@gateway/web/freenode/ip.96.23.130.10> has joined #aichallenge
+2011-12-08T22:44:29  *** LouisMartin <LouisMartin!6017820a@gateway/web/freenode/ip.96.23.130.10> has quit IRC (Ping timeout: 265 seconds)
+2011-12-08T22:44:33  <LouisMartin_> 1, 2, 1, 2 testing
+2011-12-08T22:44:41  <besh> thestinger: seriously I have trouble solving the above example
+2011-12-08T22:44:54  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T22:45:19  <thestinger> my old method was just to attack with everything
+2011-12-08T22:45:22  <thestinger> then try cancelling orders
+2011-12-08T22:45:31  <thestinger> which would result in the left two going down and the right one not going down
+2011-12-08T22:45:36  <LouisMartin_> besh: sorry if I repeated this many times, but my computer is bugging tight and I don't know if I've resent this many times over.. strange bugs.. anyways ->
+2011-12-08T22:45:38  <LouisMartin_> the implementation of this depends on how your system works, but a quick check such as "if I don't sacrifice this ant, is the outcome (gain) different?"  before moving wouldn't be costly I'd think
+2011-12-08T22:46:39  <thestinger> going to bed now, cya
+2011-12-08T22:47:09  <besh> what if there was another ant north of the 3rd ant. I mean redoing a move woud triger another undo
+2011-12-08T22:47:19  <besh> undoing*
+2011-12-08T22:47:29  <besh> ok cya
+2011-12-08T22:47:36  *** amstan <amstan!~alex@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T22:47:36  *** ChanServ sets mode: +o amstan
+2011-12-08T22:49:13  *** antimatroid <antimatroid!~nick@141.114-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T22:50:05  *** LouisMartin_ <LouisMartin_!6017820a@gateway/web/freenode/ip.96.23.130.10> has quit IRC (Quit: Page closed)
+2011-12-08T22:55:28  *** Antimony <Antimony!~chatzilla@lawn-143-215-61-158.lawn.gatech.edu> has joined #aichallenge
+2011-12-08T22:58:55  <dmj111>         result = []
+2011-12-08T22:59:33  *** Fandekasp <Fandekasp!~Fandekasp@nt10-ppp1812.west.sannet.ne.jp> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T23:02:45  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-12-08T23:03:23  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-08T23:03:48  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-08T23:05:47  <bmh> hmm... make my BFS code more generic, or start on fighting
+2011-12-08T23:07:56  *** delt0r_ <delt0r_!~bob@91-113-94-210.adsl.highway.telekom.at> has quit IRC (Ping timeout: 244 seconds)
+2011-12-08T23:11:33  *** besh <besh!835e7324@gateway/web/freenode/ip.131.94.115.36> has quit IRC (Quit: Page closed)
+2011-12-08T23:12:26  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-08T23:12:41  <Antimony> Ug, I keep finding bugs in my symmetry code
+2011-12-08T23:12:54  <Antimony> I've found at least 3 bugs in release versions
+2011-12-08T23:13:10  <bmh> Antimony: you're doing symmetry? neat!
+2011-12-08T23:13:45  <bmh> what 's your technique?
+2011-12-08T23:14:50  <Antimony> what do you mean?
+2011-12-08T23:15:58  <bmh> How are you solving it? How do you deal with rotation/mirroring?
+2011-12-08T23:16:54  <Antimony> well for one thing, I assume rotation can only happen on square maps
+2011-12-08T23:17:28  <bmh> that's a nice simplifying assumption
+2011-12-08T23:18:12  <Antimony> anyway, I hope that it will give me a edge, but I haven't really noticed any benefits yet
+2011-12-08T23:18:23  <Antimony> it wasn't as effective as I'd hoped
+2011-12-08T23:18:56  <bmh> currently my ants blindly rush other ants
+2011-12-08T23:19:01  <bmh> it's... suboptimal
+2011-12-08T23:20:18  *** delt0r_ <delt0r_!~bob@178-190-200-11.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-08T23:20:37  <Antimony> why would you rush other ants?
+2011-12-08T23:21:15  <bmh> Antimony: because I have no fight code
+2011-12-08T23:21:50  <Antimony> Anyway, the basic idea is to find all possible syemmtries and then each time you see a new square, remove the ones that don't fit. But unfortunately the method is a little slow
+2011-12-08T23:22:48  <Antimony> Some times, my bot doesn't even get done processing the starting data before it finds the first hill
+2011-12-08T23:22:55  <bmh> slow, really? :)
+2011-12-08T23:22:58  <a1k0n> wow, the contest site is cruising now
+2011-12-08T23:27:03  <bmh> Random Number Generator says: Genericize your search code.
+2011-12-08T23:27:33  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 248 seconds)
+2011-12-08T23:27:38  *** br3akd0wn <br3akd0wn!~mint@c-98-193-68-113.hsd1.il.comcast.net> has joined #aichallenge
+2011-12-08T23:28:01  <amstan> Antimony: hash
+2011-12-08T23:28:21  <Antimony> ?
+2011-12-08T23:28:30  <amstan> for symmetry detection
+2011-12-08T23:28:35  *** br3akd0wn <br3akd0wn!~mint@c-98-193-68-113.hsd1.il.comcast.net> has quit IRC (Client Quit)
+2011-12-08T23:28:54  <Antimony> nah, I think my way is better even if it is slow
+2011-12-08T23:29:15  <Antimony> and I do it at the end of turn after moves are calculated so at least it isn't hurting me
+2011-12-08T23:29:36  <amstan> also... once you find your first hill it's really easy
+2011-12-08T23:29:53  <amstan> the challenge is to do this before you find the hill, so you know where they are before the enemy has seen you
+2011-12-08T23:30:07  <BenJackson> I keep "timing out" on fluxid
+2011-12-08T23:30:20  <BenJackson> time taken: 185.627ms
+2011-12-08T23:30:22  <amstan> BenJackson: turn off those torrents, lol
+2011-12-08T23:30:45  <BenJackson> my ping to fluxid.pl is about 200ms
+2011-12-08T23:31:19  <BenJackson> some packet loss in mid europe
+2011-12-08T23:31:27  <_flag> BenJackson: fluxid times me out all the time too
+2011-12-08T23:31:43  <_flag> That server is kind of known for its problems, I think there may just be a ton of people using it
+2011-12-08T23:32:36  <BenJackson> this bot has most of the logic removed, too
+2011-12-08T23:32:42  <BenJackson> so I was worried if it *really* timed uot!
+2011-12-08T23:33:06  <bmh> my server isn't very beefy, but you could run your real bot there?
+2011-12-08T23:33:19  <BenJackson> in 20 games the worst turn was 310ms
+2011-12-08T23:33:48  <BenJackson> bmh: you want me to run my current contest bot on your server?
+2011-12-08T23:34:17  <bmh> BenJackson: go for it. If fluxid is overrun, I have no qualms with 'production' bots running
+2011-12-08T23:34:26  <BenJackson> oh, no
+2011-12-08T23:34:29  <Antimony> my bot can generally only find hills before seeing them on a 2 player map
+2011-12-08T23:34:35  <BenJackson> I just did 20 runs with some modified logic to see what it did
+2011-12-08T23:34:43  <Antimony> because you usally have to explore almost half the map before you can be sure
+2011-12-08T23:34:49  <BenJackson> I just wanted to see what it did with most of the "rules" removed
+2011-12-08T23:34:53  <BenJackson> to see which rules are worth putting back
+2011-12-08T23:35:02  <bmh> BenJackson: there is one game with bj_v4 v. skynet. Skynet should have won, but I turned off my laptop and went to bed :)
+2011-12-08T23:35:14  <BenJackson> Antimony: you guys are going to kick yourselves at the end ;-)
+2011-12-08T23:35:35  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Quit: Leaving.)
+2011-12-08T23:35:45  <Antimony> I doubt your symetry method is better than mine
+2011-12-08T23:36:00  <BenJackson> :)
+2011-12-08T23:36:02  <Antimony> well apart from optimization
+2011-12-08T23:36:12  <Antimony> mine's good, it's just too slow
+2011-12-08T23:36:14  <BenJackson> :)
+2011-12-08T23:37:07  *** amstan <amstan!~alex@69-196-130-230.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-12-08T23:37:48  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-08T23:37:49  *** amstan_ <amstan_!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2011-12-08T23:37:54  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-12-08T23:42:18  *** amstan <amstan!~alex@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-08T23:42:18  *** ChanServ sets mode: +o amstan
+2011-12-08T23:46:05  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has joined #aichallenge

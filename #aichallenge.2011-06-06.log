@@ -1,0 +1,823 @@
+2011-06-06T00:00:03  <amstan> jmcarthur: no idea
+2011-06-06T00:00:11  <amstan> jmcarthur: people should use later tell more often
+2011-06-06T00:00:15  <jmcarthur> agreed
+2011-06-06T00:00:16  <amstan> or email
+2011-06-06T00:00:42  <antimatroid> people should just idle
+2011-06-06T00:00:59  <jmcarthur> i do, but then people just ping me instead of saying what they want to say
+2011-06-06T00:01:14  <jmcarthur> or maybe you mean McLeopold
+2011-06-06T00:01:19  <antimatroid> yep
+2011-06-06T00:25:31  <okayzed> To be clear, in trueskill the sigma does not always go down - if there is a match which is an upset or something similar, the sigma may grow
+2011-06-06T00:26:04  <okayzed> And when a player is ranked first, there is no upper bound, so the sigma may grow as well, because their max skill level is uncertain
+2011-06-06T00:26:28  <okayzed> (you are using trueskill, right?)
+2011-06-06T00:28:06  <antimatroid> we are using trueskill
+2011-06-06T00:28:14  <okayzed> they talk about it in the trueskill paper, the behavior you are seeing is not certain. and also, i'm starting to think trueskill is not a good ranking system to determine 1st, 2nd, 3rd
+2011-06-06T00:28:20  <okayzed> but more of a good ranking system for matchmaking
+2011-06-06T00:28:35  <antimatroid> what else would you use for multiplayer ranking?
+2011-06-06T00:28:38  <antimatroid> bayeslo is out
+2011-06-06T00:28:48  <antimatroid> i don't really understand any of them tbh
+2011-06-06T00:28:56  <okayzed> i don't know, i'm wondering the same thing myself
+2011-06-06T00:29:16  <okayzed> i think that having a tournament might be better than using trueskill
+2011-06-06T00:29:34  <antimatroid> what do you mean by tournament?
+2011-06-06T00:29:40  <okayzed> like, have one of those tournaments where everyone plays X games and then calculate standings from that
+2011-06-06T00:29:46  <antimatroid> something resembling a round robbin is not possible and incredibly inefficient
+2011-06-06T00:29:47  <okayzed> like they do for chess
+2011-06-06T00:29:54  <antimatroid> there's too many bots
+2011-06-06T00:30:00  <okayzed> i didn't say round robin
+2011-06-06T00:30:01  <antimatroid> you're looking at 4000+ bots
+2011-06-06T00:31:04  <antimatroid> i still like the idea of incrementally partitioning each section of the leaderboard and restarting a new tournament for each section
+2011-06-06T00:31:12  <antimatroid> with final rankings determined in the final round
+2011-06-06T00:31:28  <antimatroid> it means the final rank only really matters about how well you play against similarly ranked bots though
+2011-06-06T00:33:17  <okayzed> http://en.wikipedia.org/wiki/Swiss-system_tournament
+2011-06-06T00:36:16  <amstan> contestbot: later tell mcleopold please see above(in the logs)
+2011-06-06T00:36:16  <contestbot> amstan: Ready to serve, my lord.
+2011-06-06T00:37:46  <janzert1> I'd rather stick with a ranking system than a tournament system
+2011-06-06T00:37:53  <janzert1> it gives us a lot more flexibility
+2011-06-06T00:38:15  <janzert1> and so far seems to work quite well
+2011-06-06T00:38:55  <janzert1> in either case I definitely do not want to change what we do between the open and finals portion
+2011-06-06T00:39:03  <jmcarthur> i don't personally think trueskill is at all appropriate for determining a winner at the end. bayeselo might be better for that, or maybe a real tournament. for the bulk of the contest, trueskill should be good though
+2011-06-06T00:39:10  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-06-06T00:39:24  <amstan> we'll also do the pairings cutoff probably
+2011-06-06T00:39:34  <amstan> so, it should get more accurate at the end
+2011-06-06T00:40:17  <janzert1> trueskill is basically a modified glicko which has been shown to out perform elo pretty well
+2011-06-06T00:40:31  <jmcarthur> bayeselo is not elo
+2011-06-06T00:40:41  <janzert1> admittedly bayeselo may do better because it can operate on a global basis
+2011-06-06T00:40:52  <janzert1> but we pretty much pushed the limits of that the last contest
+2011-06-06T00:41:09  <janzert1> and yes I was typing that before your response ;)
+2011-06-06T00:41:38  <janzert1> and generalizing bayeselo to a multiplayer game is certainly non-trivial
+2011-06-06T00:41:44  <jmcarthur> definitely :(
+2011-06-06T00:42:05  <jmcarthur> as is generalizing trueskill to bayestrueskill
+2011-06-06T00:42:25  <jmcarthur> ;)
+2011-06-06T00:42:29  <janzert1> :)
+2011-06-06T00:42:58  <janzert1> and assuming the contest grows again I really don't think we can handle a non-incremental system of any kind
+2011-06-06T00:43:54  *** delt0r___ <delt0r___!~delt0r@188-22-162-29.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-06T00:44:02  *** delt0r_ <delt0r_!~delt0r@188-22-167-225.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-06-06T00:44:05  <janzert1> or at least it needs to have better than the quadratic time in number of players that bayeselo has
+2011-06-06T00:44:09  <jmcarthur> we might get to the point that we just run trueskill for the dev period, give them a day extra or so to stabilize, then pick the top n bots and run a tournament with them
+2011-06-06T00:44:29  <jmcarthur> might seem unfair, but probably the best we can do
+2011-06-06T00:44:41  <janzert1> which will be completely untested :/
+2011-06-06T00:44:58  <janzert1> in a live situation at least
+2011-06-06T00:45:11  <jmcarthur> yeah
+2011-06-06T00:45:36  <janzert1> that's the main reason I really don't want to change the way the tournament runs for the finals
+2011-06-06T00:46:23  <jmcarthur> it's just a tough situation
+2011-06-06T00:46:54  <jmcarthur> it means we have to make hard tradeoffs between fairness/correctness and stability and time/cost
+2011-06-06T00:48:09  <janzert1> yes, I just believe that so far using a ranking system with some sort of progressive cutoff has worked really well at balancing the tradeoffs
+2011-06-06T00:48:55  <jmcarthur> i can't argue with that. i'm just speaking of possibilities and ideals
+2011-06-06T00:49:06  <janzert1> of course it's been nice that the number 1 player was so dominant the last two contest too :)
+2011-06-06T00:49:40  <janzert1> it's hard for anyone to argue with the result that way
+2011-06-06T00:50:06  <jmcarthur> that might be less likely with ants :\
+2011-06-06T00:50:53  <janzert1> yes, I think so
+2011-06-06T00:51:17  <jmcarthur> maybe if it's a bit ambiguous we could just round-robin the top n (for a pretty small n, like 10 or so)
+2011-06-06T00:52:00  *** yasith <yasith!~yasith@124.43.56.151> has quit IRC (Ping timeout: 240 seconds)
+2011-06-06T00:52:03  <jmcarthur> would be simple enough and small enough that we can error check it pretty easily
+2011-06-06T00:54:24  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-06-06T00:55:01  <jmcarthur> oh hmm, i forgot it's a >2 player game this time
+2011-06-06T00:55:04  <janzert1> it just seems to open up too much room for arguing about the results
+2011-06-06T00:55:42  <janzert1> also by narrowing the cutoff enough at some point it will basically become a roundrobin
+2011-06-06T00:55:47  <janzert1> if we have to go that far
+2011-06-06T00:57:03  <janzert1> we hit a technical limitation last time on the way pairing worked and how fast it ran that we couldn't lower the cutoff any further, but I think with the way pairing works now we should be able to bring the cutoff down to the point of a round robin if we needed to
+2011-06-06T01:05:07  *** yasith <yasith!~yasith@124.43.58.93> has joined #aichallenge
+2011-06-06T01:26:13  *** UncleVasya <UncleVasya!kvirc@31.144.240.152> has joined #aichallenge
+2011-06-06T01:31:04  <UncleVasya> wow, something very strange happened with the rankings.
+2011-06-06T01:40:47  *** Palmik <Palmik!~palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-06-06T01:54:38  <okayzed> what happened?
+2011-06-06T01:56:50  <UncleVasya> my skill is about 50 now, it's definitely a bug.
+2011-06-06T01:59:42  <UncleVasya> in this profile you can see many zeroes as outcome from the fights: http://aichallengebeta.hypertriangle.com/profile_games.php?user=70&page=1. I have them to and think everybody has.
+2011-06-06T02:02:51  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-06-06T02:03:25  <okayzed> how are there 10 players on a map?
+2011-06-06T02:06:39  *** UncleVasya <UncleVasya!kvirc@31.144.240.152> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T02:08:59  *** UncleVasya <UncleVasya!kvirc@31.144.141.68> has joined #aichallenge
+2011-06-06T02:25:45  <CIA-26> aichallenge: janzert epsilon * r6ba8ba2 / manager/manager.py : Correct variable used - http://bit.ly/kto4Zi
+2011-06-06T02:32:31  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-06T02:44:37  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-06-06T02:45:21  <janzert1> contestbot: later tell McLeopold setting the draw_probability to 0 is causing division by zero errors when updating the trueskill values for a game
+2011-06-06T02:45:21  <contestbot> janzert1: Aye, aye, sir
+2011-06-06T02:46:03  <janzert1> later tell McLeopold it also doesn't seem like it is correct at all since draws obviously happen at a much greater than 0% rate
+2011-06-06T02:46:14  <janzert1> contestbot: later tell McLeopold it also doesn't seem like it is correct at all since draws obviously happen at a much greater than 0% rate
+2011-06-06T02:46:14  <contestbot> janzert1: I come to serve.
+2011-06-06T02:50:11  *** berak <berak!~berak@89.204.153.138> has joined #aichallenge
+2011-06-06T03:24:40  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-06-06T03:25:27  *** mcstar <mcstar!~mcstar@adsl-89-132-5-115.monradsl.monornet.hu> has joined #aichallenge
+2011-06-06T03:25:50  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-06T03:32:49  <xQuasar> So has anyone taken a look at the fact that the jvm starting is often bugged?
+2011-06-06T03:33:31  <janzert1> xQuasar: yes, as I replied to your earlier query about it ;) , it is a known problem on the beta server because it doesn't have much ram
+2011-06-06T03:35:29  <janzert1> Sorry I'm being unreasonable. Time for bed I'm obviously getting much too irritable
+2011-06-06T03:36:38  <xQuasar> janzert1: sorry then, must've missed your reply
+2011-06-06T03:37:11  <janzert1> yeah, not your fault. I think my reply was a good 15 minutes after you asked
+2011-06-06T03:38:06  <janzert1> should know better than to let my irritation from trying to track down bugs bleed out into chat
+2011-06-06T03:54:58  *** Zaphus <Zaphus!cb2666d2@gateway/web/freenode/ip.203.38.102.210> has joined #aichallenge
+2011-06-06T04:00:07  *** Zaphus <Zaphus!cb2666d2@gateway/web/freenode/ip.203.38.102.210> has quit IRC (Quit: Page closed)
+2011-06-06T04:02:40  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-06T04:36:37  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-06-06T04:52:51  *** ulope <ulope!~ulope@eq4.ulo.pe> has joined #aichallenge
+2011-06-06T04:53:54  *** ulope <ulope!~ulope@eq4.ulo.pe> has left #aichallenge
+2011-06-06T05:03:44  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 240 seconds)
+2011-06-06T05:11:49  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-06T05:20:19  *** UncleVasya <UncleVasya!kvirc@31.144.141.68> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T05:29:45  *** berak <berak!~berak@89.204.153.138> has quit IRC (Ping timeout: 255 seconds)
+2011-06-06T05:35:38  *** berak <berak!~berak@89.204.137.136> has joined #aichallenge
+2011-06-06T05:36:46  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-06T05:36:59  *** Frontier <Frontier!~marco@dslb-088-070-134-001.pools.arcor-ip.net> has joined #aichallenge
+2011-06-06T05:37:52  <Zaphus> anyone here ?
+2011-06-06T05:39:31  *** olexs <olexs!~Leviathan@drms-590cea62.pool.mediaWays.net> has joined #aichallenge
+2011-06-06T05:43:27  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 246 seconds)
+2011-06-06T05:54:34  *** yasith_ <yasith_!~yasith@124.43.60.47> has joined #aichallenge
+2011-06-06T05:54:53  *** Eruonen <Eruonen!Its@546BEC22.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-06-06T05:56:41  *** yasith <yasith!~yasith@124.43.58.93> has quit IRC (Ping timeout: 240 seconds)
+2011-06-06T06:01:39  *** olexs <olexs!~Leviathan@drms-590cea62.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-06T06:09:05  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-06T06:10:54  *** UncleVasya <UncleVasya!kvirc@31.144.130.116> has joined #aichallenge
+2011-06-06T06:13:58  <antimatroid> Zaphus: hello :)
+2011-06-06T06:14:07  <Zaphus> Hi
+2011-06-06T06:14:12  <Zaphus> it's been a while :-)
+2011-06-06T06:14:26  <antimatroid> erm, it must have been :P
+2011-06-06T06:14:30  <antimatroid> i don't remember you sorry :P
+2011-06-06T06:14:58  <antimatroid> your username seemed familiar though
+2011-06-06T06:15:07  <Zaphus> lol, I was around for the last comp - was doing OK but life got in the way (company folded, had to worry about how to pay for food!)
+2011-06-06T06:15:08  <antimatroid> but i think that was from a zaphyr on another site a few years ag
+2011-06-06T06:15:17  <antimatroid> yeah fair enough
+2011-06-06T06:15:24  <antimatroid> things going better now?
+2011-06-06T06:15:50  <Zaphus> yep, been having a look at the Ants comp, trying to find bugs
+2011-06-06T06:15:57  <Zaphus> no pun intended
+2011-06-06T06:16:03  <antimatroid> which language are you using?
+2011-06-06T06:16:09  <antimatroid> the pun should always be intended ;)
+2011-06-06T06:21:34  *** UncleVasya <UncleVasya!kvirc@31.144.130.116> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T06:21:57  *** UncleVasya <UncleVasya!kvirc@178-133-44-59.dialup.umc.net.ua> has joined #aichallenge
+2011-06-06T06:26:05  <Zaphus> I'm trying to replicate this bug:  https://github.com/aichallenge/aichallenge/issues/159
+2011-06-06T06:29:54  <antimatroid> why is there red around water?
+2011-06-06T06:33:14  <antimatroid> i think the reason non-neon green ants are dying on turn 590 is colliding ants no?
+2011-06-06T06:34:30  <antimatroid> does anyone know what the deal is with the water square with red behind it?
+2011-06-06T06:35:27  <antimatroid> oh, i think that's where the link is going to?
+2011-06-06T06:35:45  <Zaphus> it could be colliding ants
+2011-06-06T06:36:45  <antimatroid> pretty sure it's all colliding ants
+2011-06-06T06:36:48  <antimatroid> and there's no bug :P
+2011-06-06T06:37:10  <antimatroid> what language are you using? c++ <3
+2011-06-06T06:38:52  <antimatroid> one thing to check would be that collided ants aren't participating in battles
+2011-06-06T06:39:07  <antimatroid> Zaphus: want to check that one out :P
+2011-06-06T06:39:25  <antimatroid> just make a map where you can cause it to happen after one turn
+2011-06-06T06:40:36  <Zaphus> yeah, c++
+2011-06-06T06:40:55  <antimatroid> i'm an awful person, have you stripped out the 'r' line information?
+2011-06-06T06:41:16  <Zaphus> ?
+2011-06-06T06:41:33  <Zaphus> oh, the removed food info
+2011-06-06T06:41:40  <antimatroid> in the >> function in State.h, remove the processing of 'r', and in clear() add food.clear()
+2011-06-06T06:41:49  <antimatroid> are you on windows?
+2011-06-06T06:41:53  <Zaphus> yep
+2011-06-06T06:42:00  <antimatroid> what did you do about the timer?
+2011-06-06T06:42:12  <Zaphus> grabbed the code I used in the last comp
+2011-06-06T06:42:12  <antimatroid> or are you using mingw like a sane person?
+2011-06-06T06:42:25  <antimatroid> is it os agnostic?
+2011-06-06T06:42:28  <antimatroid> or windows specific?
+2011-06-06T06:42:38  <antimatroid> if it's os agnostic, would you be able to pastebin it for me?
+2011-06-06T06:42:43  <Zaphus> can I cut and paste to here ?
+2011-06-06T06:42:50  <antimatroid> pastebin.com
+2011-06-06T06:42:58  <antimatroid> you paste it into a text box then give me the link
+2011-06-06T06:43:01  <antimatroid> might be .org
+2011-06-06T06:43:07  <antimatroid> google is your friend :P
+2011-06-06T06:43:34  <antimatroid> i'm technically in the middle of an exam till wednesday, but i'll fix the cpp bot up once that's finished
+2011-06-06T06:43:38  <Zaphus> http://pastebin.com/aMe6866X
+2011-06-06T06:43:58  <Zaphus> ignore the conio include, thats for something else
+2011-06-06T06:44:29  <antimatroid> gross :P, i'll see if i can use that in a few days
+2011-06-06T06:44:33  <antimatroid> i hate timer code
+2011-06-06T06:47:15  <Zaphus> I might have old c++ code, there is no clear() and there is no 'food' - it uses isFood
+2011-06-06T06:47:24  <Zaphus> unless you just mean set it to false/0
+2011-06-06T06:51:46  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T06:57:37  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC (Ping timeout: 252 seconds)
+2011-06-06T06:59:05  <antimatroid> Zaphus: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/dist/starter_bots/cpp/State.cc
+2011-06-06T06:59:08  <antimatroid> line 211 on that page
+2011-06-06T06:59:35  <antimatroid> oh, and then it'd be reset() where you want to clear food,
+2011-06-06T06:59:55  <Zaphus> yeah,   square.reset()
+2011-06-06T07:00:35  <Zaphus> except... I kind of like what you did, as a strategy - if I saw two bits of food, went to get one, it would remember the other and go look for it, thats kind of neat
+2011-06-06T07:01:02  <antimatroid> lol, that starter bot is really broken
+2011-06-06T07:01:08  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-06T07:01:23  <antimatroid> i'm going to upload a different version now
+2011-06-06T07:01:42  <xQuasar> Does the server send all the information about what your ants can see, every turn?
+2011-06-06T07:01:47  <Zaphus> whats the deal with the r anyway, if you can see the square you can see it has no food, otherwise you cant see it and won't get the r - is it purely to let the bots optimize a bit ?
+2011-06-06T07:01:51  <xQuasar> If so, wouldn't it be more efficient to only send the changes?
+2011-06-06T07:02:11  <antimatroid> 'r' line has been removed from the engine
+2011-06-06T07:02:14  <antimatroid> ignore it's existence
+2011-06-06T07:03:03  <mcstar> thunderstorm again bb
+2011-06-06T07:03:06  *** mcstar <mcstar!~mcstar@adsl-89-132-5-115.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-06T07:04:28  <Zaphus> xQuasar:  Sending full vision is good, better than requiring everyone to write a bot that can track all the changes.   might be a bit more efficient to send changes but it's not the bottleneck
+2011-06-06T07:04:43  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-06-06T07:05:28  <Zaphus> antimatroid:  if 'r' was removed from the engine, then your bot code would keep thinking there was food all over the place, right ?  ahhh
+2011-06-06T07:06:12  <antimatroid> Zaphus: 3... 2... 1...
+2011-06-06T07:06:46  <Zaphus> impressive how high I got my bot with that in there :-)
+2011-06-06T07:06:48  * antimatroid kicks CIA
+2011-06-06T07:08:44  <antimatroid> ah crud, something messed up
+2011-06-06T07:11:21  <locutus2> the last contest we have the ugly thing of climbing up the ranking for each new bot
+2011-06-06T07:11:55  <antimatroid> what do you mean?
+2011-06-06T07:11:58  <locutus2> i see this time there are the ghost entry of last submission for better comparision
+2011-06-06T07:12:00  <antimatroid> pw didn't have that which was terrible
+2011-06-06T07:12:06  <antimatroid> i don't like that idea
+2011-06-06T07:12:24  <antimatroid> it's good to make a new submission work it's way up the leaderboard
+2011-06-06T07:12:38  <Zaphus> yeah, I like the ghosts...   but what happens when we have 4,000 ghosts ?  need a ranking page that has no ghosts for easy viewing
+2011-06-06T07:12:40  <antimatroid> it encourages people not to resubmit as often and forces people to see how their bot does against lower ranked bots
+2011-06-06T07:12:55  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC (Ping timeout: 252 seconds)
+2011-06-06T07:13:01  <locutus2> i have read the papers to trueskill and think we should for each new version start mit the last mean but the starter sigma
+2011-06-06T07:14:12  <locutus2> because the bot has probably a similar strenght
+2011-06-06T07:14:19  <antimatroid> that's better
+2011-06-06T07:14:41  <antimatroid> not your comments sorry, my gitfu is poor
+2011-06-06T07:14:44  <locutus2> but if this wrong through the high sigma for new bots this corrected very fast
+2011-06-06T07:15:44  * antimatroid kicks CIA-26 again
+2011-06-06T07:15:57  <Zaphus> problem with starting at the bottom is it discourages changes in the final weeks, since you may never make it back up to the top in time
+2011-06-06T07:16:13  <antimatroid> the rankings are all cleared at the start of the contest
+2011-06-06T07:16:38  <antimatroid> i submitted my bot for the first time in a month or so for pw an hour or so before the contest
+2011-06-06T07:17:21  <antimatroid> the main server is a crap place to test your bot, it's just for bragging rights imo
+2011-06-06T07:17:24  <antimatroid> tcp is where it's at
+2011-06-06T07:18:20  <locutus2> also if we start a new version with old mean the trueskill updates for the other players in the same match a more realistic and not biased to the 'wrong' strength of the new version
+2011-06-06T07:20:57  <antimatroid> apparently cia is dead :\
+2011-06-06T07:21:39  <Zaphus> the problem with TCP is that I can't watch while at work.  Plus timeout / earlyout can only be tested properly on the main server
+2011-06-06T07:22:00  <antimatroid> why can't you watch while at work?
+2011-06-06T07:22:34  <antimatroid> it's going to be tough going back to non-live tcp games
+2011-06-06T07:22:37  <antimatroid> <3 jbotmanager
+2011-06-06T07:23:17  <Zaphus> I guess I could leave my PC on all day, playing TCP
+2011-06-06T07:25:31  <Zaphus> does anyone have a TCP test server going yet ?
+2011-06-06T07:27:22  *** xQuasar <xQuasar!xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-06T07:27:53  <CIA-26> aichallenge: Nick Ham epsilon * r49170e8 / (5 files): removed 'r' lines - http://bit.ly/jpsJCy
+2011-06-06T07:30:09  <antimatroid> ... that wasn't delayed
+2011-06-06T07:30:19  <antimatroid> no tcp server yet
+2011-06-06T07:39:36  <Zaphus> I've made those same changes to my bot (with a few personal tweaks) - still behaves properly, which is nice.
+2011-06-06T07:40:00  <xQuasar> <antimatroid> 'r' line has been removed from the engine <- are you serious or joking D:
+2011-06-06T07:40:40  *** Quasar <Quasar!xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-06T07:41:06  *** Quasar is now known as Guest98744
+2011-06-06T07:44:11  *** xQuasar <xQuasar!xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-06-06T07:44:53  <Zaphus> ah, the version of the playgame tools I have still have the 'r' support in them, I think - so it cleans up after itself
+2011-06-06T07:45:38  <antimatroid> xQuasar: that happened AGES ago
+2011-06-06T07:46:27  <antimatroid> i had been holding off to change it till i fixed up the timer, but hadn't got around to it, so i finally did then
+2011-06-06T07:46:29  <Zaphus> hmm - ok, then my code is really smart and it didnt get upset with the invisible food - because it makes zero difference to the behaviour of my (local) bot
+2011-06-06T07:46:31  <antimatroid> it's a very simple fix though
+2011-06-06T07:47:05  <antimatroid> Zaphud: you probably also want to add isFood = 0 to clear in Square.h
+2011-06-06T07:47:12  <antimatroid> so 3 changes
+2011-06-06T07:47:27  <Guest98744> well this way we have to refresh ALL of our data on our bot every turn D:
+2011-06-06T07:47:31  <Guest98744> so inefficient ;-;
+2011-06-06T07:47:38  *** Guest98744 is now known as xQuasar
+2011-06-06T07:48:03  <antimatroid> it barely costs anything resource wise
+2011-06-06T07:48:12  <xQuasar> What if the map's really big :o
+2011-06-06T07:48:21  *** mcstar <mcstar!~mcstar@adsl-89-132-7-215.monradsl.monornet.hu> has joined #aichallenge
+2011-06-06T07:48:29  <antimatroid> the real problem with no 'r' lines is the implicit information
+2011-06-06T07:48:33  <antimatroid> but i lost that argument
+2011-06-06T07:59:15  *** olexs <olexs!~Leviathan@drms-590cea62.pool.mediaWays.net> has joined #aichallenge
+2011-06-06T08:00:03  <Zaphus> ok, I grabbed the latest game engine from git, now I see a difference between before and after (not much, but a difference none the less) - the old tools must have still had the r in them
+2011-06-06T08:03:48  *** mcstar <mcstar!~mcstar@adsl-89-132-7-215.monradsl.monornet.hu> has quit IRC (Ping timeout: 246 seconds)
+2011-06-06T08:07:52  *** Frontier <Frontier!~marco@dslb-092-076-161-100.pools.arcor-ip.net> has joined #aichallenge
+2011-06-06T08:39:49  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T08:43:15  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Quit: Page closed)
+2011-06-06T08:43:53  *** delt0r_ <delt0r_!~delt0r@188-22-174-244.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-06T08:44:13  *** xQuasar <xQuasar!xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC ()
+2011-06-06T08:45:28  *** delt0r___ <delt0r___!~delt0r@188-22-162-29.adsl.highway.telekom.at> has quit IRC (Ping timeout: 244 seconds)
+2011-06-06T08:55:39  <Frontier> what is 'yesterday' in chat slang?
+2011-06-06T08:56:34  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-06-06T08:56:55  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-06-06T09:03:14  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-06T09:07:32  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-06-06T09:09:27  <antimatroid> Frontier: what's the definition of "the"?
+2011-06-06T09:09:29  <antimatroid> no looking it up either
+2011-06-06T09:09:41  <antimatroid> i can't think of an answer to your question
+2011-06-06T09:09:47  <antimatroid> and it reminded me how hard defining the is
+2011-06-06T09:25:28  *** berak <berak!~berak@89.204.137.136> has quit IRC (Quit: berak)
+2011-06-06T09:26:52  *** amstan <amstan!~alex@142.222.14.77> has joined #aichallenge
+2011-06-06T09:26:52  *** ChanServ sets mode: +o amstan
+2011-06-06T09:28:21  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 244 seconds)
+2011-06-06T09:29:14  <amstan> hello
+2011-06-06T09:29:18  *** yasith_ <yasith_!~yasith@124.43.60.47> has quit IRC (Quit: The Sniper Got Me)
+2011-06-06T09:35:10  <sigh> hello
+2011-06-06T09:40:48  *** jugde <jugde!~jugde@st-cn0001.oulu.fi> has joined #aichallenge
+2011-06-06T09:41:53  <antimatroid> evening
+2011-06-06T09:56:40  *** mcstar <mcstar!~mcstar@adsl-89-134-12-117.monradsl.monornet.hu> has joined #aichallenge
+2011-06-06T10:02:19  <antimatroid> @topic
+2011-06-06T10:02:19  <contestbot> antimatroid: Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge || Beta testers needed: http://aichallengebeta.hypertriangle.com/ (amstan)
+2011-06-06T10:07:13  *** Eruonen <Eruonen!Its@546BEC22.cm-12-4d.dynamic.ziggo.nl> has quit IRC ()
+2011-06-06T10:10:30  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-06-06T10:19:51  *** InsaneMalkavian <InsaneMalkavian!5cffe08b@gateway/web/freenode/ip.92.255.224.139> has joined #aichallenge
+2011-06-06T10:30:00  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-06T10:31:54  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-06-06T10:42:51  *** Torquemada <Torquemada!c397de61@gateway/web/freenode/ip.195.151.222.97> has joined #aichallenge
+2011-06-06T10:43:27  <Torquemada> hi guys
+2011-06-06T10:43:42  *** berak <berak!~berak@89.204.153.169> has joined #aichallenge
+2011-06-06T10:45:40  <Torquemada> amstan, could you check, why I didn't recieved a registration email? I've registered for beta testing on prev week.
+2011-06-06T10:45:51  <amstan> there is no registration email
+2011-06-06T10:46:07  <amstan> there's an activation link after you register
+2011-06-06T10:46:10  <amstan> you have to click it
+2011-06-06T10:46:52  <amstan> Torquemada: did you miss it?
+2011-06-06T10:47:19  <Torquemada> Yeah i clicked it. Ok I'll try to enter now.
+2011-06-06T10:48:55  <Torquemada> I enter, thanks.
+2011-06-06T10:55:23  *** amstan <amstan!~alex@142.222.14.77> has quit IRC (Ping timeout: 250 seconds)
+2011-06-06T11:01:25  *** berak <berak!~berak@89.204.153.169> has quit IRC (Write error: Broken pipe)
+2011-06-06T11:10:38  *** amstan <amstan!~alex@142.222.92.23> has joined #aichallenge
+2011-06-06T11:10:38  *** ChanServ sets mode: +o amstan
+2011-06-06T11:11:49  *** locutus2 <locutus2!~locutus2@62.152.161.149> has joined #aichallenge
+2011-06-06T11:33:10  *** amstan <amstan!~alex@142.222.92.23> has quit IRC (Read error: Operation timed out)
+2011-06-06T11:44:50  *** amstan <amstan!~alex@142.222.92.23> has joined #aichallenge
+2011-06-06T11:44:50  *** ChanServ sets mode: +o amstan
+2011-06-06T11:48:01  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-06T11:48:33  *** amstan <amstan!~alex@142.222.92.23> has quit IRC (Client Quit)
+2011-06-06T11:50:10  *** amstan <amstan!~alex@142.222.92.23> has joined #aichallenge
+2011-06-06T11:50:10  *** ChanServ sets mode: +o amstan
+2011-06-06T11:54:05  *** BtbN <BtbN!btbn@btbn.de> has quit IRC (Remote host closed the connection)
+2011-06-06T12:05:58  *** jmcarthur is now known as Gregamahol
+2011-06-06T12:06:38  *** Gregamahol is now known as jmcarthur
+2011-06-06T12:08:19  *** Torquemada <Torquemada!c397de61@gateway/web/freenode/ip.195.151.222.97> has quit IRC (Quit: Page closed)
+2011-06-06T12:12:00  <antimatroid> jmcarthur: greg am ahole :P
+2011-06-06T12:13:27  <jmcarthur> heh
+2011-06-06T12:13:47  <jmcarthur> somebody in another channel lost their home internet connection so about ten people stole variations of his nick
+2011-06-06T12:14:43  *** okayzed <okayzed!~okay@98.158.22.181> has quit IRC (Ping timeout: 246 seconds)
+2011-06-06T12:18:49  <antimatroid> haha :P
+2011-06-06T12:18:50  <antimatroid> sounds fair
+2011-06-06T12:19:01  *** computerwiz_222 <computerwiz_222!~andrew@142.222.92.10> has joined #aichallenge
+2011-06-06T12:19:12  <computerwiz_222> hello
+2011-06-06T12:19:46  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-06-06T12:20:19  *** BtbN <BtbN!btbn@btbn.de> has joined #aichallenge
+2011-06-06T12:35:26  *** guyverthree <guyverthree!519182e7@gateway/web/freenode/ip.81.145.130.231> has joined #aichallenge
+2011-06-06T12:35:32  <guyverthree> hello all
+2011-06-06T12:37:48  <guyverthree> i'm having a problem with running the client in a browser
+2011-06-06T12:39:51  <olexs> hi. what browser do you use?
+2011-06-06T12:41:07  <amstan> what client?
+2011-06-06T12:42:15  *** computerwiz_222 <computerwiz_222!~andrew@142.222.92.10> has quit IRC (Remote host closed the connection)
+2011-06-06T12:42:50  *** locutus2 <locutus2!~locutus2@62.152.161.149> has quit IRC (Ping timeout: 250 seconds)
+2011-06-06T12:43:33  *** _0x47 <_0x47!~slash@p57B3FB61.dip.t-dialin.net> has quit IRC (Ping timeout: 255 seconds)
+2011-06-06T12:48:42  *** amstan <amstan!~alex@142.222.92.23> has quit IRC (Quit: Konversation terminated!)
+2011-06-06T12:49:06  *** janzert1 is now known as janzert
+2011-06-06T12:49:16  <guyverthree> internet explorer
+2011-06-06T12:49:38  <olexs> version?
+2011-06-06T12:49:45  <guyverthree> i agree to use the active X control and it gives back a typeError
+2011-06-06T12:50:05  <guyverthree> IE 8
+2011-06-06T12:50:34  <olexs> interesting, IE8 should work fine actually
+2011-06-06T12:50:45  <guyverthree> object doesn't support this property or method
+2011-06-06T12:51:03  <olexs> you are just trying to view a game, right?
+2011-06-06T12:51:19  <guyverthree> yep
+2011-06-06T12:51:31  <guyverthree> just starting to get the tools running
+2011-06-06T12:51:47  <guyverthree> the planetwars one worked fine straight fgrom the box
+2011-06-06T12:51:50  <guyverthree> :)
+2011-06-06T12:52:37  <olexs> hm, I have IE9 on my machine already, can't really test it. but activeX already sounds wrong, game viewer is html5 canvas + javascript, not activeX
+2011-06-06T12:53:22  <olexs> add ?debug=true to your URL (&debug=true if the URL already has a ? in it) and see if anything changes
+2011-06-06T12:54:14  <guyverthree> C:\Documents and Settings\jamesd\Desktop\AI\Ants\game_logs\replay.html
+2011-06-06T12:54:19  <guyverthree> is the user
+2011-06-06T12:54:22  <guyverthree> url
+2011-06-06T12:54:26  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-06-06T12:54:37  <olexs> try C:\Documents and Settings\jamesd\Desktop\AI\Ants\game_logs\replay.html?debug=true
+2011-06-06T12:54:40  <guyverthree> however it does not have a ? in it for arguments
+2011-06-06T12:55:03  <guyverthree> windows cannot find the url
+2011-06-06T12:56:05  <olexs> okay, doesn't work with IE and local content, it seems
+2011-06-06T12:56:53  <olexs> what if you open a game from the beta server, like http://aichallengebeta.hypertriangle.com/visualizer.php?game=15644 ? does that run properly?
+2011-06-06T12:57:12  <guyverthree> just gonna open in in firefox from now on
+2011-06-06T12:57:47  <olexs> that should do it, as well :) chrome has best performance in html5, firefox and IE can get slow on large games
+2011-06-06T12:58:15  <mcstar> as for a sidenote: when i tried to view a game on win 7 with ie whichever.version it complained that a dont have Java installed and it didnt show anything but a nice errorbox
+2011-06-06T12:58:25  *** _0x47 <_0x47!~slash@p5B12EF8E.dip.t-dialin.net> has joined #aichallenge
+2011-06-06T12:58:32  *** InsaneMalkavian <InsaneMalkavian!5cffe08b@gateway/web/freenode/ip.92.255.224.139> has quit IRC (Ping timeout: 252 seconds)
+2011-06-06T12:58:42  <mcstar> a->I
+2011-06-06T12:58:51  <olexs> ie9 works for me on win7 x64
+2011-06-06T12:59:06  <mcstar> but why does it need java?
+2011-06-06T12:59:19  <olexs> no idea :)
+2011-06-06T12:59:30  <mcstar> on chromium it worked
+2011-06-06T12:59:34  <mcstar> in
+2011-06-06T12:59:41  <mcstar> silly IE
+2011-06-06T12:59:49  <mcstar> not that i care a bit im just saying
+2011-06-06T13:00:14  <mcstar> Frontier: do you know anything about this?
+2011-06-06T13:00:58  <janzert> older IE versions don't support canvas so it falls back to a java applet
+2011-06-06T13:01:06  <janzert> not really sure what it does in IE9
+2011-06-06T13:01:14  <mcstar> it cant be that old
+2011-06-06T13:01:25  <mcstar> its from a win7 enterprise
+2011-06-06T13:01:37  <janzert> IE9 was released just a few months ago
+2011-06-06T13:01:39  <olexs> win7 came with ie8, ie9 came as an optional update
+2011-06-06T13:01:39  <mcstar> so i guess it must be at least ie8 right?
+2011-06-06T13:01:50  *** guyverthree <guyverthree!519182e7@gateway/web/freenode/ip.81.145.130.231> has quit IRC (Ping timeout: 252 seconds)
+2011-06-06T13:01:53  <janzert> yes, but IE8 is old enough :)
+2011-06-06T13:01:57  <mcstar> ok
+2011-06-06T13:05:34  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has joined #aichallenge
+2011-06-06T13:07:18  *** amstan <amstan!~alex@142.222.2.127> has joined #aichallenge
+2011-06-06T13:07:18  *** ChanServ sets mode: +o amstan
+2011-06-06T13:07:50  *** olexs <olexs!~Leviathan@drms-590cea62.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-06T13:17:54  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110413222027])
+2011-06-06T13:20:14  *** bhasker <bhasker!~bhasker@nat/yahoo/x-hknwdqstcmsvbhfo> has joined #aichallenge
+2011-06-06T13:41:43  *** okayzed <okayzed!~okay@98.158.22.181> has joined #aichallenge
+2011-06-06T13:51:18  *** itsme <itsme!55354963@gateway/web/freenode/ip.85.53.73.99> has joined #aichallenge
+2011-06-06T13:51:22  <Frontier> mcstar: You need at least IE9. Previous versions of IE don't support enough web standards
+2011-06-06T13:52:24  *** guyverthree <guyverthree!519182e7@gateway/web/freenode/ip.81.145.130.231> has joined #aichallenge
+2011-06-06T13:52:29  <guyverthree> hey guys
+2011-06-06T13:52:31  <Frontier> mcstar: Especially the html5 canvas is missing for the visualizer. Therefor I added a Java version, that emulates the canvas. But some of the CSS3 formating needed work arounds in IE as well
+2011-06-06T13:52:39  <guyverthree> another small problem
+2011-06-06T13:54:03  *** komeedipoeg <komeedipoeg!528346fb@gateway/web/freenode/ip.82.131.70.251> has joined #aichallenge
+2011-06-06T13:54:12  <Frontier> mcstar: there is a static check for IE < 8 in the php. In this case Java is used.
+2011-06-06T13:54:22  <Frontier> sorry, IE <= 8
+2011-06-06T13:54:26  <komeedipoeg> Hi
+2011-06-06T13:55:07  <Frontier> In the previous contest we had practically the same setup
+2011-06-06T13:56:12  <guyverthree> I cannot seem to get a java bot to run a game
+2011-06-06T13:56:24  <guyverthree> it's only the start bot one
+2011-06-06T13:56:33  <guyverthree> it keeps crashing
+2011-06-06T13:56:43  <guyverthree> i think i'm running the command incorrectly
+2011-06-06T13:57:00  <guyverthree> i'm using java MyBot/build/classes/MyBot
+2011-06-06T13:57:04  <komeedipoeg> where can i find the python module Queue? ImportError: No module named Queue
+2011-06-06T13:57:06  <itsme> Hi
+2011-06-06T13:57:08  <mcstar> Frontier: thx for the clarification, however this doesnt concern me at all(not using windows), but might be of interest to some other ppl, cant you throw an error message like: the problem would be solved if you lazy bastard had installed IE9 :D
+2011-06-06T13:58:10  <itsme> I'm using windows and I try to run the example on the tools package
+2011-06-06T13:58:15  <itsme> $ ./play_one_game.sh running for 100 turns turn    0 stats: ant_count: [1, 1, 1, 1] score 1 1 1 1 status timeout crashed crashed timeout waiting 0.25 seconds for bots to process end turn
+2011-06-06T13:58:19  <Frontier> hehe when i coded that ie9 wasn't even ready
+2011-06-06T13:58:29  <itsme> any clue??
+2011-06-06T13:58:34  <guyverthree> itsme
+2011-06-06T13:58:39  <guyverthree> i have the same thing
+2011-06-06T13:58:42  <guyverthree> i had
+2011-06-06T13:58:55  <guyverthree> you need tyo change the paths of the sample bots slightly
+2011-06-06T13:59:21  <guyverthree> change the paths to this
+2011-06-06T13:59:30  <guyverthree> python sample_bots/python/LeftyBot.py
+2011-06-06T13:59:40  <guyverthree> basically remove the dst from the start of the tools thing
+2011-06-06T13:59:44  <itsme> o it's true
+2011-06-06T14:00:33  <Frontier> mcstar: The problem can be solved by either installing IE9 OR Java. I'm not sure IE9 is supported on Windows 2000/XP.
+2011-06-06T14:00:54  <itsme> now it gave timeouts
+2011-06-06T14:01:29  <mcstar> itsme: turn on debugging and see if the bots spit out some useful info
+2011-06-06T14:01:29  <itsme> at least on second turn
+2011-06-06T14:01:42  <mcstar> -E
+2011-06-06T14:02:00  *** guyverthree <guyverthree!519182e7@gateway/web/freenode/ip.81.145.130.231> has quit IRC (Quit: Page closed)
+2011-06-06T14:02:33  <itsme> ./play_one_game.sh -E ????
+2011-06-06T14:02:48  <mcstar> give it to playgame.py
+2011-06-06T14:02:59  <mcstar> in play_one_game.sh
+2011-06-06T14:03:18  <itsme> -E or --E
+2011-06-06T14:03:24  <mcstar> doestn matter
+2011-06-06T14:04:28  <itsme> --E -> playgame.py: error: no such option: --E
+2011-06-06T14:04:41  <itsme> but -E works, where the debug is stored??
+2011-06-06T14:05:35  *** Frontier <Frontier!~marco@dslb-092-076-161-100.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-06-06T14:06:25  <mcstar> i think -E should make the bot errors appear in the console
+2011-06-06T14:06:51  <itsme> the out it gave is:
+2011-06-06T14:06:52  <itsme> $ ./play_one_game.sh running for 100 turns turn    0 stats: ant_count: [1, 1, 1, 1] turn    1 stats: ant_count: [1, 1, 1, 1] score 1 1 1 1 status timeout timeout timeout timeout waiting 2.25 seconds for bots to process end turn
+2011-06-06T14:06:57  <mcstar> theres another one, -e which spits them out into files in a user given directory
+2011-06-06T14:07:12  <mcstar> thats not it
+2011-06-06T14:07:38  <mcstar> if the bot uses the stderr to print error messages, -E makes them visible
+2011-06-06T14:07:55  <mcstar> otherwise, the engine doesnt show them
+2011-06-06T14:08:09  <itsme> ok i'm using the defaults bots
+2011-06-06T14:08:23  <itsme> it's the first time i have download the tools.zip
+2011-06-06T14:09:12  <mcstar> are you trying this in cygwin?
+2011-06-06T14:09:25  <itsme> yes
+2011-06-06T14:09:29  <mcstar> (why cant a windows person answer his question anyway?)
+2011-06-06T14:09:46  <itsme> because in windows native console the are problems with python
+2011-06-06T14:09:49  <mcstar> ok, sure the path is correct to the bots?
+2011-06-06T14:10:30  <mcstar> well theres a play_one_game.cmd which is supposed to be run from cmd
+2011-06-06T14:11:19  <itsme> C:\ai_contest\ants\tools>play_one_game.cmd   File "C:\ai_contest\ants\tools\playgame.py", line 159     print("Running profile and outputting to %s" % (prof_file,), file=sys.stderr)                                                                      ^ SyntaxError: invalid syntax
+2011-06-06T14:12:19  <mcstar> maybe your python is simply old
+2011-06-06T14:12:29  <itsme> is there any windows guy who have managed to run the examples??????
+2011-06-06T14:12:37  <mcstar> you need at least 2.6 but i think 2.7 is recommended
+2011-06-06T14:12:46  <mcstar> yes, sure many
+2011-06-06T14:13:17  <itsme> ok i have 2.5.2
+2011-06-06T14:13:26  <itsme> this may be the motive, thanks
+2011-06-06T14:13:37  <mcstar> np
+2011-06-06T14:19:18  <amstan> don't even try with 2.5, lol
+2011-06-06T14:19:38  <komeedipoeg> Traceback (most recent call last):   File "E:\ants\playgame.py", line 16, in <module>     from engine import run_game ImportError: No module named engine
+2011-06-06T14:19:57  <komeedipoeg> python 2.7.1
+2011-06-06T14:22:57  <mcstar> ls ..\worker
+2011-06-06T14:23:14  <mcstar> do you have engine.py in there?
+2011-06-06T14:23:32  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has left #aichallenge
+2011-06-06T14:25:44  <itsme> wwooohh, itworks, great
+2011-06-06T14:25:56  <itsme> this nigth iwillbeginmy bot
+2011-06-06T14:26:08  <komeedipoeg> it works :D
+2011-06-06T14:27:09  <itsme> and i will have to review my space key
+2011-06-06T14:28:04  <itsme> many thanks to all they guys that have worked so hard to have ready this constest
+2011-06-06T14:28:54  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-06-06T14:29:35  <McLeopold> anyone need help with playgame syntax?
+2011-06-06T14:31:20  <McLeopold> @later tell jmcarthur I'm worried about the accuracy of our TrueSkill implementation.  It seems odd that nobody is above 60.  I lowered the draw margin and reset submissions to see if it makes a difference.  Janzert noticed I did it wrong, so I need to correct.
+2011-06-06T14:31:20  <contestbot> McLeopold: Ready to serve.
+2011-06-06T14:31:21  *** itsme <itsme!55354963@gateway/web/freenode/ip.85.53.73.99> has quit IRC (Quit: Page closed)
+2011-06-06T14:33:55  <janzert> McLeopold: I did reset the draw margin to 10% last night
+2011-06-06T14:34:05  <janzert> just to stop the division errors
+2011-06-06T14:34:07  <McLeopold> ok, I'm going to set it to 1%
+2011-06-06T14:34:15  <janzert> why are you lowering it?
+2011-06-06T14:34:20  <McLeopold> I'm checking the database for any actual draws
+2011-06-06T14:34:22  <janzert> the actual rate seems higher
+2011-06-06T14:34:43  <janzert> at least there was a divide by zero pretty much every other game
+2011-06-06T14:35:52  <McLeopold> A higher draw margin makes bigger updates for a win
+2011-06-06T14:35:55  <janzert> also the my range and average looked fairly healthy to me last night
+2011-06-06T14:36:24  <janzert> err, mu not my :P
+2011-06-06T14:36:41  <McLeopold> hmm... yeah, the rankings look a lot better
+2011-06-06T14:37:02  <McLeopold> I think there is a slight error somewhere that makes skill drop over time
+2011-06-06T14:37:57  <McLeopold> The draws are from games with only starter bots getting stuck in the same location.
+2011-06-06T14:38:11  <McLeopold> I think the draw percentage will actually be lower, close to zero.
+2011-06-06T14:38:15  <janzert> hmm, could be I see the average my is now 48.47, last night it was 49.xxx
+2011-06-06T14:38:43  <McLeopold> I check some trueskill updates against the online calculator, and we are off
+2011-06-06T14:39:20  <janzert> we'll probably always have a fairly good sized group of starter bots so I don't think the draw percentage will ever approach 0
+2011-06-06T14:39:30  <McLeopold> I did see that someone said sigma may rise, so I was wrong there
+2011-06-06T14:39:58  <McLeopold> But I'm not tuning the system for starters, I'm tuning for actual bots
+2011-06-06T14:40:11  <janzert> I was wondering how much floating point rounding error we're getting with from some of the normal distribution functions
+2011-06-06T14:40:21  <McLeopold> A win doesn't mean as much with a lower draw percentage, which is good
+2011-06-06T14:40:31  <janzert> but the overall system has to account for the group of starter bots there will be
+2011-06-06T14:40:44  <McLeopold> That might be the issues, the rounding.
+2011-06-06T14:41:12  <janzert> adjust beta if you're trying to adjust how much a win means
+2011-06-06T14:41:15  <janzert> that's what it's for
+2011-06-06T14:41:40  <McLeopold> I was thinking about that.  I would like a feature where a bot is only active for maybe a week or so, then deactivated.  You'd have to log in and request more games to get reactivated.  That would drop out abandonded accounts.
+2011-06-06T14:42:07  <janzert> yeah, I've thought about that before. I have mixed feelings about it
+2011-06-06T14:42:08  <McLeopold> More games for people who are actually participating
+2011-06-06T14:42:22  <McLeopold> what's the downside?
+2011-06-06T14:42:44  <janzert> people get mad because there submission is dropped out of the contest?
+2011-06-06T14:42:52  <mcstar> why dont you request users periodically to renew their bot status?
+2011-06-06T14:43:00  <janzert> maybe with a clear explanation and an email when the deactivation occurs
+2011-06-06T14:43:37  <McLeopold> It wouldn't drop out, just not be scheduled for games.  Plus, they can click one button to reactivate.
+2011-06-06T14:43:51  <janzert> and there have certainly been top 10 bots that go for long stretches without updates
+2011-06-06T14:44:06  <McLeopold> We can have a countdown timer for them, they don't have to wait to reactivate it, they can click everyday to keep it going.
+2011-06-06T14:44:22  <janzert> but are you skewing the rest of the field by not then playing against them
+2011-06-06T14:44:40  <McLeopold> okay, that could be a downside...
+2011-06-06T14:45:13  <McLeopold> we could just take them out of seed rotation, but they could still be matched against
+2011-06-06T14:45:26  <janzert> that might be work out
+2011-06-06T14:45:47  <UncleVasya> In the last contest I saw some bots from september with rank near 300.
+2011-06-06T14:46:00  <amstan> McLeopold: oh yes, have you seen that convo?
+2011-06-06T14:46:04  <McLeopold> I think any potential minor downside is greatly outweighed by the benefit of removing starter bots from  playing
+2011-06-06T14:46:39  <McLeopold> UncleVasya: I think my bot won the "longest stretch in the top 100" award :p
+2011-06-06T14:46:57  <McLeopold> amstan: yes
+2011-06-06T14:47:05  <janzert> I kinda like the idea of removing them from being seeds
+2011-06-06T14:47:33  <McLeopold> It's already an issue, so I do want to do it.  I just also want the automatic removal so you have to be active.
+2011-06-06T14:48:04  <McLeopold> so, back to my original point, draws aren't really happening among non-starter bots.
+2011-06-06T14:48:22  <McLeopold> I think you are supposed to adjust epsilon, not beta.
+2011-06-06T14:48:29  <McLeopold> beta is calculated from that
+2011-06-06T14:48:54  <janzert> but the overall rankings parameters should be adjusted for the overall results, not just the high end results
+2011-06-06T14:49:20  <janzert> beta is a measure of how 'random' the game outcome is
+2011-06-06T14:49:21  <McLeopold> epsilon is supposed to be tuned for the game, not the contestants
+2011-06-06T14:49:28  <UncleVasya> I think there should be a line (for example 15%+) after which bots can be deactivated after some time inactive.
+2011-06-06T14:50:02  <UncleVasya> I mean that first 15% of the rankings will play even if their masters abandoned them.
+2011-06-06T14:50:37  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-06T14:50:44  <McLeopold> UncleVasya: if we take them out of seed rotation, they would still get games against newer bots.
+2011-06-06T14:50:52  <amstan> i think rank should be proportional with their sigma
+2011-06-06T14:51:10  <McLeopold> amstan: do you mean mu?  how?
+2011-06-06T14:51:18  <janzert> given that ants seems to be quite sensitive to initial conditions (why non-symmetric food is a problem) I think beta is going to be fairly high
+2011-06-06T14:51:21  <jmcarthur> is the trueskill implementation using floating point?
+2011-06-06T14:51:26  <amstan> as in.. it doesn't matter if the guy near the end is uncertain
+2011-06-06T14:51:51  <McLeopold> jmcarthur: it should, it's python
+2011-06-06T14:52:03  <janzert> jmcarthur: yes it is currently at least
+2011-06-06T14:52:04  <UncleVasya> btw, about sigma: is problem with it's lowering already fixed?
+2011-06-06T14:52:23  <janzert> McLeopold: there are other fractional number representations available in python
+2011-06-06T14:53:21  <McLeopold> janzert: what would be the most acurate type if we don't want rounding errors?
+2011-06-06T14:53:34  <jmcarthur> i don't know what all the intermediate values in trueskill look like, but if we had the time to fiddle with it i would be tempted to look into a fixed point representation
+2011-06-06T14:54:03  <McLeopold> jmcarthur: I'll see what I can do and see if it then matches the online calculator
+2011-06-06T14:54:10  <janzert> McLeopold: depends on what you want do, anything else will probably be much slower of course
+2011-06-06T14:54:23  <jmcarthur> but i doubt anything like that is built in to python. we'd have to find a library or roll our own. also, to use it well, you need to always be aware of your precision and adjust depending on context
+2011-06-06T14:54:29  <McLeopold> we want accuracy above speed
+2011-06-06T14:54:32  <janzert> Decimal is probably the logical one for better accuracy
+2011-06-06T14:55:20  <jmcarthur> is Decimal dynamic precision (and is it adjustible or automatic)?
+2011-06-06T14:55:32  <janzert> jmcarthur: http://docs.python.org/library/decimal.html
+2011-06-06T14:55:52  <janzert> user specified precision
+2011-06-06T14:56:04  <janzert> I don't believe there is any automatic adjustment
+2011-06-06T14:56:18  <McLeopold> I'll max it out and see what happends
+2011-06-06T14:57:19  <jmcarthur> so it's a global precision
+2011-06-06T14:57:55  <jmcarthur> hopefully we don't use any libs that change it then...
+2011-06-06T14:58:16  <McLeopold> score 1 for functional programming...
+2011-06-06T14:58:19  <janzert> each number has a context specifying the precision among other things
+2011-06-06T14:58:28  <jmcarthur> each *number*?
+2011-06-06T14:59:04  <jmcarthur> ah you can create new contexts
+2011-06-06T14:59:09  <janzert> oops, each thread
+2011-06-06T14:59:15  <jmcarthur> and make it active/inactive
+2011-06-06T14:59:20  <janzert> yes
+2011-06-06T14:59:34  *** UncleVasya <UncleVasya!kvirc@178-133-44-59.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T14:59:42  <jmcarthur> so as long as we always activate our own context whenever the trueskill stuff is entered then we should be fine
+2011-06-06T14:59:52  <jmcarthur> and to play nice we would deactivate it when we are done
+2011-06-06T15:00:04  <janzert> I doubt anything else we use, uses Decimals
+2011-06-06T15:00:08  * jmcarthur shrugs
+2011-06-06T15:00:39  <McLeopold> manager only gets called once for one update, then exits
+2011-06-06T15:01:01  <janzert> that's right
+2011-06-06T15:01:08  *** amstan <amstan!~alex@142.222.2.127> has quit IRC (Ping timeout: 240 seconds)
+2011-06-06T15:02:21  <McLeopold> janzert: float("inf")? How does that become a decimal?
+2011-06-06T15:02:49  <McLeopold> nvm
+2011-06-06T15:03:12  <janzert> Decimal("Infinity") should do it I believe
+2011-06-06T15:03:21  <janzert> but why are we starting with an infinity?
+2011-06-06T15:03:25  * janzert goes to look
+2011-06-06T15:03:41  <McLeopold> janzert: line 93
+2011-06-06T15:04:00  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-06T15:04:36  *** UncleVasya <UncleVasya!kvirc@88-214-96-42.dialup.umc.net.ua> has joined #aichallenge
+2011-06-06T15:04:46  <jmcarthur> i good fixed point library will provide operations that adjust the precision to retain as much information as possible. i have one written in haskell that provides operations that give more claimed precision after multiplication and less claimed precision after division, for example. rounding (which by contract lowers precision) is always explicit then and you aren't caught by surprise
+2011-06-06T15:05:35  <janzert> jmcarthur: talk to the IEEE and get it in the decimal specification and it will end in python ;)
+2011-06-06T15:05:44  <jmcarthur> eh
+2011-06-06T15:07:28  <mcstar> hm, come on 64bit floating point precision is enough for most applications, an bug is more likely to cause imperfections than precision problems
+2011-06-06T15:07:48  <jmcarthur> it just depends
+2011-06-06T15:08:20  <McLeopold> the more operations you have, the large the error
+2011-06-06T15:08:27  <McLeopold> trueskill has quite a few
+2011-06-06T15:08:39  <mcstar> i dont think that trueskill ranking involves numerical integration
+2011-06-06T15:08:39  <jmcarthur> a 64 bit binary fixed point number can express any point from the sun to pluto to submicrometer precision
+2011-06-06T15:08:53  <jmcarthur> with uniform precision
+2011-06-06T15:09:05  <McLeopold> what about alpha centari?
+2011-06-06T15:09:07  <janzert> mcstar: what is sum(0.1 for r in range(10))?
+2011-06-06T15:09:19  <jmcarthur> McLeopold: for submicrometer precision you might need more bits ;)
+2011-06-06T15:09:22  <mcstar> haha
+2011-06-06T15:09:33  <McLeopold> but what is the precision?
+2011-06-06T15:09:52  <jmcarthur> you mean what would the precision be for 64 bits from the sun to AC?
+2011-06-06T15:09:56  <McLeopold> y
+2011-06-06T15:09:57  <mcstar> thats another problem, representation incompatibility
+2011-06-06T15:10:09  <jmcarthur> mcstar: huh?
+2011-06-06T15:10:16  <mcstar> to janzert
+2011-06-06T15:10:26  <janzert> or worse sum(0.01 for r in range(100)) - sum(0.1 for r in range(10)) :)
+2011-06-06T15:10:49  <mcstar> im sorry to say but it is working
+2011-06-06T15:11:03  <janzert> 7.7715611723760958e-16 ?
+2011-06-06T15:11:20  <mcstar> janzert: that 0.1 cant be represented as a binary string is a completely different problem
+2011-06-06T15:11:31  <mcstar> (finite b s)
+2011-06-06T15:11:44  <jmcarthur> mcstar: about 2.3 millimeters of precision
+2011-06-06T15:11:47  <jmcarthur> oops
+2011-06-06T15:11:49  <jmcarthur> McLeopold: ^^
+2011-06-06T15:11:52  <McLeopold> ooooh
+2011-06-06T15:11:59  <mcstar> mine is much longer
+2011-06-06T15:12:07  <mcstar> oh sry
+2011-06-06T15:12:09  <McLeopold> ooooooooooh
+2011-06-06T15:12:11  <mcstar> ;D
+2011-06-06T15:12:48  <jmcarthur> McLeopold: that is assuming that wolfram alpha is a reasonably accurate calculator and encyclopedia for this
+2011-06-06T15:13:20  <McLeopold> only if they didn't use floating point....
+2011-06-06T15:13:42  <jmcarthur> doesn't look like it
+2011-06-06T15:13:55  <jmcarthur> these numbers seem pretty good (just tried it for pluto, too)
+2011-06-06T15:14:09  <jmcarthur> i had already done the math for pluto when developing my fixed point library
+2011-06-06T15:14:58  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-06-06T15:19:45  <jmcarthur> with 80 bits (the number of bits that extended precision floating point gets), fixed point can specify any point between the sun and alpha centauri to within 0.034 micrometers
+2011-06-06T15:20:16  <mcstar> jmcarthur:why do you say that "with uniform precision"? it is correct that the sun-pluton distance approxmiated in microns is 6000000000000000000, and a 64 bit integer can hold a value as large as 18446744073709551616, nevertheless, the relatice accuracy of floating point numbers depend on the magnitude i.e. the exponent of the numbers in question
+2011-06-06T15:20:27  <jmcarthur> exactly
+2011-06-06T15:20:35  <janzert> McLeopold: a quicker test than converting the whole trueskill module to use Decimal might be to re-enable the use of scipy and check the results with that
+2011-06-06T15:20:38  <McLeopold> Chuck Norris can do it with 0.0037
+2011-06-06T15:20:40  <jmcarthur> this is an advantage of fixed point precision over floating point precision
+2011-06-06T15:21:03  <McLeopold> janzert: never used scipy
+2011-06-06T15:21:29  <janzert> neither have I really
+2011-06-06T15:21:50  <janzert> but looking at the trueskill code it was originally written to use it
+2011-06-06T15:22:03  <jmcarthur> mcstar: well, i say it's an advantage, but it's really more of a tradeoff
+2011-06-06T15:22:08  <janzert> just need to install scipy and uncomment the imports at the top
+2011-06-06T15:22:12  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-06-06T15:22:24  <jmcarthur> mcstar: floating point is nice when you *need* to be able to work with potentially unpredictable orders of magnitude
+2011-06-06T15:22:39  <jmcarthur> mcstar: otherwise, fixed point might be nicer
+2011-06-06T15:23:16  <mcstar> i dont think you understand me
+2011-06-06T15:23:26  <mcstar> im saying that precision depends upon magnitude
+2011-06-06T15:23:35  <jmcarthur> yes
+2011-06-06T15:23:41  <jmcarthur> with floating point
+2011-06-06T15:23:51  <mcstar> but you said uniform precision in a previous comment
+2011-06-06T15:23:54  <jmcarthur> yes
+2011-06-06T15:23:58  <mcstar> which is misleadind i think
+2011-06-06T15:24:01  <jmcarthur> i was talking about fixed point precision
+2011-06-06T15:24:15  <mcstar> ah ok
+2011-06-06T15:24:30  <jmcarthur> because floating point doesn't have that uniformity
+2011-06-06T15:24:44  <mcstar> if you know the absolute magnitudes you can use fixed point sure
+2011-06-06T15:24:51  <mcstar> it wasnt clear for me what did u mean then
+2011-06-06T15:25:02  <jmcarthur> that is a very common case (knowing your range)
+2011-06-06T15:25:27  <jmcarthur> e.g. it's common to do silly things like representing RGB components as floats in the range 0-1
+2011-06-06T15:26:34  <mcstar> well, sometimes you want nan
+2011-06-06T15:26:36  <jmcarthur> sure, you get a decent precision in that range compared to larger ranges, but you could do so much better with fixed point in this case (which people sometimes do without realizing when they represent a component as, say, 0-255 or 0-65535)
+2011-06-06T15:26:50  <mcstar> with fixed point, it will cycle back
+2011-06-06T15:26:56  <mcstar> or not
+2011-06-06T15:27:31  <mcstar> btw i never heard of fixed point representation when i dealt with c
+2011-06-06T15:27:49  <mcstar> is there a common one?(implementTION)
+2011-06-06T15:27:55  <jmcarthur> C is one of the nicest languages to use fixed point in because you can take advantage of so many of the properties at a low level
+2011-06-06T15:28:02  <jmcarthur> i have no idea
+2011-06-06T15:28:07  <jmcarthur> i've only ever done it manually
+2011-06-06T15:28:34  <jmcarthur> it requires a fair bit of documentation to keep track of it since C's type system doesn't express everything i would like it to
+2011-06-06T15:29:22  <jmcarthur> s/documentation/comments/
+2011-06-06T15:29:43  <mcstar> actually, its a good idea, using fixed point on the gpu, instead of the slower floating point units
+2011-06-06T15:29:59  <jmcarthur> floating point is not necessarily that slow
+2011-06-06T15:30:10  <jmcarthur> also, it's nice for stuff like HDR
+2011-06-06T15:30:11  <mcstar> in many cases we know the ranges of our variables that we simulate
+2011-06-06T15:30:30  <jmcarthur> the main benefit to fixed point on something like a GPU is lower memory requirements
+2011-06-06T15:30:45  <mcstar> no, these have 64 bit fpu-s
+2011-06-06T15:30:45  <jmcarthur> why use a float when 8 bits will do, for example
+2011-06-06T15:31:07  <mcstar> it has to do with physical simulations
+2011-06-06T15:31:09  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-06-06T15:31:12  <jmcarthur> ah
+2011-06-06T15:31:19  <mcstar> 8bit is nowhere near enough
+2011-06-06T15:31:19  <jmcarthur> i was thinking graphics
+2011-06-06T15:31:34  <jmcarthur> 8 bits is fine for an RGB component intended for the screen
+2011-06-06T15:31:42  <mcstar> actually we had problems with 32bit fp precision previoulsy
+2011-06-06T15:32:04  <mcstar> nvidia fpu-s dont comply with the usual ieee standards
+2011-06-06T15:32:07  <janzert> McLeopold: well using scipy, at least for the example in test_truskill.py, makes no difference
+2011-06-06T15:32:12  <jmcarthur> but yeah, if you care about accuracy and know your range, fixed point rocks
+2011-06-06T15:32:40  <McLeopold> janzert: can you see how it differers from the online calc?
+2011-06-06T15:33:33  <janzert> yeah, at least for that example I see mu differs by as much as 0.2
+2011-06-06T15:33:50  <McLeopold> did you see the jskills link in the logs?
+2011-06-06T15:34:06  <McLeopold> https://github.com/nsp/JSkills
+2011-06-06T15:34:08  <janzert> no
+2011-06-06T15:34:14  <janzert> oh, that yes
+2011-06-06T15:36:32  *** bhasker <bhasker!~bhasker@nat/yahoo/x-hknwdqstcmsvbhfo> has quit IRC (Quit: bhasker)
+2011-06-06T15:45:04  <Frontier> jmcarthur: You were talking about C and floating point. Take a look at D. There is a huge interface to the low level functionality: http://www.digitalmars.com/d/2.0/phobos/std_math.html
+2011-06-06T15:47:20  <janzert> McLeopold: btw, I think ghosts need to disappear after some time (or game) limit even if the new version doesn't surpass the previous one (not sure if there are already plans to do that or not)
+2011-06-06T15:56:57  <UncleVasya> Is it difficult to turn off these lines on the sides of the map in visualizer? I mean these blackened pieces of map that represents the other side.
+2011-06-06T15:58:05  <UncleVasya> I wanna turn it off in local visualizer.
+2011-06-06T15:58:20  <Frontier> UncleVasya: Do they irritate you?
+2011-06-06T15:58:52  <Frontier> I had something like this, but I removed it, because I considered it an unnessecary extra option.
+2011-06-06T15:59:08  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wqwwbhkrtlyatotj> has joined #aichallenge
+2011-06-06T15:59:36  * UncleVasya is going to search word irritate in the vocabulary.
+2011-06-06T15:59:55  <Frontier> confuse
+2011-06-06T15:59:58  <UncleVasya> yes
+2011-06-06T16:00:24  <UncleVasya> They are bowl out me much.
+2011-06-06T16:00:53  <Frontier> hmm some attacks happen across map boundaries, so it is somewhat important to see the copy of the map
+2011-06-06T16:01:38  <UncleVasya> ok
+2011-06-06T16:02:13  <Frontier> would you prefer if there was just white around the map?
+2011-06-06T16:02:44  <UncleVasya> I did it when just downloaded source code :)
+2011-06-06T16:02:55  <UncleVasya> White background and black water
+2011-06-06T16:03:00  <Frontier> Actually you are the second person to ask for that, so I may actually add that feature again.
+2011-06-06T16:03:12  <Frontier> Haha, ok then :)
+2011-06-06T16:04:02  <mcstar> yeeehah, my engine+visualizer is working, ants can eat each other
+2011-06-06T16:04:41  <Frontier> mcstar: What amazing features does your engine offer? Is it fast?
+2011-06-06T16:04:55  <mcstar> i think it is
+2011-06-06T16:05:05  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-fwfigkjuoxsjjcqh> has joined #aichallenge
+2011-06-06T16:05:05  <Frontier> Can it load bots written in other languages?
+2011-06-06T16:05:31  <mcstar> oh no, it cant interface with other bots, i didnt want it to
+2011-06-06T16:05:39  <Frontier> Does it help debugging?
+2011-06-06T16:05:45  <mcstar> i want to develop my genetic algorithm with it
+2011-06-06T16:06:09  <Frontier> Yeah I though of that, but it is too much for me.
+2011-06-06T16:06:19  <UncleVasya> Are we waiting for ground.invaders this time? :D
+2011-06-06T16:06:23  <mcstar> what? writing an engine?
+2011-06-06T16:06:35  <Frontier> no, doing a genetic algorithm
+2011-06-06T16:06:39  <mcstar> ah
+2011-06-06T16:06:47  <mcstar> thx, you could have saif it erlier
+2011-06-06T16:06:55  <mcstar> but its too late for me now isnt it?
+2011-06-06T16:06:57  <mcstar> :D
+2011-06-06T16:07:02  <mcstar> said
+2011-06-06T16:07:40  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wqwwbhkrtlyatotj> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T16:08:12  <Frontier> I'd probably write some general strategies (expand, defend, attack, some other strategy...) and let something like a neural net decide for the right strategy depending on the situation on the map
+2011-06-06T16:08:29  <mcstar> done it before?
+2011-06-06T16:08:43  <mcstar> (the neural thingy)
+2011-06-06T16:09:04  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-06-06T16:09:04  *** ChanServ sets mode: +o amstan
+2011-06-06T16:09:07  <Frontier> no, but I learnt that if you give feedback on the outcome of a strategy to the neural net, it can adjust itself and chose another one next time
+2011-06-06T16:09:52  <mcstar> well, that is called learning isnt it?
+2011-06-06T16:10:28  <Frontier> yes, so it would be something you can call ai. most of the stuff in planet wars was far away from ai :)
+2011-06-06T16:10:55  <Frontier> but I have to work on the visualizer first anyway!
+2011-06-06T16:11:09  <mcstar> i dont know, the programmer at least would be able to pass the turing test lol
+2011-06-06T16:12:03  <mcstar> i will really try the GA stuff, if it wont work well, or at all, then ill give heuristics a try
+2011-06-06T16:12:22  <mcstar> but i have to say it was quite pleasant to write the engine in lisp
+2011-06-06T16:12:44  *** olexs <olexs!~Leviathan@drms-590edbaf.pool.mediaWays.net> has joined #aichallenge
+2011-06-06T16:13:17  *** roginn <roginn!bb6aa42a@gateway/web/freenode/ip.187.106.164.42> has joined #aichallenge
+2011-06-06T16:15:06  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 4.0.1/20110518052719])
+2011-06-06T16:15:17  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-06-06T16:21:24  <jmcarthur> Frontier: well i was talking about C and fixed point. floating point is still floating point even if highly configurable
+2011-06-06T16:22:26  <jmcarthur> i like that documentation. very precise
+2011-06-06T16:22:58  <jmcarthur> and i love that D prefers purity even though it's an impure language
+2011-06-06T16:23:00  <Frontier> I hate that documentation. Once it goes into classes, structs or templates you get totally lost :p
+2011-06-06T16:23:14  <jmcarthur> well yeah. i just mean this floating point stuff specifically
+2011-06-06T16:23:53  <Frontier> is there a pure language?
+2011-06-06T16:24:11  <Frontier> how could you write anything meaningful without ever changing the outside world?
+2011-06-06T16:24:45  <Frontier> files, console, network, shared memory
+2011-06-06T16:33:04  *** Palmik <Palmik!~palmik@PalmikPC.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-06-06T16:37:21  <jmcarthur> purity doesn't even technically mean you can't communicate with the outside world, at least not by many definitions
+2011-06-06T16:38:53  <jmcarthur> well
+2011-06-06T16:38:57  <jmcarthur> let me rephrase
+2011-06-06T16:39:11  <janzert> :)
+2011-06-06T16:39:55  <jmcarthur> *purity* has to do with how the meanings of functions are derived from their parts, but doesn't not require that the *meaning* of those functions can't have anything to do with the outside world
+2011-06-06T16:40:31  <jmcarthur> it's perhaps a subtle distinction, especially when looking at currently popular pure languages which aren't as different from imperative programming as they at first seem
+2011-06-06T16:41:37  <janzert> seems I could extend purity to cover pretty much anything going from a definition that includes outside world state though
+2011-06-06T16:42:07  <jmcarthur> janzert: exactly! the problem is that you then have to have a definition for outside world state. it's harder than it appears
+2011-06-06T16:42:12  <janzert> but I'm certainly not a functional programmer by any means ;)
+2011-06-06T16:42:15  <jmcarthur> s/definition/model/
+2011-06-06T16:43:01  <mcstar> its soo nice that when i have a conceptually signifacant bug, the program still manages to run for a time, and appear to work ok, hm
+2011-06-06T16:43:21  <jmcarthur> one of my biggest problems with haskell is that most haskell developers have accepted IO as *the* solution to communicating with the outside world. to me, all it does is give us an imperative DSL. the problem is that it doesn't have a precise model at all.
+2011-06-06T16:43:49  <jmcarthur> so it's only "pure" if you just treat it entirely as a black box. kind of cheating, IMO
+2011-06-06T16:44:26  *** delt0r___ <delt0r___!~delt0r@188-22-170-41.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-06T16:44:38  <jmcarthur> it's still pure i guess.  getLine's meaning is just a big question mark. at least you can combine question marks and get other question marks.
+2011-06-06T16:44:55  <janzert> hehe
+2011-06-06T16:45:56  *** delt0r_ <delt0r_!~delt0r@188-22-174-244.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-06-06T16:50:45  <Frontier> *sigh*, well I guess I like the definition where a pure function is simply one that doesn't depend on or modify anything outside of its scope.
+2011-06-06T16:51:52  <Frontier> although the generalization sounds good on second thought
+2011-06-06T16:52:38  <jmcarthur> well, your definition sounds about the same as mine. the *meaning* of a pure function doesn't depend on or modify anything outside of scope
+2011-06-06T16:54:10  <jmcarthur> because purity can be taken to mean different things, i use "denotative" to describe the kind of thing i'm talking about
+2011-06-06T16:54:29  <jmcarthur> which has a precise meaning
+2011-06-06T16:54:33  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-fwfigkjuoxsjjcqh> has quit IRC (Quit: bhasker_)
+2011-06-06T16:55:27  <jmcarthur> in a denotative language, expressions can be made up of subexpressions, each subexpression is associated with a meaning (like a mathematical object, a number, a function, etc.), and the meaning of an expression depends only on the meanings of its subexpressions
+2011-06-06T16:55:29  *** bhasker <bhasker!~bhasker@nat/yahoo/x-oollhcxibaekiylv> has joined #aichallenge
+2011-06-06T16:56:14  <mcstar> jmcarthur: havent you discussed this a couple of weeks ago? i have deja vu
+2011-06-06T16:56:33  <jmcarthur> i may have said the same thing here before, but i think it was at least a couple months ago
+2011-06-06T17:02:04  *** UncleVasya <UncleVasya!kvirc@88-214-96-42.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-06-06T17:06:48  *** mcstar <mcstar!~mcstar@adsl-89-134-12-117.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-06T17:19:45  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-06-06T17:32:58  *** roginn <roginn!bb6aa42a@gateway/web/freenode/ip.187.106.164.42> has quit IRC (Quit: Page closed)
+2011-06-06T17:33:13  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has quit IRC (Read error: Connection reset by peer)
+2011-06-06T17:33:36  *** bhasker <bhasker!~bhasker@nat/yahoo/x-oollhcxibaekiylv> has quit IRC (Ping timeout: 250 seconds)
+2011-06-06T17:41:42  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has joined #aichallenge
+2011-06-06T17:42:35  *** bhasker <bhasker!~bhasker@nat/yahoo/x-ktxladwbobartqsc> has joined #aichallenge
+2011-06-06T17:45:51  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-06-06T17:57:26  *** amstan_ <amstan_!~alex@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-06-06T17:57:26  *** ChanServ sets mode: +o amstan_
+2011-06-06T18:02:15  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-06T18:02:30  *** bhasker <bhasker!~bhasker@nat/yahoo/x-ktxladwbobartqsc> has quit IRC (Quit: bhasker)
+2011-06-06T18:04:56  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yikqvwoaugjirwdq> has joined #aichallenge
+2011-06-06T18:05:45  *** amstan_ <amstan_!~alex@206-248-186-147.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-06-06T18:29:17  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-06-06T18:44:18  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-06-06T18:48:19  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-06-06T18:49:29  *** Zaphus <Zaphus!7cbf35b4@gateway/web/freenode/ip.124.191.53.180> has quit IRC (Quit: Page closed)
+2011-06-06T18:51:14  *** xQuasar <xQuasar!xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-06T18:51:31  <xQuasar> If 'r' has been removed from the game, I think you guys should update this page: http://aichallengebeta.hypertriangle.com/specification.php
+2011-06-06T18:54:18  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Disconnected by services)
+2011-06-06T18:54:59  *** xQuasar <xQuasar!xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC ()
+2011-06-06T18:55:10  *** Mathnerd314_ <Mathnerd314_!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-06-06T18:56:11  *** Mathnerd314_ is now known as Mathnerd314
+2011-06-06T18:57:44  *** okayzed is now known as okay
+2011-06-06T19:20:14  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-06-06T19:24:35  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: time to go)
+2011-06-06T19:37:20  *** batukan <batukan!~br@adsl-89-132-43-109.monradsl.monornet.hu> has joined #aichallenge
+2011-06-06T19:39:09  *** batukan <batukan!~br@adsl-89-132-43-109.monradsl.monornet.hu> has quit IRC (Quit: quiting)
+2011-06-06T19:54:50  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yikqvwoaugjirwdq> has quit IRC (Ping timeout: 248 seconds)
+2011-06-06T19:58:48  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wdhcdqfvihtnwjfg> has joined #aichallenge
+2011-06-06T20:09:22  *** olexs <olexs!~Leviathan@drms-590edbaf.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-06T20:34:42  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Ping timeout: 255 seconds)
+2011-06-06T21:03:13  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wdhcdqfvihtnwjfg> has quit IRC (Quit: bhasker)
+2011-06-06T21:05:09  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-06-06T22:02:54  <antimatroid> @later tell xQuasar I've updated the specs page to remove the 'r' line stuff on github, it'll show up on the beta site specs next time amstan "redoes" stuff
+2011-06-06T22:02:54  <contestbot> antimatroid: Ready to serve.
+2011-06-06T22:08:05  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC ()
+2011-06-06T22:10:00  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-06-06T22:34:23  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Read error: Connection reset by peer)
+2011-06-06T22:35:24  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-06T22:44:23  *** computerwiz_222 <computerwiz_222!~andrew@216-246-252-249.cpe.distributel.net> has joined #aichallenge
+2011-06-06T22:44:28  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-06-06T22:45:32  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-06-06T22:45:33  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Read error: Connection reset by peer)
+2011-06-06T22:45:41  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-06T22:47:11  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Read error: Connection reset by peer)
+2011-06-06T23:06:21  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Disconnected by services)
+2011-06-06T23:07:33  *** Mathnerd314_ <Mathnerd314_!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-06-06T23:08:20  *** Mathnerd314_ is now known as Mathnerd314
+2011-06-06T23:16:06  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2011-06-06T23:19:41  *** okay is now known as okayzed
+2011-06-06T23:30:31  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-06T23:52:29  *** computerwiz_222 <computerwiz_222!~andrew@216-246-252-249.cpe.distributel.net> has quit IRC (Ping timeout: 276 seconds)
+2011-06-06T23:57:08  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)

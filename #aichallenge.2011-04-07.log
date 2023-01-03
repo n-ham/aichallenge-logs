@@ -1,0 +1,439 @@
+2011-04-07T00:01:46  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-04-07T00:08:21  <janzert> hmm :(
+2011-04-07T00:08:47  <McLeopold> It will be faster.  It's the choosing of the map that is slowing me down, which isn't that critical.
+2011-04-07T00:09:02  <janzert> even 1.5 seconds will be workable
+2011-04-07T00:09:04  <McLeopold> I'll be happy if we get it to 500ms
+2011-04-07T00:09:10  <janzert> just would be nice to be faster
+2011-04-07T00:09:12  <janzert> yeah
+2011-04-07T00:09:45  <McLeopold> This time around, I don't think the database will be to much of an issue.  I plan to get memcache working for most php pages.
+2011-04-07T00:10:06  <janzert> great
+2011-04-07T00:10:07  <McLeopold> So it should be free to churn on matchups and ranking.
+2011-04-07T00:10:28  <McLeopold> btw, can you add memcache to the install scripts?
+2011-04-07T00:10:33  <janzert> what I can do will be very limited from here on out, work is picking up into our busy season now
+2011-04-07T00:10:36  <McLeopold> I can create an issue if you want
+2011-04-07T00:10:52  <janzert> just using the apt package?
+2011-04-07T00:11:10  <McLeopold> yeah, that's what I'm using locally.
+2011-04-07T00:11:44  <McLeopold> I've never really looking into things like NoSQL, CouchDB or MongoDB
+2011-04-07T00:12:23  <janzert> just need to add the package name to the list at line 27 in install_website_packages() of server_setup.py then
+2011-04-07T00:12:58  <McLeopold> And something to get it in the startup scripts
+2011-04-07T00:13:16  <janzert> apt won't have it start automatically already?
+2011-04-07T00:13:39  <McLeopold> I'm still new to ubuntu
+2011-04-07T00:13:57  <McLeopold> I'm used to gentoo, you always roll your own. :)
+2011-04-07T00:14:05  <janzert> ahh, I'd be rather surprised if apt doesn't configure it to start
+2011-04-07T00:14:58  <janzert> we may need to add some manual configuration changes though but the defaults are probably fine to start with
+2011-04-07T00:15:32  <janzert> from the little I've used memcache it seems like the only major knob to twist is how much memory to use
+2011-04-07T00:15:38  <janzert> am I remembering right?
+2011-04-07T00:15:50  <McLeopold> yep
+2011-04-07T00:16:10  <McLeopold> plus telling it of other server to help with the load, but we would only have one
+2011-04-07T00:16:39  <janzert> in which case I wouldn't bother worrying with that for now since I've no idea what the final server capability will look like
+2011-04-07T00:16:55  <McLeopold> I'm don't know if I'm using php-memcache or php-memcached :/
+2011-04-07T00:17:04  <janzert> hehe
+2011-04-07T00:17:48  <McLeopold> oh, php-memcached is newer and better
+2011-04-07T00:18:39  <janzert> and looks like php-memcache is just the php interface not the actual memcached daemon
+2011-04-07T00:19:09  <McLeopold> both php-* are just clients
+2011-04-07T00:19:46  <janzert> http://packages.ubuntu.com/natty/php5-memcached
+2011-04-07T00:20:00  <McLeopold> http://stackoverflow.com/questions/1442411/using-memcache-vs-memcached-with-php
+2011-04-07T00:20:36  <janzert> oops, yeah
+2011-04-07T00:20:43  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-07T00:20:57  <janzert> I saw the libmemcached5 dependency and thought it was daemon itself
+2011-04-07T00:21:11  <McLeopold> janzert: do you think you could do the chroot stuff before you can't work on this anymore?
+2011-04-07T00:21:30  <janzert> was jbroman not working on it?
+2011-04-07T00:21:37  <McLeopold> I don't know
+2011-04-07T00:21:40  <janzert> I could try
+2011-04-07T00:21:50  <McLeopold> It's been really quite the last 2 weeks
+2011-04-07T00:21:57  <McLeopold> I haven't really done much myself
+2011-04-07T00:22:09  <janzert> although mainly I was hoping once you had the pieces in place that everything worked end to end I would finish off the setup scripts
+2011-04-07T00:22:33  <McLeopold> I'm more worried about chroot than install scripts
+2011-04-07T00:22:45  <janzert> it shouldn't take much to do that so should be able to squeeze it in :}
+2011-04-07T00:22:58  <janzert> yeah, it's rather a bigger benefit
+2011-04-07T00:23:06  <janzert> more work too I think ;)
+2011-04-07T00:23:51  <janzert> although even more important is getting the sigstop stuff working (and seeing if it will really work)
+2011-04-07T00:24:06  <McLeopold> I'm hoping sigh will look at that.
+2011-04-07T00:24:18  <McLeopold> Also, Frontier is worried about buffer stuff with the engine.
+2011-04-07T00:24:43  <janzert> was just typing about that :)
+2011-04-07T00:25:09  <janzert> the easiest portable way to do it is have a thread for each bots input and output
+2011-04-07T00:25:42  <McLeopold> kinda like dmj setup?
+2011-04-07T00:25:46  <janzert> so long as we're only going to have 10's and not hundreds of bots in a game it should work just fine
+2011-04-07T00:26:04  <janzert> not sure what he did, I've never looked at his tcp server code at all
+2011-04-07T00:26:19  <McLeopold> I'm pretty sure you did
+2011-04-07T00:26:29  <janzert> I wouldn't be surprised though since it is a common technique
+2011-04-07T00:26:32  <McLeopold> there was a comment about mixing threads and processes...
+2011-04-07T00:26:57  <janzert> maybe back in the tron timeframe I might have but I don't remember doing it :)
+2011-04-07T00:27:51  <janzert> you can look at my arimaa AEI interface for an example of doing it too, although it's not quite what you want so probably not as good of an example if it's also in the tcp server
+2011-04-07T00:29:15  <janzert> actually though now that I think about it more I'd be a bit surprised if he is using it in the tcp server
+2011-04-07T00:29:38  <janzert> non-blocking socket IO is pretty easy and portable
+2011-04-07T00:29:59  <McLeopold> that's where I got the example that you looked at
+2011-04-07T00:30:31  <janzert> ok, I don't remember the example now though
+2011-04-07T00:31:47  <janzert> basic idea in python is kick of a thread that just reads or writes to the bot and then communicate to it from the main thread using a queue
+2011-04-07T00:32:08  <McLeopold> I think the current sandbox does that
+2011-04-07T00:32:50  <janzert> I think the old sandbox did for reads, but not writes
+2011-04-07T00:33:01  <janzert> not sure if the current one still does
+2011-04-07T00:33:40  <McLeopold> yeah, your right, not for writes
+2011-04-07T00:35:09  <janzert> yep, looks like
+2011-04-07T00:36:24  <janzert> anything else offhand? I've got a headache and looking at code isn't doing it any good
+2011-04-07T00:36:37  <janzert> going to take off unless you need something
+2011-04-07T00:36:40  <McLeopold> just chroot
+2011-04-07T00:37:14  <janzert> yeah, I'll try and look at getting that setup next time I get some time
+2011-04-07T00:37:30  <McLeopold> thx
+2011-04-07T00:38:09  <janzert> see you around
+2011-04-07T00:38:17  <McLeopold> later
+2011-04-07T01:06:03  *** chris__0076 <chris__0076!~Chris_007@adsl-176-16-141.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-04-07T01:23:40  *** fgump <fgump!~gump@188.74.82.177> has joined #aichallenge
+2011-04-07T01:24:58  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-04-07T01:46:05  *** Daniel350 <Daniel350!~daniel@CPE-121-220-42-241.lnse2.win.bigpond.net.au> has joined #aichallenge
+2011-04-07T02:26:26  <CIA-33> aichallenge: McLeopold epsilon * r7fca3fb / sql/2_generate_matchup.sql : updated generate_matchups sp, added some sql for setting positions (in progress) - http://bit.ly/hFFsmP
+2011-04-07T02:27:41  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-07T02:37:44  *** lundgren <lundgren!55e0a6c0@gateway/web/freenode/ip.85.224.166.192> has joined #aichallenge
+2011-04-07T03:13:56  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-07T03:37:37  *** amstan <amstan!~amstan@69-196-170-222.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-04-07T03:37:43  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-04-07T03:50:45  *** antimatroid <antimatroid!~nick@106.113-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-04-07T03:58:45  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-04-07T04:00:14  *** stocha <stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-07T04:02:55  *** stocha <stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Client Quit)
+2011-04-07T04:06:00  *** antimatroid <antimatroid!~nick@158.130-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-07T04:07:11  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-04-07T04:10:17  <CIA-33> aichallenge: sigh epsilon * r326515f / worker/engine.py : Ensure that bots can't DoS engine with a large stream of input without "go" - http://bit.ly/fBDeEu
+2011-04-07T04:10:25  *** antimatroid <antimatroid!~nick@158.130-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-04-07T04:28:53  *** antimatroid <antimatroid!~nick@158.130-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-07T04:29:37  *** fgump <fgump!~gump@188.74.82.177> has quit IRC (Quit: Leaving)
+2011-04-07T04:30:22  *** lundgren <lundgren!55e0a6c0@gateway/web/freenode/ip.85.224.166.192> has quit IRC (Quit: Page closed)
+2011-04-07T04:58:09  <Keth> Frontier: http://pastebin.com/nkMvs2cV - bugged replay (perhaps too long? it went up to 1000 rounds)
+2011-04-07T05:01:03  <Keth> Frontier: http://pastebin.com/3cxRPTiU - one more, much smaller
+2011-04-07T05:03:12  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-07T05:39:22  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-04-07T06:08:12  *** Keth <Keth!~kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-07T06:08:20  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-07T06:32:05  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.50> has joined #aichallenge
+2011-04-07T06:42:57  *** delt0r_ <delt0r_!~delt0r@188-22-167-59.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-04-07T06:43:19  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-04-07T06:49:21  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-07T07:29:03  *** delt0r <delt0r!~delt0r@greg.cibiv.univie.ac.at> has joined #aichallenge
+2011-04-07T07:30:24  *** Daniel350 <Daniel350!~daniel@CPE-121-220-42-241.lnse2.win.bigpond.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-04-07T07:54:47  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-07T07:55:09  *** Keth <Keth!~kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-07T07:57:01  *** Daniel350 <Daniel350!~daniel@CPE-121-220-42-241.lnse2.win.bigpond.net.au> has joined #aichallenge
+2011-04-07T08:03:36  <Frontier> Keth: I get a "Number of orders does not match life span." with that replay.
+2011-04-07T08:04:59  <Frontier> but I have an idea. it must be another regression from the json switch
+2011-04-07T08:05:22  <Keth> Frontier: no idea either
+2011-04-07T08:08:42  <Frontier> ok lets do the math... the line says 'end turn' = 756 and 'conversion turn' = 70
+2011-04-07T08:09:29  <Frontier> that makes 686 turns that must be filled with orders (unless this ant survived the game, but you said it went over 1000 turns)
+2011-04-07T08:11:32  <Keth> you telling me it's my bot?
+2011-04-07T08:11:34  <Keth> blame the negine
+2011-04-07T08:11:35  <Keth> engine
+2011-04-07T08:11:36  <Keth> :3
+2011-04-07T08:11:42  <Frontier> I see 684 commands in the command string. But even if the ant survived that would only allow it to have one less move order than life span
+2011-04-07T08:11:48  <Keth> the thing is
+2011-04-07T08:11:50  <Keth> I gave you two
+2011-04-07T08:11:55  <Keth> the second one has only like 80 turns
+2011-04-07T08:12:02  <Keth> and gives same error
+2011-04-07T08:12:19  <Keth> see if you can figure out the shorter one
+2011-04-07T08:13:16  <Frontier> ok command string has 42 chars
+2011-04-07T08:13:18  <Stocha> we'll need some regression tests for then engine somehow
+2011-04-07T08:13:35  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-04-07T08:13:41  <Frontier> ant is owned by player from 0 - 44
+2011-04-07T08:14:36  <Frontier> same story. somehow the ant lives longer than the engine outputs orders for it
+2011-04-07T08:15:43  <Keth> i guess report to whoever does the engine since I honestly have no clue how the repaly information is stored
+2011-04-07T08:16:03  <Keth> I just thought I would let you know I often get these with my bot and stocha's
+2011-04-07T08:16:51  <Keth> I know it might be bot fault but engine shouldn't output the corrupted replay in first place
+2011-04-07T08:18:21  <Frontier> sigh can probably tell you what is going wrong. But I can imagine it happens with other bots, too.
+2011-04-07T08:19:00  <Keth> i see
+2011-04-07T08:19:20  <Keth> so I talk to sigh and I tell him what?
+2011-04-07T08:19:21  <Frontier> Any bot that survives the game has one less order than it should. Or maybe the other way round: The engine tries to artificially prolong the replay.
+2011-04-07T08:19:30  <sigh> what's happening?
+2011-04-07T08:19:35  <Keth> =D
+2011-04-07T08:19:35  <Frontier> :D
+2011-04-07T08:19:46  <Keth> one replay
+2011-04-07T08:19:48  <Keth> well
+2011-04-07T08:19:51  <Keth> many replays are corrupted
+2011-04-07T08:20:05  <Frontier> This chat turns out to be a sketch comedy
+2011-04-07T08:20:13  <sigh> hmm... those replay's that you pasted above?
+2011-04-07T08:20:21  <Keth> let me paste again, there is one short
+2011-04-07T08:20:21  <sigh> why are they the old style replays?
+2011-04-07T08:20:42  <Keth> that's true
+2011-04-07T08:20:49  <Frontier> people like 'em better that way
+2011-04-07T08:21:07  <sigh> more to the point, the latest engine can't generate them
+2011-04-07T08:21:16  <Keth> yeah, i realized ujst now
+2011-04-07T08:21:30  <Keth> sketch comedy over
+2011-04-07T08:31:34  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-07T08:33:35  <Frontier> sigh: Is it the same bug that you already solved a few days ago?
+2011-04-07T08:34:05  <sigh> Frontier: no idea... probably
+2011-04-07T08:34:41  <Frontier> I thought it was maybe another attempt at adding a 'bonus round'.
+2011-04-07T08:36:10  <sigh> *shrug* there's been a few bugs fixed... I'm not going to worry about errors in old versions
+2011-04-07T08:37:25  <Frontier> sigh: I thought it was a new bug since it looked like the bug with the scores having an additional entry.
+2011-04-07T08:37:51  <Frontier> Its good to know that I can reject any non-json replay now :)
+2011-04-07T08:38:02  <Frontier> ...I mean in bug reports
+2011-04-07T08:38:39  <sigh> Frontier: to be honest it sounds more like a bug I had ages ago in the conflict resolution
+2011-04-07T08:55:45  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.50> has quit IRC (Remote host closed the connection)
+2011-04-07T08:56:13  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 276 seconds)
+2011-04-07T08:58:09  <Frontier> sigh: the leap seconds issue looks like an april fool's joke ^^
+2011-04-07T08:59:05  <Frontier> I didn't know about it though. It was an interesting read. May come handy one day at a table quiz
+2011-04-07T09:00:03  <sigh> yeah, I don't know why he put that in there
+2011-04-07T09:22:17  *** amstan <amstan!~amstan@69-196-170-222.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T09:22:18  *** ChanServ sets mode: +o amstan
+2011-04-07T09:29:15  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-07T09:33:27  *** amstan <amstan!~amstan@69-196-170-222.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-04-07T09:54:47  <Frontier> why do we have compile.py and compile_anything.py and compile.py doesn't run because it tries to call a function with 0 arguments that takes 1 argument. *puzzled*
+2011-04-07T10:12:25  *** helo_ <helo_!46593219@gateway/web/freenode/ip.70.89.50.25> has joined #aichallenge
+2011-04-07T10:17:34  *** Daniel350 <Daniel350!~daniel@CPE-121-220-42-241.lnse2.win.bigpond.net.au> has quit IRC (Quit: Ex-Chat)
+2011-04-07T10:33:04  <CIA-33> aichallenge: Marco Leise epsilon * rd92ba5f / (worker/server_info.py.sample worker/worker_setup.py): added D language .deb to worker setup script / added missing comma in server_info.py.sample - http://bit.ly/f1J8mM
+2011-04-07T10:37:30  <Frontier> @later tell McLeopold: Please review your commit on compiler.py from the 15th of March. It looks as if the old compile_anything.py and the new compiler.py got mixed up. Also the mysql import may no longer be required.
+2011-04-07T10:37:30  <contestbot> Frontier: As you wish.
+2011-04-07T10:42:47  <CIA-33> aichallenge: aerique epsilon * rf8b0c60 / ants/dist/starter_bots/common_lisp/src/game-state.lisp : Prevent dead ants from overwriting food tiles. - http://bit.ly/gRxYGn
+2011-04-07T10:51:08  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 246 seconds)
+2011-04-07T10:57:50  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-04-07T11:01:25  *** contestbot_ <contestbot_!~supybot@76-10-147-221.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T11:01:26  *** contestbot <contestbot!~supybot@69-196-170-222.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-04-07T11:03:44  *** contestbot_ is now known as contestbot
+2011-04-07T11:03:46  *** ChanServ sets mode: +o contestbot
+2011-04-07T11:07:11  *** contestbot_ <contestbot_!~supybot@69.165.153.211> has joined #aichallenge
+2011-04-07T11:07:12  *** contestbot <contestbot!~supybot@76-10-147-221.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-04-07T11:09:06  *** contestbot_ is now known as contestbot
+2011-04-07T11:09:08  *** ChanServ sets mode: +o contestbot
+2011-04-07T11:16:18  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-07T11:16:35  <janzert> Since it just came out yesterday I'm guessing the leap second issue was a reaction to http://queue.acm.org/detail.cfm?id=1967009
+2011-04-07T11:17:31  <janzert> but I think for us it's clearly YAGNI and adds way more complexity than it's worth to handle it
+2011-04-07T11:23:19  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-07T11:29:29  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-04-07T11:33:35  <McLeopold> Frontier: you around?
+2011-04-07T11:34:15  <Frontier> hi
+2011-04-07T11:36:58  <Frontier> McLeopold: Yeah, I found that I could not run compiler.py when I wanted to add support for D and noticed that several parts of the code don't fit together as if they were taken from different sources/dates.
+2011-04-07T11:40:05  <McLeopold> Frontier: you are right that I did put that together from a few other files.
+2011-04-07T11:40:15  <McLeopold> The changes were to support compiling on the workers.
+2011-04-07T11:40:35  <McLeopold> Plus, to remove any language data from the database
+2011-04-07T11:40:57  <McLeopold> BTW, the leap seconds issue is a total joke :D
+2011-04-07T11:41:38  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-16-141.asm.bellsouth.net> has joined #aichallenge
+2011-04-07T11:42:04  <Frontier> McLeopold: I said it looks like an april fool's joke. The previous version of compiler.py looks more consistent.
+2011-04-07T11:43:42  <McLeopold> does the current version break for you?
+2011-04-07T11:45:18  <Frontier> It breaks badly. Look at the main method for example. compile_anything requires an argument, but doesn't return a list of results
+2011-04-07T11:45:37  <Frontier> (these are two separate issues)
+2011-04-07T11:46:03  <McLeopold> oh, I guess I should have removed the main, look at how the worker.py uses it
+2011-04-07T11:46:05  <Frontier> It's really a crazy mix.
+2011-04-07T11:47:08  <Frontier> hmm, it would be nice if I could have the main back to run tests with it
+2011-04-07T11:47:46  <McLeopold> let me fix it then
+2011-04-07T11:47:54  <Frontier> also there is still a compile_anything.py that should be removed I think :)
+2011-04-07T11:48:20  <Frontier> remove the mysql import while you are at it.
+2011-04-07T11:50:16  *** amstan <amstan!~alex@142.222.102.128> has joined #aichallenge
+2011-04-07T11:50:16  *** ChanServ sets mode: +o amstan
+2011-04-07T11:56:04  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-04-07T12:06:19  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-07T12:19:21  *** skynetz <skynetz!~none@unaffiliated/skynetz> has joined #aichallenge
+2011-04-07T12:28:09  *** delt0r <delt0r!~delt0r@greg.cibiv.univie.ac.at> has quit IRC (Ping timeout: 276 seconds)
+2011-04-07T12:44:15  <McLeopold> janzert/amstan: can you answer a compiling question?
+2011-04-07T12:44:24  <amstan> McLeopold: compiling what?
+2011-04-07T12:44:25  <amstan> maybe
+2011-04-07T12:44:29  <McLeopold> java
+2011-04-07T12:44:42  <amstan> ok, try me, but i doubt it
+2011-04-07T12:45:03  <McLeopold> in the last contest, did a java submission get compiled to a class file or jar file?
+2011-04-07T12:46:35  <amstan> i think it was class
+2011-04-07T12:48:08  <McLeopold> that's going to break my detect_language function
+2011-04-07T12:54:17  <McLeopold> amstan: language is detected by finding a MyBot.* file, when java is compiled I get a MyBot.class and MyBot.jar file, if I attempt to detect the language again, it fails because MyBot.class could be scala
+2011-04-07T12:54:48  <amstan> why are you detecting language after compilation?
+2011-04-07T12:54:54  <amstan> shouldn't this be done before?
+2011-04-07T12:55:13  <amstan> don't you have the same problem with compiled languages, like Haskell/C
+2011-04-07T12:55:19  <McLeopold> because we pulled the language info out of the database
+2011-04-07T12:55:23  <amstan> they both get compiled to a binary MyBot
+2011-04-07T12:55:57  <McLeopold> So, I need a worker database of submission_id's to languages, or we write a file to the dir that can help us detect
+2011-04-07T12:56:11  <McLeopold> if we write a file to the dir, a side affect is people can self declare the language
+2011-04-07T12:56:23  <McLeopold> maybe a good thing?
+2011-04-07T12:57:27  <McLeopold> Or, I could create a run.sh file after compilation, and not need to detect the language again?
+2011-04-07T12:58:10  <McLeopold> amstan: again, if we didn't overwrite, it could have interesting side affects
+2011-04-07T12:58:47  <amstan> i think that's fine...
+2011-04-07T13:02:12  <Frontier> I thought Java was compiled to .jar, but look at compile_anything.py to know. Anyway why do we keep .o and .class files? If we cleaned them up we could detect the language again. A shell wrapper is ok I guess. I'd prefer to just load the executable for the compiled languages. It is the purist in me…
+2011-04-07T13:04:05  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-04-07T13:04:29  <McLeopold> Frontier: there could always be another conflict, it is better to just detect the language once and be done with it
+2011-04-07T13:04:49  <McLeopold> Also, I could just load the text from the run.sh and use that as my command directly
+2011-04-07T13:06:20  <Frontier> :)
+2011-04-07T13:17:41  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-04-07T13:24:00  *** contestbot_ <contestbot_!~supybot@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T13:24:01  *** contestbot <contestbot!~supybot@69.165.153.211> has quit IRC (Disconnected by services)
+2011-04-07T13:25:07  <CIA-33> aichallenge: McLeopold epsilon * r814d2ba / (worker/compiler.py worker/worker.py): Compiler.py can now be run directly for testing. Added run.sh as output to compiling for language detection. - http://bit.ly/g5Pugp
+2011-04-07T13:25:07  *** contestbot_ is now known as contestbot
+2011-04-07T13:25:08  *** ChanServ sets mode: +o contestbot
+2011-04-07T13:25:19  <McLeopold> Frontier: ok, try the compiler.py now, let me know how it goes
+2011-04-07T13:27:15  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-07T13:28:41  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110319135224])
+2011-04-07T13:31:11  *** amstan <amstan!~alex@142.222.102.128> has quit IRC (Ping timeout: 248 seconds)
+2011-04-07T13:51:55  <Zannick> you're not saving the compile output?
+2011-04-07T13:53:03  <Zannick> well, saving as in holding onto in a variable until it can be emailed to the user
+2011-04-07T14:00:13  *** andy____ <andy____!4e465f4f@gateway/web/freenode/ip.78.70.95.79> has joined #aichallenge
+2011-04-07T14:02:43  <McLeopold> Zannick: do we really want to email compile output to the users?
+2011-04-07T14:03:11  <Zannick> seemed like a good idea last contest
+2011-04-07T14:03:19  <McLeopold> My stuff always worked :)
+2011-04-07T14:03:33  <Zannick> Not everyone's did
+2011-04-07T14:03:34  <McLeopold> I'm gathering error messages, which could be sent
+2011-04-07T14:03:51  <McLeopold> I figured the progress logging was worthless
+2011-04-07T14:04:03  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-07T14:07:04  *** needsch <needsch!~Robert@81.210.159.12> has joined #aichallenge
+2011-04-07T14:09:19  <Zannick> the main problems that output is useful for is when it doesn't compile as expected but succeeds.
+2011-04-07T14:10:01  <Zannick> i can't think of an example
+2011-04-07T14:10:03  <Zannick> :P
+2011-04-07T14:10:27  *** [1]Kender <[1]Kender!~Kender@5ED3098D.cm-7-4a.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-07T14:10:35  <Zannick> i'm not going to worry about it
+2011-04-07T14:10:44  <[1]Kender> good evening
+2011-04-07T14:11:38  *** [1]Kender is now known as Kender2
+2011-04-07T14:12:28  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-04-07T14:13:03  <Kender2> could the aichallenge worker, manager, etc code also be used for continous competition?
+2011-04-07T14:13:19  <Kender2> rather than specific events
+2011-04-07T14:19:48  *** choas <choas!~lars@p5792CDCA.dip.t-dialin.net> has joined #aichallenge
+2011-04-07T14:20:32  <Kender2> Are there even any other sites running this apart from ai-contest.com ?
+2011-04-07T14:23:47  *** delt0r <delt0r!~delt0r@188-22-160-165.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-07T14:30:21  <Kender2> for java coders: http://bitbath.org "A real time strategy game where your code does the fighting."
+2011-04-07T14:31:32  <Kender2> I am interested in making it multi-language so I was wondering if the aichallenge software might be a fit?
+2011-04-07T14:32:40  <McLeopold> Kender2: it might be
+2011-04-07T14:33:48  <Kender2> I'm digging through the repository now, but python is not my strongest language
+2011-04-07T14:34:22  <McLeopold> it looks like it depends on 2 java class methods to work
+2011-04-07T14:34:39  <McLeopold> It would be some effort to abstract that out into a text protocol for communication
+2011-04-07T14:35:04  <Kender2> oh yes, I am thinking about doing a rewrite from scratch
+2011-04-07T14:35:12  <McLeopold> Plus, you would need the game engine to interface with the text protocol
+2011-04-07T14:35:14  <Kender2> to support multiple programming languages
+2011-04-07T14:35:24  <McLeopold> ok
+2011-04-07T14:35:33  <Kender2> and then I stumbled upon aichallenge / ai-contest.com
+2011-04-07T14:35:44  <McLeopold> Then, first, you want to define the bot communication protocol, then write a game class.
+2011-04-07T14:36:25  <McLeopold> look at ants/ants.py as an example of a game engine, also look at ants/game.py as a "interface" of sorts which will work with worker/engine.py
+2011-04-07T14:37:31  <McLeopold> As far as a continuous contest goes, we will eventually have an official tcp server, which may suit your needs better, but another ai-context instance would work too.
+2011-04-07T14:37:32  <Kender2> I can't figure out if it supports adding new contestants while the manager is running though
+2011-04-07T14:37:40  <McLeopold> hmm...
+2011-04-07T14:37:41  <Kender2> tcp server?
+2011-04-07T14:37:58  <McLeopold> You mean the game is always running and you just enter the arena?
+2011-04-07T14:38:08  <Kender2> yes
+2011-04-07T14:38:36  <Kender2> at bitbath.org a new entry is pitted against all existing bots to determine it's ranking
+2011-04-07T14:38:43  <McLeopold> no, this is written for  specific game instances with a set number of players
+2011-04-07T14:39:07  <Kender2> so more like a tournament
+2011-04-07T14:39:34  <Kender2> ?
+2011-04-07T14:40:34  <McLeopold> bitbath is not continuous, it is specific games, so ai-contest code would work
+2011-04-07T14:41:05  <McLeopold> yes, we are more like a tournament
+2011-04-07T14:41:34  <McLeopold> the worker and manager together control the matchups and maintain the rankings
+2011-04-07T14:42:41  <Kender2> yes, I see now how they could be expanded to support my arena-style contest
+2011-04-07T14:43:19  *** amstan <amstan!~alex@142.222.92.4> has joined #aichallenge
+2011-04-07T14:43:19  *** ChanServ sets mode: +o amstan
+2011-04-07T14:43:47  <McLeopold> to be clear, there are individual game instances with only 2 contestants, which isn't really an arena style game
+2011-04-07T14:43:53  <Kender2> true
+2011-04-07T14:44:04  <Kender2> but anyone can enter a new bot at any time
+2011-04-07T14:44:14  <McLeopold> yeah, for ai-contest, we keep it running until the deadline
+2011-04-07T14:44:25  <McLeopold> we could keep it running forever if we wanted to
+2011-04-07T14:45:02  <Kender2> ah, then I misunderstood a very basic concept
+2011-04-07T14:45:27  <Kender2> I thought the competition (manager/worker) would not start running until everyone had submitted their programds
+2011-04-07T14:47:05  <Kender2> Guess I'll have to brush up on my python to understand the code a bit better
+2011-04-07T14:47:17  <Kender2> and to be able to contribute
+2011-04-07T14:47:51  <McLeopold> it runs continuously, workers are separate servers that request a game to run, then the manager gives them a set of players to put in a game
+2011-04-07T14:48:23  <McLeopold> if a new submission is entered, the manager will probably schedule them for a game sooner than later
+2011-04-07T14:49:44  *** amstan <amstan!~alex@142.222.92.4> has quit IRC (Ping timeout: 246 seconds)
+2011-04-07T14:51:17  <Kender2> ok thanks. I'm going to have a think about the direction I'm going to take. And this has certainly given me something interesting to consider.
+2011-04-07T14:52:30  <Frontier> McLeopold: I see your changes, now I git stashed my changes, pulled yours and have to figure out how to merge.
+2011-04-07T14:52:54  *** Kender2 is now known as Kender_away
+2011-04-07T14:54:21  *** boegel <boegel!~boegel@91.182.209.28> has joined #aichallenge
+2011-04-07T14:59:09  <McLeopold> Frontier: welcome to hell
+2011-04-07T14:59:14  <McLeopold> merge hell
+2011-04-07T14:59:34  *** delt0r_ <delt0r_!~delt0r@188-22-163-169.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-07T14:59:51  <McLeopold> Frontier: do you need your changes?  I'd rather maintain control of the compiler.py
+2011-04-07T15:00:30  *** delt0r <delt0r!~delt0r@188-22-160-165.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-04-07T15:01:02  *** helo_ <helo_!46593219@gateway/web/freenode/ip.70.89.50.25> has quit IRC (Ping timeout: 252 seconds)
+2011-04-07T15:03:01  <Frontier> Oh it is just the addition for D. Nothing that conflicts with your work. But I'd like to test it thoroughly here instead of just telling you what to add.
+2011-04-07T15:03:59  <Frontier> Are you currently working on that file?
+2011-04-07T15:04:21  <McLeopold> Okay, got worried for a second.  Merge away, I'm done with it.
+2011-04-07T15:05:02  <McLeopold> Probably easier to just copy paste your dict entries into the current version
+2011-04-07T15:06:27  <Zannick> Frontier: you probably want to unstash (or stash pop) or maybe rebase
+2011-04-07T15:07:08  *** needsch <needsch!~Robert@81.210.159.12> has quit IRC (Ping timeout: 258 seconds)
+2011-04-07T15:07:29  <Frontier> Zannick: did that, now I need a gui tool to have a good look at the conflicts. I could pick out my changes manually, but it is not as much fun in the long run.
+2011-04-07T15:07:51  <Zannick> eurgh, yeah.
+2011-04-07T15:13:34  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-07T15:24:25  <Frontier> I am using git-cola now. It is written in Python and you can select lines in the diff viewer, right click and choose to undo or keep them
+2011-04-07T15:27:34  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-04-07T15:30:25  <CIA-33> aichallenge: Marco Leise epsilon * r1a1ca86 / worker/compiler.py : added compiler support for D - http://bit.ly/er8AEB
+2011-04-07T15:30:44  <Frontier> it worked ok :)
+2011-04-07T15:32:53  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-07T15:39:33  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-04-07T15:47:55  *** choas <choas!~lars@p5792CDCA.dip.t-dialin.net> has quit IRC (Quit: Lost terminal)
+2011-04-07T16:21:07  *** boegel <boegel!~boegel@91.182.209.28> has quit IRC (Quit: Leaving)
+2011-04-07T16:37:40  *** skynetz <skynetz!~none@unaffiliated/skynetz> has quit IRC (Quit: .)
+2011-04-07T16:37:47  *** amstan <amstan!~amstan@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T16:37:47  *** ChanServ sets mode: +o amstan
+2011-04-07T16:39:57  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-04-07T16:53:12  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T16:53:12  *** ChanServ sets mode: +o amstan_
+2011-04-07T16:58:41  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has quit IRC (Ping timeout: 246 seconds)
+2011-04-07T17:39:25  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T17:39:25  *** ChanServ sets mode: +o amstan_
+2011-04-07T17:44:45  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has quit IRC (Ping timeout: 276 seconds)
+2011-04-07T17:55:56  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-07T17:59:53  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-04-07T18:08:14  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-04-07T18:09:18  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-07T18:20:09  <CIA-33> aichallenge: McLeopold epsilon * rd0d9f0f / (sql/2_generate_matchup.sql website/api_get_task.php): on demand trueskill matchmaking - http://bit.ly/faWdmD
+2011-04-07T18:33:57  <CIA-33> aichallenge: McLeopold epsilon * recd7cba / (85 files in 4 dirs): cleanup of maps - http://bit.ly/hvs8qu
+2011-04-07T18:37:12  <McLeopold> antimatroid: why'd you nuke my .gitignore files?
+2011-04-07T18:54:17  <antimatroid> McLeopold: i got rid of one ages ago so i could add .txt files to the maps directory
+2011-04-07T18:54:22  <antimatroid> i'm not aware of doing it since then
+2011-04-07T18:54:52  <antimatroid> i can't remember who, but at the time i was like wtf to someone and they realised it was that and said just get rid of it for the moment :)
+2011-04-07T19:00:33  <Zannick> you don't need to nuke them, just change them
+2011-04-07T19:01:23  <McLeopold> antimatroid: I'm renamed your .txt to .map
+2011-04-07T19:01:29  <McLeopold> *I've*
+2011-04-07T19:01:58  <antimatroid> McLeopold: consider adding parameters to map files for the "map generator used"
+2011-04-07T19:02:03  <antimatroid> and possibly even for row and col translate
+2011-04-07T19:02:16  <McLeopold> YES! I have thought of that.
+2011-04-07T19:02:23  <antimatroid> i've gotta head to the uni now
+2011-04-07T19:02:33  <McLeopold> I want to provide the seed used so you can regenerate the exact same map if needed.
+2011-04-07T19:03:14  <antimatroid> hmmm, for asymmetry i would still prefer if food spawning was the same for each map each game
+2011-04-07T19:03:33  <McLeopold> are we talking about spawning?
+2011-04-07T19:03:39  <antimatroid> otherwise it's even harder to tell how fair a map is
+2011-04-07T19:03:43  <antimatroid> yeah
+2011-04-07T19:03:55  <Zannick> you could embed the seed in the map
+2011-04-07T19:04:05  <Zannick> but then the food spawn becomes predictable
+2011-04-07T19:04:16  <antimatroid> only predictable if you play the same map over and over
+2011-04-07T19:04:29  <antimatroid> in the final contest new maps with seeds can be used
+2011-04-07T19:04:36  <McLeopold> I think we are talking about 2 things.  Antimatroid wants to give hints to the engine for best food method, I want reproducible map generation.
+2011-04-07T19:04:47  <Zannick> oh, and not provide the seed to the players
+2011-04-07T19:04:56  <Zannick> i dunno why i thought that
+2011-04-07T19:07:55  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-04-07T19:09:00  <McLeopold> "git status = nothing to commit" feels as good as "inbox = 0"
+2011-04-07T19:09:20  <McLeopold> OBTW
+2011-04-07T19:09:35  <CIA-33> aichallenge: McLeopold epsilon * r45a16a9 / (11 files): start of js engine - http://bit.ly/hlROnA
+2011-04-07T19:09:39  <CIA-33> aichallenge: McLeopold epsilon * r09ec0a4 / (3 files): some changes to submission test - http://bit.ly/gwgGFa
+2011-04-07T19:09:41  <CIA-33> aichallenge: McLeopold epsilon * readade8 / sql/matchups.sql.txt : cleanup of sql - http://bit.ly/guYHGE
+2011-04-07T19:09:42  <McLeopold> TLDR
+2011-04-07T19:10:24  <janzert> antimatroid: btw .gitignore just tells git what to ignore by default, you can still explicitly git add ignored-file
+2011-04-07T19:13:35  <antimatroid> my inbox has over 600 unread emails
+2011-04-07T19:13:36  <antimatroid> it's a mess
+2011-04-07T19:13:37  *** amstan <amstan!~amstan@206-248-186-52.dsl.teksavvy.com> has quit IRC (Ping timeout: 248 seconds)
+2011-04-07T19:37:40  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110323143040])
+2011-04-07T19:40:39  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 264 seconds)
+2011-04-07T19:41:15  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-04-07T19:44:28  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-07T19:51:35  *** Frontier <Frontier!~marco@dslb-088-071-185-049.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-04-07T19:55:14  *** Keth <Keth!~kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-07T19:55:23  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-07T20:01:02  *** Frontier <Frontier!~marco@dslb-088-071-185-049.pools.arcor-ip.net> has joined #aichallenge
+2011-04-07T20:17:05  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-04-07T20:19:48  *** amstan <amstan!~amstan@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T20:19:48  *** ChanServ sets mode: +o amstan
+2011-04-07T20:23:36  *** sigh_ is now known as sigh
+2011-04-07T20:26:17  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-04-07T20:42:11  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-07T21:24:38  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-04-07T21:31:54  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has quit IRC ()
+2011-04-07T21:33:27  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-04-07T21:38:08  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-07T22:10:26  *** antimatroid <antimatroid!~nick@158.130-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 246 seconds)
+2011-04-07T22:21:29  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T22:21:29  *** ChanServ sets mode: +o amstan_
+2011-04-07T22:22:29  <CIA-33> aichallenge: Marco Leise epsilon * r6e8ae91 / (2 files): visualizer: added switch for player label overlays on ants (A-Z) - http://bit.ly/hszG5d
+2011-04-07T22:23:56  *** antimatroid <antimatroid!~nick@142.120-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-07T22:29:51  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-04-07T22:31:19  *** Kingpin13 <Kingpin13!~Kingpin13@cpc17-aztw23-2-0-cust59.aztw.cable.virginmedia.com> has joined #aichallenge
+2011-04-07T22:31:23  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-04-07T22:32:10  *** antimatroid <antimatroid!~nick@142.120-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-04-07T22:51:17  *** antimatroid <antimatroid!~nick@142.120-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-07T23:00:08  *** delt0r___ <delt0r___!~delt0r@188-22-170-149.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-07T23:01:30  *** delt0r_ <delt0r_!~delt0r@188-22-163-169.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-04-07T23:11:24  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 252 seconds)
+2011-04-07T23:11:30  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Ping timeout: 260 seconds)
+2011-04-07T23:13:11  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-04-07T23:13:35  *** sigh <sigh!~sigh@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-04-07T23:14:45  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-04-07T23:29:21  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has quit IRC (Quit: Konversation terminated!)
+2011-04-07T23:29:29  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-07T23:29:29  *** ChanServ sets mode: +o amstan_
+2011-04-07T23:29:58  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-04-07T23:47:49  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-04-07T23:50:52  *** Frontier <Frontier!~marco@dslb-088-071-185-049.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)

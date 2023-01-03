@@ -1,0 +1,1002 @@
+2011-03-30T00:00:16  <nesquik> amstan, I couldn
+2011-03-30T00:00:20  <nesquik> 't find it on the wiki
+2011-03-30T00:00:24  <nesquik> could you point me to it?
+2011-03-30T00:00:25  <amstan> https://github.com/aichallenge/aichallenge/issues#issue/12
+2011-03-30T00:00:46  <amstan> nesquik: pyro is working on it... but you could join forces
+2011-03-30T00:01:00  <nesquik> ok thanks :)
+2011-03-30T00:03:59  <mcsmash> woot!
+2011-03-30T00:04:03  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 276 seconds)
+2011-03-30T00:04:12  <amstan> mcsmash: se topic
+2011-03-30T00:05:08  *** KP13 is now known as Kingpin13
+2011-03-30T00:05:50  <amstan> mcsmash: here's a visualizer to satisfy your desires: http://home.hypertriangle.com/~alex/aichallenge/ants/visualizer/offline.html
+2011-03-30T00:25:49  *** nesquik <nesquik!~nesquik@c-174-53-163-36.hsd1.mn.comcast.net> has quit IRC (Quit: Leaving)
+2011-03-30T01:08:19  <Frontier> amstan: I kinda deprecated the offline.html now in favor of the standalone visualizer.jar. McLeopold was the first to complain about that move ^^
+2011-03-30T01:09:59  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-30T01:13:44  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 250 seconds)
+2011-03-30T01:17:18  <sigh> Frontier: don't make people run jars unless they can't do it any other way
+2011-03-30T01:18:34  <Frontier> sigh: what is bad about them?
+2011-03-30T01:18:36  <sigh> html visualiser is so much easier, especially when I'm doing dev by sshing to a different machine
+2011-03-30T01:19:26  <sigh> with html, I can just serve up the webpage and access it local browser :)
+2011-03-30T01:19:26  <Frontier> sigh: can you explain your use case a little bit? I never used the html visualizer in the last contest, only ShowGame.jar
+2011-03-30T01:20:14  <sigh> I worked from my laptop, but ssh into my desktop which is a much more powerful machine to actually do dev and run the thing
+2011-03-30T01:20:15  <Frontier> sigh: If you run your own webserver, you can probably set up php as well and run the official visualizer.php
+2011-03-30T01:20:26  <sigh> eh? webserver?
+2011-03-30T01:20:33  <sigh> python -m SimpleHTTPServer
+2011-03-30T01:20:42  <Frontier> oic ^^
+2011-03-30T01:21:15  <sigh> even when I'm working on the same machine that's what I do
+2011-03-30T01:21:17  <Frontier> now how would you get the replay into the html?
+2011-03-30T01:22:20  <sigh> I haven't looked at your visualiser yet... the one in the viewer directory is just hard coded :P
+2011-03-30T01:23:04  <Frontier> what do you mean by hard coded? if you cannot change it, it doesn't work :o)
+2011-03-30T01:23:45  <Frontier> Does it load a replay from a predefined http location?
+2011-03-30T01:23:59  <sigh> no, just local fike
+2011-03-30T01:24:00  <sigh> *file
+2011-03-30T01:24:12  <sigh> 0.stream :P
+2011-03-30T01:24:29  <Frontier> html cannot read local files or did I miss something?
+2011-03-30T01:25:20  <sigh> hmm... lemme check... it might be an artifact of the fact that I'm serving up the entire dir
+2011-03-30T01:25:21  <Frontier> but anyway, via http that would be possible using a GET request on that same file
+2011-03-30T01:25:58  <Frontier> i guess that is what McLeopold is doing. I saw a GET somewhere in his code.
+2011-03-30T01:26:13  <sigh> ah yes it uses $.get('0.stream',..)
+2011-03-30T01:27:33  <sigh> basically my set up is that I have `python -m SimpleHTTPServer` running on that directory, and I simply go to http://localhost:8000/viewer.html
+2011-03-30T01:27:34  <Frontier> It would be easy to add a 'reload' button to the visualizer.jar, that fetches a new replay from your simple http server. I had that in mind anyway to avoid the VM load times
+2011-03-30T01:27:48  <janzert> python -m SimpleHTTPServer is starting a local (very simple) webserver so you don't have to deal with the local file restrictions
+2011-03-30T01:27:57  <sigh> for the html, you just refresh the browser
+2011-03-30T01:28:22  <Frontier> same thing, yes
+2011-03-30T01:28:43  <Frontier> you dont restart the browser, you just refresh
+2011-03-30T01:30:34  <sigh> even without SimpleHTTPServer you should still be able to do $.get('0.stream',...) if you are just looking at localhost
+2011-03-30T01:30:49  <sigh> I just have that setup because I'm not always looking up localhsot
+2011-03-30T01:30:51  <sigh> *localhost
+2011-03-30T01:31:28  <Frontier> localhost doesn't exist when you don't run a server on it :p
+2011-03-30T01:31:51  <janzert> yeah, Frontier is referring to using file:// urls
+2011-03-30T01:31:55  <sigh> sorry, I meant when you are looking at file:///../viewer.html
+2011-03-30T01:32:48  <sigh> if you can view that, then file:///.../0.stream is just as valid
+2011-03-30T01:33:08  <janzert> any local file request is considered a cross site request for javascript and is not allowed to access the content of any such request
+2011-03-30T01:33:14  <Frontier> sigh: I think browsers have 'same-origin' restrictions in place there.
+2011-03-30T01:33:31  <sigh> does it? ok
+2011-03-30T01:33:43  <Frontier> file:// urls are genrally considered NOT to be same-origin
+2011-03-30T01:35:14  <Frontier> loading http(s) urls into the visualizer works, the question is: would a simple 'f5 to refresh' be ok or are there other reasons not to run a jar?
+2011-03-30T01:35:39  <Frontier> (considering setting up simpleHTTPServer to be at least as complicated as installing Java 6)
+2011-03-30T01:36:38  <sigh> hang on... viewer.html is allowed to access the local javascript files?
+2011-03-30T01:36:45  * Frontier takes a note to collect use cases before starting actual work
+2011-03-30T01:36:49  <sigh> or whatever
+2011-03-30T01:37:07  <sigh> it must be
+2011-03-30T01:37:08  <Frontier> sigh: yes, but the special XmlHTTPRequest is not
+2011-03-30T01:37:10  <janzert> Frontier: except they're going to need install python for the engine currently anyway right?
+2011-03-30T01:37:30  <sigh> in which case write the replay to a .js file which stores the json to a variable
+2011-03-30T01:37:34  <sigh> global variable
+2011-03-30T01:37:36  <janzert> at which point the SimpleHTTPServer setup is a matter of telling them the right commandline to use
+2011-03-30T01:38:19  <sigh> I think if you write the .js then it doesn't need SimpleHTTPServer, and works like the old planetwars one
+2011-03-30T01:38:20  <Frontier> apt-get install sun-jre6 , come on ^^
+2011-03-30T01:38:58  <Frontier> so the old planetwars visualizer loaded a js file?
+2011-03-30T01:39:12  <janzert> yes, it's not a big thing. just certainly no easier than the other way
+2011-03-30T01:39:24  <sigh> sort of, it wrote the visualiser file itself
+2011-03-30T01:39:47  <Frontier> the html file WROTE a js file?
+2011-03-30T01:39:57  * Frontier is puzzled
+2011-03-30T01:39:58  <sigh> no, the engine which generated the replay
+2011-03-30T01:40:04  <sigh> generated a html file
+2011-03-30T01:40:29  <sigh> for example in your case the engine would output offline.html
+2011-03-30T01:41:26  <sigh> (or it injected it into an existing template, can't remember)
+2011-03-30T01:41:59  <Frontier> I see. Well, I'm not sure now, if I should work on that or let the engine write the replay into a html template.
+2011-03-30T01:42:27  <Frontier> I sounds more like an output option to me, like 'export this file as pdf'
+2011-03-30T01:42:31  <antimatroid> damnit
+2011-03-30T01:42:38  <antimatroid> my physics lecturer gives out bonus marks
+2011-03-30T01:42:51  <antimatroid> that means we need to put additional effort into assignments :\
+2011-03-30T01:43:28  <sigh> Frontier: actually, in planet wars you did something like this: engine | create_visualiser
+2011-03-30T01:43:53  <Frontier> lol, never heard of that option. where did you get this create_visualizer script?
+2011-03-30T01:43:58  <sigh> so engine output the replay, and create_visuliser did the messy stuff (names different of course)
+2011-03-30T01:45:39  <sigh> hang on
+2011-03-30T01:45:54  <sigh> I will find the actual code instead of making up stuff
+2011-03-30T01:47:05  <janzert> didn't deal with the stuff people were using client side much but all I remember from planetwars is something like "plagame.jar .... | showgame.jar"
+2011-03-30T01:47:47  <sigh> janzert: yeah, you could substitute showgame..jar with one which created a html version and opened it in your browser
+2011-03-30T01:47:56  <janzert> ahh
+2011-03-30T01:48:30  <sigh> https://github.com/DanielVF/Planet-Wars-Canvas-Visualizer/blob/master/visualize_localy.py
+2011-03-30T01:48:34  <sigh> there
+2011-03-30T01:49:19  <sigh> it took index.php as a template and created generated.htm
+2011-03-30T01:49:47  <sigh> and launched it in your browser
+2011-03-30T01:50:26  <sigh> (personally I commented out the webbrowser.open line and just used SimpleHTTPServer, but that wasn't a requirement)
+2011-03-30T01:50:29  <janzert> makes sense since that's the way it worked on the server too
+2011-03-30T01:50:35  <sigh> yup
+2011-03-30T01:52:41  *** Kingpin13 is now known as Kingpin13|away
+2011-03-30T01:52:50  <sigh> Frontier: you still there?
+2011-03-30T01:52:51  <Frontier> sigh: now we load replays via GET request, but with a different template it still works
+2011-03-30T01:53:55  <sigh> I'll let you handle it ^_^
+2011-03-30T01:54:06  <Frontier> visualizer = new Visualizer(...);
+2011-03-30T01:54:07  <Frontier> visualizer.loadReplayData(<replay data goes here>);
+2011-03-30T01:54:29  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-30T01:54:57  <Frontier> I don't get to wash my dishes today it seems ^^
+2011-03-30T01:55:03  <sigh> :)
+2011-03-30T01:55:13  <McLeopold> Is frontier still around?
+2011-03-30T01:55:19  <sigh> o_O
+2011-03-30T01:55:20  <Frontier> hi McLeopold: pls join the discussion
+2011-03-30T01:55:21  <sigh> no
+2011-03-30T01:55:28  <sigh> :P
+2011-03-30T01:55:37  <McLeopold> Am an in the discussion now?
+2011-03-30T01:56:03  <sigh> I was just trying to convince Frontier to allow people to run the html visualiser locally
+2011-03-30T01:56:16  <Frontier> We were talking about sigh running the engine on a remote machine via ssh and viewing the replay over a browser
+2011-03-30T01:56:20  <McLeopold> So, just some thoughts on the visualizer.  Replay files will be resources on the internet.
+2011-03-30T01:56:30  <Frontier> correct
+2011-03-30T01:56:36  <McLeopold> An html viewer should be supported.
+2011-03-30T01:56:51  <McLeopold> My impression was that the java viewer was only an IE work around.
+2011-03-30T01:57:15  <sigh> mine too, but then the offline.html file disappeared :P
+2011-03-30T01:57:16  <Frontier> from making it faster on IE emerged a standalone .replay viewer
+2011-03-30T01:57:19  <McLeopold> There is no reason to force people to use java or jar files.
+2011-03-30T01:57:32  <sigh> that's what I said :D
+2011-03-30T01:57:34  <Frontier> but we already force them to use Python
+2011-03-30T01:57:41  <McLeopold> That's cool, but we need to give people the js only version.
+2011-03-30T01:57:42  <Frontier> same logic I think
+2011-03-30T01:58:09  <sigh> less dependencies the better
+2011-03-30T01:58:21  <McLeopold> The engine is written as python, but is written to a spec.
+2011-03-30T01:59:00  <McLeopold> We should have a java engine for those that want it, but we shouldn't force it.
+2011-03-30T01:59:09  <Frontier> ok, you need to help me out a bit here. what should the engine do, what should the html look like to make it easy to use. copy&paste replays seem awkward to me
+2011-03-30T01:59:34  <McLeopold> The engine is capable of producing replay and stream formats.
+2011-03-30T01:59:53  <sigh> Frontier: for now just do what McLeopold's visualiser does
+2011-03-30T02:00:01  <McLeopold> The visualizer should accept those formats from any resource, url, paste, local file, etc...
+2011-03-30T02:00:25  <Frontier> no etc, that are all options ;)
+2011-03-30T02:00:29  <McLeopold> The java viewer is fine, it just needs to go in a tool package for java users.
+2011-03-30T02:00:39  <McLeopold> Someone will think of something else
+2011-03-30T02:00:43  <sigh> yup
+2011-03-30T02:00:55  <McLeopold> The visualizer needs text, and that is all it should care about.
+2011-03-30T02:01:18  <Frontier> McLeopold: Hehe, I don't think it is for Java users only. Everyone can use it until other alternatives emerge
+2011-03-30T02:01:22  <McLeopold> The offline.html should just be a tool to help gather the text from various sources and pass it to the visualizer
+2011-03-30T02:02:12  <McLeopold> http://www.faqs.org/docs/artu/
+2011-03-30T02:02:17  <McLeopold> Text is king
+2011-03-30T02:02:43  <Frontier> what is that html 3?
+2011-03-30T02:03:12  <McLeopold> can you not read html source?
+2011-03-30T02:03:28  <Frontier> McLeopold: I think your viewer html is what you want, I don't need to reinvent the wheel.
+2011-03-30T02:04:03  <sigh> the downside of viewer.html is that it requires SimpleHTTPServer
+2011-03-30T02:04:11  <sigh> but it's better than no HTML visualiser :P
+2011-03-30T02:05:35  <McLeopold> restore offline.html, the wheel was already made
+2011-03-30T02:06:00  <Frontier> I only have so much time and I would rather ensure the applet runs stable and I get map scrolling and zoom implemented
+2011-03-30T02:06:25  <sigh> Frontier: I'll do it then, just put offline.html back and I'll get something working
+2011-03-30T02:06:40  <Frontier> It is still in the repo history, isn't it?
+2011-03-30T02:06:54  <sigh> ok, fine.. I'll get it back myself :P
+2011-03-30T02:07:17  <Frontier> should it go into the viewer folder then, or in a separate tools folder?
+2011-03-30T02:08:02  <sigh> why can't it live in the visualiser folder where offline.html used to be?
+2011-03-30T02:08:32  <Frontier> People would download a lot of stuff like the java classes to get it working
+2011-03-30T02:08:49  <Frontier> although they only need the js files and images
+2011-03-30T02:08:53  <sigh> eh?
+2011-03-30T02:09:12  <Frontier> but the directory structure changed to make it cleaner to work with from ant
+2011-03-30T02:09:15  <sigh> oh, you are talking about the java visualiser?
+2011-03-30T02:09:15  <McLeopold> then can we pull the js out of the java package?
+2011-03-30T02:09:21  <Frontier> there is js, java and data
+2011-03-30T02:09:42  <Frontier> but the offline.html will look for img/... instead of data/img
+2011-03-30T02:10:10  <McLeopold> sigh: are you familiar with the visualize_locally.py from the last contest?
+2011-03-30T02:10:21  <McLeopold> could we add an option for that in playgame.py?
+2011-03-30T02:10:26  <sigh> I pasted it to the channel just before you got here
+2011-03-30T02:10:37  <Frontier> McLeopold: The Java version compiles the JS, images and Java into one jar. So I think it belongs together somehow, but we can propably seperate things a bit
+2011-03-30T02:10:47  <sigh> McLeopold: that's kind of what I was thinking
+2011-03-30T02:10:48  <McLeopold> except maybe it launches the SimpleHTTPServer?
+2011-03-30T02:11:28  <sigh> I don't like the idea of it launching anything
+2011-03-30T02:11:29  <McLeopold> the ant script can pull from other directories if it needs to
+2011-03-30T02:11:46  <Frontier> McLeopold: If you use visualize_locally.py, I could let the ant script zip up a package with the html template to use
+2011-03-30T02:12:25  <Frontier> We should provide as many tools as possible on a central download page of ai-contest.com
+2011-03-30T02:13:13  <McLeopold> sigh: how come you don't want it to launch things?
+2011-03-30T02:13:32  <McLeopold> even if it was an option?
+2011-03-30T02:13:56  <sigh> the engine shouldn't launch random processes
+2011-03-30T02:14:09  <McLeopold> Not the engine, playgame
+2011-03-30T02:14:41  <McLeopold> playgame is just a testing tool, like the offline.html
+2011-03-30T02:14:57  <sigh> hmmm... maybe
+2011-03-30T02:15:14  <McLeopold> the engine.py is in worker, and doesn't even know anything about ants
+2011-03-30T02:15:18  <sigh> in which case it should just run webbrowser.open like visualise_locally.py did
+2011-03-30T02:15:42  <McLeopold> yeah, but it would have to write a special html file, which we don't want to do
+2011-03-30T02:15:43  * janzert wishes ants didn't depend on stuff in worker
+2011-03-30T02:16:05  <McLeopold> janzert: the ants.py is written to an interface of sorts
+2011-03-30T02:16:12  <Frontier> who doesn't want to write a html file?
+2011-03-30T02:16:15  <McLeopold> other than that, it is completely separate
+2011-03-30T02:16:20  <McLeopold> me
+2011-03-30T02:16:21  <sigh> McLeopold: what's wrong with the process that planetwars had?
+2011-03-30T02:16:40  <janzert> it's just going to make it harder to package it up
+2011-03-30T02:16:43  <McLeopold> nothing, I'm just striving for elegance
+2011-03-30T02:17:32  <McLeopold> janzert: yes, but easier when we have multiple games going
+2011-03-30T02:17:40  <sigh> launching SimpleHTTPServer in the foreground, forcing people to navigate to http://localhost:8000/offline.html
+2011-03-30T02:17:43  <sigh> is not elegent
+2011-03-30T02:17:47  * janzert doesn't believe in multiple games ;)
+2011-03-30T02:18:21  <Frontier> *sigh* another bike shed :p   no offense, i start of a few myself
+2011-03-30T02:18:22  <janzert> or the 'interface' could just be a convention all the games conformed to
+2011-03-30T02:18:31  <McLeopold> sigh: okay, maybe, but it's more elegant that writing a temp file to the same location everytime
+2011-03-30T02:18:50  <sigh> the user doesn't care
+2011-03-30T02:18:54  <Frontier> McLeopold: think PDF exporter ;)
+2011-03-30T02:18:55  <McLeopold> janzert: that's the idea
+2011-03-30T02:19:20  <janzert> well with that idea the game doesn't import anything from worker :)
+2011-03-30T02:19:31  <sigh> all the user knows is that there shell is taken out of action and that they have to manually navigate to some url
+2011-03-30T02:19:32  <McLeopold> sigh: ultimately, it would be nice for a user testing locally to treat his system as a separate tcp server
+2011-03-30T02:19:59  <McLeopold> which is why having playgame.py manage replay files and an html interface for browsing them seems elegant
+2011-03-30T02:20:24  <sigh> that's fine if you can set it up so that someone who doesn't know python, html, or anything about the web can run it
+2011-03-30T02:20:58  <sigh> McLeopold: either way, it is not usable
+2011-03-30T02:20:59  <Frontier> McLeopold: In that case we are close to a full ai-contest server installation
+2011-03-30T02:21:15  <janzert> http://www.boingboing.net/2011/03/29/machete-shooting-rif.html completely off topic but...sweet :)
+2011-03-30T02:21:16  <McLeopold> what's not usable?
+2011-03-30T02:22:30  <McLeopold> sigh: I don't think I followed your train of thought...
+2011-03-30T02:23:49  <Frontier> I have a feeling browsing replays is a nice feature, but you are making it more complicated than neccesary for most users. Look at how simple the starter packs are
+2011-03-30T02:24:29  <Frontier> Ideally you just unzip and run a command (or pipe the output of the engine into it)
+2011-03-30T02:24:44  <McLeopold> I just don't want to make it more complicated for those that can cope with good tools.  Obviously we want sane defaults, but that doesn't mean we should limit ourselves.
+2011-03-30T02:25:06  <sigh> McLeopold: the only thing that you have a problem with is writing a html file?
+2011-03-30T02:25:45  <McLeopold> Yeah, because I think the replay files should remain text so that you can easily pass them around to different tools
+2011-03-30T02:26:02  <Frontier> McLeopold: again, think PDF
+2011-03-30T02:26:17  <Frontier> it is an export option, not an format to be parsed
+2011-03-30T02:26:23  <sigh> the replays were plain text in planetwars
+2011-03-30T02:26:26  <McLeopold> So, if the replay files was written somewhere for storage, *and* a temp html files was written, that would be ok.  I just think we could do slightly better.
+2011-03-30T02:26:38  <sigh> it was visualise_locally which created html
+2011-03-30T02:27:21  <sigh> either way, if you insist I would rather visualise_locally.py so SimpleHTTPServer stuff, I still think it makes it more effort on the user's part than planetwars was
+2011-03-30T02:27:26  <Frontier> McLeopold: for me that option seems ok. You tell visualize_locally to keep a copy of the original data somehwere and let it write the html
+2011-03-30T02:27:59  <McLeopold> Okay, a http server could be separated from playgame, but both could assume some type of local storage structure.
+2011-03-30T02:28:18  <sigh> also automatically running SimpleHTTPServer hijacks the port, and assumes that the user is not doing anything else with it
+2011-03-30T02:28:29  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-30T02:28:36  <Frontier> add a port command-line option
+2011-03-30T02:28:38  <McLeopold> sigh: stop, I've changed my mind already :P
+2011-03-30T02:29:07  <sigh> no, now I'm arguing tht visualise_locally shouldn't use SimpleHTTPServer either :P
+2011-03-30T02:29:10  <Frontier> the official server will have replays in ROOT/games/...
+2011-03-30T02:29:29  <McLeopold> sigh: yes, I agree, make a separate tool
+2011-03-30T02:29:39  <sigh> ok :)
+2011-03-30T02:29:41  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-03-30T02:29:58  <McLeopold> replay_server.py
+2011-03-30T02:30:03  <sigh> yup
+2011-03-30T02:30:34  <sigh> ideally you would run that in the background, and not start it for every new game
+2011-03-30T02:30:37  <McLeopold> which would need the js stuff and some of the offline.html stuff
+2011-03-30T02:30:42  <McLeopold> yeah
+2011-03-30T02:30:52  <sigh> yes, that is actually elegent :)
+2011-03-30T02:31:01  <sigh> *elegant
+2011-03-30T02:31:06  <McLeopold> \o/ I knew we could do it
+2011-03-30T02:31:14  <Frontier> :D
+2011-03-30T02:31:32  <McLeopold> okay, gotta go to bed now
+2011-03-30T02:31:43  <Frontier> goofd night
+2011-03-30T02:31:44  <McLeopold> oh, did you see my map generator?
+2011-03-30T02:31:59  <Stocha> the labyrinth ?
+2011-03-30T02:32:04  <McLeopold> yeah
+2011-03-30T02:32:12  <Frontier> McLeopold: amazing voronoi diagrams
+2011-03-30T02:32:15  <McLeopold> I'll get it symmetric tomorrow
+2011-03-30T02:32:42  <Stocha> shame :p
+2011-03-30T02:33:03  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-30T02:33:05  <Stocha> you will give the spec of you map generator also right ?  Is it easy to implement ?
+2011-03-30T02:33:06  <Frontier> sigh: Do you agree with me, that we should package this html visualizer for download?
+2011-03-30T02:34:14  <Frontier> We can add a makefile in the ants directory that zips up your Python scripts and the stuff from the visualizer directory (html template, js, images)
+2011-03-30T02:36:45  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T02:37:37  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T02:54:55  *** amstan <amstan!~amstan@75-119-243-151.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-03-30T02:57:17  *** Eruonen <Eruonen!onensora@koers032.iie.hva.nl> has joined #aichallenge
+2011-03-30T03:04:00  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 264 seconds)
+2011-03-30T03:07:58  *** phirenz <phirenz!~phire@142.248.69.111.dynamic.snap.net.nz> has quit IRC (Ping timeout: 248 seconds)
+2011-03-30T03:08:11  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-03-30T03:08:11  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-30T03:10:06  *** phirenz <phirenz!~phire@142.248.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-30T03:20:05  *** Kingpin13|away is now known as Kingpin13
+2011-03-30T03:27:27  *** SubmittedDenied <SubmittedDenied!88bac9cd@gateway/web/freenode/ip.136.186.201.205> has joined #aichallenge
+2011-03-30T03:27:34  <SubmittedDenied> Hey all
+2011-03-30T03:27:44  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-03-30T03:27:45  *** phirenz is now known as phire
+2011-03-30T03:31:41  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-30T03:42:22  <sigh> Frontier: I don't mind as long as it is easy to use
+2011-03-30T03:44:47  <Frontier> Accessibility is what is really great about this contest.
+2011-03-30T03:45:09  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-03-30T03:45:24  <Frontier> I still have to implement the color blind mode
+2011-03-30T03:47:18  <Frontier> I'll overlay the player's letter A, B, C... over the ants
+2011-03-30T03:48:24  <Frontier> Just a side note only loosely related to the ease of use of the tools :)
+2011-03-30T03:48:42  <SubmittedDenied> is there a limit to the size of an ants game?
+2011-03-30T03:52:34  <CIA-90> aichallenge: sigh fast-vision * rf63f0b1 / ants/ants.py : Implemented incremental updates for vision - http://bit.ly/h0A519
+2011-03-30T03:55:10  *** delt0r___ <delt0r___!~delt0r@188-22-161-107.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-30T03:56:48  <Frontier> sigh: I should also incrementally load the replay or calculate vision.
+2011-03-30T03:57:11  <sigh> :)
+2011-03-30T03:57:26  *** delt0r_ <delt0r_!~delt0r@188-22-163-219.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-03-30T03:57:36  <Frontier> It was pretty naive to precalculate every players vision for every turn. Most of the times that data wont be used
+2011-03-30T03:58:29  *** woudshoo <woudshoo!~user@ipleiden.intellimagic.net> has joined #aichallenge
+2011-03-30T03:59:50  <CIA-90> aichallenge: sigh fast-vision * r9640155 / ants/ants.py : Cleanup and comment new vision code - http://bit.ly/i5TaOe
+2011-03-30T04:00:06  <sigh> Frontier: feel free to look at what the engine does in the fast-vision branch
+2011-03-30T04:00:15  <sigh> janzert: you there?
+2011-03-30T04:00:59  <phire> Is overlaying the letter on the ant the best idea?
+2011-03-30T04:01:03  <janzert> sort of
+2011-03-30T04:01:29  <sigh> janzert: check out the ants.py in the fast-vision branch :D
+2011-03-30T04:02:03  <janzert> it's the incremental update idea?
+2011-03-30T04:02:21  <sigh> in a game it took down time for vision from 20ms per turn to 0.01ms/turn
+2011-03-30T04:02:47  <janzert> hmm, I guess it may be worth it then
+2011-03-30T04:02:59  <janzert> what is the total time per turn at that point?
+2011-03-30T04:03:07  <janzert> back in a bit
+2011-03-30T04:03:08  <sigh> sorry, 0.37ms/turn
+2011-03-30T04:05:44  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T04:06:16  <sigh> hard to tell total time per turn, there's no function for it
+2011-03-30T04:07:37  <sigh> and the game doesn't get much shorter because 2 seconds is spent sleeping waiting for bots to reply :)
+2011-03-30T04:09:18  <woudshoo> hi all, just curious, but what is the rationale for showing water only the first time it is seen?  It does not seem to add anything to the gameplay.
+2011-03-30T04:09:51  <sigh> woudshoo: reduce the amount of data that needs to be transfered
+2011-03-30T04:10:16  <sigh> that's really the only issue there
+2011-03-30T04:11:10  <woudshoo> sigh: I see, 5000 water * 8 bytes can add up
+2011-03-30T04:11:16  <sigh> yup
+2011-03-30T04:11:41  <sigh> and it is trivial for a bot to keep track of it
+2011-03-30T04:12:51  <woudshoo> Yes, it is trivial to keep track, I just started playing with implementing a bot and that is definitely not the hard part.
+2011-03-30T04:13:37  <woudshoo> Also, I just updated yesterday, and the offline.html viewer is gone :-(  It looked cool eventhough the playgame did not generate output that could be parsed by offline.html
+2011-03-30T04:15:12  <sigh> woudshoo: it will be back, don't worry :)
+2011-03-30T04:17:06  <sigh> for now, you can just: git checkout b08cc7 ants/visualizer/offline.html
+2011-03-30T04:18:23  <woudshoo> sigh: thank you, now I just should write a script to wrap the 0.replay in the format offline.html expects.  (Or fix/change playgame.py, but I don't know any python)
+2011-03-30T04:19:09  <sigh> woudshoo: yeah, we'll get around to implementing that, everything is still in dev
+2011-03-30T04:19:34  <antimatroid> woudshoo: python code teaches itself
+2011-03-30T04:19:42  <woudshoo> sigh: I know, I just couldn't wait to start playing around.
+2011-03-30T04:21:01  <sigh> :)
+2011-03-30T04:22:20  <woudshoo> antimatroid:  Well, I have heard good things about it, but in my copiuous free time *cough* *cough* I haven't found time to look at it.
+2011-03-30T04:23:43  <woudshoo> BTW, who should I contact about the common lisp interface/infrastructure?
+2011-03-30T04:24:40  *** SubmittedDenied <SubmittedDenied!88bac9cd@gateway/web/freenode/ip.136.186.201.205> has quit IRC (Quit: Page closed)
+2011-03-30T04:25:43  <janzert> sigh: it is a nice impressive speed up and should probably go in, I just am getting the feeling that it is probably at the point of optimizing something that isn't the bottleneck
+2011-03-30T04:26:33  <sigh> janzert: it was the bottleneck before... but I only did it to make it harder for McLeopold to beat it
+2011-03-30T04:26:42  <janzert> :)
+2011-03-30T04:27:58  <aerique> woudshoo: me, but i'm dumbing it down as per McLeopold's instructions
+2011-03-30T04:28:31  <sigh> janzert: and in case you missed me saying it, it was 0.37ms/turn not 0.01ms :P
+2011-03-30T04:28:47  <janzert> heh
+2011-03-30T04:29:00  <sigh> still 50 times faster :)
+2011-03-30T04:29:50  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T04:29:53  <woudshoo> aerique:  Thanks for the work,  curious what are you dumbing down?
+2011-03-30T04:30:21  <aerique> woudshoo: https://github.com/aichallenge/aichallenge/issues/3#comment_934055
+2011-03-30T04:30:56  <woudshoo> aerique: Just a question, on MacOSX (my laptop) I regularly have that my bot times out during the setup face because loading the sbcl core/image takes too long with a cold cache.  Is that a dange in the real competition?
+2011-03-30T04:31:53  <aerique> woudshoo: no, we always use compiled bots on the game server (exactly because of the problem you mentioned)
+2011-03-30T04:31:54  <Frontier> I think the timer is set to 3 seconds for the warm up phase.
+2011-03-30T04:32:05  <aerique> woudshoo: (at least for CL that is)
+2011-03-30T04:33:07  <woudshoo> aerique:  I use locally the compiled bot.  The resulting executable is about 40MB and if I run it the first time, it can take more than 3 seconds.  (Somehow my Mac is sometimes really slow with disk access.)  But if the experience of planetwars was that it is not a problem I will not worry about it.
+2011-03-30T04:33:31  <aerique> woudshoo: ah ok.  it has indeed not been a problem with planet wars
+2011-03-30T04:33:39  <sigh> woudshoo: for local you can extend the time using the --loadtime option to playgame.py
+2011-03-30T04:35:18  <aerique> woudshoo: you could also try using the proxy-bot so you don't have to recompile every time (but i haven't got OS X so it isn't tested there)
+2011-03-30T04:35:33  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-03-30T04:35:52  <aerique> woudshoo: mega1 used it as well but i think he's on linux as well
+2011-03-30T04:36:36  <woudshoo> aerique: I was just trying the proxy bot this morning (in the train), but I did not use your starter pack and started from scratch, so I was just trying to get sockets working.
+2011-03-30T04:39:16  <aerique> woudshoo: you're from Leiden? (i'm in The Hague)
+2011-03-30T04:41:19  <woudshoo> aerique: Yes, working in Leiden (should get back to it, my boss doesn't pay me to do this) living in Rijswijk
+2011-03-30T04:42:55  <aerique> woudshoo: cool, i live in Delft.. anyway, back to work for me as well
+2011-03-30T04:43:09  <woudshoo> sigh: Thank you for the --loadtime option
+2011-03-30T04:47:15  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T04:47:48  <Stocha> just put the rational for not sending already seen water into the spec; So not all 5000 participants inquires :p
+2011-03-30T04:51:16  <Frontier> Stocha: were you the color blind person?
+2011-03-30T04:52:26  <sigh> Stocha: done
+2011-03-30T05:00:36  <Frontier> woudshoo: There is now a really cool standalone replay viewer. Just install 'ant' go into the visualizer directory and type 'ant run-visualizer'. The offline.html is deprecated. It will be replaced by scriptable Python solution.
+2011-03-30T05:01:26  <Frontier> So in the long run you can use the Java visualizer or the Python script which will generate a html page embedding the replay
+2011-03-30T05:03:12  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T05:07:56  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-30T05:16:57  <woudshoo> Frontier:  I tried it, but the compile fails on MacOSX
+2011-03-30T05:19:19  <woudshoo> Frontier: It fails with: compile-rhino:...[javac] javac: invalid target release: 1.6
+2011-03-30T05:25:01  <phire> Frontier, I'm getting a Build error with the visualizer
+2011-03-30T05:25:28  <phire> "package sun.plugin.javascript does not exist"
+2011-03-30T05:25:35  <phire> actually, that looks easy to fix
+2011-03-30T05:27:23  <phire> or not
+2011-03-30T05:32:17  *** woudshoo` <woudshoo`!~user@ipleiden.intellimagic.net> has joined #aichallenge
+2011-03-30T05:32:32  <phire> http://pastie.org/1734442
+2011-03-30T05:35:52  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-03-30T05:36:08  *** woudshoo <woudshoo!~user@ipleiden.intellimagic.net> has quit IRC (Ping timeout: 276 seconds)
+2011-03-30T05:39:20  <CIA-90> aichallenge: aerique epsilon * r4ee3264 / (28 files in 7 dirs):
+2011-03-30T05:39:21  <CIA-90> aichallenge: Trim starter bot as per McLeopold's instructions.
+2011-03-30T05:39:21  <CIA-90> aichallenge: See: http://github.com/aichallenge/aichallenge/issues/3#comment_934055 - http://bit.ly/hsPUTW
+2011-03-30T05:42:28  <sigh> @later tell McLeopold, made vision about 50x faster - see fast-vision branch: https://github.com/aichallenge/aichallenge/blob/fast-vision/ants/ants.py#L215
+2011-03-30T05:42:28  <contestbot> sigh: As you wish.
+2011-03-30T05:42:52  <sigh> hm... that comma will screw things up wont it
+2011-03-30T05:43:28  <sigh> @later tell sigh, this is a test
+2011-03-30T05:43:28  <contestbot> sigh: I think that worked...
+2011-03-30T05:43:29  <phire> probably
+2011-03-30T05:43:41  <sigh> no, that worked
+2011-03-30T05:43:59  <phire> depends on how smart the parsing algrothem is
+2011-03-30T05:44:20  <sigh> seems it can handle that
+2011-03-30T05:44:25  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-30T05:51:33  <CIA-90> aichallenge: aerique epsilon * rd688d79 / ants/dist/starter_bots/common_lisp/test/run-tests.lisp : Update CL unit tests. - http://bit.ly/gXT1DY
+2011-03-30T06:01:45  * Naktibalda has to copy these unit tests :)
+2011-03-30T06:07:12  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-30T06:19:36  <aerique> They are in need of improvement :-|
+2011-03-30T06:26:52  *** p4p4p4 <p4p4p4!~chatzilla@82.113.106.31> has joined #aichallenge
+2011-03-30T06:47:41  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T06:48:47  <Stocha> @seen Frontier
+2011-03-30T06:48:47  <contestbot> Stocha: Frontier was last seen in #aichallenge 1 hour, 47 minutes, and 21 seconds ago: <Frontier> So in the long run you can use the Java visualizer or the Python script which will generate a html page embedding the replay
+2011-03-30T06:49:02  <Stocha> @later tell Frontier i am colorblind yes
+2011-03-30T06:49:02  <contestbot> Stocha: I think that worked...
+2011-03-30T06:49:31  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Client Quit)
+2011-03-30T07:03:16  *** needsch <needsch!~Robert@s1629.dyn.hrz.tu-darmstadt.de> has joined #aichallenge
+2011-03-30T07:03:54  *** needsch <needsch!~Robert@s1629.dyn.hrz.tu-darmstadt.de> has quit IRC (Client Quit)
+2011-03-30T07:12:22  <sigh> Frontier: ping
+2011-03-30T07:13:09  <sigh> @later tell Frontier how do I start the visualiser off in expanded mode
+2011-03-30T07:13:09  <contestbot> sigh: Yes master!
+2011-03-30T07:20:18  <sigh> @later tell Frontier, nevermind figured it out, but now I need to know why you have that annoying "Accept the next dialog to have colorized button graphics." message
+2011-03-30T07:20:18  <contestbot> sigh: Yes master!
+2011-03-30T07:20:50  <Frontier> sigh: start it in expanded mode? expand it and then click on save... theoretically
+2011-03-30T07:21:04  <sigh> Frontier: nah, I figured it out
+2011-03-30T07:21:13  <sigh> anyway... why is that security message there?
+2011-03-30T07:21:16  <sigh> can I take it out?
+2011-03-30T07:21:31  <sigh> it's in ImageManager.js
+2011-03-30T07:21:39  <Frontier> You can tell Firefox to always accept.
+2011-03-30T07:22:16  <sigh> how?
+2011-03-30T07:22:16  <Frontier> If you ignore it the buttons for fog of war will all be the same color. I did not put that there without reason. A shame of you to think so ^^
+2011-03-30T07:22:28  <Frontier> Isn't there a checkbox?
+2011-03-30T07:22:30  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T07:22:34  <sigh> I just get the alert
+2011-03-30T07:22:38  <Frontier> huh?
+2011-03-30T07:22:45  <Frontier> but you use firefox?
+2011-03-30T07:22:48  <sigh> and it just says "OK"
+2011-03-30T07:22:49  <sigh> yes
+2011-03-30T07:22:50  <Frontier> which version?
+2011-03-30T07:23:11  <Frontier> 4?
+2011-03-30T07:23:14  <sigh> Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-GB; rv:1.9.2.16) Gecko/20110319 Firefox/3.6.16
+2011-03-30T07:23:21  <sigh> 3.6.16
+2011-03-30T07:23:58  <Frontier> I'm now on windows, where I don't have the same arsenal of browsers installed, but that sure looks strange to me.
+2011-03-30T07:24:09  <sigh> I just get the alert and that's it
+2011-03-30T07:24:10  <Frontier> Are the buttons colorized btw?
+2011-03-30T07:24:16  <sigh> no
+2011-03-30T07:24:29  <Frontier> so it fails silently without asking you hmm.
+2011-03-30T07:24:56  <Stocha> there is an expended mode ? (maybe i have an older version anyway)
+2011-03-30T07:25:02  <Stocha> Can you draw grid also ?
+2011-03-30T07:25:18  <Frontier> ok, you can temporarily remove the alert. I'll have to see why it doesn't popup the Firefox security screen next
+2011-03-30T07:25:43  <Frontier> Stocha: sure, I have that on my list.
+2011-03-30T07:26:57  <Frontier> I'm just now in the annoying situation that I didn't implement multithreading right in the applet. And that's no task that I love to work on, but it is the most important since IE users will currently get a white screen :p
+2011-03-30T07:28:24  <Frontier> offline.html isn't even prepared for IE. I was actually glad to dump that ugly copy&paste thing ^^
+2011-03-30T07:29:31  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T07:31:04  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T07:31:47  <Stocha> you do need multitask ??
+2011-03-30T07:32:57  <phire> Ironically, my AI which just stood still actually got a better score that the AI from the starter pack
+2011-03-30T07:34:01  *** Frontier1 <Frontier1!~Marco@dslb-088-070-136-120.pools.arcor-ip.net> has joined #aichallenge
+2011-03-30T07:34:21  *** EruooNenningly <EruooNenningly!onensora@koers032.iie.hva.nl> has joined #aichallenge
+2011-03-30T07:35:08  *** Eruonen <Eruonen!onensora@koers032.iie.hva.nl> has quit IRC (*.net *.split)
+2011-03-30T07:35:08  *** Frontier <Frontier!~Marco@dslb-088-070-136-120.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2011-03-30T07:35:08  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-03-30T07:35:08  *** dr- <dr-!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has quit IRC (*.net *.split)
+2011-03-30T07:35:09  <CIA-90> aichallenge: sigh replay * r5d5b057 / ants/visualize_locally.py : Allow people to surpress launching the page in the browser (+7 more commits...) - http://bit.ly/emIZik
+2011-03-30T07:35:31  *** dr- <dr-!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-03-30T07:35:48  <sigh> Frontier: I created new replay branch for the replay stuff, because I just did stuff to get it working. I don't know what you can McLeopold will think of it :P
+2011-03-30T07:36:35  <sigh> ./play_one_game.sh --output replay | ./visualize_locally.py
+2011-03-30T07:37:39  <Frontier1> Stocha: An applet has to start an addition thread if it wants to do anything on its own basically
+2011-03-30T07:37:46  <Frontier1> *additional
+2011-03-30T07:39:27  <Frontier1> The browser just calls init() once and then start()/stop() whenever it becomes visible/invisible to let the applet know that it would waste system ressources if it keeps running its animation thread.
+2011-03-30T07:39:29  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-03-30T07:40:50  <Frontier1> If you create an applet with a GUI, then you don't create a thread by yourself, but Java's windowing toolkit will create one to process the key and mouse events.
+2011-03-30T07:41:04  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 276 seconds)
+2011-03-30T07:45:25  <Frontier1> sigh: what is "stuff to get it working" ? :p
+2011-03-30T07:45:38  *** Frontier1 is now known as Frontier
+2011-03-30T07:46:07  <sigh> most of the changes were in engine.py :P
+2011-03-30T07:46:25  <Frontier> uh yeah don't break anything there
+2011-03-30T07:46:52  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T07:46:57  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-03-30T07:47:06  <sigh> anyway, feel free to change any of the visualizer related stuff in that branch
+2011-03-30T07:47:55  <sigh> @later tell McLeopold ok, it's only 5x faster
+2011-03-30T07:47:55  <contestbot> sigh: As you wish.
+2011-03-30T07:48:09  <Frontier> sigh: were you aware that the jar visualizer can download the 0.replay from http://localhost/ ? Just out of curiosity :)
+2011-03-30T07:48:34  <sigh> Frontier: ok?
+2011-03-30T07:48:48  <sigh> how does that help the html visualiser
+2011-03-30T07:49:27  <Frontier> I'm just saying one does not need a html visualizer just to get a replay from a remote server
+2011-03-30T07:50:01  <sigh> sure
+2011-03-30T07:51:38  <sigh> janzert: ok, it's only 5x faster... I was read the wrong column in the profiler output :(
+2011-03-30T07:52:31  <sigh> janzert: in my defence, before the thing wasn't calling any functions so the total time and cumulative time were the same...
+2011-03-30T07:52:39  <Stocha> i like the html visualizer. Don't make it so that people have to use it. But those who want should be able to
+2011-03-30T07:53:19  <Stocha> for example people may want to share games on pastebin or by email.
+2011-03-30T07:53:31  <Stocha> especially now that stuff is all messy.
+2011-03-30T07:53:45  <Frontier> I wanted to force the java visualizer on all of you, harhar. but i made up my mind now. if you prefer the glitches that come with html on a local file system and ie not displaying anything, its ok for me
+2011-03-30T07:54:09  <Stocha> but we'll have both option right ?
+2011-03-30T07:54:18  <Frontier> Stocha: sure
+2011-03-30T07:54:24  <Stocha> :)
+2011-03-30T07:55:04  <phire> what local html glitches?
+2011-03-30T07:55:40  <Frontier> The specs don't allow any access to files from within scripts on a local filesystem.
+2011-03-30T07:55:45  <sigh> Frontier: either way, java 1.6 wont work on my laptop :P
+2011-03-30T07:55:45  <Stocha> phire : they said the score is fair. Your bot was more involved into the game, that's all.
+2011-03-30T07:56:08  <Stocha> Mine which wiped out the three other only barely won.
+2011-03-30T07:56:11  <Frontier> sigh: if you mean performance wise, I think they sped it up quite a bit compared to Java 1,5
+2011-03-30T07:56:25  <sigh> Frontier: no, as in I can't get it
+2011-03-30T07:56:47  <phire> Frontier, Base64 encode the external files as data urls
+2011-03-30T07:56:56  <Frontier> phire: This comes down to the point where I cannot colorize button graphics for fog of war in strict browsers or automatically load replay files
+2011-03-30T07:57:56  <phire> Stocha, I guess we better design our bots to aim for a high score, rather than destroy all ants
+2011-03-30T07:58:06  <Frontier> phire: You are right, that would work. But how long can an url become? 409600 chars?
+2011-03-30T07:58:11  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T07:58:46  <phire> I have seen some massive ones
+2011-03-30T07:59:04  <Frontier> A few years back long urls were a problem. They may now work cross-browser.
+2011-03-30T07:59:11  <phire> I think Internet Explorer has some limits, but not other broswers
+2011-03-30T08:00:16  <phire> IE7 doesn't support data URIs at all
+2011-03-30T08:00:22  <Frontier> Microsoft should just give up on IE and forcedly uninstall that non-standard-compliant browser on everyones machine, so we can finally have an open web with all the new stuff.
+2011-03-30T08:00:28  <phire> and IE8 has a 32KB limitation
+2011-03-30T08:00:42  <Frontier> lol, see. we might just hit that
+2011-03-30T08:01:14  <Frontier> our replays are in the range of hundrets of KB
+2011-03-30T08:01:53  <phire> can we not just embed the replays directly into the html
+2011-03-30T08:01:56  <phire> they are just text
+2011-03-30T08:02:15  <Frontier> that is what sigh is working on
+2011-03-30T08:02:32  <sigh> it's there in the replay branch
+2011-03-30T08:02:57  <sigh> I'll merge it in if I get approval from you and McLeopold
+2011-03-30T08:03:12  <Frontier> where do the files go? how will the package be released?
+2011-03-30T08:03:20  <sigh> I dunno, you decide
+2011-03-30T08:04:05  <Stocha> phire : i don't think it's that a big problem at low levels.
+2011-03-30T08:04:18  <Frontier> oh, then... make a zip file from it, like the starter bots. you can put the source files in visualizer/<some recognizable name> if you want
+2011-03-30T08:04:27  <Stocha> phire just do good looking bots, and hope for the best :)
+2011-03-30T08:04:41  <phire> Whats the scoring criteria anyway?
+2011-03-30T08:04:54  <Stocha> i'm not sure they got that settledyet
+2011-03-30T08:05:04  <Stocha> i think they go for ant killed at the moment.
+2011-03-30T08:05:05  <Frontier> Either you write a Makefile, or I'll add a section to the ant script if you place it in visualizer/
+2011-03-30T08:06:00  <Stocha> I'm a supporter of number of ants at end of game as it stand now. Not knowing what fighting rule will make it live. But either way i think number of ants is safer.
+2011-03-30T08:06:35  <Stocha> If then you have to make the game 1vs1 for it to make any sense i won't be the one complaining.
+2011-03-30T08:07:18  <CIA-90> aichallenge: sigh replay * r1f195a9 / (2 files in 2 dirs): Move visualize_locally/py into visualizer dir - http://bit.ly/i1E8Gj
+2011-03-30T08:07:30  <sigh> Frontier: it's all in the visualizer directory now
+2011-03-30T08:07:34  <Frontier> sigh: Personally I don't emphasize easy collection of the files from the repo, but a zip download on the final web site.
+2011-03-30T08:07:37  <Frontier> kk
+2011-03-30T08:07:51  <phire> number of ants at end will probally lead to bots racing out to try and grab as much territory as possible then defending it for the rest of the game
+2011-03-30T08:08:14  <Frontier> ah python variadic arguments :)
+2011-03-30T08:08:27  <sigh> hmm?
+2011-03-30T08:10:07  <sigh> Frontier: what about python?
+2011-03-30T08:10:33  <Frontier> it concatenates paths with a simple (parta, partb, partc)
+2011-03-30T08:10:57  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T08:10:59  <Frontier> In Java it is new File(new File(new File(parta), partb), partc)
+2011-03-30T08:11:06  <sigh> haha
+2011-03-30T08:11:44  <Frontier> or "parta + File.separator + partb + File.separator + partc", you have the choice after all
+2011-03-30T08:12:12  <sigh> but yeah, please change anything in visualize_locally.py or replay.html.template to how you think it should work
+2011-03-30T08:12:39  <sigh> as I said, I just wanted something that worked
+2011-03-30T08:12:59  <Frontier> sigh: btw, meta data is not required if you don't add playernames or anything relevant.
+2011-03-30T08:13:17  <sigh> oh ok
+2011-03-30T08:13:59  <Frontier> I'll look at it at some point and see if I would change anything. Otherwise never stop a running system
+2011-03-30T08:14:07  <sigh> ideally, you and McLeopold would agree on a json format and the engine/worker would output that
+2011-03-30T08:14:33  <Frontier> sigh: I don't know about your disk space, but I prefer to keep the file size small.
+2011-03-30T08:14:56  <sigh> how does that relate?
+2011-03-30T08:15:38  <Frontier> I once calculated the difference in file size with the streaming format back then and it was way bigger.
+2011-03-30T08:16:15  <sigh> but we are not using the streaming format for this?
+2011-03-30T08:16:38  <Frontier> No, but honestly. How would you put the storage format into good json?
+2011-03-30T08:16:56  <sigh> what? you are already trying to put it into json
+2011-03-30T08:17:00  <Frontier> It is just strings of data for each ant
+2011-03-30T08:17:48  <Frontier> When we thought about adding meta data to the replays, JSON was the best future proof solution.
+2011-03-30T08:18:19  <Frontier> It doesn't change the replay file itself, but wraps it transparently.
+2011-03-30T08:18:24  <sigh> sure... and the worker also does the same thing, only thing is that the format in visualiser is different from the engine
+2011-03-30T08:18:39  <Frontier> ?
+2011-03-30T08:19:01  <Frontier> ok i get it
+2011-03-30T08:19:30  <sigh> the json that McLeopold implemented in the engine does not match what you implemented in your visualiser
+2011-03-30T08:19:36  <sigh> and you guys should get that sorted out
+2011-03-30T08:20:00  <Frontier> We have the wiki with the specs, what could have gone wrong?
+2011-03-30T08:20:20  <sigh> I dunno, all I know is that it is different
+2011-03-30T08:20:53  <Frontier> I what way?
+2011-03-30T08:21:07  <Frontier> different meta data?
+2011-03-30T08:21:40  <sigh> and different key names
+2011-03-30T08:21:44  <Frontier> that is no problem, the visualizer just takes what it understands and ignores the rest. and mcleopold can add anything that might be of use for amstan or others
+2011-03-30T08:22:06  <Frontier> different names for the same thing is bad indeed -.-
+2011-03-30T08:22:31  <Frontier> English is not my native language, so he might have had better names.
+2011-03-30T08:22:38  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T08:22:54  <Frontier> I'll tell him to check the wiki and tell me what is different now.
+2011-03-30T08:23:49  <Frontier> ...and I still don't feel motivated to fix the threading issue :(
+2011-03-30T08:25:03  <Frontier> I'll get a http://www.backundfrost.de/produktbilder/original/433.jpg from the bakery, maybe that helps.
+2011-03-30T08:26:05  <Stocha> what's wrong with your thread management ?
+2011-03-30T08:26:52  <Stocha> that's a prototype for ant food graphics ?
+2011-03-30T08:30:22  *** contestbot_ <contestbot_!~supybot@75-119-243-151.dsl.teksavvy.com> has joined #aichallenge
+2011-03-30T08:30:23  *** contestbot <contestbot!~supybot@75-119-243-151.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-03-30T08:31:17  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has quit IRC (Ping timeout: 240 seconds)
+2011-03-30T08:31:37  *** jmpespxoreax <jmpespxoreax!~notauser@69-196-180-55.dsl.teksavvy.com> has joined #aichallenge
+2011-03-30T08:31:37  *** contestbot_ is now known as contestbot
+2011-03-30T08:31:38  *** ChanServ sets mode: +o contestbot
+2011-03-30T08:35:41  <phire> hmm, its not really to your advantage to provoke your enemies to attack each other.
+2011-03-30T08:38:17  <Frontier> Stocha: good idea. I'll make it an easter egg ;).
+2011-03-30T08:42:46  <antimatroid> well i'll see how that goes..
+2011-03-30T08:42:58  <antimatroid> just shot an email off the the mentor guys for the gambit gsoc stuff
+2011-03-30T08:43:01  <Frontier> Stocha: I have a worker thread that reads a queue with the javascript timer events that can expire any time. If i have some immediate stuff to do inbetween, like an image is fully loaded and triggers the onload function, I interrupt this thread (which is waiting for a timer to expire). Unfortunatly I use that thread to download the replay as well. This is a blocking socket operation which is also affected by the interruption. S
+2011-03-30T08:43:25  <Frontier> gambit gsoc?
+2011-03-30T08:43:31  <antimatroid> google summer of code
+2011-03-30T08:43:49  <antimatroid> http://www.google-melange.com/gsoc/org/show/google/gsoc2011/gambit
+2011-03-30T08:44:26  <phire> Question
+2011-03-30T08:44:40  <phire> Food is placed by the random number generator, right?
+2011-03-30T08:45:06  <phire> and the random number generator is seeded with the system time on startup
+2011-03-30T08:45:20  <phire> and the bots are started up at around the same time
+2011-03-30T08:45:42  <phire> Is there a security issue there?
+2011-03-30T08:45:46  <Frontier> no
+2011-03-30T08:46:17  <Frontier> The bots don't know the exact time after all.
+2011-03-30T08:46:58  <Frontier> The random number algorithm is too complex in turn to find the seed from a series of output values
+2011-03-30T08:46:59  <phire> you blocked the syscall?
+2011-03-30T08:47:18  <antimatroid> the bots start after the engine picks the seed
+2011-03-30T08:47:23  <Frontier> phire: a few milliseconds difference will result in totally different numbers
+2011-03-30T08:47:26  <antimatroid> good luck guessing the exact time the engine got it
+2011-03-30T08:47:48  <phire> but you can brute force it if you know the likely range the seed time is in
+2011-03-30T08:48:03  <Frontier> hmm
+2011-03-30T08:48:33  <antimatroid> what if we use that seed to compute a number of other seeds to generate, and use those seeds to generate each suceeding seed?
+2011-03-30T08:48:36  <antimatroid> :P
+2011-03-30T08:48:37  <Frontier> there could be a salt value in the db in the final compo
+2011-03-30T08:48:37  <antimatroid> yo dog
+2011-03-30T08:49:12  <phire> well, probally best to just grab a number out of urandom and use that to seed the prng
+2011-03-30T08:50:28  <Frontier> doesn't bot location influence food spawning?
+2011-03-30T08:50:48  <phire> and the layout of the map?
+2011-03-30T08:51:40  <Frontier> so there is really no advantage in knowing the random seed as long as you dont know the map
+2011-03-30T08:53:08  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T08:53:11  <phire> if you could quickly scout the map
+2011-03-30T08:54:07  <Frontier> you cant -.-
+2011-03-30T08:54:24  <Frontier> you move at 1 square per turn
+2011-03-30T08:54:50  <phire> it also might be possible to determine the map from the behaviour of the PRNG
+2011-03-30T08:55:19  <phire> but I think it becomes chicken and egg
+2011-03-30T08:55:21  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T08:55:45  <phire> you don't know the seed without knowing the map, and you don't know the map without knowing the seed
+2011-03-30T08:55:54  <Stocha> you have the option of using secure random.
+2011-03-30T08:56:00  <Stocha> if things really get that far.
+2011-03-30T08:56:17  <Stocha> So far i've found few use of trying to guess the random numbers though.
+2011-03-30T08:56:34  <Stocha> You'd probably be better to start with the symmetric things if maps are symmetrics
+2011-03-30T08:56:46  <Stocha> Or make your bot stronger in fact.
+2011-03-30T08:56:50  <Stocha> that's a huge gain also.
+2011-03-30T08:57:04  <Stocha> a bad bot with the whole map divination will still be bad :p
+2011-03-30T08:57:26  <Stocha> that becomes a problem if all bot are of same strength though.
+2011-03-30T08:58:08  <phire> yes
+2011-03-30T08:58:37  <phire> but you don't need to go all the way to a secure random, just use a non-predictable seed
+2011-03-30T08:58:46  <Stocha> what will you make an easter egg Frontier. I didn't get it.
+2011-03-30T08:59:06  <Stocha> There are plenty of solutions.
+2011-03-30T08:59:33  <Stocha> and really marginal trouble at the moment.
+2011-03-30T08:59:43  <Stocha> you don't even know the map generation algorithm that will be used now :p
+2011-03-30T08:59:59  <phire> lol
+2011-03-30T09:00:21  <Stocha> but i like your logic. i would have the same though. wait. i had them.
+2011-03-30T09:00:21  <phire> its tempting to just leave it in and see if anyone can exploit it
+2011-03-30T09:00:39  <Stocha> yeah.
+2011-03-30T09:01:18  <Stocha> but if you look at the game and it become crystal clear the bot already know the game, that might be trouble for your bot also.
+2011-03-30T09:01:25  <Stocha> the map
+2011-03-30T09:01:37  <Stocha> especially if it is done for all maps.
+2011-03-30T09:02:12  <Stocha> so you'll have to try to build a good bot, make it use the known map, and then make use of it in order for that not to be too evident.
+2011-03-30T09:02:35  <Stocha> Unless you only want to point out there is security issue.
+2011-03-30T09:03:02  <Stocha> it seems marginally important in the whole. unless you can earn money or something.
+2011-03-30T09:03:26  <Stocha> Or if it really is easy to hack. Wich i doubt it will.
+2011-03-30T09:03:41  <phire> yeah, I think it will be really hard
+2011-03-30T09:04:01  <phire> unless map generation is done per round with the same random seed
+2011-03-30T09:04:51  <Stocha> still it is good to point that out. Maybe they should make some official statement about it. So the issue won't come again and again :p
+2011-03-30T09:05:51  <Stocha> bot location will certainly affect food spawning yes
+2011-03-30T09:06:06  <Stocha> so that'll make it much harder to anticipate where food will pop out.
+2011-03-30T09:06:31  <Stocha> as will the fact that the bot can add some entropy in general. explicitly or implicitly
+2011-03-30T09:06:32  <phire> but it will allow you to determin the locations of the other bots
+2011-03-30T09:06:49  <Stocha> i can help.
+2011-03-30T09:07:03  <Stocha> but your bot engine will have to be good enougth in the first place.
+2011-03-30T09:07:26  <Stocha> so the question is : are you better making the bot strong, or making it know some stuff about the map setting.
+2011-03-30T09:07:38  <Stocha> Same goes with cracking map symmetry.
+2011-03-30T09:08:05  <Stocha> I have been working on a bot, to see how that is going.
+2011-03-30T09:08:21  <Stocha> so far, i wouldn't use full knowledge easilly.
+2011-03-30T09:08:29  <Stocha> of course it would help. But not that much.
+2011-03-30T09:08:52  <phire> it allows you to get away without scouting as much
+2011-03-30T09:08:56  <Stocha> About one week of work should beat the knowledge from where i stand now.
+2011-03-30T09:09:05  <Stocha> it allows you to do much.
+2011-03-30T09:09:17  <Stocha> but that's for perfect knowledge also.
+2011-03-30T09:09:26  <Stocha> and at starting game.
+2011-03-30T09:09:34  <Stocha> so it helps, but it's big trouble.
+2011-03-30T09:09:42  <Stocha> and maybe not worth it.
+2011-03-30T09:09:46  <phire> now that I think about it
+2011-03-30T09:09:53  <phire> unlike games like starcraft
+2011-03-30T09:09:56  <Stocha> and it might be sanctionned if people find out.
+2011-03-30T09:10:01  <phire> scouting isn't excatly expensive
+2011-03-30T09:10:06  <Stocha> it is
+2011-03-30T09:10:15  <Stocha> it is very expansive at the start of the game.
+2011-03-30T09:10:27  <Stocha> every little things matter in the starting phase.
+2011-03-30T09:10:42  <Stocha> knowing where food would pop would be huge :p
+2011-03-30T09:10:45  <phire> there is essentially an exponential groth rate in the starting phase
+2011-03-30T09:10:51  <Stocha> yeah
+2011-03-30T09:11:01  <Stocha> until you clash on the opponent
+2011-03-30T09:11:09  <phire> yeah
+2011-03-30T09:11:20  <Stocha> so you have to get food really fast and efficient up to that point. and then the game start.
+2011-03-30T09:11:32  <Stocha> and exploration is good for that
+2011-03-30T09:11:36  <phire> yes
+2011-03-30T09:11:43  <Stocha> and knowning where food will pop is big :p
+2011-03-30T09:12:02  <phire> yes
+2011-03-30T09:12:19  <Stocha> still, it's not much of a real issue in most cases i could think of. Because it's simply too hard to do.
+2011-03-30T09:12:55  <Stocha> with a lot of easy thing to do for your bot, without treachery.
+2011-03-30T09:13:10  <phire> also, the fix is extreamly easy
+2011-03-30T09:13:30  <Stocha> true. if things go really wrong, they'll switch to secure random.
+2011-03-30T09:13:49  <Stocha> which won't happen by all mean really.
+2011-03-30T09:14:31  <Stocha> so let's close the matter for now, and see when they settle the map generation/food spawning stuff :p
+2011-03-30T09:14:40  <phire> sure
+2011-03-30T09:16:44  <phire> hmm, on a slightly related note, if they go with the food around bot starting location algorithm
+2011-03-30T09:16:54  <phire> defending your starting location is going to be important
+2011-03-30T09:17:21  *** jmpespxoreax <jmpespxoreax!~notauser@69-196-180-55.dsl.teksavvy.com> has quit IRC (Changing host)
+2011-03-30T09:17:21  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-03-30T09:17:23  <phire> and trying to locate and take of enemy starting locations will be useful
+2011-03-30T09:24:12  <phire> I guess I should actually code my bot, instead of just planing it
+2011-03-30T09:24:24  <Stocha> it is a fun thing to do
+2011-03-30T09:24:32  <Stocha> but discussing it is more fun :p
+2011-03-30T09:24:38  <Stocha> easier sometimes also.
+2011-03-30T09:24:59  <Stocha> what langage are u using ?
+2011-03-30T09:26:47  <phire> I decided on c
+2011-03-30T09:27:24  <phire> I'm not a big fan of c++
+2011-03-30T09:27:49  <phire> and I've decided python will be a bit slow
+2011-03-30T09:28:07  <Stocha> c is solid
+2011-03-30T09:28:13  <Stocha> but you have few means of visualisation :p
+2011-03-30T09:28:23  <Stocha> unless you know a framework well
+2011-03-30T09:28:31  <Stocha> or are very comfortable with ascii
+2011-03-30T09:28:37  <phire> I love ascii
+2011-03-30T09:28:41  <Stocha> or you have good tools
+2011-03-30T09:29:30  <Stocha> my current state of the hart bot kicked all three hunter bot from the random map :p
+2011-03-30T09:29:30  *** woudshoo` <woudshoo`!~user@ipleiden.intellimagic.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-30T09:29:37  <Stocha> tell me when you are at that.
+2011-03-30T09:29:51  <phire> right now I'm trying to decide on a name
+2011-03-30T09:29:55  <Stocha> then we'll setup a tcp server or something and see what's going on between us :p
+2011-03-30T09:29:59  <phire> I always get stuck at this point
+2011-03-30T09:29:59  <Stocha> a name ?
+2011-03-30T09:30:08  <Stocha> does that make your bot stronger ? :p
+2011-03-30T09:30:23  <Stocha> just see how it does and name if after performances.
+2011-03-30T09:30:44  <Stocha> if it rock, name it bush. It if it always loose, napoleon.
+2011-03-30T09:30:57  <phire> no, but I need to name the git repo something
+2011-03-30T09:31:03  <Stocha> ah
+2011-03-30T09:31:11  <Stocha> i took the name of the challenge
+2011-03-30T09:31:14  <Stocha> epsilon
+2011-03-30T09:31:24  <Stocha> that's not good, but it is a name .
+2011-03-30T09:31:39  <phire> screw it, I'll just find a random name generator
+2011-03-30T09:31:43  <Stocha> backboneEpsilon00 was the first one
+2011-03-30T09:31:59  <Stocha> what about phireBot ?
+2011-03-30T09:32:18  <phire> lets just call it Fred
+2011-03-30T09:32:24  <Stocha> fred ?
+2011-03-30T09:32:28  <phire> its a name
+2011-03-30T09:32:33  <Stocha> like the guys that took out my girlfriend ?
+2011-03-30T09:32:44  <Stocha> name it "rex" then.
+2011-03-30T09:33:02  <phire> rex the bot
+2011-03-30T09:33:08  <Stocha> Or desoxyrybonucleic
+2011-03-30T09:33:28  <Stocha> desxyrybonucleicbot45834 is good enough for a starter.
+2011-03-30T09:34:39  <Stocha> what about Adaw
+2011-03-30T09:34:46  <Stocha> Ant darn absolute winner.
+2011-03-30T09:35:14  <phire> brb
+2011-03-30T09:35:19  <Stocha> I had trouble naming my two litlle girl. But i never had trouble naming bot or rpg characters :p
+2011-03-30T09:40:55  <phire> I'm really bad at naming things
+2011-03-30T09:41:41  <phire> phirebot it is
+2011-03-30T09:47:42  <Stocha> :)
+2011-03-30T09:47:47  <Stocha> good name
+2011-03-30T09:47:55  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-03-30T09:47:57  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-30T10:05:05  <Frontier> Stocha: the easteregg will be the ant food graphic you proposed
+2011-03-30T10:27:53  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-30T10:45:31  <Frontier> there are 19 java threads when you run an applet. i didn't know that until i looked into the debugger today
+2011-03-30T10:47:15  <phire> That rings bells from my eclipse plugin days
+2011-03-30T10:48:30  <phire> Main thread
+2011-03-30T10:48:35  <phire> gui thread
+2011-03-30T10:48:40  <phire> a number of worker threads
+2011-03-30T11:02:21  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T11:02:32  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Client Quit)
+2011-03-30T11:03:12  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-30T11:03:23  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T11:04:18  <Stocha> yeah there are a lot of thread when you go for swing one way or another.
+2011-03-30T11:04:36  <Stocha> but it a lot of case you can simply use the main swing thread.
+2011-03-30T11:04:51  <Stocha> it's safe most of the time.
+2011-03-30T11:05:03  <Stocha> you use invokeLater or something like that.
+2011-03-30T11:05:14  <Stocha> i do that in the visualizer you saw.
+2011-03-30T11:05:56  <Stocha> but i'm not sure i really understood what's going on. If you are using java or something else alltogether.
+2011-03-30T11:06:03  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has joined #aichallenge
+2011-03-30T11:06:30  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Client Quit)
+2011-03-30T11:13:16  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-03-30T11:15:49  *** bhasker <bhasker!~bhasker@nat/yahoo/x-aackllwhzjtooevn> has joined #aichallenge
+2011-03-30T11:16:42  *** woudshoo <woudshoo!~user@ipleiden.intellimagic.net> has joined #aichallenge
+2011-03-30T11:26:46  *** Frontier is now known as mleise
+2011-03-30T11:31:27  *** amstan <amstan!~alex@75.119.243.151> has joined #aichallenge
+2011-03-30T11:31:33  <amstan> hello
+2011-03-30T11:34:36  *** EruooNenningly <EruooNenningly!onensora@koers032.iie.hva.nl> has quit IRC ()
+2011-03-30T11:37:02  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-03-30T11:39:47  *** bhasker <bhasker!~bhasker@nat/yahoo/x-aackllwhzjtooevn> has quit IRC (Quit: bhasker)
+2011-03-30T11:55:45  *** delt0r_ <delt0r_!~delt0r@188-22-174-237.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-30T11:56:48  *** delt0r___ <delt0r___!~delt0r@188-22-161-107.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-03-30T11:58:14  <dwchandler> phire: not going with the obvious bot name?
+2011-03-30T11:58:27  <dwchandler> don't make me say it
+2011-03-30T11:58:54  <phire> like I said, I'm bad with thinking up names
+2011-03-30T11:59:25  <dwchandler> phireant. there, I said it
+2011-03-30T11:59:30  <phire> lol
+2011-03-30T11:59:40  <dwchandler> ;-)
+2011-03-30T12:17:41  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-30T12:19:53  *** p4p4p4 <p4p4p4!~chatzilla@82.113.106.31> has quit IRC (Read error: Connection timed out)
+2011-03-30T12:25:29  *** p4p4p4 <p4p4p4!~chatzilla@82.113.106.31> has joined #aichallenge
+2011-03-30T12:30:12  *** McLeopold1 <McLeopold1!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-03-30T12:32:12  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has quit IRC (Ping timeout: 252 seconds)
+2011-03-30T12:34:45  *** mleise is now known as Frontier
+2011-03-30T12:35:29  *** McLeopold1 is now known as McLeopold
+2011-03-30T12:38:56  *** woudshoo <woudshoo!~user@ipleiden.intellimagic.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-30T12:39:18  <Frontier> McLeopold: Could you check the wiki and tell me what meta data you implemented differently than I did? sigh let me know that there are differences we should sort out.
+2011-03-30T12:49:18  <McLeopold> for the replay format?
+2011-03-30T12:52:02  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110319135224])
+2011-03-30T12:52:39  *** Gorgoroth <Gorgoroth!~cedricvar@ALille-552-1-67-32.w92-142.abo.wanadoo.fr> has joined #aichallenge
+2011-03-30T12:53:00  <McLeopold> Frontier: I really don't like the json
+2011-03-30T12:53:54  <McLeopold> we need to go all json or all space/newline delimited, but this mix of both is just ugle
+2011-03-30T12:54:18  <McLeopold> so ugly I had to use the term "ugle", which means really ugly
+2011-03-30T12:58:28  <McLeopold> if we want to do json, the rip out the meta data from the replaydata string and put it into proper json
+2011-03-30T12:59:09  <McLeopold> in fact, don't even have a replaydata, just turn the whole thing into json
+2011-03-30T13:03:06  *** Gorgoroth <Gorgoroth!~cedricvar@ALille-552-1-67-32.w92-142.abo.wanadoo.fr> has left #aichallenge
+2011-03-30T13:07:51  <Frontier> that doesn't answer my question, but we would bloat the file with json structures and I wanted to be prepared for the next contest when someone thinks of a replay format that again isn't json. I do want the separation between meta data (which is future proof json) and the replay data which can be any format.
+2011-03-30T13:08:21  <Frontier> Is your primary point to have meta data and replay data on the same 'level'?
+2011-03-30T13:09:28  <Frontier> Or don't you like the fact there are two ways to encode the data, but are ok with nesting the replay data into the metadata
+2011-03-30T13:14:28  <Frontier> McLeopold: If we can agree on a JSON replay nested in JSON metadata and you change the specs I'll reimplement the replay format.
+2011-03-30T13:17:15  <phire> how much overhead will JSON add to the replay format?
+2011-03-30T13:17:27  <phire> and is it an issue?
+2011-03-30T13:19:09  <Frontier> phire: it was with the streaming format, which is already large and instead of "a 12 30" it would be "{ type: "ant", row: 12, col: 30 }"
+2011-03-30T13:20:26  <phire> so 6 times larger
+2011-03-30T13:21:12  <Frontier> so ~10 mb per file, but now we are talking about the storage format which is pretty much compressed
+2011-03-30T13:22:05  <Frontier> every ant has a single line that contains it's complete life time data.
+2011-03-30T13:22:49  <phire> Why can't we compress the streaming format in the same way?
+2011-03-30T13:22:57  <phire> well, almost the same way
+2011-03-30T13:23:26  <Frontier> eh.. that IS the difference between the storage and streaming format
+2011-03-30T13:23:54  <phire> just have a string, where each char represents the direction an ant took at that frame
+2011-03-30T13:24:38  <phire> or the fact that it has died and won't be appearing in any more frames
+2011-03-30T13:27:11  <Frontier> ok phire, you could do that, but currently it is more verbose and we talk about the storage format here which is 10 times smaller atm.
+2011-03-30T13:27:11  <Frontier> a line looks like "a 1 1 0 0 5 0 nsew-neeeessssnwsnwensweennw-sn"
+2011-03-30T13:27:11  <Frontier> in json: { row: 1, col: 1, startturn: 0, conversion: 0, endturn: 5, player: 0, moves: "nsew-neeeessssnwsnwensweennw-sn" }
+2011-03-30T13:32:18  *** namina <namina!~namina@cpc4-aztw22-2-0-cust353.aztw.cable.virginmedia.com> has joined #aichallenge
+2011-03-30T13:32:19  <phire> but you could have a single format for both, that looked something like this:
+2011-03-30T13:32:46  <phire> { new-food: [2, 3], new-ant: [4, 5], movement: "nse--nn-wsw-esnddn-s"}
+2011-03-30T13:32:53  <phire> where new food is a list of all new foods that have popped up this turn
+2011-03-30T13:33:18  <phire> and new-ant is where a new ant has appeared, (replacing the food)
+2011-03-30T13:33:44  <phire> and movement is the directional movements for all the ants in that turn
+2011-03-30T13:34:03  <phire> its almost as compact, and still streaming
+2011-03-30T13:38:20  <Frontier> I don't use the streaming format, but you can propose that to McLeopold and sigh
+2011-03-30T13:43:12  <phire> it just seams a bit of a waste to have 2 formats
+2011-03-30T13:44:07  *** choas <choas!~lars@p578F6B72.dip.t-dialin.net> has joined #aichallenge
+2011-03-30T13:45:18  <namina> @seen sigh
+2011-03-30T13:45:18  <contestbot> namina: sigh was last seen in #aichallenge 5 hours, 23 minutes, and 37 seconds ago: <sigh> and different key names
+2011-03-30T13:46:40  <namina> @later tell sigh I know its still in dev but I just gave the visualize_locally script a go, got the following error: http://pastebin.com/cKDxsUZv
+2011-03-30T13:46:40  <contestbot> namina: Yes master!
+2011-03-30T14:02:52  <McLeopold> phire: could you write that up as a possible spec in the wiki?
+2011-03-30T14:09:29  *** p4p4p4 <p4p4p4!~chatzilla@82.113.106.31> has quit IRC (Read error: Connection timed out)
+2011-03-30T14:10:22  *** p4p4p4 <p4p4p4!~chatzilla@82.113.106.31> has joined #aichallenge
+2011-03-30T14:11:09  <McLeopold> Frontier: I don't like the fact that you need two generic parsers to get the actual data.  Also, I'd like maps and replays to be stored as resources on the net that would be usable by any tool.  Having 1 parsing routine make it easier to pass around.
+2011-03-30T14:11:49  <McLeopold> Frontier: also, as far as specific metadata goes, you are in charge and know what you need, so sigh should conform the engine to your needs.
+2011-03-30T14:12:41  <McLeopold> Most of that meta data will be generated by the manager/php pages after a result has been reported by the worker.
+2011-03-30T14:13:55  <McLeopold> Frontier: also, it would be possible to make the map not part of the replay, but just give another url to the visualizer to load it.
+2011-03-30T14:14:16  <McLeopold> And, I always wanted a way to browse maps by sight with planet wars.
+2011-03-30T14:23:18  <phire> McLeopold, ok, tomorrow
+2011-03-30T14:23:30  <phire> I need some sleep right now.
+2011-03-30T14:24:20  <phire> night
+2011-03-30T14:24:58  <McLeopold> phire: also keep in mind I want the streaming format to be able to describe the entire state of the game for each turn
+2011-03-30T14:25:55  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Ping timeout: 248 seconds)
+2011-03-30T14:25:56  <McLeopold> we might as well just to run-length encoding without walls...
+2011-03-30T14:26:43  *** p4p4p4 <p4p4p4!~chatzilla@82.113.106.31> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-03-30T14:28:45  *** phire <phire!~phire@142.248.69.111.dynamic.snap.net.nz> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T14:45:00  <namina> has anyone done any work on an official tcp server yet?
+2011-03-30T14:50:46  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-30T14:54:56  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2011-03-30T14:55:18  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has left #aichallenge
+2011-03-30T14:56:08  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-30T14:57:44  *** rhino <rhino!46593219@gateway/web/freenode/ip.70.89.50.25> has joined #aichallenge
+2011-03-30T15:02:26  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-30T15:19:00  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-30T15:19:29  *** rhino <rhino!46593219@gateway/web/freenode/ip.70.89.50.25> has quit IRC (Quit: Page closed)
+2011-03-30T15:21:16  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-03-30T15:21:25  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-30T15:35:11  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-30T15:50:07  *** Chris_0076 <Chris_0076!~Chris_007@adsl-88-204-60.asm.bellsouth.net> has joined #aichallenge
+2011-03-30T16:07:34  *** woudshoo <woudshoo!~user@ironhead.xs4all.nl> has joined #aichallenge
+2011-03-30T16:19:45  *** Chris_0076 <Chris_0076!~Chris_007@adsl-88-204-60.asm.bellsouth.net> has quit IRC (Read error: Operation timed out)
+2011-03-30T16:22:37  <Naktibalda> what's a point of having sample_bots and starter_bots?
+2011-03-30T16:24:17  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 276 seconds)
+2011-03-30T16:26:13  *** woudshoo <woudshoo!~user@ironhead.xs4all.nl> has quit IRC (Read error: Operation timed out)
+2011-03-30T16:32:28  *** amstan_ <amstan_!~amstan@75-119-243-151.dsl.teksavvy.com> has joined #aichallenge
+2011-03-30T16:32:28  *** ChanServ sets mode: +o amstan_
+2011-03-30T16:32:29  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-248-13.asm.bellsouth.net> has joined #aichallenge
+2011-03-30T16:36:36  <McLeopold> Naktibalda: the starter bots are meant to be ready for upload to the contest server as a valid entry, so we do not want to include a bunch of extra tools and files that don't pertain to the entry
+2011-03-30T16:36:56  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T16:37:35  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-30T16:37:38  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-30T16:38:19  <McLeopold> Naktibalda: did you get my last message?
+2011-03-30T16:40:03  <Naktibalda> no
+2011-03-30T16:40:11  <Naktibalda> oh, I see 1
+2011-03-30T16:41:01  <McLeopold> Naktibalda: Would you be willing to put together a map pastebin?
+2011-03-30T16:41:56  <Naktibalda> pastebin guy :)
+2011-03-30T16:42:41  <McLeopold> well, it was nice last time around
+2011-03-30T16:42:57  <McLeopold> I'm checking to see if my viewer.html works for just maps...
+2011-03-30T16:43:53  <Naktibalda> of course I could when I understand how the stuff works
+2011-03-30T16:45:26  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-30T16:45:36  <Naktibalda> I get 4 timeouts when I execute ./play_one_game.sh
+2011-03-30T16:45:40  <Naktibalda> what could be a reason
+2011-03-30T16:47:46  <McLeopold> it should be calling the python bots
+2011-03-30T16:49:36  <McLeopold> try running just this "python dist/sample_bots/python/HunterBot.py", then type "rows 10\ncols 10\nready\n" and see what happens
+2011-03-30T16:50:04  <McLeopold> it should work with python2.7
+2011-03-30T16:50:27  <Naktibalda> rows 10\ncols 10\nready\n
+2011-03-30T16:50:38  <Naktibalda> ValueError: invalid literal for int() with base 10: '10\\ncols'
+2011-03-30T16:50:51  <McLeopold> sry, just hit enter instead of typing \n
+2011-03-30T16:50:56  <Naktibalda> I have 2.6.6
+2011-03-30T16:51:57  <Naktibalda> installing 2.7
+2011-03-30T16:52:16  <McLeopold> python 2.6.6 works on my windows box
+2011-03-30T16:52:29  <McLeopold> so the bots should work with 2.6 or 2.7
+2011-03-30T16:53:04  <McLeopold> doesn't work with python 3.1
+2011-03-30T16:53:31  <Naktibalda> yes, bot works
+2011-03-30T16:53:43  <Naktibalda> it responds with "go"
+2011-03-30T16:53:45  <McLeopold> works with 2.5.5 as well
+2011-03-30T16:54:01  <McLeopold> hmm, then it should work when running play_one_game...
+2011-03-30T16:54:16  <Naktibalda> timeouts are instant
+2011-03-30T16:54:25  <McLeopold> that doesn't sound right
+2011-03-30T16:55:09  <Naktibalda> do I need any parameter? :)
+2011-03-30T16:55:14  <McLeopold> it sounds like the engine isn't starting the bot processes correctly
+2011-03-30T16:55:26  <McLeopold> no, play_one_game doesn't need them
+2011-03-30T16:55:29  <Naktibalda> what's $@ ?
+2011-03-30T16:56:08  <Naktibalda> Incorrect number of bots for map.  Need 4, got 5
+2011-03-30T16:56:21  <McLeopold> oh, that $@ is probably the issue
+2011-03-30T16:57:08  <Naktibalda> nope
+2011-03-30T16:57:30  <McLeopold> did you take out all 4 characters? "$@"?
+2011-03-30T16:58:02  <Naktibalda> if I don't pass any parameters' it's ignored, so not a problem
+2011-03-30T16:58:12  <Naktibalda> test_bot.sh doesn't work either
+2011-03-30T16:58:41  <Naktibalda> it complains about engine.py, but I have engine.pyc only
+2011-03-30T16:59:23  <McLeopold> yeah, that's broken for me too
+2011-03-30T17:03:49  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-30T17:04:48  <Naktibalda> ok, it's time to turn off computer :) bye
+2011-03-30T17:04:54  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110323143040])
+2011-03-30T17:12:53  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-30T17:38:12  *** choas <choas!~lars@p578F6B72.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-30T17:52:36  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-03-30T18:04:32  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-30T18:07:21  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-30T18:18:36  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-30T18:21:11  *** chris__0076 <chris__0076!~Chris_007@adsl-190-129-32.asm.bellsouth.net> has joined #aichallenge
+2011-03-30T18:23:54  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-248-13.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-03-30T18:28:38  <Naktibalda> how to read profile file?
+2011-03-30T18:28:48  <Naktibalda> generated by --profile
+2011-03-30T18:34:00  <sigh> Naktibalda: http://docs.python.org/library/profile.html#instant-user-s-manual
+2011-03-30T18:34:16  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-30T18:34:18  <sigh> if just want to see something try:
+2011-03-30T18:34:21  <sigh> import pstats
+2011-03-30T18:34:36  <sigh> p = pstats.Stats('ants.profile').strip_dirs()
+2011-03-30T18:34:52  <Naktibalda> did you see my issue an 1.5 hours ago?
+2011-03-30T18:34:56  <sigh> p.sort_stats('time').print_stats()
+2011-03-30T18:35:04  <sigh> Naktibalda: no
+2011-03-30T18:35:25  <sigh> btw, that profile is for the engine, not for the bots :P
+2011-03-30T18:35:50  <Naktibalda> i have an issue with engine
+2011-03-30T18:36:17  <sigh> what happens?
+2011-03-30T18:36:19  <Naktibalda> I'm trying to run ./play_single_game.sh and I get all 4 timeouts imediatelly
+2011-03-30T18:38:03  <sigh> hmm... you were talking with McLeopold about it? what have you found out?
+2011-03-30T18:38:18  <Naktibalda> nothing
+2011-03-30T18:38:24  <sigh> what OS are you running?
+2011-03-30T18:38:27  <Naktibalda> well, bots run standalone
+2011-03-30T18:38:41  <Naktibalda> Ubuntu, python 2.6.6
+2011-03-30T18:41:50  <sigh> has it ever worked for you before?
+2011-03-30T18:41:53  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-30T18:42:37  <Naktibalda> playgame.py worked 3 or 4 weeks ago
+2011-03-30T18:43:04  <sigh> are you familiar with git bisect?
+2011-03-30T18:43:13  <Naktibalda> no
+2011-03-30T18:44:16  <Naktibalda> 40940 function calls (40756 primitive calls) in 0.190 CPU seconds
+2011-03-30T18:44:44  <sigh> I don't really have the time to help you right now, but git bisect can help you find the last good revision
+2011-03-30T18:45:02  <sigh> other than that the only thing I can think of is to give you a version with a lot more logging
+2011-03-30T18:46:02  <McLeopold> Naktibalda: I can look at the issue later, in about 5 hours, if you don't solve it
+2011-03-30T18:47:34  <Naktibalda> should I report an issue?
+2011-03-30T18:47:53  <sigh> Naktibalda: sure
+2011-03-30T18:48:44  <sigh> McLeopold: I was reading through the logs, "$@" inserts the command line arguments given to the script... so you can do things like ./play_one_game.sh --log_output
+2011-03-30T18:48:53  <sigh> it would not be causing problems
+2011-03-30T18:56:13  *** num1 <num1!~num1@unaffiliated/num1> has quit IRC (Ping timeout: 260 seconds)
+2011-03-30T19:00:40  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has quit IRC ()
+2011-03-30T19:04:14  *** chris__0076 <chris__0076!~Chris_007@adsl-190-129-32.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T19:21:32  <McLeopold> sigh: play_one_game is meant to be an example of how to run playgame.py, let's not make it take any command line arguments
+2011-03-30T19:22:00  * Naktibalda is going to wait a few more weeks
+2011-03-30T19:22:01  *** num1 <num1!~num1@unaffiliated/num1> has joined #aichallenge
+2011-03-30T19:22:29  <McLeopold> lets make a readme that encourages people to customize it for testing
+2011-03-30T19:23:26  <sigh> ok
+2011-03-30T19:23:43  <janzert> maybe belongs in a readme type text file instead of an actual script then?
+2011-03-30T19:23:56  <sigh> yeah, that seems to be better
+2011-03-30T19:23:57  <janzert> if it's meant to be an example of a command line that is
+2011-03-30T19:24:13  * Naktibalda failed to find a working version :)
+2011-03-30T19:24:33  <sigh> Naktibalda: even from 3 or 4 weeks ago?
+2011-03-30T19:25:39  <Naktibalda> I can't find a working map
+2011-03-30T19:25:55  <Naktibalda> Exception: ('map', 'Incorrect number of cols in row 0. Got 78, expected None.')
+2011-03-30T19:26:22  <Naktibalda> Exception: ('map', 'Incorrect number of rows.  Expected None, got 0')
+2011-03-30T19:26:29  <sigh> use maps/random4.txt
+2011-03-30T19:26:53  <Naktibalda> AttributeError: 'NoneType' object has no attribute 'endswith'
+2011-03-30T19:27:00  <Naktibalda> UnboundLocalError: local variable 'bots' referenced before assignment
+2011-03-30T19:27:34  <sigh> ah, you must have hit the repo in a broken state :(
+2011-03-30T19:35:21  <Naktibalda> at last found a working version :)
+2011-03-30T19:37:18  <Naktibalda> There are only 'skip'ped commits left to test.
+2011-03-30T19:41:31  *** niemela <niemela!~niemela@129.62.151.126> has quit IRC (Read error: Connection reset by peer)
+2011-03-30T19:42:49  <McLeopold> janzert: I was thinking a step in the starter guide would be "run play_one_game and watch a game play locally"
+2011-03-30T19:43:07  *** niemela <niemela!~niemela@129.62.151.126> has joined #aichallenge
+2011-03-30T19:43:36  <McLeopold> janzert/sigh: also, test_bot.cmd is meant to run the exact same test that the worker will run for compilation tests
+2011-03-30T19:44:15  <McLeopold> Naktibalda: you may be in the realm of the row/col reversed code
+2011-03-30T19:45:21  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Connection reset by peer)
+2011-03-30T19:46:22  <Naktibalda> must be one of these: https://github.com/aichallenge/aichallenge/commit/2c5dcabb3dacaac2b9e6a68028be2b9655bf1acf https://github.com/aichallenge/aichallenge/commit/0796834efb1443a6dc934860d007964e6f8d4cc3
+2011-03-30T19:48:27  <janzert> McLeopold: but telling the to run play_one_game and watch doesn't teach anything that can then be applied later, instead telling them to run whatever the command is in play_one_game will let them see what is actually happening and allow them to modify it for their own use
+2011-03-30T19:49:21  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T19:50:00  <Naktibalda> I found some working versions on March 06-07
+2011-03-30T19:53:34  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T19:56:20  *** delt0r___ <delt0r___!~delt0r@188-22-162-170.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-30T19:57:26  *** delt0r_ <delt0r_!~delt0r@188-22-174-237.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T20:06:56  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Operation timed out)
+2011-03-30T20:07:16  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T20:17:42  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Quit: No Ping reply in 180 seconds.)
+2011-03-30T20:18:15  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T20:23:06  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-03-30T20:23:41  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Quit: No Ping reply in 180 seconds.)
+2011-03-30T20:24:08  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T20:25:57  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-30T20:29:15  *** iFire` <iFire`!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T20:29:58  * Naktibalda wasted 2 hours, everything works now
+2011-03-30T20:30:53  <Naktibalda> err, no
+2011-03-30T20:30:58  <Naktibalda> ValueError: too many values to unpack
+2011-03-30T20:31:19  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Ping timeout: 248 seconds)
+2011-03-30T20:32:45  <Naktibalda> --verbose option breaks playgame
+2011-03-30T20:32:50  <Naktibalda> bye
+2011-03-30T20:32:58  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110323143040])
+2011-03-30T20:37:40  *** computerwiz_222 <computerwiz_222!~andrew@216-58-20-94.cpe.distributel.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T20:40:15  *** computerwiz_222 <computerwiz_222!~andrew@174-138-218-155.cpe.distributel.net> has joined #aichallenge
+2011-03-30T20:46:15  *** iFire` <iFire`!~kittens@unaffiliated/ifire> has quit IRC (Ping timeout: 248 seconds)
+2011-03-30T20:47:47  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T21:03:50  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Remote host closed the connection)
+2011-03-30T21:28:25  *** num1 <num1!~num1@unaffiliated/num1> has quit IRC (Ping timeout: 246 seconds)
+2011-03-30T21:33:39  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-03-30T22:11:28  <namina> sigh: did you see my error with visualize_locally.py earlier?
+2011-03-30T22:11:55  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-30T22:12:52  <sigh> namina: yeah, if you could could you paste the raw replay file as well (usually in viewer/0.replay)... also note the git commit you are running when reporting these things as it is still in dev
+2011-03-30T22:17:10  <namina> ok, sure. here is raw 0.replay: http://pastebin.com/DQT4WC9J and git commit is 1f195a97a37e604b3d34bb69d956b5fbce1817f8
+2011-03-30T22:17:24  *** br <br!59860b11@gateway/web/freenode/ip.89.134.11.17> has joined #aichallenge
+2011-03-30T22:17:50  *** br is now known as Guest67048
+2011-03-30T22:20:23  *** Guest67048 <Guest67048!59860b11@gateway/web/freenode/ip.89.134.11.17> has left #aichallenge
+2011-03-30T22:25:02  <sigh> namina: thanks, I will look at it later
+2011-03-30T22:25:26  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-220-33.asm.bellsouth.net> has joined #aichallenge
+2011-03-30T22:25:30  <namina> sigh: thanks
+2011-03-30T22:32:23  *** namina <namina!~namina@cpc4-aztw22-2-0-cust353.aztw.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2011-03-30T23:12:38  *** phire <phire!~phire@142.248.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-30T23:16:49  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-30T23:27:43  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-30T23:29:41  *** zklapow_ <zklapow_!~zklapow@184.152.61.64> has joined #aichallenge
+2011-03-30T23:33:34  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-30T23:39:53  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T23:44:52  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Quit: No Ping reply in 180 seconds.)
+2011-03-30T23:48:06  *** zklapow_ <zklapow_!~zklapow@184.152.61.64> has quit IRC (Quit: zklapow_)
+2011-03-30T23:48:45  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-30T23:52:15  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Client Quit)
+2011-03-30T23:52:42  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge

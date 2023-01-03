@@ -1,0 +1,1999 @@
+2010-11-12T00:00:01  <Zannick> it seems to me like you're trying to prevent coordinates from being close to integer values
+2010-11-12T00:00:28  <Zannick> sigh: :P
+2010-11-12T00:00:45  <antimatroid> Zannick: i was told to explicitly exclude integer coordinates
+2010-11-12T00:01:01  <janzert> not integer coordinates
+2010-11-12T00:01:03  <Zannick> what??
+2010-11-12T00:01:08  <antimatroid> ?
+2010-11-12T00:01:10  <janzert> near integer distances
+2010-11-12T00:01:15  <sigh> Zannick: yes, to prevent possible rounding errors
+2010-11-12T00:01:17  <antimatroid> oh okay, i need to change that thena
+2010-11-12T00:01:33  <antimatroid> and it wasn't checking it for home planets, will fix that up too
+2010-11-12T00:01:51  <Zannick> hm
+2010-11-12T00:02:01  <Zannick> i guess that's kind of legit
+2010-11-12T00:02:07  <Zannick> for distances, at least
+2010-11-12T00:02:08  <sigh> errr... it doesn't matter if the coordinates are near integers
+2010-11-12T00:02:10  <sigh> only distances
+2010-11-12T00:02:53  <antimatroid> yeah, i see that now :P
+2010-11-12T00:03:24  <antimatroid> i think i said last night my life philosophy is do first think later
+2010-11-12T00:03:36  <sigh> code should check abs(distance) < epsilon or abs(distance) - 1 > epsilon
+2010-11-12T00:03:53  <sigh> err.. ignore that
+2010-11-12T00:03:56  <antimatroid> :P
+2010-11-12T00:05:12  <sigh> meh, you are smart enough to figure it out
+2010-11-12T00:06:25  <Zannick> except you want to use the nonrounded form of distance for that
+2010-11-12T00:06:34  <sigh> yup
+2010-11-12T00:07:25  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T00:07:38  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has joined #aichallenge
+2010-11-12T00:09:07  <Zannick> only other comments i have are on formatting
+2010-11-12T00:09:10  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-11-12T00:09:49  <sigh> it's missing that threshold thing based on growth rate. is that important?
+2010-11-12T00:10:31  <Zannick> that was a way of establishing different minimum distances between planets
+2010-11-12T00:11:02  <antimatroid> threshold based on growth rate?
+2010-11-12T00:11:04  <Zannick> it would be useful to keep that, though
+2010-11-12T00:11:14  <sigh> sure, but that was used on top of the <= 1 requirement
+2010-11-12T00:11:20  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-11-12T00:11:33  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Quit: Page closed)
+2010-11-12T00:11:35  <Zannick> no
+2010-11-12T00:11:42  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-11-12T00:12:05  <Zannick> let's see, 0.4 * the sum of the square roots of the growth rates
+2010-11-12T00:12:10  <antimatroid> that was a "what the fuck are you talking about" question mark
+2010-11-12T00:12:23  <Zannick> was the minimum distance between two planets
+2010-11-12T00:12:31  <sigh> line 36 in the original script: if dist < threshold or dist <= 1:
+2010-11-12T00:12:35  <Zannick> and that could be 0.8 for some cases
+2010-11-12T00:13:12  <Zannick> wait, haha
+2010-11-12T00:13:37  <Zannick> the biggest that would be is 0.4 * (sqrt(5) + sqrt(5))
+2010-11-12T00:13:41  <Zannick> which is less than
+2010-11-12T00:13:43  <Zannick> which is less than 2
+2010-11-12T00:13:57  <Zannick> hahahaha
+2010-11-12T00:14:04  <Zannick> antimatroid: no, you're perfectly fine without that
+2010-11-12T00:14:21  <Zannick> since you basically are using a bigger minimum distance
+2010-11-12T00:14:44  *** delt0r <delt0r!~delt0r@188-22-168-21.adsl.highway.telekom.at> has joined #aichallenge
+2010-11-12T00:15:06  *** delt0r___ <delt0r___!~delt0r@188-22-16-160.adsl.highway.telekom.at> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T00:15:06  <Zannick> i can't believe i didn't notice that when i edited that file last
+2010-11-12T00:16:38  <sigh> :)
+2010-11-12T00:16:41  <contestbot> Top 10 players: bocsimacko(4416), george(4229), asavis(4184), shangas(4177), Raschi(4171), GreenTea(4126), oldman(4111), dmj111(4094), _Astek_(4086), _iouri_(4048)
+2010-11-12T00:17:16  <antimatroid> http://codepad.org/noN1rFFp take two
+2010-11-12T00:17:26  <antimatroid> i reduced min starting distance to 5
+2010-11-12T00:17:43  *** codefun64 <codefun64!ae1ffdd4@gateway/web/freenode/ip.174.31.253.212> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T00:18:28  *** iris1 <iris1!~iris1@2002:45cb:10af:0:21d:4fff:fe49:d625> has quit IRC (Ping timeout: 260 seconds)
+2010-11-12T00:19:45  <janzert> how hard would it be to instead ensure there is a neutral with cost less than 5 * home world distance
+2010-11-12T00:20:13  <Zannick> make it the first neutral generated
+2010-11-12T00:20:29  <janzert> at least I think that is the correct formula, someone who is actually playing and thinking about these things feel free to chime in on that :)
+2010-11-12T00:20:47  <sigh> that's enough strict enough
+2010-11-12T00:20:47  <antimatroid> janzert: easy, i'll just make sure the first two neutrals added meet that
+2010-11-12T00:21:05  <sigh> actually
+2010-11-12T00:21:08  <Zannick> wait, home world distance...as in dist(p1, p2)?
+2010-11-12T00:21:22  <Zannick> hm, i see what that entials
+2010-11-12T00:21:25  <Zannick> entails
+2010-11-12T00:21:28  <janzert> right distance between the two
+2010-11-12T00:21:33  <janzert> two home worlds
+2010-11-12T00:21:33  <antimatroid> hold on, i'll do it then let you guys look
+2010-11-12T00:21:46  <sigh> actually... that formula is fine
+2010-11-12T00:22:34  <sigh> I think it is better to just not make the home planets too close
+2010-11-12T00:22:45  <antimatroid> wait, i need to restrict the number of ships to 25 too?
+2010-11-12T00:23:00  <antimatroid> the neutral doesn't even need to be within that distance
+2010-11-12T00:23:08  <antimatroid> there needs to be a neutral with planets < 25?
+2010-11-12T00:23:14  <antimatroid> with ships*
+2010-11-12T00:23:16  <janzert> antimatroid the only restriction on the neutral is number of ships
+2010-11-12T00:23:21  <sigh> the position of the planet doesn't matter, only cost
+2010-11-12T00:23:39  <antimatroid> okay, so first neutrals added have ships in [1, 25)?
+2010-11-12T00:23:53  <sigh> 5*distance(p1,p2)
+2010-11-12T00:24:02  <antimatroid> yes der :P
+2010-11-12T00:24:05  <antimatroid> okay, hold up
+2010-11-12T00:24:13  <janzert> [1, 5*distance(p1,p2))
+2010-11-12T00:24:26  <sigh> you can make the range inclusive
+2010-11-12T00:24:31  <sigh> if you want
+2010-11-12T00:24:41  <antimatroid> i think it's better if it's not
+2010-11-12T00:25:05  <janzert> and you could make the home world distance minimum down lower then
+2010-11-12T00:25:44  <sigh> it still doesn't stop draws though... map 30 obeys this condition and is still a boring map
+2010-11-12T00:26:20  <janzert> any chance you have a handy playback showing map 30
+2010-11-12T00:27:25  <janzert> nm found it on tcp
+2010-11-12T00:27:50  <sigh> http://72.44.46.68/canvas?game_id=976319 for everyone else
+2010-11-12T00:28:03  <janzert> map 30 doesn't  follow that rule does it?
+2010-11-12T00:28:19  <sigh> it is possible to aquire the 20 in the corner
+2010-11-12T00:29:01  <janzert> how far are the home planets, 4?
+2010-11-12T00:29:06  <janzert> or only 3
+2010-11-12T00:29:20  <sigh> I think 5
+2010-11-12T00:29:44  <eburnette_> startDist is 5
+2010-11-12T00:29:59  <antimatroid> janzert: i was just thinking, i'll remove starting distance being greater than 2
+2010-11-12T00:30:03  <antimatroid> i think it's fine now
+2010-11-12T00:30:12  <Zannick> does it obey the condition ignoring the center planet?
+2010-11-12T00:30:22  <janzert> hmm, ok so you can expand to the 20 planet but no farther basically
+2010-11-12T00:30:41  <sigh> unless opponent is stupid: http://72.44.46.68/canvas?game_id=978085
+2010-11-12T00:30:48  <antimatroid> if home distances are 2, just means there exists neutrals for both players that have ships less than 10
+2010-11-12T00:31:02  <janzert> antimatroid: right
+2010-11-12T00:31:02  <antimatroid> if both bots suck, that's their fault
+2010-11-12T00:31:10  <sigh> :(
+2010-11-12T00:31:50  <eburnette_> if your opponent is not ragebot you can get planet 8 and 21 (starting at 2)
+2010-11-12T00:32:56  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2010-11-12T00:33:10  <janzert> how about this will the top 100 bots always at least draw map 30?
+2010-11-12T00:33:34  <janzert> if so then we probably need to start worrying about disallowing it
+2010-11-12T00:33:40  <sigh> janzert: I think so
+2010-11-12T00:33:47  <Zannick> i would think a really good bot should be able to win.
+2010-11-12T00:33:49  <eburnette_> can you be in the top 100 and be beaten by ragebot?
+2010-11-12T00:33:49  <antimatroid> http://codepad.org/JuoNVCba take 3
+2010-11-12T00:34:00  <sigh> Zannick: prove it :)
+2010-11-12T00:34:27  <janzert> but it will probably still be easier to do it manually than fixing the generator to not create them in the first place
+2010-11-12T00:34:27  <Zannick> it was mentioned that one could take a 20-planet
+2010-11-12T00:34:30  <sigh> eburnette_: easily
+2010-11-12T00:35:00  <Zannick> if that's true, then the distance from 1 to 2 is at least 5
+2010-11-12T00:35:03  <sigh> that might be an idea though... force everyone to play ragebot in main tournament
+2010-11-12T00:35:08  <janzert> sigh: but you think they all win or draw map 30?
+2010-11-12T00:35:09  <sigh> :P
+2010-11-12T00:35:21  <sigh> janzert: draw against other top bots
+2010-11-12T00:35:25  <Zannick> and doing that ought to be enough to put a player ahead
+2010-11-12T00:35:34  <antimatroid> i was just thinking, with map generation in final tournament, would it be possible to generate a new map every time a pairing has played on all maps already generated?
+2010-11-12T00:35:43  <janzert> I mean win or draw against perfect play :)
+2010-11-12T00:35:46  <eburnette_> if it takes this much thought then it should be in there
+2010-11-12T00:35:48  <Zannick> but there is no way to prevent bots from doing the exact same thing
+2010-11-12T00:35:57  <antimatroid> and start with 1 map, then generate as needed?
+2010-11-12T00:35:58  <janzert> i.e. against anyone
+2010-11-12T00:36:10  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2010-11-12T00:36:32  <janzert> antimatroid: I'd rather not add that complexity
+2010-11-12T00:36:34  <sigh> janzert: I'm 90% sure it will draw against perfect play
+2010-11-12T00:36:38  <sigh> 99%
+2010-11-12T00:36:54  <antimatroid> then we're going to need to work out a number of planets to be generated for the final contest
+2010-11-12T00:37:05  <eburnette_> generate 100,000 maps and you won't have to worry about it antimatroid
+2010-11-12T00:37:09  <antimatroid> i'd say too many will make results more unstable, but too few results in repeats
+2010-11-12T00:37:34  <Zannick> just round-robin n times on n maps
+2010-11-12T00:37:40  <antimatroid> you can't round robin
+2010-11-12T00:37:47  <antimatroid> it's too inefficient
+2010-11-12T00:38:06  <Zannick> :P
+2010-11-12T00:38:17  <janzert> yeah, round-robin is a terribly inefficient use of games
+2010-11-12T00:38:49  <antimatroid> i'd say 20-30 maps max
+2010-11-12T00:38:56  <janzert> hmm, yeah I guess ideally we want as many maps as the largest number of pairings
+2010-11-12T00:39:06  <janzert> repeat pairings
+2010-11-12T00:39:17  <antimatroid> repeat pairings on a map are pointless
+2010-11-12T00:39:26  <janzert> right
+2010-11-12T00:39:33  <eburnette_> maybe
+2010-11-12T00:39:36  <antimatroid> although can repeat starting positions i think
+2010-11-12T00:39:46  <antimatroid> repeat with them switched*
+2010-11-12T00:39:50  <sigh> yeah... I think you should actually work out estimates on paper to figure out the number of maps
+2010-11-12T00:39:59  <eburnette_> there is a random factor due to timing
+2010-11-12T00:40:07  <eburnette_> or use of random()
+2010-11-12T00:40:09  <janzert> antimatroid: yeah, if necessary not as ideal as a different map though
+2010-11-12T00:40:34  <antimatroid> would it be very hard for it to generate a new map every time a pairing requires it?
+2010-11-12T00:40:41  <antimatroid> i think that'd be ideal
+2010-11-12T00:41:04  <janzert> I would have to think about how hard that might be
+2010-11-12T00:41:14  <Zannick> you'd have to keep track of the number of times a pairing occurs
+2010-11-12T00:41:21  <janzert> remember new maps would have to be distributed to all the workers
+2010-11-12T00:41:23  <antimatroid> already happening pretty sure
+2010-11-12T00:41:37  <antimatroid> yeah, i have no idea how everything works :)
+2010-11-12T00:41:40  <janzert> Zannick: the new pairing code does that
+2010-11-12T00:41:49  <Zannick> janzert: ah, excellent
+2010-11-12T00:41:57  <eburnette_> only probl is you could never repeat a battle (for understanding why the bot made a certain move)
+2010-11-12T00:42:14  <antimatroid> i think that map generator is solid now
+2010-11-12T00:42:19  <eburnette_> at least by map number anyway
+2010-11-12T00:42:55  <sigh> why not have first pairing on map 1, second on map 2, etc?
+2010-11-12T00:43:04  <sigh> or would that be less fair?
+2010-11-12T00:43:39  <Zannick> that would heavily favor map 1 in initial rankings
+2010-11-12T00:43:46  <janzert> antimatroid: mind making up a zip of say 20 maps from it and post it on the forums to try and get some feedback from players on them
+2010-11-12T00:43:47  <antimatroid> sigh: that would do it
+2010-11-12T00:43:53  <antimatroid> generate 200 maps, then do what sigh said
+2010-11-12T00:44:03  <sigh> nah ,I think Zannick is right
+2010-11-12T00:44:20  <Zannick> and you'd probably not get to all 200
+2010-11-12T00:44:39  <janzert> yeah, you really need to randomly choose within the set of maps being used
+2010-11-12T00:44:39  <antimatroid> yeah, i read that after
+2010-11-12T00:45:08  <sigh> in that case, why do we want to restrict the maps to a small set?
+2010-11-12T00:45:10  <janzert> which really means you want the initial set to be about the right size to start with and only grow if needed
+2010-11-12T00:45:12  <sigh> why not 1000?
+2010-11-12T00:45:21  <antimatroid> janzert: that sounds good though, increment usable maps when necessary, and pick between unused maps when paired
+2010-11-12T00:45:24  <sigh> what is the advantage of a small set?
+2010-11-12T00:45:26  <Zannick> yet in that case, you need to remember which maps you've used
+2010-11-12T00:45:31  <antimatroid> start with like 20
+2010-11-12T00:46:03  <antimatroid> sigh: i think it's better if lots of different bots play on the same map
+2010-11-12T00:47:09  <sigh> playing devil's advocate, why is that better?
+2010-11-12T00:48:10  <Zannick> better confidence in rankings
+2010-11-12T00:48:29  <janzert> if you have a beats b beats c it's probably more likely a beats c if they both played the same map(s)
+2010-11-12T00:48:47  <antimatroid> janzert: do you want me to post a link to the code in the forum post too?
+2010-11-12T00:48:57  <sigh> hmm..fair enough
+2010-11-12T00:48:58  <janzert> sure, then people can play with it
+2010-11-12T00:49:37  <eburnette_> when you make the sample maps, give them new numbers, >1000
+2010-11-12T00:50:06  <Zannick> map2k1.txt
+2010-11-12T00:50:14  <antimatroid> eburnette_: what?
+2010-11-12T00:50:14  <Zannick> heh
+2010-11-12T00:50:19  <antimatroid> i've already made them, i'm uploading them now
+2010-11-12T00:50:22  <Zannick> no, numbers are better, actually
+2010-11-12T00:50:48  <eburnette_> I don't want them to be confused with the maps that already exist
+2010-11-12T00:51:07  <antimatroid> wait, no i'm not
+2010-11-12T00:51:12  <janzert> call 'em antimap<n>.txt :)
+2010-11-12T00:51:21  <Zannick> antimaproid
+2010-11-12T00:51:29  <eburnette_> that works too
+2010-11-12T00:51:43  <eburnette_> just don't callem map1 map2 etc.
+2010-11-12T00:54:51  <antimatroid> they're testmap1-20
+2010-11-12T00:56:17  <antimatroid> http://tinyurl.com/testmaps
+2010-11-12T00:57:42  *** virdo <virdo!~virdoo@bas9-london14-1279330910.dsl.bell.ca> has quit IRC (Ping timeout: 240 seconds)
+2010-11-12T00:59:52  <eburnette_> blech I hate spending all night on improvements that don't improve things
+2010-11-12T01:00:03  <eburnette_> night all
+2010-11-12T01:00:14  *** eburnette_ <eburnette_!621b3c3f@gateway/web/freenode/ip.98.27.60.63> has quit IRC (Quit: Page closed)
+2010-11-12T01:01:27  *** kincody <kincody!3d11de48@gateway/web/freenode/ip.61.17.222.72> has joined #aichallenge
+2010-11-12T01:04:13  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-11-12T01:08:59  <janzert> btw, if everyone here could test those maps and report back how your bot handles them (crashes, plays stupidly or plays normal) that would be great
+2010-11-12T01:09:38  <antimatroid> http://ai-contest.com/forum/viewtopic.php?f=19&t=1087
+2010-11-12T01:10:23  <antimatroid> oh, i'll add something about brand new maps being generated for contest too
+2010-11-12T01:10:53  <mega1> janzert: are you considering using that map generator for the finals?
+2010-11-12T01:10:53  *** kincody <kincody!3d11de48@gateway/web/freenode/ip.61.17.222.72> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T01:11:12  <amstan> antimatroid: you raise good points, i agree, we should have those maps in
+2010-11-12T01:11:15  <amstan> like.. now
+2010-11-12T01:11:17  <amstan> lol
+2010-11-12T01:11:17  <antimatroid> mega1: yes
+2010-11-12T01:11:27  *** perestre1ka <perestre1ka!~vlad@194.242.5.47> has quit IRC (Ping timeout: 255 seconds)
+2010-11-12T01:11:28  <janzert> mega1: I believe j3camero was very much in favor of it
+2010-11-12T01:11:31  <amstan> janzert: let's just add them
+2010-11-12T01:11:36  *** yasith <yasith!~yasith@112.134.127.18> has joined #aichallenge
+2010-11-12T01:11:36  <antimatroid> amstan: patience
+2010-11-12T01:11:48  <janzert> I'm personally slightly worried about doing it at this stage
+2010-11-12T01:11:50  <amstan> if they're valid maps i don't see why not
+2010-11-12T01:12:08  <amstan> we constantly added maps last contest
+2010-11-12T01:12:16  <antimatroid> eburnette_ for example had something in his code that depends on the old maps
+2010-11-12T01:12:25  <janzert> amstan: because we are sort of changing the definition of valid here
+2010-11-12T01:12:26  <antimatroid> but i think people shouldn't have assumed that anyway
+2010-11-12T01:12:37  <mega1> I asked two weeks ago to pin down the generator
+2010-11-12T01:12:43  <amstan> janzert: the only thing is different is the symmetry
+2010-11-12T01:13:01  <antimatroid> mega1: i'm trying to pin it down now, do you not like these types of maps? any particular reason?
+2010-11-12T01:13:12  <mega1> no, I like them
+2010-11-12T01:13:34  <amstan> janzert: if there is a time to add maps to test things it's not
+2010-11-12T01:13:35  <amstan> now*
+2010-11-12T01:13:43  <mega1> what I don't much like is changing the generator two weeks before the end of a three month contest
+2010-11-12T01:13:53  <janzert> hmm, I think it was 2 weeks ago :/
+2010-11-12T01:14:03  *** perestrelka <perestrelka!~vlad@194.242.5.47> has joined #aichallenge
+2010-11-12T01:14:07  <janzert> but yeah, I certainly don't want to just throw them into the final
+2010-11-12T01:14:19  <amstan> janzert: here..
+2010-11-12T01:14:25  <amstan> janzert: we can add just one
+2010-11-12T01:14:33  <amstan> how many maps are there in total
+2010-11-12T01:14:37  <antimatroid> janzert: what about adding some of those 20 now, and seeing what happens?
+2010-11-12T01:14:47  <amstan> i say yes
+2010-11-12T01:14:50  <janzert> can we wait till tomorrow and see what the feedback is on the forums
+2010-11-12T01:14:57  <antimatroid> yeah, that's probably good
+2010-11-12T01:15:06  <janzert> removing them again is much harder than adding them
+2010-11-12T01:15:24  <antimatroid> i don't think it's really changing the generator, when no generator had ever been set in stone
+2010-11-12T01:15:28  <amstan> janzert: is it?
+2010-11-12T01:15:31  <antimatroid> it's always been said that the old one wasn't intended to be used
+2010-11-12T01:15:45  <antimatroid> amstan: rankings depend on the results
+2010-11-12T01:15:56  <mega1> antimatroid: was it said?
+2010-11-12T01:15:57  <janzert> yes, although adding them won't be completely trivial either :}
+2010-11-12T01:15:59  <antimatroid> we need dhartmei to add some to tcp
+2010-11-12T01:16:00  <amstan> janzert: the old games will still be there, yes, but taking maps out so no further people use them
+2010-11-12T01:16:17  <antimatroid> mega1: j3camero has said it numerous times on here, but that's not really official i will admit
+2010-11-12T01:16:40  <contestbot> Top 10 players: bocsimacko(4447), george(4277), Raschi(4198), shangas(4194), asavis(4184), GreenTea(4155), dmj111(4125), oldman(4124), dimkadimon(4109), _Astek_(4093)
+2010-11-12T01:16:52  <janzert> and tables in the database refer to them
+2010-11-12T01:16:55  <amstan> j3camero is pretty spontaneous, he won't have much objections to this either
+2010-11-12T01:17:10  <janzert> best not to really delete them at all but add the code to disable them really
+2010-11-12T01:17:16  <antimatroid> i'm in favour of waiting for forum responses
+2010-11-12T01:18:08  <janzert> if someone does decide to add them, remember to get them on all the workers and in svn for new workers before adding them to the database
+2010-11-12T01:18:16  <janzert> otherwise it's going to be a real mess
+2010-11-12T01:19:07  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC ()
+2010-11-12T01:19:51  <janzert> fyi, to answer a question I saw go by earlier, there are currently 100 maps in use
+2010-11-12T01:22:39  <antimatroid> is it still just the 100 that came with starter packs?
+2010-11-12T01:24:37  <janzert> I believe so
+2010-11-12T01:24:44  <janzert> it's the 100 in svn
+2010-11-12T01:25:01  <antimatroid> the first responded in the thread is under the impression that currently those 100 are intended to be the ones used
+2010-11-12T01:25:20  <antimatroid> that would be the worst imo, it's meant to be an ai contest, not who can solve these 100 maps
+2010-11-12T01:25:51  <antimatroid> at least i think that's what they meant
+2010-11-12T01:25:53  <janzert> yeah, definitely the maps will be regenerated for the final
+2010-11-12T01:26:44  <antimatroid> i think it's important all these decisions are made before the contest next time, which includes working out how to make maps properly
+2010-11-12T01:27:44  <janzert> the only problem, well one anyway, is that a lot of these problems don't become evident until lots of people start pounding on them
+2010-11-12T01:28:37  <antimatroid> yep, neutral resolution was a good one for that
+2010-11-12T01:30:12  *** codefun <codefun!ae1ffdd4@gateway/web/freenode/ip.174.31.253.212> has joined #aichallenge
+2010-11-12T01:30:28  * codefun pokes the chat and wonders if anything's up
+2010-11-12T01:33:24  <antimatroid> codefun: http://ai-contest.com/forum/viewtopic.php?f=19&t=1087&p=7127#p7127
+2010-11-12T01:34:14  <amstan> antimatroid: i would be interested to know what he meant by " People (such as myself) have written bots that are specifically geared to perform well on the current maps."
+2010-11-12T01:34:27  <amstan> does he actually rely on the middle planet thing?
+2010-11-12T01:34:36  <antimatroid> eburnette said he does
+2010-11-12T01:34:42  <antimatroid> but not majorly
+2010-11-12T01:34:57  <antimatroid> imo it's never been said that maps will meet that requirement
+2010-11-12T01:35:04  <codefun> relying on specific settings = not good AI.
+2010-11-12T01:35:05  <janzert> one common thing is simple code for splitting the map in two may break I suppose
+2010-11-12T01:35:22  <antimatroid> you can still split the map in half though
+2010-11-12T01:35:24  <janzert> and that seems to be a fairly common thing to be mentioned as first turn code on the forums
+2010-11-12T01:35:36  <janzert> antimatroid: yeah, just the current code might break
+2010-11-12T01:35:42  <antimatroid> the way i split it is unaffected by the change
+2010-11-12T01:35:46  <janzert> but it shouldn't be a big deal
+2010-11-12T01:35:47  <amstan> codefun: well.. no... it is good AI, like... you can only go so far..
+2010-11-12T01:38:18  <amstan> antimatroid: point symmetric maps might be in the theme too, they do look like galaxies
+2010-11-12T01:38:40  <antimatroid> point symmetric?
+2010-11-12T01:38:54  <janzert> point, symmetric...
+2010-11-12T01:40:37  <amstan> antimatroid: how they are now, i mean
+2010-11-12T01:40:39  <codefun> Has anyone else thought of the fact the "radially symmetric" maps are just inversely bilaterally symmetric? Like you make one side, copy it, turn it upside down, then put it on the other side..?
+2010-11-12T01:41:19  <antimatroid> codefun: i don't think you can do radially symmetric maps unless players are at angles 180 degrees apart
+2010-11-12T01:42:02  <antimatroid> i was going to have the generator randomly switch between them but it doesn't work
+2010-11-12T01:43:04  <amstan> codefun: yeah.. i'm not sure.. i'm split now
+2010-11-12T01:43:26  <amstan> i was fine with introducing the linearly symmetric maps
+2010-11-12T01:43:51  <amstan> till i saw that people were relying on the center planet thing: "players home planets were required to start in a position such that the line joining them intersected the center neutral planet."
+2010-11-12T01:44:19  <mega1> we have spent two and a half months [unknowingly] optimizing for the old map generator
+2010-11-12T01:44:22  <amstan> mega1: are you doing this?
+2010-11-12T01:44:39  <mega1> do you really think it's a good idea to change it now?
+2010-11-12T01:44:47  <mega1> amstan: no
+2010-11-12T01:45:00  <amstan> mega1: well.. you said unknowingly
+2010-11-12T01:45:01  <codefun> How can you unknowingly optimize for the exact same map configurations to be used?
+2010-11-12T01:45:17  <mega1> for the _distribution_ of maps
+2010-11-12T01:45:47  <amstan> So.. the rules do not state that we may not change maps, we could do it at any time. The problems with that is that we'll make a lot of people unhappy, and to what end?
+2010-11-12T01:45:49  <codefun> I'm not sure I follow.
+2010-11-12T01:46:05  <codefun> Well, I, for one, think switching up maps is great.
+2010-11-12T01:46:22  <amstan> codefun: once you have different map types, you'll surely find some bugs that manifests only on the linear symmetric maps
+2010-11-12T01:46:22  <mega1> codefun: do you have tunable parameters in your code?
+2010-11-12T01:46:27  <codefun> It gives people a chance to see how their AI fares in the big bad world of uncertainties.
+2010-11-12T01:47:23  <antimatroid> amstan: jeff gave me the idea of these maps
+2010-11-12T01:47:24  <mega1> codefun: did you throw away certain changes or approaches because they didn't perform well enough?
+2010-11-12T01:47:40  <amstan> antimatroid: oh man.. he'll definitely put them in then
+2010-11-12T01:47:59  <mega1> well, the maps that you tested on were the current ones
+2010-11-12T01:48:27  <mega1> everyone has burned weeks of cpu power testing ideas
+2010-11-12T01:48:49  <mega1> changing the maps late invalidates much of that effort.
+2010-11-12T01:49:19  <antimatroid> mega1: starting maps have always just been examples
+2010-11-12T01:49:29  <mega1> I the generator is changed I have to put trying new developments on hold and repeat testing.
+2010-11-12T01:49:31  <antimatroid> i have always been under that understanding, both for this and tron
+2010-11-12T01:49:39  <antimatroid> tron has significantly different maps added at the end
+2010-11-12T01:49:48  <amstan> antimatroid: just in terms of size
+2010-11-12T01:50:00  <antimatroid> amstan: and obstables
+2010-11-12T01:50:01  <mega1> antimatroid: that's was unfair for the same reason
+2010-11-12T01:50:15  <amstan> antimatroid: we didn't have those change, just size
+2010-11-12T01:50:40  <antimatroid> i think a size change is worse
+2010-11-12T01:50:55  <mega1> antimatroid: for an optimization task moving the target is a strange thing to do
+2010-11-12T01:50:58  <codefun> size change would make battles a bit... drawn out and strange
+2010-11-12T01:51:24  <mega1> and the target is a distribution of maps (i.e. what the generator produces)
+2010-11-12T01:51:46  <antimatroid> i prefer the greater level of generality
+2010-11-12T01:51:55  <codefun> larger maps means more calculations which means that actually could cause our bots to crash due to time constraints
+2010-11-12T01:52:00  <antimatroid> and i don't think anyones code is going to break in such a way that can't easily be fixed
+2010-11-12T01:52:03  <mega1> the 900 hundred sample maps that I used for testing should be a pretty good sample
+2010-11-12T01:52:27  <amstan> antimatroid: i see mega's pov, he spent tons of time testing and optimizing his code
+2010-11-12T01:52:38  <antimatroid> on an assumption he made
+2010-11-12T01:52:51  <codefun> anti, I think changing map design/configuration/symmetry is fine, personally
+2010-11-12T01:52:53  <mega1> of course, I have the most invested in the current status quo
+2010-11-12T01:53:03  <amstan> antimatroid: how would you of done it then?
+2010-11-12T01:53:05  <codefun> If my AI fails because of map configuration I must've failed in making an intelligent machine
+2010-11-12T01:53:14  <antimatroid> i'd be surprised of your bot wasn't still far superior on these maps
+2010-11-12T01:53:15  <mega1> but we all have optimized for that generator
+2010-11-12T01:53:34  <mega1> antimatroid: that's not really the point
+2010-11-12T01:53:35  <amstan> mega1: k.. so like..
+2010-11-12T01:53:37  <amstan> try it!
+2010-11-12T01:53:50  <antimatroid> codefun: not entirely true, what happens if i thow your both in a 10-dimensional 4 player gmae?
+2010-11-12T01:54:14  <antimatroid> amstan: i write my bot to be as general as possible inside teh rules that have been given
+2010-11-12T01:54:33  <amstan> antimatroid: ok.. sounds good\
+2010-11-12T01:54:40  <mega1> antimatroid: does it perform equally well for every map generator within those rules?
+2010-11-12T01:55:09  <antimatroid> i would expect it to be as random as the maps generated under either generator
+2010-11-12T01:55:21  <mega1> have you tested and discarded changes during the last two months?
+2010-11-12T01:55:23  <antimatroid> i have nothing about forcing that symmetry
+2010-11-12T01:55:41  <antimatroid> and on the same side, i could argue that i would have spent more time thinking under that restriction if it were in stone
+2010-11-12T01:55:51  <antimatroid> so i'm at a disadvantage to those who made an assumption
+2010-11-12T01:55:58  <amstan> oh man.. this is exactly what happened last year with accoun
+2010-11-12T01:56:00  <antimatroid> although i probably wouldn't have
+2010-11-12T01:56:06  <amstan> he just died when he heard we'll have smaller maps
+2010-11-12T01:56:55  <antimatroid> so arguing one is disadvantaged from an assumption they made is an invalid argument imo, because the same holds for those who didn't make the assumption and then have that forced on them
+2010-11-12T01:57:11  <codefun> Too much bureaucracy! Make a command decision and stick with it.
+2010-11-12T01:57:20  <mega1> antimatroid: it can easily be that among the versions you discarded as bad, there was a true gem
+2010-11-12T01:57:32  <codefun> There will be some who like it and some who don't, no matter what you do, and they'll both have the same arguments.
+2010-11-12T01:57:40  <amstan> so the thing is... these different maps make the games more interesting, it's under the rules, and if you optimized your bot for the first map generator you made a gamble
+2010-11-12T01:58:25  <antimatroid> i don't think many people really will have optimised with that restriction anyway
+2010-11-12T01:58:33  <mega1> right, and you can also make bigger changes if you want to shuffle ranking around ... which I don't :-)
+2010-11-12T01:58:47  <amstan> antimatroid: they probably all do, because they used the default map generator
+2010-11-12T01:59:12  <amstan> i don't think anyone modified the map generator to produce other maps such as different number of planets or changes to the symmetry
+2010-11-12T01:59:21  <antimatroid> given the current rankings are based off the first 100 maps atm, i'd say the rankings are terrible atm
+2010-11-12T01:59:32  <antimatroid> because a lot of peoples bots can just be running strategies they already created on there
+2010-11-12T01:59:39  <antimatroid> although i doubt many are
+2010-11-12T01:59:48  <codefun> maybe the guy on top using lisp is
+2010-11-12T01:59:51  *** bhasker <bhasker!~bhasker@adsl-99-25-118-235.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: bhasker)
+2010-11-12T01:59:57  <amstan> codefun: guy on top is mega1
+2010-11-12T02:00:29  <mega1> I'm not relying explicitly on the map generator being as it is.
+2010-11-12T02:00:44  <mega1> dimka in the forum says basically the same thing.
+2010-11-12T02:01:08  <amstan> antimatroid: hold on, there's 2 threads, can i merge them?
+2010-11-12T02:01:25  <antimatroid> amstan: remove the old one if anything
+2010-11-12T02:02:02  <amstan> antimatroid: oh! make it a poll
+2010-11-12T02:02:18  *** yasith <yasith!~yasith@112.134.127.18> has quit IRC (Ping timeout: 260 seconds)
+2010-11-12T02:02:50  <antimatroid> amstan: i'm not sure i can alter it now
+2010-11-12T02:03:00  <amstan> antimatroid: i can do it
+2010-11-12T02:05:16  <amstan> antimatroid: is there any rules about the map designs?
+2010-11-12T02:07:10  <antimatroid> read the comment post
+2010-11-12T02:07:13  *** asdffasf <asdffasf!47bebb38@gateway/web/freenode/ip.71.190.187.56> has joined #aichallenge
+2010-11-12T02:07:46  <antimatroid> amstan: isn't line symmetric the old one?
+2010-11-12T02:07:58  <antimatroid> shouldn't people be able to vote for that exclusively if you are going to do a poll?
+2010-11-12T02:09:04  <amstan> antimatroid: point symmetric was the old one
+2010-11-12T02:10:27  <antimatroid> okay, cool
+2010-11-12T02:10:41  <antimatroid> the generator i wrote will need to be altered to do both kinds of maps
+2010-11-12T02:11:02  <amstan> antimatroid: should be fairly easy
+2010-11-12T02:11:07  <amstan> antimatroid: can i have a link to the code?
+2010-11-12T02:11:08  <antimatroid> http://codepad.org/JuoNVCba
+2010-11-12T02:11:16  <antimatroid> bam, i was just on my way to provide it :P
+2010-11-12T02:11:45  <antimatroid> i had never done anything in python before that, so don't be too harsh on the coding style
+2010-11-12T02:12:06  <antimatroid> i didn't even realise i could just run the file without compiling, mind blown
+2010-11-12T02:12:48  <codefun> you must learn the ways of scripting... ;)
+2010-11-12T02:12:52  <amstan> antimatroid: where's the symmetry stuff
+2010-11-12T02:13:35  <antimatroid> amstan: it picks radius and rotation angles randomly then generates coordinates based off of those
+2010-11-12T02:13:48  <amstan> antimatroid: ugh.. yeah.. you need a total redesign then
+2010-11-12T02:14:06  <antimatroid> why?
+2010-11-12T02:14:06  <amstan> antimatroid: what i did for tron was.. i generated the top half, picked a starting point
+2010-11-12T02:14:25  <amstan> then.. for point symmetry i would copy that top part, mirror X and Y and put it under
+2010-11-12T02:14:32  <amstan> for line symmetry just mirror X
+2010-11-12T02:15:01  *** yasith <yasith!~yasith@112.134.125.7> has joined #aichallenge
+2010-11-12T02:15:03  <amstan> oh man!
+2010-11-12T02:15:06  <amstan> epic kind of maps
+2010-11-12T02:15:09  <amstan> make 2 galaxies
+2010-11-12T02:15:12  <amstan> far from eachother
+2010-11-12T02:15:19  <amstan> put a player in each galaxy
+2010-11-12T02:15:23  <antimatroid> that's just a race to expand
+2010-11-12T02:15:28  <amstan> make the galaxies so far that yeah...
+2010-11-12T02:15:30  <antimatroid> that's hardly even a game
+2010-11-12T02:15:36  <amstan> so.. the winner will be the one that expands the best
+2010-11-12T02:15:52  <antimatroid> that's more of who is best at a decision problem than a game
+2010-11-12T02:15:57  <amstan> i did a test with those maps for tron, they were isolated from eachother, it was who survives the most in the maze
+2010-11-12T02:16:02  <antimatroid> in that my decisions don't affect the other player
+2010-11-12T02:16:21  <antimatroid> like mario ai, that's not a game
+2010-11-12T02:16:25  <amstan> i see
+2010-11-12T02:16:25  <antimatroid> it's a decision problem
+2010-11-12T02:16:26  <amstan> ok
+2010-11-12T02:16:40  <contestbot> Top 10 players: bocsimacko(4463), george(4276), shangas(4228), asavis(4210), Raschi(4197), GreenTea(4153), oldman(4134), dmj111(4127), Doraj8(4109), _Astek_(4096)
+2010-11-12T02:17:20  <amstan> i wanna know what mcleopold and a1k0n think about this
+2010-11-12T02:17:27  *** Tobu <Tobu!~Tobu@unaffiliated/tobu> has quit IRC (Ping timeout: 255 seconds)
+2010-11-12T02:17:49  <antimatroid> so do i, Mcleopold hasn't been in the channel all day though
+2010-11-12T02:18:27  <amstan> #later tell McLeopold see this, ping us when done: http://ai-contest.com/forum/viewtopic.php?f=19&t=1087
+2010-11-12T02:18:30  <amstan> @later tell McLeopold see this, ping us when done: http://ai-contest.com/forum/viewtopic.php?f=19&t=1087
+2010-11-12T02:18:30  <contestbot> amstan: I think that worked...
+2010-11-12T02:18:38  <amstan> @later tell a1k0n see this, ping us when done: http://ai-contest.com/forum/viewtopic.php?f=19&t=1087
+2010-11-12T02:18:38  <contestbot> amstan: OK
+2010-11-12T02:20:12  <amstan> janzert: oh yeah.. there's a guy complaining about clojure support
+2010-11-12T02:23:09  <janzert> hmm
+2010-11-12T02:24:31  <antimatroid> anyway, i'm going to buy some dinner
+2010-11-12T02:25:53  <amstan> janzert: what do you think of "Number of planets is not stated in the rules, and it might change, (assume 100 if you really want a top limit)."
+2010-11-12T02:26:34  <antimatroid> i'm against changing it from 23
+2010-11-12T02:26:39  <antimatroid> although i could personally handle it
+2010-11-12T02:26:40  <amstan> antimatroid: why?
+2010-11-12T02:27:00  <antimatroid> if you make it much past 30 you will cripple a significant portion of the bots
+2010-11-12T02:27:08  <antimatroid> and a fix wont be easy without completely changing strategies
+2010-11-12T02:27:37  <amstan> antimatroid: but again.. this is exactly the same problem as the linear symmetry
+2010-11-12T02:28:06  <antimatroid> it is, like i said before, these kind of things need to be worked out before the contest even starts if possible
+2010-11-12T02:28:18  <antimatroid> varying around below 30 would be fine
+2010-11-12T02:28:35  <antimatroid> but if you go above that, you're going to really render a lot of the top bots useless
+2010-11-12T02:28:42  <amstan> antimatroid: that sounds good
+2010-11-12T02:28:46  <amstan> so.. s/100/30
+2010-11-12T02:28:59  <amstan> i just think it's really stupid to have a constant number of planets
+2010-11-12T02:29:10  <antimatroid> i don't think it really matters
+2010-11-12T02:29:16  <antimatroid> strategy wise
+2010-11-12T02:30:31  <antimatroid> one option is to randomly decide whether to include the centre neutral planet or not
+2010-11-12T02:30:57  <janzert> amstan: yeah moving it up is likely to break any bots using bitmasks for planets
+2010-11-12T02:31:08  <amstan> i think the number of planets should be in the [15:30] range
+2010-11-12T02:31:23  <antimatroid> i wouldn't be opposed to [3,30]
+2010-11-12T02:31:28  <amstan> sure..
+2010-11-12T02:31:38  <antimatroid> but a lot of people would
+2010-11-12T02:31:47  <antimatroid> i always wanted 3 planets, but i think i was the only one
+2010-11-12T02:31:59  <antimatroid> a lot of people wouldn't****
+2010-11-12T02:32:50  <antimatroid> hang on, i have a good idea for even more general maps, i'll draw a pic
+2010-11-12T02:35:02  <antimatroid> http://imgur.com/N2LzL.png
+2010-11-12T02:35:16  <amstan> antimatroid: that's line symmetric
+2010-11-12T02:35:17  <antimatroid> you can pick any number of neutrals to go along that yellow line, and only have to put one of them in
+2010-11-12T02:35:40  <antimatroid> yes, but it's adding more planets starting equal distance between players
+2010-11-12T02:36:00  <amstan> won't cause RPS?
+2010-11-12T02:36:12  <antimatroid> the idea is to have the other ones as well
+2010-11-12T02:36:13  <janzert> that would be good :)
+2010-11-12T02:36:28  <amstan> janzert: do we still have the priority column for the maps?
+2010-11-12T02:36:39  <janzert> yes, but it's currently unused
+2010-11-12T02:36:42  *** wh1teside_ <wh1teside_!~admin@adsl-76-202-215-207.dsl.emhril.sbcglobal.net> has quit IRC (Remote host closed the connection)
+2010-11-12T02:36:42  <antimatroid> generate players starting positions, generate random number of single neutrals, then fill the rest with two symmetrically placed neutrals
+2010-11-12T02:36:51  <amstan> janzert: as in.. the code ignores it?
+2010-11-12T02:37:06  <janzert> yeah, the code doesn't reference it anywhere that I have seen
+2010-11-12T02:37:14  <amstan> that's not cool
+2010-11-12T02:37:19  <amstan> that's how we disabled maps last term
+2010-11-12T02:37:23  <janzert> and certainly the rewrite of pairing code I just did doesn't
+2010-11-12T02:37:23  <amstan> set priority to 0
+2010-11-12T02:37:29  <janzert> yep
+2010-11-12T02:38:19  <janzert> after I remembered seeing that the column was there adding it's use back in shouldn't be too hard
+2010-11-12T02:38:56  <janzert> in fact I think now that's how we should disable the current maps for the final
+2010-11-12T02:39:03  <antimatroid> alright, i'm going to change it to randomly pick number of planets and number of middle neutrals
+2010-11-12T02:39:09  <janzert> just set all of them to 0 then generate the new maps
+2010-11-12T02:39:10  <amstan> janzert: k.. so we have that solved then
+2010-11-12T02:39:23  <janzert> well, theoretically :)
+2010-11-12T02:39:32  <janzert> still need to write the code of course
+2010-11-12T02:39:32  <amstan> antimatroid: how about starting a github repo for the new version of the map generators?
+2010-11-12T02:39:43  <amstan> antimatroid: i'll help you on there
+2010-11-12T02:40:20  <antimatroid> i wouldn't have a clue how to do that sorry
+2010-11-12T02:41:15  <antimatroid> i'm not willing to do anything or get any access to anything that renders me inelligible of competing though
+2010-11-12T02:41:16  <amstan> antimatroid: do you know git?
+2010-11-12T02:41:24  <antimatroid> nope
+2010-11-12T02:41:28  <amstan> antimatroid: oh man
+2010-11-12T02:41:39  <amstan> antimatroid: yeah.. dont' worry about the inegibility, this should be fine
+2010-11-12T02:41:53  <amstan> antimatroid: do you know svn?
+2010-11-12T02:41:56  <antimatroid> nope :P
+2010-11-12T02:42:12  <amstan> you should learn
+2010-11-12T02:42:17  <antimatroid> i should learn a lot of things
+2010-11-12T02:42:43  *** eburnette <eburnette!95ad066e@gateway/web/freenode/ip.149.173.6.110> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T02:42:47  <amstan> janzert: help me on this one
+2010-11-12T02:42:54  <codefun> ;)
+2010-11-12T02:42:55  <codefun> http://imgur.com/N2LzL.png peace?
+2010-11-12T02:43:10  <Zannick> i'd recommend just using the current svn repo so as not to get divided all over the place
+2010-11-12T02:43:42  <amstan> oh man.. that's even more complicated, since i don't know it myself, therefore i can't help him on it
+2010-11-12T02:43:51  <janzert> hmm?
+2010-11-12T02:44:13  <antimatroid> what do you want to do?
+2010-11-12T02:45:40  <janzert> oh maybe you want, "learning a to use a version control system is crucial for your development as a programmer and all around person, a distributed version control system is a particularly good way" :)
+2010-11-12T02:45:48  *** tapwater <tapwater!~tapwater@cpe-70-112-195-55.austin.res.rr.com> has quit IRC (Quit: tapwater)
+2010-11-12T02:46:20  <Zannick> learning svn is good, too
+2010-11-12T02:46:24  <janzert> although I like bzr > hg > git myself which is about the opposite of the rest of the world :)
+2010-11-12T02:46:36  <Zannick> makes you feel so much better when you step up to git or hg
+2010-11-12T02:46:48  <Zannick> hey, i like hg over git :P
+2010-11-12T02:46:52  <Zannick> haven't used bzr, though
+2010-11-12T02:47:13  <amstan> janzert: yay! that!
+2010-11-12T02:47:58  <antimatroid> now, if one was to use both symmetries, what sort of split would you like the maps to be?
+2010-11-12T02:47:59  <antimatroid> 50 50?
+2010-11-12T02:48:33  <antimatroid> i think it'd be best to just make the one generator generate all maps
+2010-11-12T02:48:51  <Zannick> 50/50 is good, make it even chance to go either way
+2010-11-12T02:50:53  *** fawek <fawek!~faw@chello089079023212.chello.pl> has joined #aichallenge
+2010-11-12T02:51:14  <amstan> antimatroid: what's the point of translate_planets?
+2010-11-12T02:52:01  <antimatroid> amstan: positive coordinates
+2010-11-12T02:52:07  <antimatroid> apparently it's needed for viewers
+2010-11-12T02:52:20  <amstan> antimatroid: oh.. decent, k
+2010-11-12T02:53:25  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has joined #aichallenge
+2010-11-12T03:00:33  <antimatroid> how does one do else if in python?
+2010-11-12T03:00:40  <amstan> antimatroid: elif
+2010-11-12T03:07:05  <amstan> antimatroid: what's a realistic mapsize?
+2010-11-12T03:07:18  <amstan> as in the biggest horizontal or vertical distance between planets
+2010-11-12T03:11:32  <antimatroid> i think people are happy with a map radius of 12
+2010-11-12T03:11:48  <amstan> oh..
+2010-11-12T03:11:50  <antimatroid> i have it switching between symmetries
+2010-11-12T03:12:00  <amstan> so.. 10,20?
+2010-11-12T03:12:02  <amstan> how's that?
+2010-11-12T03:12:02  <antimatroid> just going to add variable number of planets and "central" planets
+2010-11-12T03:12:12  <antimatroid> 10,20?
+2010-11-12T03:12:16  <amstan> 10-20
+2010-11-12T03:12:16  <antimatroid> map radius?
+2010-11-12T03:12:19  <amstan> could be variable
+2010-11-12T03:12:22  <amstan> it's not exactly radius
+2010-11-12T03:12:24  <amstan> it's size
+2010-11-12T03:12:39  <antimatroid> i say just leave it at 12 max, then it doesn't necessarily reach that distance anyway
+2010-11-12T03:12:44  <antimatroid> so max distance is 24
+2010-11-12T03:13:25  <amstan> antimatroid: i'm creating X and Y values based on random.uniform(10,15)
+2010-11-12T03:13:47  <antimatroid> i'm geneating radius and theta values randomly, then converting to cartesian coordinates
+2010-11-12T03:13:53  <antimatroid> so it's made inside a cirlce
+2010-11-12T03:14:03  <amstan> i'm making another map gen
+2010-11-12T03:14:06  <antimatroid> it makes doing the new symmetry much easier
+2010-11-12T03:14:09  <antimatroid> why?
+2010-11-12T03:14:16  <amstan> for linear maps
+2010-11-12T03:14:23  <amstan> linear symmetry*
+2010-11-12T03:14:23  <antimatroid> linear?
+2010-11-12T03:14:32  <antimatroid> 1d maps?
+2010-11-12T03:15:39  <amstan> ^^
+2010-11-12T03:16:28  *** codefun <codefun!ae1ffdd4@gateway/web/freenode/ip.174.31.253.212> has quit IRC (Quit: Page closed)
+2010-11-12T03:16:41  <contestbot> Top 10 players: bocsimacko(4457), george(4275), asavis(4258), shangas(4225), Raschi(4180), GreenTea(4148), dmj111(4122), _Astek_(4100), Doraj8(4088), _iouri_(4086)
+2010-11-12T03:16:57  *** aerique <aerique!euqirea@xs2.xs4all.nl> has joined #aichallenge
+2010-11-12T03:26:23  *** perror <perror!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2010-11-12T03:44:04  <amstan> antimatroid: http://codepad.org/ZhgQWDtM
+2010-11-12T03:45:01  <amstan> antimatroid: the only problem is that it produces even number of planets all the time
+2010-11-12T03:45:19  <antimatroid> amstan: home planets are to always start with 100 ships and 5 growth
+2010-11-12T03:45:28  <amstan> that's easy
+2010-11-12T03:46:26  <antimatroid> there's a whole bunch of checks etc. people want as well
+2010-11-12T03:46:38  <amstan> like?
+2010-11-12T03:46:54  <antimatroid> like distances aren't allowed to be withing epsilon of an integer, players must be able to take at least one neutral on the first move without losing their home planet to rage bot
+2010-11-12T03:48:09  <amstan> oh man
+2010-11-12T03:48:11  <amstan> hold on
+2010-11-12T03:48:13  <amstan> i have a problem
+2010-11-12T03:48:31  <antimatroid> ?
+2010-11-12T03:52:55  <amstan> @visualizer
+2010-11-12T03:52:56  <contestbot> amstan: visualizer = (#1) http://github.com/DanielVF/Planet-Wars-Canvas-Visualizer, or (#2) http://csclub.uwaterloo.ca/~amstan/aichallenge/canvas-visualizer/
+2010-11-12T03:55:27  <amstan> antimatroid: http://codepad.org/KkdSp33e
+2010-11-12T03:55:40  <amstan> antimatroid: how would you not make ragebot win?
+2010-11-12T04:06:11  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-11-12T04:07:52  <antimatroid> amstan: first neutral added has ships < 5*dist(players home planets)
+2010-11-12T04:08:00  <antimatroid> more importantly, http://codepad.org/1R9ILAWg
+2010-11-12T04:08:17  <antimatroid> that generator will do both symmetries, and variable numbers of "centre planets" and varying number of planets
+2010-11-12T04:08:31  <antimatroid> it's messy as fuck though
+2010-11-12T04:08:33  <amstan> that's a lot of code
+2010-11-12T04:08:39  <antimatroid> ^^ :)
+2010-11-12T04:08:45  <antimatroid> i've never programmed in python before
+2010-11-12T04:09:01  <antimatroid> i can't believe it doesn't have operator overloading :(
+2010-11-12T04:09:16  <amstan> operator overloading? like what?
+2010-11-12T04:09:28  <amstan> change behavoir of a+b?
+2010-11-12T04:09:30  <amstan> sure it does
+2010-11-12T04:09:35  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-11-12T04:09:42  <amstan> you need to make a Planet class
+2010-11-12T04:09:49  <amstan> and then you have
+2010-11-12T04:09:55  <amstan> def __add__ (self, other):
+2010-11-12T04:10:00  <amstan> return what it'll return
+2010-11-12T04:11:01  <antimatroid> i wanted not_valid(p1, p2) and not_valid(p1) but it didn't seem to like that
+2010-11-12T04:11:11  <antimatroid> that's function overloading
+2010-11-12T04:11:13  <antimatroid> my bad
+2010-11-12T04:11:14  <amstan> you mean function overloading
+2010-11-12T04:11:16  <amstan> oh..
+2010-11-12T04:11:18  <amstan> that's not pythonic
+2010-11-12T04:11:25  <Accoun> who math is connection limit for TCP server?
+2010-11-12T04:11:41  <Accoun> unandestending problems i have
+2010-11-12T04:11:41  <antimatroid> Accoun: we are considering changes the types of maps generated
+2010-11-12T04:11:51  <antimatroid> your opinion on the idea would be great
+2010-11-12T04:11:57  <Accoun> antimatroid> stuped idia
+2010-11-12T04:12:07  <antimatroid> they're better maps
+2010-11-12T04:12:28  <Accoun> stuped idea change reles in last week
+2010-11-12T04:12:34  <Accoun> stuped idea change rules in last week
+2010-11-12T04:12:36  <antimatroid> it's not the last week
+2010-11-12T04:12:49  <Accoun> in last 1.5 weeks
+2010-11-12T04:12:55  <amstan> Accoun: it's not a rule
+2010-11-12T04:12:55  <mega1> Accoun: please vote in the forum
+2010-11-12T04:13:08  <mega1> Accoun: http://ai-contest.com/forum/viewtopic.php?f=19&t=1087&start=10
+2010-11-12T04:13:10  <Accoun> all canadia math less main mass
+2010-11-12T04:13:17  <antimatroid> there's more than 2 weeks left, and rules were never stated either way
+2010-11-12T04:13:33  <Accoun> do all u want
+2010-11-12T04:13:44  <mega1> Accoun: vote in the poll
+2010-11-12T04:13:45  <antimatroid> Accoun: have you taken a look at the new maps?
+2010-11-12T04:13:47  <Accoun> canadian organiser very chitty
+2010-11-12T04:13:56  <amstan> :(
+2010-11-12T04:14:21  <amstan> Accoun: don't look at me, it was suggested by antimatroid
+2010-11-12T04:14:32  <Accoun> please install new maps in TCP cerver of stuped canadian relay cange rules
+2010-11-12T04:14:35  <amstan> i'm sure he's neither an organizer nor canadian
+2010-11-12T04:14:46  <Accoun> if
+2010-11-12T04:14:56  <Accoun> server
+2010-11-12T04:15:00  <antimatroid> i haven't seen dhartmei in a while, i will try to get some on there when i do
+2010-11-12T04:15:07  <antimatroid> his email address bounced yesterday
+2010-11-12T04:15:11  <Accoun> hope u andesend me
+2010-11-12T04:15:22  <antimatroid> we can make out what you mean
+2010-11-12T04:15:49  <antimatroid> Accoun: you can download 20 such maps and a generator from that link above
+2010-11-12T04:15:50  <amstan> and i was enjoying coding this..
+2010-11-12T04:16:02  <amstan> now it's all ruined
+2010-11-12T04:16:13  <Accoun> some tiames tcp.exe dont finish bot and logs is ceep bloked
+2010-11-12T04:16:17  <Accoun> sthange bug
+2010-11-12T04:16:41  <contestbot> Top 10 players: bocsimacko(4447), bix0r4ever(4285), george(4254), asavis(4253), shangas(4225), Raschi(4166), GreenTea(4143), dmj111(4124), davidjliu(4105), _iouri_(4097)
+2010-11-12T04:18:20  <amstan> @later tell dmj111 see this, ping us when done: http://ai-contest.com/forum/viewtopic.php?f=19&t=1087
+2010-11-12T04:18:20  <contestbot> amstan: Aye, aye, sir
+2010-11-12T04:26:05  <mega1> is it possible to change votes?
+2010-11-12T04:26:37  <antimatroid> mega1: yes, i just did
+2010-11-12T04:26:48  *** Utkarsh <Utkarsh!~admin@117.201.83.140> has joined #aichallenge
+2010-11-12T04:26:54  <mega1> didn't know that
+2010-11-12T04:27:05  <amstan> mega1: ya, i made it changable
+2010-11-12T04:27:26  <antimatroid> i take it that was from seeing my change and not a change of heart? :P
+2010-11-12T04:27:45  <amstan> antimatroid: what was?
+2010-11-12T04:27:46  <mega1> not of mine :-)
+2010-11-12T04:27:59  <antimatroid> amstan: i changed my vote from both to wild
+2010-11-12T04:28:07  <amstan> mega1: and you?
+2010-11-12T04:28:13  <antimatroid> saw my change
+2010-11-12T04:28:17  <antimatroid> and wondered how poll number dropped
+2010-11-12T04:28:22  <mega1> yup
+2010-11-12T04:28:34  <amstan> mega1: what did you vote for?
+2010-11-12T04:28:54  <mega1> amstan: the "stay where you are" option
+2010-11-12T04:28:58  <amstan> ok
+2010-11-12T04:29:42  <amstan> but line symmetry is so much cooler than point symmetry!
+2010-11-12T04:30:03  <antimatroid> mega1 made assumptions about maps being like that and "threw out ideas based on that"
+2010-11-12T04:30:36  <amstan> like.. why would you throw out an idea just because current maps are like that?
+2010-11-12T04:30:52  <amstan> the least you can do is ask
+2010-11-12T04:31:01  <antimatroid> he did
+2010-11-12T04:31:01  <amstan> wait.. maybe you did
+2010-11-12T04:31:04  <amstan> darn
+2010-11-12T04:31:07  <mega1> I made the assumption that the strength a bot displays is closely related to its playing strength in the final tournament
+2010-11-12T04:31:22  <antimatroid> i don't think the rankings will change much at all
+2010-11-12T04:31:28  <amstan> mega1: how sure are you that changing it to line symmetric too will break your bot?
+2010-11-12T04:31:41  <amstan> antimatroid: i don't think either
+2010-11-12T04:31:43  <antimatroid> is it possible to run some of the top bots on new maps separately and see if the rankings remain much the same?
+2010-11-12T04:31:56  <antimatroid> my intentions are not to mix up the rankings at all
+2010-11-12T04:32:04  <amstan> antimatroid: not really, code's kinda crappy, so it's inflexible at doing these things
+2010-11-12T04:32:17  <mega1> I don't know if this change will change anything which is precisely the reason for not doing it.
+2010-11-12T04:32:18  <amstan> antimatroid: and running them without a sandbox is not a cool idea either
+2010-11-12T04:32:36  <antimatroid> what we need is some of the maps on tcp
+2010-11-12T04:32:59  <mega1> I have played about 20000 games locally so far.
+2010-11-12T04:33:27  <mega1> testing countless changes
+2010-11-12T04:33:43  <amstan> anyone know grep?
+2010-11-12T04:33:58  <amstan> nvm
+2010-11-12T04:34:09  <antimatroid> mega1: you were welcome to create your own test maps
+2010-11-12T04:34:21  <antimatroid> the same was said for tron, don't assume maps are going to be like those provided
+2010-11-12T04:34:54  <mega1> antimatroid: I'm still not talking about the maps but the generator.
+2010-11-12T04:35:32  <amstan> mega1: you're welcome to create your own generator
+2010-11-12T04:35:47  <mega1> are or were?
+2010-11-12T04:35:54  <amstan> still are
+2010-11-12T04:35:58  <antimatroid> mega1: that's my point, there has never been a specified "official generator for the contest"
+2010-11-12T04:36:00  <mega1> and it's just too late
+2010-11-12T04:36:15  <antimatroid> an example genreator and example genrated maps were provided
+2010-11-12T04:36:17  <mega1> guys, the lawyer stance is just not useful
+2010-11-12T04:36:27  <amstan> mega1: the point is that you should have thought about this, other people did
+2010-11-12T04:36:42  <mega1> I did and asked on the mailing list.
+2010-11-12T04:37:03  <amstan> k, hold on
+2010-11-12T04:37:17  <amstan> mega1: what email did you use as?
+2010-11-12T04:37:25  <mega1> mega@retes.hu
+2010-11-12T04:37:31  <amstan> darn
+2010-11-12T04:37:33  <amstan> k
+2010-11-12T04:38:17  <amstan> mega1: wait, you sure? do you have a subject name, i can't find your actual email address
+2010-11-12T04:38:32  <antimatroid> yes, i'm looking at it now
+2010-11-12T04:38:37  <amstan> antimatroid: link?
+2010-11-12T04:38:42  <antimatroid> it's in my email :P
+2010-11-12T04:38:49  <amstan> antimatroid: subject line?
+2010-11-12T04:38:58  <antimatroid> DECISION TIME
+2010-11-12T04:39:01  <antimatroid> second last
+2010-11-12T04:39:02  <mega1> yes
+2010-11-12T04:39:39  <amstan> it's melis.*
+2010-11-12T04:40:32  <amstan> mega1: you didn't get a reply though
+2010-11-12T04:40:41  <antimatroid> that's his point
+2010-11-12T04:41:11  <antimatroid> yes, no response doesn't mean the generator there is official, but then the point moves onto it being really late in the contest
+2010-11-12T04:41:30  <antimatroid> but i've been going under the assumption the whole time that maps could change, and my understanding of the rules was to expect that
+2010-11-12T04:41:47  <mega1> yes, the maps
+2010-11-12T04:42:25  <mega1> but if the generator too then you have to think and lay down some guidelines
+2010-11-12T04:42:27  <antimatroid> it's a situation where there is no solution that doesn't in a way disadvantage someone, that's why these decisions need to be made (where possible) before the contest even starts
+2010-11-12T04:42:36  <mega1> yes
+2010-11-12T04:44:04  <antimatroid> my point is that it shouldn't give any particular person an unfair advantage with the new maps, whether optimising on old ones or not, the new maps are way cooler and the rules always had this open to be done
+2010-11-12T04:44:51  <antimatroid> and it does give an advantage to people who made assumptions and have spent considerable time working under those assumptions to then have them enforced
+2010-11-12T04:46:07  <amstan> so..
+2010-11-12T04:46:23  <amstan> i did say "just changing the seed": http://pastebin.com/r2nRuc9u
+2010-11-12T04:46:51  <antimatroid> amstan: "You should not train your bots on the current maps." should read "You should not train your bots exclusively on the current maps."
+2010-11-12T04:47:27  <antimatroid> there is nothing wrong with training bots on current maps, but they were only ever given as examples
+2010-11-12T04:47:42  <amstan> antimatroid: yeah, lol
+2010-11-12T04:47:44  <amstan> antimatroid: thanks
+2010-11-12T04:48:14  <antimatroid> i'm going to get back to work on the new bot anyway, it's not going to write itself
+2010-11-12T04:50:01  <mega1> I also asked about whether server #0 is going to be in the finals
+2010-11-12T04:50:15  <mega1> because it's way slower than the others
+2010-11-12T04:50:33  <mega1> and the amount of ram one can expect to have without being forced to swap and time out.
+2010-11-12T04:50:34  <antimatroid> mega1: jeff seemed to think the servers were going a lot better now
+2010-11-12T04:50:40  <antimatroid> it was getting 90 games a minute before
+2010-11-12T04:50:46  <antimatroid> but not sure about your specific question
+2010-11-12T04:51:13  <antimatroid> it isn't that good anymore, hmmm
+2010-11-12T04:52:39  <antimatroid> there's a new australian in the top 50
+2010-11-12T05:05:41  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2010-11-12T05:16:42  <contestbot> Top 10 players: bocsimacko(4451), bix0r4ever(4273), asavis(4262), george(4243), shangas(4227), Raschi(4208), GreenTea(4142), dmj111(4125), Doraj8(4114), _Astek_(4095)
+2010-11-12T05:26:20  *** nullkuhl <nullkuhl!~nullkuhl@196.221.227.142> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T05:26:28  *** iNtERrUpT <iNtERrUpT!~interrupt@116.201.171.122> has joined #aichallenge
+2010-11-12T05:26:50  *** nullkuhl <nullkuhl!~nullkuhl@196.221.227.142> has joined #aichallenge
+2010-11-12T05:27:41  *** p4p4 <p4p4!~chatzilla@82.113.121.52> has joined #aichallenge
+2010-11-12T05:29:31  *** iNtERrUpT <iNtERrUpT!~interrupt@116.201.171.122> has quit IRC (Remote host closed the connection)
+2010-11-12T05:37:15  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has quit IRC (Ping timeout: 255 seconds)
+2010-11-12T05:39:31  <antimatroid> haha, i generated a map that looks like a cock and balls
+2010-11-12T05:40:30  <Naktibalda> you have to hope that your bot doesn't suck at it :)
+2010-11-12T05:40:47  <antimatroid> http://imgur.com/TfTBN.png
+2010-11-12T05:41:01  <antimatroid> that's what a map would look like with many "central" neutral planets
+2010-11-12T05:41:04  <antimatroid> and a cock and balls theme
+2010-11-12T05:48:35  <Error323_> http://ai-contest.com/game_stats.php woooooooow it's blaaazing
+2010-11-12T05:49:24  <Error323_> antimatroid: how is that symmetrical?
+2010-11-12T05:49:55  <amstan> Error323_: it is, it's just scaled annoyingly for some reason
+2010-11-12T05:50:18  <amstan> Error323_: it's symmetric about that line of planets
+2010-11-12T05:50:29  <antimatroid> yeah, it is symmetrical, i have a seprate file i can check symmetry of a map on and I have counted turns in jbotmanager
+2010-11-12T05:50:30  <Error323_> ah ok
+2010-11-12T05:50:46  <antimatroid> http://codepad.org/5A5vJQuD
+2010-11-12T05:50:51  <antimatroid> try generating yourself some maps on that page
+2010-11-12T05:51:04  <antimatroid> it'll give you alternating symmetries and multiple "central" neutral planets
+2010-11-12T05:53:20  <antimatroid> oh, and varying number of planets
+2010-11-12T05:54:16  <Error323_> ah
+2010-11-12T05:54:25  <Error323_> those are excellent given my bot's workings :P
+2010-11-12T05:54:57  <antimatroid> Error323_: http://ai-contest.com/forum/viewtopic.php?f=19&t=1087&start=20
+2010-11-12T05:55:08  <antimatroid> there is a poll on peoples preferences about using new maps like these in the final contest
+2010-11-12T05:58:24  <mega1> Error323_: make sure you read the discussion too :-)
+2010-11-12T05:58:28  <antimatroid> wait, i'm not sure the game stays symmetric when radially symmetric if i put "centre" neutrals off dead centre
+2010-11-12T06:00:54  <Error323_> mega1: yeah imo its too late aswell
+2010-11-12T06:01:22  <antimatroid> it's always been intended for them to change though
+2010-11-12T06:01:34  <antimatroid> people were told not to assume the starting maps are a good representation of all maps
+2010-11-12T06:01:52  <antimatroid> i think people missed that memo
+2010-11-12T06:02:01  <antimatroid> it was touted throughout tron
+2010-11-12T06:02:05  <antimatroid> and i've seen it said for this
+2010-11-12T06:03:31  <Error323_> well
+2010-11-12T06:03:58  <Error323_> even if it was said it would still be very misleading to let the unofficial ranking server never ever play those maps
+2010-11-12T06:04:32  <mega1> Error323_: have you voted yet? ;-)
+2010-11-12T06:05:10  <Error323_> yes
+2010-11-12T06:06:02  <antimatroid> Error323_: i think it's unfair to let people who made assumptions get to have those maps exclusively
+2010-11-12T06:06:13  <antimatroid> anyone who didn't make any assumptions shouldn't be disadvantaged
+2010-11-12T06:06:59  <antimatroid> i haven't made any assumptions for that reason, cause it'd suck if things changed
+2010-11-12T06:07:04  <antimatroid> but it's always been said that they would
+2010-11-12T06:07:16  <antimatroid> it's unfair to then just leave it imo
+2010-11-12T06:07:30  <antimatroid> more unfair*
+2010-11-12T06:08:17  *** Utkarsh <Utkarsh!~admin@117.201.83.140> has quit IRC (Ping timeout: 240 seconds)
+2010-11-12T06:09:44  *** Error323_ <Error323_!~fhuizing@145.116.230.164> has quit IRC (Ping timeout: 272 seconds)
+2010-11-12T06:11:52  *** Bobng <Bobng!~T@78.144.194.163> has joined #aichallenge
+2010-11-12T06:12:31  *** Error323 <Error323!~fhuizing@145-116-230-164.uilenstede.casema.nl> has joined #aichallenge
+2010-11-12T06:12:38  <Error323> @rankings
+2010-11-12T06:12:39  <contestbot> Error323: Top 10 players: bix0r4ever(4301), shangas(4297), asavis(4273), Raschi(4260), george(4245), GreenTea(4197), Error323(4192), dmj111(4141), _Astek_(4111), Doraj8(4111)
+2010-11-12T06:12:47  <Error323> I just had to see that
+2010-11-12T06:13:03  <antimatroid> hehe
+2010-11-12T06:13:03  <Error323> Being temporarily in the top 10 :P
+2010-11-12T06:13:16  <antimatroid> oh, i thought you were referring to bocsimacko not being there
+2010-11-12T06:13:19  <antimatroid> i take it he resubmitted
+2010-11-12T06:13:24  <antimatroid> congrats :)
+2010-11-12T06:13:28  <Error323> oh
+2010-11-12T06:13:31  <Error323> hehe
+2010-11-12T06:13:44  <Error323> yeah, well its a fluke =)
+2010-11-12T06:13:57  <Error323> only played four games
+2010-11-12T06:14:14  <Error323> it'll fall down soon i think
+2010-11-12T06:15:00  <antimatroid> there is no bot for bocsimacko
+2010-11-12T06:15:15  <antimatroid> mega1: did you mean to take your bot down?
+2010-11-12T06:16:03  <antimatroid> wait, nevermind
+2010-11-12T06:16:11  <antimatroid> i don't know why it didn't show up under "lisp" bots
+2010-11-12T06:16:43  <contestbot> Top 10 players: bix0r4ever(4302), shangas(4291), asavis(4268), Raschi(4255), george(4228), GreenTea(4197), Error323(4188), dmj111(4138), Doraj8(4118), _Astek_(4109)
+2010-11-12T06:18:04  <mega1> antimatroid: just reuploaded
+2010-11-12T06:18:25  <antimatroid> yep, i didn't think i'd have noticed in the time it took to show up
+2010-11-12T06:18:48  <mega1> Error323: is that the alpha beta bot?
+2010-11-12T06:18:55  <antimatroid> it got to 12th pretty quick
+2010-11-12T06:18:57  <antimatroid> one game
+2010-11-12T06:19:05  <Error323> mega1: nah, the alphabeta bot sux
+2010-11-12T06:19:09  <mega1> ouch
+2010-11-12T06:19:14  <Error323> yeeeeeep
+2010-11-12T06:19:31  <Error323> wasted about 1.5 weeks of codetime on that :/
+2010-11-12T06:19:46  <antimatroid> i wasted so much time on minimax and zero sum simultaneous games
+2010-11-12T06:19:48  <mega1> I did play with alpha beta and nash too
+2010-11-12T06:20:41  <antimatroid> i'm in the process of writing a complete final revision to try and get rid of bugs and rid myself of terrible hacks i made previously
+2010-11-12T06:21:00  <Error323> i just don't know a good eval function
+2010-11-12T06:21:28  <Error323> thats not a very precisely tweaked heuristic thing
+2010-11-12T06:21:40  <Error323> which would take another 2 weeks to get right
+2010-11-12T06:22:03  <Error323> i want awesomeness in a linear function :P
+2010-11-12T06:22:05  <Error323> heh
+2010-11-12T06:22:21  <Error323> or through non manual tweaking anyway
+2010-11-12T06:22:27  *** Tobu <Tobu!~Tobu@unaffiliated/tobu> has joined #aichallenge
+2010-11-12T06:22:29  <Error323> can be nonlinear
+2010-11-12T06:27:00  *** Utkarsh <Utkarsh!~admin@117.201.83.140> has joined #aichallenge
+2010-11-12T06:33:13  <Error323> mega1: )@(#*$)@#($*%)#$% http://ai-contest.com/visualizer.php?game_id=7031517
+2010-11-12T06:33:27  <Error323> its not even remotely fair how i don't stand a chance
+2010-11-12T06:33:29  <mega1> thank you :-)
+2010-11-12T06:33:29  <Error323> xD
+2010-11-12T06:33:56  <Error323> @rankings
+2010-11-12T06:33:57  <contestbot> Error323: Top 10 players: bix0r4ever(4308), shangas(4297), asavis(4274), Raschi(4261), george(4234), GreenTea(4203), Error323(4190), dmj111(4143), Doraj8(4124), _Astek_(4115)
+2010-11-12T06:33:59  <aerique> at least it's over quick :)
+2010-11-12T06:34:03  <Error323> ah still there
+2010-11-12T06:34:07  <Error323> hehe
+2010-11-12T06:34:40  <Error323> i'm so curious as to what your heuristic eval function is
+2010-11-12T06:34:53  <mega1> I think the rating calc is lagging a bit.
+2010-11-12T06:35:19  <mega1> Error323: that should be a good topic for a short blog post
+2010-11-12T06:35:45  <antimatroid> i do hope nobody beats mega1 (unless it's me), he's been on top so long now
+2010-11-12T06:36:05  <mega1> george worries me still
+2010-11-12T06:36:12  <Error323> hehe
+2010-11-12T06:36:14  <antimatroid> yeah, i saw his bot earlier
+2010-11-12T06:36:19  <mega1> he has an old bot on the official server
+2010-11-12T06:36:28  <antimatroid> that;s more worrying
+2010-11-12T06:36:34  <antimatroid> last time i had a running bot i beat him 2 for 1
+2010-11-12T06:36:38  <antimatroid> but that was probably pure luck
+2010-11-12T06:36:42  <mega1> and on tcp he was getting very near to the top when he took his bots down
+2010-11-12T06:37:03  <antimatroid> perhaps he had the eureka moment :P
+2010-11-12T06:37:09  <antimatroid> and isn't releasing until final tourny now
+2010-11-12T06:37:57  <Error323> mega1: yes blogging that would be really cool
+2010-11-12T06:38:19  <mega1> unfortunately I'll only have time to blog on the 28th :-)
+2010-11-12T06:38:24  <antimatroid> hehe
+2010-11-12T06:38:51  <Error323> mega1: how so?
+2010-11-12T06:39:03  <mega1> I'm so busy writing code
+2010-11-12T06:39:25  <Error323> still?
+2010-11-12T06:39:25  <antimatroid> Error323: tthat wasn't self explanatory?
+2010-11-12T06:39:36  <antimatroid> one could program for a few years on this problem
+2010-11-12T06:39:52  <Error323> no i mean why not 29th, 30th et
+2010-11-12T06:39:54  <Error323> etc
+2010-11-12T06:39:55  <Error323> +)
+2010-11-12T06:40:11  <mega1> because the contest ends on the 27th?
+2010-11-12T06:40:39  <antimatroid> i'm putting my final bot up a good day before deadline
+2010-11-12T06:41:00  <Error323> mega1: yeah i know, so you can blog afterwards right =)
+2010-11-12T06:41:05  <Error323> doesn't have to be just 28th
+2010-11-12T06:41:27  <antimatroid> give him a break, english is his second language
+2010-11-12T06:41:51  <Error323> hmm it seems i'm being misunderstood
+2010-11-12T06:42:00  <antimatroid> i understand
+2010-11-12T06:42:12  <antimatroid> he meant that he wont be blogging until at least then
+2010-11-12T06:42:18  <Error323> got nothing but respect for the man ;)
+2010-11-12T06:42:53  <antimatroid> i think everyone is in awe
+2010-11-12T06:42:59  <antimatroid> over a monthy uncontested on top
+2010-11-12T06:43:05  <antimatroid> nobody managed that last time
+2010-11-12T06:45:29  <Error323> hehe yes amazing
+2010-11-12T06:46:01  <antimatroid> lol, i managed to get trapped in free minecraft
+2010-11-12T06:46:13  *** narnach <narnach!~Narnach@p5DF7A46A.dip0.t-ipconnect.de> has joined #aichallenge
+2010-11-12T06:46:13  *** narnach is now known as narnach_mb
+2010-11-12T06:46:17  <antimatroid> i went down and hit lava and water, then it blocked me on all 6 sides
+2010-11-12T06:53:09  <mega1> who's the funny guy with metternich and nesselrode on tcp?
+2010-11-12T06:54:47  <mega1> all austrians are suspicious
+2010-11-12T06:55:01  <Error323> lol
+2010-11-12T06:56:31  <antimatroid> i always like the story about russian scienctists vs us scientists coming up with writing devices in space
+2010-11-12T06:56:37  <Error323> mega1: what's funny abou tit?
+2010-11-12T06:56:37  <antimatroid> i take it you've both heard that one?
+2010-11-12T06:57:04  <Error323> yeah the pencil vs million dollar pen
+2010-11-12T06:57:06  <Error323> or sth
+2010-11-12T06:57:18  <antimatroid> yeah aha
+2010-11-12T06:57:27  <antimatroid> i always write in pacer
+2010-11-12T06:57:54  <antimatroid> techniclick is my choice
+2010-11-12T06:58:17  <antimatroid> pink for some reason, not sure why, i've just always got the pink one
+2010-11-12T06:58:43  <mega1> Error323: they were involved in putting down the hungarian revolution (1844-1848) against the austrians
+2010-11-12T06:58:43  <Error323> mega1: lol, how do you test your bots when you win of everyone but yourself :P must be a real problem for you
+2010-11-12T06:58:55  <Error323> mega1: ahhh lol
+2010-11-12T06:59:25  <mega1> it takes many games to get info on tcp
+2010-11-12T06:59:42  <mega1> and even then I'm mostly counting number of losses
+2010-11-12T06:59:50  <mega1> to compare versions. Oh, and timeouts.
+2010-11-12T06:59:50  <Error323> yeah...
+2010-11-12T06:59:57  <Error323> still its very tricky
+2010-11-12T07:00:15  <Error323> i assume you first play against eachother locally
+2010-11-12T07:00:52  <mega1> yes, and a couple of times lost 100+ elos with a change that was quite a bit better against its old self
+2010-11-12T07:01:16  <Error323> yeah but you can't play them against eachother on tcp
+2010-11-12T07:01:27  <mega1> can, but don't want to
+2010-11-12T07:01:30  <Error323> that would seriously bias the results as they would be picked against eachother quite a lot
+2010-11-12T07:01:35  <mega1> yes
+2010-11-12T07:02:09  <mega1> that's the trouble Accoun has with running several versions at the same time
+2010-11-12T07:03:37  <Error323> i think your only good testbed is the official
+2010-11-12T07:03:55  <Error323> tcp is too unstable in terms of connections/players
+2010-11-12T07:04:34  <mega1> true, on the other hand you play a whole lot more games
+2010-11-12T07:05:28  <Error323> mega1: are you running linux by any chance?
+2010-11-12T07:05:40  <mega1> Error323: yes
+2010-11-12T07:05:57  <mega1> you don't want a binary, right? ;-)
+2010-11-12T07:06:59  <Error323> no :P
+2010-11-12T07:07:13  <Error323> i want you to have mine :P
+2010-11-12T07:07:38  <Error323> just curiuos :P
+2010-11-12T07:14:25  <antimatroid> remember official site still only has the original 100 maps
+2010-11-12T07:14:42  <antimatroid> i don't think that is a good indication of possible maps, even with the original generator
+2010-11-12T07:16:43  <contestbot> Top 10 players: bocsimacko(4311), asavis(4291), shangas(4283), Raschi(4270), bix0r4ever(4257), george(4210), GreenTea(4193), dmj111(4146), _Astek_(4142), Doraj8(4134)
+2010-11-12T07:17:06  <antimatroid> mega1: that didn't take long :P
+2010-11-12T07:17:25  <Error323> lol
+2010-11-12T07:17:53  <Error323> is the servercode using old rank as startrank nowadays?
+2010-11-12T07:18:22  <antimatroid> i think it might be
+2010-11-12T07:18:32  <antimatroid> but only based off watching your bots go up the ranks
+2010-11-12T07:20:47  <mega1> I think it makes a lot of sense to bias opponent selection this way
+2010-11-12T07:23:07  *** phreeza <phreeza!~phreeza@f049174063.adsl.alicedsl.de> has joined #aichallenge
+2010-11-12T07:23:34  <phreeza> hi everyone
+2010-11-12T07:23:39  <phreeza> how are the bots going?
+2010-11-12T07:23:59  <phreeza> some newcomers on the tcp i see
+2010-11-12T07:24:10  <phreeza> new in the top10 al least
+2010-11-12T07:24:45  <antimatroid> mega1: it does
+2010-11-12T07:25:02  <antimatroid> phreeza: i haven't got a running bot atm, in the middle of a complete rewrite
+2010-11-12T07:25:42  <phreeza> antimatroid: aha, i haven't got anything workble running either :(
+2010-11-12T07:25:53  <phreeza> your heuristic bot that you are rewriting?
+2010-11-12T07:28:07  <antimatroid> yep, i've given up on modeling the other player too
+2010-11-12T07:28:10  <antimatroid> it's too expensive
+2010-11-12T07:29:17  <phreeza> dmj111: ping?
+2010-11-12T07:29:35  <phreeza> antimatroid: computionally?
+2010-11-12T07:30:06  <antimatroid> yes
+2010-11-12T07:30:14  <phreeza> yea i guess thats the only thing that makes sense in this context :P
+2010-11-12T07:30:29  <antimatroid> have you taken a look at the new maps i generated?
+2010-11-12T07:30:35  <antimatroid> http://ai-contest.com/forum/viewtopic.php?f=19&t=1087&start=20
+2010-11-12T07:30:35  <phreeza> no
+2010-11-12T07:30:39  <antimatroid> there is a discussion here
+2010-11-12T07:30:41  <antimatroid> and links to some
+2010-11-12T07:30:51  <phreeza> ok i'll have a look
+2010-11-12T07:32:12  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 276 seconds)
+2010-11-12T07:32:59  <phreeza> i think i agree with the first reply... interesting in principle, but a bit late to change them now
+2010-11-12T07:33:41  <antimatroid> it has always been said that they will change damnit
+2010-11-12T07:33:53  <phreeza> hehe
+2010-11-12T07:33:53  <antimatroid> it's unfair not to change them
+2010-11-12T07:34:04  <phreeza> you've probably heard this many times now?
+2010-11-12T07:34:13  <antimatroid> yes
+2010-11-12T07:34:13  *** _Utkarsh <_Utkarsh!~admin@117.201.90.251> has joined #aichallenge
+2010-11-12T07:34:22  <antimatroid> but i've always been working under the assumption that maps will change
+2010-11-12T07:34:29  <antimatroid> and it was stated like that
+2010-11-12T07:34:36  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-30-224-80.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-11-12T07:34:44  <phreeza> ah but what you are suggesting is keeping the generator rules but generating new maps?
+2010-11-12T07:34:54  <antimatroid> no, i have a new generator
+2010-11-12T07:34:57  <antimatroid> does more symmetrie
+2010-11-12T07:35:01  <antimatroid> and more general maps
+2010-11-12T07:35:14  *** Utkarsh <Utkarsh!~admin@117.201.83.140> has quit IRC (Ping timeout: 272 seconds)
+2010-11-12T07:35:26  <phreeza> ah i see
+2010-11-12T07:35:30  <antimatroid> it will always be the case that a fresh set of maps is generated for the final contest
+2010-11-12T07:36:03  <phreeza> yea i'm cool with that
+2010-11-12T07:36:17  <antimatroid> i'm incredibly biased
+2010-11-12T07:36:21  <phreeza> but changing the symmetries seems a bit harsh
+2010-11-12T07:36:32  <antimatroid> no it doesn't, people shouldn't make assumptions
+2010-11-12T07:36:50  <Error323> lol
+2010-11-12T07:36:50  <antimatroid> it's harsh to allow people who made assumptions to have had that extra time working under that constraint
+2010-11-12T07:36:52  <phreeza> i think even people who didn't explicitly make that assumption tweaked their bots on these maps
+2010-11-12T07:36:55  <Error323> antimatroid: yes they should
+2010-11-12T07:37:15  <Error323> you can't let the official run the same type of maps for 80% of the contest time
+2010-11-12T07:37:23  <Error323> and then suddenly change everything
+2010-11-12T07:37:32  <antimatroid> the maps were provided only as an example
+2010-11-12T07:37:44  <antimatroid> it was always stated they are not to be used as an exhaustive testing set
+2010-11-12T07:37:47  <antimatroid> not even the generator
+2010-11-12T07:37:49  <Error323> but its all the contestants got..
+2010-11-12T07:37:54  <antimatroid> make your own
+2010-11-12T07:37:57  <antimatroid> it's not that difficult
+2010-11-12T07:38:03  <Error323> no i mean...
+2010-11-12T07:38:04  <antimatroid> i've made a couple of different generators
+2010-11-12T07:38:08  <phreeza> the space is so huge....
+2010-11-12T07:38:08  <antimatroid> and plenty of small maps
+2010-11-12T07:38:14  <antimatroid> testing out lots of general cases
+2010-11-12T07:38:29  <Error323> the contestants need other opponents and they can't get hands on the binaries of other players so all they got is official
+2010-11-12T07:38:32  <antimatroid> i did that under the specified rules
+2010-11-12T07:38:37  <phreeza> if the symmetries can be changed, whos to say the size of the planets isn't
+2010-11-12T07:38:41  <phreeza> or the number
+2010-11-12T07:38:48  <antimatroid> now it's basically saying, people who made assumptions get to hold them and have had that extra time working with that
+2010-11-12T07:39:09  <antimatroid> phreeza: one option and generator switched between symmetries and number of planets etc.
+2010-11-12T07:39:14  <antimatroid> switches*
+2010-11-12T07:39:19  <antimatroid> i am actually in favour of that one
+2010-11-12T07:40:01  <antimatroid> also, with bilateral symmetry, you can have multiple neutrals starting at an equal distance from both players
+2010-11-12T07:40:08  <antimatroid> rather than just the central planet
+2010-11-12T07:40:42  <phreeza> you can have that now too
+2010-11-12T07:40:42  <antimatroid> and the maps are way cooler
+2010-11-12T07:40:46  <antimatroid> no you can't
+2010-11-12T07:40:48  <phreeza> because of the ceil
+2010-11-12T07:41:00  <antimatroid> no, you can do it without ceil
+2010-11-12T07:41:11  <antimatroid> but the games become unfair
+2010-11-12T07:41:38  <antimatroid> depending on distribution of planets on each half on each playeyers half of the map
+2010-11-12T07:41:53  <antimatroid> so split the map in 4
+2010-11-12T07:42:24  <antimatroid> to make it possible with radial symmetry, it needs to be bilaterally symmetric too
+2010-11-12T07:43:11  <phreeza> my bots so far could probably deal with any change but this would be really good to know for the new one i'm working on...
+2010-11-12T07:43:24  <antimatroid> hence why i'm trying to finalise this
+2010-11-12T07:43:28  *** cYmen <cYmen!~cymen@squint.a-oben.org> has quit IRC (Ping timeout: 272 seconds)
+2010-11-12T07:43:40  <antimatroid> i've been waiting for it to change for ages, and it hasn't so i'm pushing for decisions to be made
+2010-11-12T07:43:45  <Error323> antimatroid: what if there are ppl with machinelearning algos that used data from the official server etc
+2010-11-12T07:43:57  *** cYmen <cYmen!~cymen@squint.a-oben.org> has joined #aichallenge
+2010-11-12T07:44:01  <antimatroid> Error323: maps are changing no matter what
+2010-11-12T07:44:07  <Error323> yes ofc
+2010-11-12T07:44:10  <antimatroid> it's an ai contest, not who can solve these 100 maps the best contest
+2010-11-12T07:44:11  <Error323> but not that radically
+2010-11-12T07:44:31  <antimatroid> the difference with mine really isn't that much imo
+2010-11-12T07:44:31  <Error323> just different point symmetry maps
+2010-11-12T07:44:52  <antimatroid> i don't expect any bots to really change ranking significantly
+2010-11-12T07:45:08  <phreeza> mega1 sounds pretty concerned in the forum :D
+2010-11-12T07:45:27  <antimatroid> i'm pretty sure he is just opposed to changing it so late
+2010-11-12T07:45:43  <antimatroid> but the way i see it, it's always been expected to change, so it's not fucking people over at the last minute
+2010-11-12T07:45:46  <Error323> i'm surprised that you are not :P
+2010-11-12T07:45:58  <antimatroid> i've been expecting it to always change
+2010-11-12T07:45:58  <Error323> well probably because you are in the middle of a rewrite
+2010-11-12T07:46:06  <Error323> and the inventor of the new mapgen
+2010-11-12T07:46:24  <antimatroid> jeff gave me the idea for the maps months ago when he said he intended to write such a generator
+2010-11-12T07:46:28  <antimatroid> no one ever did so I did yesterday
+2010-11-12T07:46:45  <antimatroid> the generator is a result of my desire for new maps, not vice versa
+2010-11-12T07:47:22  <antimatroid> and the maps are cooler
+2010-11-12T07:47:27  <antimatroid> even mega1 admitted that
+2010-11-12T07:48:58  <Error323> well so do I
+2010-11-12T07:49:09  <Error323> and probably my bot will have a positive effect
+2010-11-12T07:49:14  <Error323> on the new set
+2010-11-12T07:49:31  <Error323> but for any player with fancy learning algos its a real nightmare
+2010-11-12T07:49:33  <phreeza> imo the timeframe is just the killer argument here... a month ago i'm sure it would have been possible, but by now i think its just implicit to most people that it won't change, at least not so severely
+2010-11-12T07:49:43  <phreeza> i think the ragebot rule might make sense still
+2010-11-12T07:51:12  <antimatroid> i'll grant people the not too close to integer distances too
+2010-11-12T07:51:32  <phreeza> Error323: yes its very important to me, in my new bot i match up the mp with previously seen maps. the algorithm to do that has O(n^3), with the current symmetry i only need to match 11, now i would have to match all 23
+2010-11-12T07:52:51  <phreeza> and i'm lucky, i haven't even started the learning yet, but still it meany i will only be abler to perform 1/8th of the matches i thought i would
+2010-11-12T07:53:37  <phreeza> sorry for the typos, just started on one of these fancy microsoft natural keyboards
+2010-11-12T07:56:07  <antimatroid> it was never said people can assume these symmetries hold
+2010-11-12T07:56:21  <antimatroid> it's unfair for people who listended to that to then keep it as is
+2010-11-12T07:56:41  <antimatroid> that's the way i see it
+2010-11-12T07:56:45  <antimatroid> but yes, i'm biased :)
+2010-11-12T07:57:01  <Error323> well thats a valid argument to i guess
+2010-11-12T07:57:54  <Error323> but you have to agree that the fact that the official server hasn't used this map generator is a bit unfair
+2010-11-12T07:58:06  <phreeza> we'll just have to have another season after this, with modified rules ;)
+2010-11-12T07:58:23  <antimatroid> how is that unfair?
+2010-11-12T07:59:08  <antimatroid> it has always been said that those maps should not be taken as representative of maps used in the final tournament
+2010-11-12T07:59:51  <Error323> that would defeat the entire benefit of having the server in the first place
+2010-11-12T08:00:20  <phreeza> antimatroid: so whats to stop me from witing another map generator that just produces pahological cases where ragebot wins 90% of the time? :D
+2010-11-12T08:00:30  <phreeza> pathological*
+2010-11-12T08:00:36  <Error323> yeah
+2010-11-12T08:00:45  <Error323> in lets say a day before the end of the contest
+2010-11-12T08:01:16  <phreeza> \o/
+2010-11-12T08:01:23  <antimatroid> phreeza: because that'd be stupid
+2010-11-12T08:01:29  <Error323> lol
+2010-11-12T08:01:30  <antimatroid> this map gen is entirely open for scrutiny
+2010-11-12T08:01:31  <phreeza> :D
+2010-11-12T08:01:35  <antimatroid> it doesn't give anyone advantages
+2010-11-12T08:01:52  <antimatroid> the server is there as a guide
+2010-11-12T08:01:58  <antimatroid> it
+2010-11-12T08:02:01  <Error323> it does give some disadvantages
+2010-11-12T08:02:08  <antimatroid> s not even guaranteed that the same ranking would be used during the finals
+2010-11-12T08:02:21  <antimatroid> although it looks like it will be, and i agree with that
+2010-11-12T08:02:49  <antimatroid> it gives no one a disadvantage that didn't go making assumptions for themselves
+2010-11-12T08:03:07  <antimatroid> the alternative advantages people who made assumptions, whereas anyone who didn't should be on equal footing
+2010-11-12T08:03:54  <antimatroid> while i'm biased being in the group who didn't make assumptions, i think the fairer thing is to not disadvantage those who didn't make their own assumptions
+2010-11-12T08:06:21  *** p4p4 <p4p4!~chatzilla@82.113.121.52> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T08:08:48  <phreeza> yea i guess the argument is not going anywhere... I see your point, to a degree... but I still think its a bad idea at this point.
+2010-11-12T08:09:05  <Error323> same here
+2010-11-12T08:09:15  <antimatroid> i don't see how it's bad, if people followed the guidelines, there bot would perform fine
+2010-11-12T08:09:19  <phreeza> either way, it would be good to have an official decision asap
+2010-11-12T08:09:27  <antimatroid> if it doesn't, that's their fault for making assumptions
+2010-11-12T08:09:34  <antimatroid> their*
+2010-11-12T08:09:49  <Error323> antimatroid: its not just about assumptions
+2010-11-12T08:09:57  <Error323> learning algos take time
+2010-11-12T08:10:01  <antimatroid> it is, people were free to generate their own test maps
+2010-11-12T08:10:14  <Error323> yes but then they don't have the enemy bots
+2010-11-12T08:10:21  <Error323> and a lot don't know about tcp
+2010-11-12T08:10:34  <antimatroid> you think anyones done machine learning on the main site?
+2010-11-12T08:10:36  <Error323> since its nowhere on the site
+2010-11-12T08:10:42  <antimatroid> it's in the forums
+2010-11-12T08:11:18  <Error323> antimatroid: ppl will definitly have gathered statistics of it i'm sure
+2010-11-12T08:12:16  <Error323> and imho ppl using learning algos should not be discouraged because of this stuff since i think they deserve more to win then the heuristic versions
+2010-11-12T08:12:26  <Error323> but thats just my opinion +)
+2010-11-12T08:12:34  <Error323> and look on ai
+2010-11-12T08:12:43  <phreeza> heh
+2010-11-12T08:12:53  <antimatroid> i think the bots should work on genreal maps
+2010-11-12T08:12:55  <antimatroid> that makes it better ai
+2010-11-12T08:13:00  <phreeza> but they are learning from heuristic bots! :D
+2010-11-12T08:13:09  <antimatroid> whether it's using machine learning or heuristics
+2010-11-12T08:13:23  <antimatroid> i don't think it even changes game play very much
+2010-11-12T08:13:40  *** delt0r___ <delt0r___!~delt0r@188-22-164-167.adsl.highway.telekom.at> has joined #aichallenge
+2010-11-12T08:13:42  <phreeza> general maps is too general
+2010-11-12T08:13:58  <Error323> well i guess the fairest thing would be to add the poll on the main site and use the votecount
+2010-11-12T08:14:07  <Error323> for the decision
+2010-11-12T08:14:12  <phreeza> maybe someone has something that has O(N_planets!) but tweaked it enough to work on 23 planets
+2010-11-12T08:14:18  <phreeza> but then we bump it to 50?
+2010-11-12T08:14:26  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-11-12T08:14:37  <phreeza> Error323: agreed
+2010-11-12T08:14:40  <Error323> i'm sure it will break quite a lot of bots
+2010-11-12T08:15:12  <antimatroid> people made the bots under false assumptions then
+2010-11-12T08:15:29  <antimatroid> it's unfair on the people who made sure their bots would work more generally
+2010-11-12T08:15:46  *** delt0r <delt0r!~delt0r@188-22-168-21.adsl.highway.telekom.at> has quit IRC (Ping timeout: 272 seconds)
+2010-11-12T08:15:48  <Error323> maybe so but you can't say it has been stated very clearly through official channels
+2010-11-12T08:15:52  <antimatroid> i always get back to, it's more unfair to disadvantage those who listended rather than those who made assumptions
+2010-11-12T08:16:30  <antimatroid> i think ideally, such decisions should be in stone before the contest even starts, but they weren't
+2010-11-12T08:16:37  <Error323> i agree
+2010-11-12T08:16:44  <contestbot> Top 10 players: bocsimacko(4323), asavis(4272), bix0r4ever(4263), shangas(4259), Raschi(4246), george(4220), GreenTea(4184), Doraj8(4122), _Astek_(4121), dmj111(4114)
+2010-11-12T08:16:46  <antimatroid> some people are disadvantaged whichever way
+2010-11-12T08:16:51  <antimatroid> so who is it fairer to disadvantage?
+2010-11-12T08:17:02  <Error323> thats why a vote would be the best thing to do imo
+2010-11-12T08:17:08  <antimatroid> i don't get what proportions are, which group most deserves to be at a disadvantage?
+2010-11-12T08:17:20  <antimatroid> care* what proportions are
+2010-11-12T08:17:35  <antimatroid> size of groups should be irrelevant imo
+2010-11-12T08:18:34  <phreeza> in the end we're all doing this for fu, right? so why spoil it for many people who have put in the work by crippling their bots, even if it may be technically fair
+2010-11-12T08:18:58  <phreeza> they'll feel screwed over, whatever the real intentions may have been
+2010-11-12T08:19:08  <phreeza> for fun'
+2010-11-12T08:19:15  <phreeza> not for fu haha
+2010-11-12T08:19:16  <antimatroid> i'm not the only person who has expected maps to change
+2010-11-12T08:19:34  <Error323> everyone has expected it
+2010-11-12T08:19:38  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2010-11-12T08:19:45  <Error323> its just the variety that differs
+2010-11-12T08:19:49  <phreeza> thats the argument why proportions should count
+2010-11-12T08:20:13  <antimatroid> i'm sick of the majority getting their way, just because they're the majority
+2010-11-12T08:20:19  <antimatroid> it's a fucking stupid decision rule
+2010-11-12T08:20:40  <antimatroid> rules like that kept slavery alive
+2010-11-12T08:20:50  <antimatroid> extreme example :P
+2010-11-12T08:21:31  * phreeza sees Godwin rubbing his hands
+2010-11-12T08:22:28  <Error323> is e.g. the second of cputime set in stone?
+2010-11-12T08:23:23  <antimatroid> yes
+2010-11-12T08:25:10  <antimatroid> directly on the specification page
+2010-11-12T08:25:10  <antimatroid> "Maps have no particular dimensions and are defined completely in terms of the planets and fleets in them."
+2010-11-12T08:25:10  <antimatroid> "Most maps on the server and in the starter packs were generated programmatically by a Python script. You may also create your own to use for testing."
+2010-11-12T08:25:10  <antimatroid> " the bots each have 1 second of wall-clock time to receive the game state, process it, and send their orders."
+2010-11-12T08:25:59  <antimatroid> it says nowhere people should assume the maps on the official site are representative of teh final maps
+2010-11-12T08:26:04  <antimatroid> even the generator used
+2010-11-12T08:27:31  *** mceier <mceier!~mceier@chello089077208118.chello.pl> has joined #aichallenge
+2010-11-12T08:29:47  *** _Utkarsh <_Utkarsh!~admin@117.201.90.251> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T08:32:59  *** perestrelka <perestrelka!~vlad@194.242.5.47> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T08:33:22  *** perestrelka <perestrelka!~vlad@194.242.5.47> has joined #aichallenge
+2010-11-12T08:36:17  *** Utkarsh <Utkarsh!~admin@117.201.89.148> has joined #aichallenge
+2010-11-12T08:44:40  <aerique> I'm generating PNGs of all the benzedrine and anti's maps.  Anyone else interested?  It's just the planets and their indexes.
+2010-11-12T08:47:28  <antimatroid> i wouldn't have anything to do with them, but thanks :)
+2010-11-12T08:47:52  *** p4p4 <p4p4!~chatzilla@82.113.121.51> has joined #aichallenge
+2010-11-12T08:48:45  <aerique> i mainly made it to browse for cock 'n balls map pr0n in your set
+2010-11-12T08:49:07  <antimatroid> haha
+2010-11-12T08:49:27  *** Utkarsh <Utkarsh!~admin@117.201.89.148> has quit IRC (Ping timeout: 250 seconds)
+2010-11-12T08:49:44  <antimatroid> what you don't realise is that i secretely made it so they all look like cock and balls
+2010-11-12T08:49:55  <antimatroid> it's the ultimate troll
+2010-11-12T08:50:14  <phreeza> :D
+2010-11-12T08:53:38  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has left #aichallenge
+2010-11-12T08:54:57  *** Utkarsh <Utkarsh!~admin@117.201.95.11> has joined #aichallenge
+2010-11-12T09:03:13  *** bhasker <bhasker!~bhasker@adsl-99-25-118-235.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-11-12T09:04:38  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T09:08:15  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-11-12T09:16:44  <contestbot> Top 10 players: bocsimacko(4333), Raschi(4261), asavis(4257), shangas(4248), george(4237), bix0r4ever(4227), GreenTea(4174), dmj111(4131), _Astek_(4131), davidjliu(4115)
+2010-11-12T09:20:06  <Error323> antimatroid: do you know where the point of origin lies for the maps?
+2010-11-12T09:20:20  <Error323> that is, 0.0,0.0
+2010-11-12T09:20:48  <phreeza> Error323: its just somewhere in the corner i think, I transform my maps so center planet is at origin
+2010-11-12T09:21:11  <Error323> phreeza: which corner? :)
+2010-11-12T09:21:32  *** Migi32 <Migi32!~migi@d54C12BD3.access.telenet.be> has joined #aichallenge
+2010-11-12T09:21:34  <phreeza> you can render the maps any way you like
+2010-11-12T09:21:35  <phreeza> :)
+2010-11-12T09:21:50  <phreeza> i think the vewer makes it top left
+2010-11-12T09:21:54  <phreeza> viewer
+2010-11-12T09:27:08  *** bhasker <bhasker!~bhasker@adsl-99-25-118-235.dsl.pltn13.sbcglobal.net> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T09:27:34  *** bhasker <bhasker!~bhasker@adsl-99-25-118-235.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-11-12T09:29:50  <antimatroid> Error323: in my maps, all planets are centered around (0,0) then translated 14 in both the x and y direction
+2010-11-12T09:30:10  <antimatroid> max map radius is 12
+2010-11-12T09:33:44  <Error323> ok
+2010-11-12T09:38:52  <antimatroid> it's also picking polar coordinates randomly, then converting them to cartesian
+2010-11-12T09:38:57  <antimatroid> made it a million times easier
+2010-11-12T09:40:42  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-185-122.pools.arcor-ip.net> has joined #aichallenge
+2010-11-12T10:07:45  *** Azrathud <Azrathud!~azrathud@173-8-231-181-Colorado.hfc.comcastbusiness.net> has joined #aichallenge
+2010-11-12T10:14:18  <Migi32> antimatroid, that would make the "planet density" higher at the center than at the edges. Did you put code to counter that? If not, I should be able to come up with the right math formula for uniform distribution in polar coordinates
+2010-11-12T10:16:44  <contestbot> Top 10 players: bocsimacko(4394), asavis(4246), george(4214), shangas(4206), bix0r4ever(4179), _Astek_(4141), davidjliu(4131), dmj111(4124), GreenTea(4120), Error323(4117)
+2010-11-12T10:17:26  <Error323> wuuuuuuuut
+2010-11-12T10:17:34  <Error323> i'm in the top 10 again XD
+2010-11-12T10:18:27  <antimatroid> Migi32: i didn't
+2010-11-12T10:18:43  <antimatroid> i don't see why it would though
+2010-11-12T10:19:12  <antimatroid> okay i see what you mean
+2010-11-12T10:19:17  <antimatroid> but you are still likely to get planets far out
+2010-11-12T10:19:55  <Migi32> yea, still likely, but it'll be more likely that planets will bunch up in the middle
+2010-11-12T10:20:28  <bhasker> nice Error
+2010-11-12T10:20:34  <bhasker> so what is new in your submission
+2010-11-12T10:20:41  <Migi32> the formula to prevent this should be something along the lines of radius=max_radius * random(0.0 to 1.0)^2
+2010-11-12T10:21:12  <Migi32> no wait sqrt() instead of ()^2
+2010-11-12T10:22:15  <antimatroid> yeah okay, i see what you're getting at
+2010-11-12T10:22:20  <antimatroid> i will do that at some point
+2010-11-12T10:22:24  <antimatroid> i'm working on my own bot atm
+2010-11-12T10:22:58  <Migi32> sure, just wanted to mention it :)
+2010-11-12T10:23:06  <bhasker> btw are you guys writing your bot in C++, i am thinking my python version will be too slow to do minmax kind of stuff
+2010-11-12T10:23:18  <bhasker> just updating the state/resolving fleets for all planets is taking over 15 ms
+2010-11-12T10:23:19  <bhasker> :-\
+2010-11-12T10:23:27  <bhasker> doing that a few hundred times will probably kill my bot
+2010-11-12T10:23:43  <antimatroid> i'm using c++
+2010-11-12T10:23:47  <Error323> bhasker: ow i'll get kicked out soon enough, its 17.2 @ tcp
+2010-11-12T10:23:53  <antimatroid> although i also gave up on minimax
+2010-11-12T10:23:59  <bhasker> pure heuristic now?
+2010-11-12T10:24:08  <Error323> i'm trying maximax :P
+2010-11-12T10:24:15  <antimatroid> i'm using a tree to generate my moves
+2010-11-12T10:24:18  <bhasker> ah 17.2 is like an elo point above my bot but mine is at 58: -\
+2010-11-12T10:24:20  <antimatroid> but it's not modelling the opponent
+2010-11-12T10:24:28  <Error323> that is mega1's approach.
+2010-11-12T10:24:37  <bhasker> ah yea but to do a tree i still need to resolve battles
+2010-11-12T10:24:38  <antimatroid> that has alwaays been my heuristic appraoch
+2010-11-12T10:24:39  <Error323> bhasker: i just submitted, i'll drop down anyway
+2010-11-12T10:24:41  <Migi32> I am too, but bhasker do you know c++ already? If not, it's probably too late to learn it and write a winning entry in it.
+2010-11-12T10:25:00  <Error323> got a new idea for the evaluation function.
+2010-11-12T10:25:05  <bhasker> yea i know c++
+2010-11-12T10:25:09  <bhasker> code in it all the time @ work
+2010-11-12T10:25:24  <bhasker> just that python is easy
+2010-11-12T10:25:26  <bhasker> to tinker with
+2010-11-12T10:25:27  <antimatroid> ahh, the joys of holidays till end of contest
+2010-11-12T10:25:48  <antimatroid> python is easy, i'd never done anything with it before today and wrote out a map generator in it
+2010-11-12T10:25:49  <Error323> bhasker: i don't think you need to port it untill your minimax is fully working and you can't get it faster
+2010-11-12T10:25:53  <antimatroid> without looking a single thing up
+2010-11-12T10:25:58  <antimatroid> except how to comment
+2010-11-12T10:25:58  <Error323> mostly you want algorithmic optimizations
+2010-11-12T10:26:09  <Error323> they are >> then c++ vs pythooon
+2010-11-12T10:26:18  <bhasker> hmm
+2010-11-12T10:26:36  <bhasker> oh well let me try and implement it in python
+2010-11-12T10:26:39  <Migi32> ah ok. Well, while it may be beneficial to switch, but computation speed doesn't seem to be the deciding factor in this contest.
+2010-11-12T10:26:46  <bhasker> but i think i need to optimize my battle resolution and state update
+2010-11-12T10:26:48  <bhasker> its too slow
+2010-11-12T10:26:53  <bhasker> 15ms to update all planets is too slow
+2010-11-12T10:27:13  <Migi32> is that for 200 turns or just the diameter of the map?
+2010-11-12T10:27:14  <bhasker> well migi to do tree searches
+2010-11-12T10:27:16  <antimatroid> imo minimax is too hard in one second for this
+2010-11-12T10:27:18  <Error323> my heuristic version is blazing fast
+2010-11-12T10:27:20  <bhasker> 2x diameter
+2010-11-12T10:27:21  <antimatroid> even using c++
+2010-11-12T10:27:30  <bhasker> oops rather 2x maxdistance between planets
+2010-11-12T10:27:33  <Migi32> then it's indeed quite slow.
+2010-11-12T10:27:44  <bhasker> yup
+2010-11-12T10:29:54  <bhasker> i think logging is also killing me
+2010-11-12T10:30:04  <bhasker> just dumping state at every turn takes that from 15ms to 50ms
+2010-11-12T10:30:05  <bhasker> ^
+2010-11-12T10:30:20  <bhasker> i think the mistake is i should just update all planets at the same time
+2010-11-12T10:30:22  <bhasker> not one at a time
+2010-11-12T10:30:28  <bhasker> just advance the world by one time step
+2010-11-12T10:30:57  <bhasker> right now my engine is like for p in pw.Planets: updatePlanet(p)
+2010-11-12T10:31:26  <bhasker> which basically gets a list of fleets orders them by time and resolves battles at all turns and just duplicates state for the rest
+2010-11-12T10:32:12  <Migi32> no I think doing it planet per planet would be faster
+2010-11-12T10:32:59  <Migi32> python does have a fast sorting algorithm right?
+2010-11-12T10:33:24  *** superflit <superflit!~superflit@c-24-9-162-197.hsd1.co.comcast.net> has quit IRC (Quit: superflit)
+2010-11-12T10:35:18  <Migi32> wait I think I misunderstood you. Why does it duplicate states?
+2010-11-12T10:44:23  *** lavalamp_ <lavalamp_!4507d76a@gateway/web/freenode/ip.69.7.215.106> has joined #aichallenge
+2010-11-12T10:46:19  <antimatroid> i also haven't had anyone say they actually dislike the new maps
+2010-11-12T10:46:23  <antimatroid> just that they don't like change
+2010-11-12T10:46:39  <antimatroid> i really don;t think it even changes peoples stategies much
+2010-11-12T10:46:52  <antimatroid> i've had a number of people reluctantly admit they like them
+2010-11-12T10:48:18  *** Azrathud <Azrathud!~azrathud@173-8-231-181-Colorado.hfc.comcastbusiness.net> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T10:48:56  *** siconize <siconize!55b6145a@gateway/web/freenode/ip.85.182.20.90> has joined #aichallenge
+2010-11-12T10:49:34  <Migi32> Error323, does your alpha-beta search use iterative deepening?
+2010-11-12T10:50:16  *** wh1teside <wh1teside!~admin@adsl-76-202-215-207.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2010-11-12T11:01:25  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-11-12T11:02:15  <lavalamp_> @seen dhartmei
+2010-11-12T11:02:15  <contestbot> lavalamp_: dhartmei was last seen in #aichallenge 6 weeks, 1 day, 23 hours, 17 minutes, and 37 seconds ago: <dhartmei> project selection problem?
+2010-11-12T11:02:36  <Migi32> that's long :(
+2010-11-12T11:02:45  <Migi32> good thing he keeps his server running though :)
+2010-11-12T11:03:51  <lavalamp_> yeah...
+2010-11-12T11:05:31  <Error323> Migi32: no
+2010-11-12T11:07:01  <lavalamp_> I was just thinking that we should try and get some new maps on the server if there's much chance they'll be used
+2010-11-12T11:07:43  <Migi32> Error323, ok. I was going to take a shot at tree searches myself, so I wondered. But I just realised alpha-beta isn't even possible with Nash equilibria as node evaluation
+2010-11-12T11:09:34  <lavalamp_> it would be interesting to have the server generate a new map for every battle
+2010-11-12T11:10:59  <Migi32> you could contact dhartmei at daniel -at- benzedrine -dot- cx
+2010-11-12T11:11:36  <phreeza> that bounced my email today
+2010-11-12T11:11:51  <phreeza> sent it to at openbsd.org instead
+2010-11-12T11:12:00  <Migi32> well yea benzedrine.cx seems down
+2010-11-12T11:14:09  *** superflit <superflit!~superflit@184-96-119-251.hlrn.qwest.net> has joined #aichallenge
+2010-11-12T11:15:22  *** fawek <fawek!~faw@chello089079023212.chello.pl> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T11:16:22  *** narnach_mb <narnach_mb!~Narnach@p5DF7A46A.dip0.t-ipconnect.de> has quit IRC (Quit: Leaving.)
+2010-11-12T11:16:38  <antimatroid> lavalamp_: we decided it's better not to use lots of maps
+2010-11-12T11:16:46  <contestbot> Top 10 players: bocsimacko(4424), asavis(4231), george(4204), shangas(4203), davidjliu(4151), bix0r4ever(4148), Error323(4133), _Astek_(4131), dmj111(4111), GreenTea(4108)
+2010-11-12T11:16:47  <antimatroid> that way you have lots of bots playing on the same map
+2010-11-12T11:16:54  <antimatroid> although you don't want bots repeating
+2010-11-12T11:17:11  <antimatroid> on the same map, so i think the allowable set is going to be extended as the contest runs as needed
+2010-11-12T11:17:28  <lavalamp_> yeah, I know it's not real practical (or fair) to do a random one for each game but it would still be interesting
+2010-11-12T11:17:49  <antimatroid> i love the new maps, i hope the are allowed
+2010-11-12T11:20:12  *** superflit <superflit!~superflit@184-96-119-251.hlrn.qwest.net> has quit IRC (Ping timeout: 276 seconds)
+2010-11-12T11:20:55  *** fawek <fawek!~faw@chello089079023212.chello.pl> has joined #aichallenge
+2010-11-12T11:25:17  *** aerique <aerique!euqirea@xs2.xs4all.nl> has quit IRC (Quit: ...)
+2010-11-12T11:25:31  *** perror <perror!~fleury@aldebaran.labri.fr> has quit IRC (Quit: Bye all !)
+2010-11-12T11:33:00  *** narnach <narnach!~Narnach@p5DF7A46A.dip0.t-ipconnect.de> has joined #aichallenge
+2010-11-12T11:33:00  *** narnach is now known as narnach_mb
+2010-11-12T11:33:25  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T11:36:38  *** Utkarsh <Utkarsh!~admin@117.201.95.11> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T11:40:01  *** perror <perror!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2010-11-12T11:41:44  *** Utkarsh <Utkarsh!~admin@117.201.89.50> has joined #aichallenge
+2010-11-12T11:44:22  <Error323> lol wut #6th
+2010-11-12T11:45:01  *** vpetro <vpetro!~vpetro@bas7-ottawa23-1167872044.dsl.bell.ca> has joined #aichallenge
+2010-11-12T11:53:01  *** vpetro <vpetro!~vpetro@bas7-ottawa23-1167872044.dsl.bell.ca> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T12:02:16  *** paulmcq_ <paulmcq_!4ca8eea8@gateway/web/freenode/ip.76.168.238.168> has joined #aichallenge
+2010-11-12T12:04:52  <antimatroid> Error323: nice
+2010-11-12T12:05:09  <Error323> heh
+2010-11-12T12:05:13  <Error323> well i'll drop any second now :P
+2010-11-12T12:05:24  *** yasith <yasith!~yasith@112.134.125.7> has quit IRC (Ping timeout: 264 seconds)
+2010-11-12T12:05:37  <antimatroid> you already did and came back :P
+2010-11-12T12:05:44  <Error323> true
+2010-11-12T12:06:06  <Error323> perhaps its not that bad as on tcp
+2010-11-12T12:06:10  <Error323> since i was also running my old version there
+2010-11-12T12:06:35  *** tapwater <tapwater!~tapwater@cpe-70-112-195-55.austin.res.rr.com> has joined #aichallenge
+2010-11-12T12:10:05  *** spacebat <spacebat!~spacebat@ubermonkey.net> has quit IRC (Ping timeout: 250 seconds)
+2010-11-12T12:10:23  <Error323> but i doubt it
+2010-11-12T12:10:38  *** lovebot_ <lovebot_!~chl@mtl93-6-82-233-247-129.fbx.proxad.net> has quit IRC (Ping timeout: 252 seconds)
+2010-11-12T12:11:47  *** lovebot <lovebot!~chl@mtl93-6-82-233-247-129.fbx.proxad.net> has joined #aichallenge
+2010-11-12T12:11:52  *** spacebat <spacebat!~spacebat@ubermonkey.net> has joined #aichallenge
+2010-11-12T12:16:45  <contestbot> Top 10 players: bocsimacko(4386), asavis(4211), shangas(4192), george(4158), _Astek_(4120), Accoun(4120), davidjliu(4116), GreenTea(4110), Error323(4092), dmj111(4084)
+2010-11-12T12:17:17  <Error323> \o/
+2010-11-12T12:20:30  *** yasith <yasith!~yasith@112.134.121.8> has joined #aichallenge
+2010-11-12T12:36:39  *** shades <shades!~shades@cheshire.telephreak.org> has quit IRC (Ping timeout: 255 seconds)
+2010-11-12T12:39:39  *** boegel <boegel!~boegel@91.182.124.84> has joined #aichallenge
+2010-11-12T12:42:31  *** boegel <boegel!~boegel@91.182.124.84> has quit IRC (Client Quit)
+2010-11-12T12:46:07  <lavalamp_> sigh, alright, antimatroid, you convinced me, I changed my vote on the forum thread... :/
+2010-11-12T12:46:30  <antimatroid> :)
+2010-11-12T12:46:55  *** fawek <fawek!~faw@chello089079023212.chello.pl> has quit IRC (Read error: Operation timed out)
+2010-11-12T12:47:12  <antimatroid> there isn't much difference in preferneces atm
+2010-11-12T12:48:09  <lavalamp_> the linearly symmetric maps sure look weird if your window isn't square
+2010-11-12T12:48:24  <antimatroid> yeah, i have a 24 inch wide screen :P
+2010-11-12T12:48:34  <antimatroid> and window is far from square
+2010-11-12T12:49:13  <lavalamp_> I think point symmetric is all people thought of because it's the only one that you can generalize to more players
+2010-11-12T12:49:29  <antimatroid> you can't do more than 2 players
+2010-11-12T12:49:38  <antimatroid> it complicates things beyond imagination
+2010-11-12T12:49:57  <lavalamp_> yeah, I agree, but it seems like they were thinking of it at first
+2010-11-12T12:50:05  <antimatroid> never going to happen
+2010-11-12T12:50:12  <antimatroid> then people need to start worryig about coalitions
+2010-11-12T12:50:33  <lavalamp_> yeah, it changes things completely
+2010-11-12T12:50:56  <antimatroid> the optimal move isn't to wait like some people thing
+2010-11-12T12:51:08  <antimatroid> because smart bots will collude to take you out then battle each other
+2010-11-12T12:51:15  <lavalamp_> right
+2010-11-12T12:51:35  <lavalamp_> and you can't just start attacking player 2 because then player 3 will take you both out
+2010-11-12T12:51:41  <antimatroid> yep
+2010-11-12T12:51:48  <antimatroid> and then when do you break your coalition?
+2010-11-12T12:51:56  <antimatroid> and if there's n players, it's just insane
+2010-11-12T12:52:02  <lavalamp_> ...not to mention the fact that nD payoff tables get big fast
+2010-11-12T12:52:11  <antimatroid> yep
+2010-11-12T12:52:26  <antimatroid> i'm making a game theory library, i'm aware of how fast they blow out :|
+2010-11-12T12:52:35  <antimatroid> tensors are insane
+2010-11-12T12:52:48  <antimatroid> same as game trees
+2010-11-12T12:52:58  <antimatroid> or any tree for that matter :P
+2010-11-12T12:53:01  <lavalamp_> we could even do non-symmetric maps if the server played 2 game sets
+2010-11-12T12:53:07  <lavalamp_> lol yeah
+2010-11-12T12:53:18  <antimatroid> i think non-symmetric maps would be quite boring
+2010-11-12T12:53:41  <lavalamp_> I suppose if the common case is that one player has a huge advantage, yeah
+2010-11-12T12:54:07  <lavalamp_> but do we know that? no one as tried afaik
+2010-11-12T12:54:14  <lavalamp_> *h
+2010-11-12T12:54:18  <lavalamp_> *has
+2010-11-12T12:54:34  <antimatroid> tried non-symmetric maps?
+2010-11-12T12:54:43  <antimatroid> i have generated trivial ones testing out cases
+2010-11-12T12:54:52  <lavalamp_> ah ok
+2010-11-12T12:55:06  <antimatroid> but that's more to check my move selection is working as intended
+2010-11-12T12:55:11  <lavalamp_> maybe I should make a few and see what happens
+2010-11-12T12:55:19  <lavalamp_> ...after I get my bugs squashed
+2010-11-12T12:56:04  *** bhasker <bhasker!~bhasker@adsl-99-25-118-235.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: bhasker)
+2010-11-12T12:58:20  <mega1> hmm, why do I keep playing low ranked opponents?
+2010-11-12T12:59:28  <antimatroid> tcp or official?
+2010-11-12T13:00:04  <mega1> official
+2010-11-12T13:00:34  <antimatroid> is it counting your old games against top bots now maybe?
+2010-11-12T13:00:42  <antimatroid> and then not giving you new pairings
+2010-11-12T13:00:45  <antimatroid> that's just a guess
+2010-11-12T13:00:46  <janzert> antimatroid: nope
+2010-11-12T13:01:03  <janzert> mega1: so far as I can see it's just an unlucky streak
+2010-11-12T13:01:31  <antimatroid> Raschi had a very lucky streak in pairings
+2010-11-12T13:01:33  <antimatroid> and won them to boot
+2010-11-12T13:01:38  <mega1> janzert: thanks. So I'm not back to be running on server #0 only?
+2010-11-12T13:01:57  <janzert> taking another look at the code to see if there is something that would skew pairings for the top player
+2010-11-12T13:02:06  <antimatroid> there doesn't even seem to be a server 0 anymore?
+2010-11-12T13:02:11  <antimatroid> 123 games in the last minute
+2010-11-12T13:02:15  <janzert> mega1: nope, actually nobody is running on 0 anymore
+2010-11-12T13:02:31  <mega1> janzert: oh, cool.
+2010-11-12T13:02:54  <mega1> The distribution of ranks of opponents looked fine for my previous submission.
+2010-11-12T13:03:03  <mega1> maybe it's just laggggging
+2010-11-12T13:03:30  <janzert> btw, the new pairing code can be found in http://code.google.com/p/ai-contest/source/browse/trunk/planet_wars/backend/create_matchups.py
+2010-11-12T13:03:32  <mega1> using an oldish rank to compute the opponents
+2010-11-12T13:04:02  <janzert> the important function here would be choose_opponent
+2010-11-12T13:04:20  <janzert> but I'm not seeing anything off the top of my head that should skew the distribution
+2010-11-12T13:06:14  <antimatroid> gah, fuuu c++, let me define a priority queue of moves, i defined an inequality operator for you :(
+2010-11-12T13:16:46  <contestbot> Top 10 players: bocsimacko(4380), Raschi(4363), asavis(4206), shangas(4181), george(4161), davidjliu(4135), bix0r4ever(4131), _Astek_(4118), Accoun(4100), GreenTea(4091)
+2010-11-12T13:17:04  *** perror_ <perror_!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2010-11-12T13:19:12  *** CIA-36 <CIA-36!~CIA@208.69.182.149> has quit IRC (Ping timeout: 264 seconds)
+2010-11-12T13:21:11  <rabidus> give me a tip of good comedy movie
+2010-11-12T13:21:20  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-11-12T13:21:41  *** perror_ <perror_!~fleury@aldebaran.labri.fr> has quit IRC (Client Quit)
+2010-11-12T13:21:47  *** perror <perror!~fleury@aldebaran.labri.fr> has quit IRC (Quit: Bye all !)
+2010-11-12T13:21:48  <antimatroid> happy gilmore was the first thing to pop to mind :P
+2010-11-12T13:23:33  <rabidus> sry, have seen it already :(
+2010-11-12T13:25:22  *** choas <choas!~lars@p5792C0FE.dip.t-dialin.net> has joined #aichallenge
+2010-11-12T13:27:04  <janzert> hmm, I did think of an unintended effect on the distribution of players at the top and bottom of the rankings. Basically the top and bottom will tend toward playing opponents twice the average distance than bots in the middle.
+2010-11-12T13:27:27  <antimatroid> mega1: raschi isn't far behind on elo
+2010-11-12T13:27:57  <janzert> this is because one side of the distribution is getting cut off since there aren't any players there
+2010-11-12T13:28:11  <mega1> janzert: that's a nice property
+2010-11-12T13:28:52  <mega1> antimatroid: he has only four games
+2010-11-12T13:29:05  <antimatroid> yes, but against reasoanble opponents too :P
+2010-11-12T13:29:38  <janzert> ooh, I see it's finally time to anchor the elo range
+2010-11-12T13:29:47  <janzert> bottom bot is now at 5 elo
+2010-11-12T13:30:04  <antimatroid> he, that took WAY longer than expected
+2010-11-12T13:30:10  <janzert> yeah
+2010-11-12T13:30:27  <mega1> what does anchoring means?
+2010-11-12T13:30:38  <antimatroid> bottom bots elo is fixed i think
+2010-11-12T13:30:42  <antimatroid> so it doesn't drop below 0
+2010-11-12T13:30:46  <janzert> yes
+2010-11-12T13:31:11  <janzert> right now the whole range just keeps the median(?) at 2000
+2010-11-12T13:31:24  <janzert> instead we can anchor the worst bot to always be 0
+2010-11-12T13:31:29  <antimatroid> yep
+2010-11-12T13:31:51  <lavalamp_> or you could anchor the best bot at 4500
+2010-11-12T13:32:00  <antimatroid> that's boring
+2010-11-12T13:32:18  <antimatroid> we need irrational aesthetics thanks :)
+2010-11-12T13:32:19  <lavalamp_> better yet, enter ragebot and anchor it at 600
+2010-11-12T13:32:24  <janzert> yeah, the absolute number really are meaningless
+2010-11-12T13:34:01  <lavalamp_> if you anchor one or two constant bots, then the absolute numbers start to mean something
+2010-11-12T13:36:45  <janzert> minimally :)
+2010-11-12T13:36:59  *** boegel <boegel!~boegel@91.182.124.84> has joined #aichallenge
+2010-11-12T13:37:45  *** McLeopold <McLeopold!~scott@67.139.105.186> has joined #aichallenge
+2010-11-12T13:37:49  <lavalamp_> they would still depend on the # of bots entered, I think
+2010-11-12T13:38:02  *** CIA-37 <CIA-37!~CIA@208.69.182.149> has joined #aichallenge
+2010-11-12T13:38:57  <lavalamp_> maybe not if you had two anchor points and scaled appropriately, hm
+2010-11-12T13:39:35  <Migi32> all elo scores would vary too wildly then, I think
+2010-11-12T13:39:52  <janzert> having multiple anchor players in a rating system can lead to real problems if you aren't very careful
+2010-11-12T13:40:31  <Migi32> if ragebot gets a couple good maps and suddenly appears to do really good, and you used it as an anchor, everyone's ELO will drop really fast
+2010-11-12T13:40:32  <lavalamp_> I think two would be OK since you just translate for one and scale for the other (and feed the rating algorithm the unmodified numbers)
+2010-11-12T13:41:11  <lavalamp_> Hm you might be right about that since ragebot would be playing those near its level
+2010-11-12T13:41:23  <McLeopold> amstan: ping
+2010-11-12T13:41:27  <lavalamp_> with enough games that effect should dissapear
+2010-11-12T13:41:34  <lavalamp_> *disappear
+2010-11-12T13:41:37  <janzert> the problem is when there are intransitivities with cycles involving both anchors
+2010-11-12T13:42:04  <lavalamp_> why would that cause a problem?
+2010-11-12T13:42:29  <lavalamp_> I mean, a worse one than intransitivities already cause the system?
+2010-11-12T13:43:12  <Migi32> haha yes if you anchor one bot at 600 (say, starter package) and another at 1000 (say, ragebot) and ragebot by bad luck drops in internal score to below the starter package, your ELO ratings would be inverted
+2010-11-12T13:43:36  <Migi32> or is that not how anchors work?
+2010-11-12T13:44:02  <lavalamp_> Lol ok I was tihnking more, say, rage bot and my old bot, which is enough better than ragebot that that would never happen
+2010-11-12T13:44:15  <janzert> migi32: yeah, that's the basic problem
+2010-11-12T13:44:33  <janzert> although the ratings don't actually invert but they will be very wierd
+2010-11-12T13:45:08  <lavalamp_> suddenly first is rated .53 below ragebot, haha
+2010-11-12T13:46:14  <McLeopold> Just so you know, the elo problem is not solvable.  Relative ratings are the best you can get.
+2010-11-12T13:46:38  <Migi32> I'd say, just keep them like they are, fixed average and fixed standard deviation. The people with negative ELO won't notice anyway, I think.
+2010-11-12T13:46:46  *** Utkarsh <Utkarsh!~admin@117.201.89.50> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T13:48:29  <Migi32> the fact that top ELO keeps rising kinda reflects the fact that the contest is getting tougher and tougher
+2010-11-12T13:48:46  <lavalamp_> McLeopold: yeah, and they're not even relative all the time due to intransitivities. But anchoring can be useful, IIRC the kgs (gokgs.com) rating system has a number of anchors to stabilize it
+2010-11-12T13:49:11  <lavalamp_> I think the fact that the top Elo is rising represents the fact that more people have entered :P
+2010-11-12T13:49:29  <McLeopold> lavalamp_ is more correct
+2010-11-12T13:49:38  *** CryBaby <CryBaby!~chatzilla@254.sub-69-98-148.myvzw.com> has joined #aichallenge
+2010-11-12T13:51:01  <Migi32> yes, I know that. But as antimatroid said "we need irrational aesthetics thanks :)"
+2010-11-12T13:51:21  <McLeopold> #1 one is zero, everyone else is negative?
+2010-11-12T13:51:33  <lavalamp_> where?
+2010-11-12T13:51:53  <McLeopold> I'm just saying to anchor the top bot at elo=0
+2010-11-12T13:51:58  <lavalamp_> ohh
+2010-11-12T13:52:16  <lavalamp_> I thought that was in reference to my KGS statement
+2010-11-12T13:52:18  <McLeopold> then everyone's goal is just to suck less
+2010-11-12T13:52:49  <lavalamp_> Don't they list golf scores that way? how many stokes behind the leader you are?
+2010-11-12T13:52:54  <lavalamp_> *strokes
+2010-11-12T13:53:01  <lavalamp_> (I don't play golf)
+2010-11-12T13:53:11  <McLeopold> no
+2010-11-12T13:53:17  <McLeopold> and yet
+2010-11-12T13:53:19  <McLeopold> yes
+2010-11-12T13:53:23  *** Utkarsh <Utkarsh!~admin@117.201.81.123> has joined #aichallenge
+2010-11-12T13:53:27  <janzert> it seems televised tournaments at least do
+2010-11-12T13:53:37  <McLeopold> baseball is that way, games behind
+2010-11-12T13:54:01  <Migi32> how about this: keep elo as it is, but if elo<0, show elo as 0 instead
+2010-11-12T13:54:21  <lavalamp_> I'm sure tv is the only place I've seen golf, and that accidentally :)
+2010-11-12T13:54:35  *** superflit <superflit!~superflit@140.226.49.160> has joined #aichallenge
+2010-11-12T13:54:40  <lavalamp_> why is negative elo bad?
+2010-11-12T13:55:18  <janzert> just for the feelings of those players and aesthetics of the list
+2010-11-12T13:56:01  <McLeopold> how about a positive number that says "you are this close to becoming #1"
+2010-11-12T13:56:06  <janzert> an advantage of anchoring the minelo is also that it easy at a glance of the top to tell the overall spread
+2010-11-12T13:57:54  <janzert> from which you can determine at least the theoretical number of levels of play, where each level is defined as winning against the next lowest a certain percentage of the time
+2010-11-12T13:58:10  <lavalamp_> In go, 3/4ths of the ratings are negative
+2010-11-12T13:58:53  <janzert> oops, mixed up the order of commands sent to bayeselo
+2010-11-12T13:59:00  *** Cold-Phoenix <Cold-Phoenix!~Cold-Phoe@87.113.31.205> has joined #aichallenge
+2010-11-12T13:59:09  <janzert> now half our ranks are negative :P
+2010-11-12T13:59:34  <lavalamp_> janzert: that may or may not work... I can come up with bots that suck on purpose
+2010-11-12T13:59:54  <janzert> the worst bots already lose every game immediately
+2010-11-12T14:00:15  <janzert> hard to get worse than that :)
+2010-11-12T14:01:28  <lavalamp_> e.g., in go human players can suck at 30 or 40 kyu... random play is estimated to be about 150 kyu, and then you could write algorithms that tried to lose on purpose to do worse than that. If we already have bots that are as terrible as possible, that's distorting the "number of levels" calculation
+2010-11-12T14:01:58  <lavalamp_> when you compare it to go or chess, anyway
+2010-11-12T14:02:21  <mega1> how is chess elo anchored?
+2010-11-12T14:02:23  <janzert> yeah, but I say that is because go and chess aren't calculating it correctly :P
+2010-11-12T14:02:36  <mega1> there has been recent talk about chess elo inflation
+2010-11-12T14:02:43  <lavalamp_> janzert, that's a possible view :)
+2010-11-12T14:03:01  <lavalamp_> mega1, isn't there always talk about that?
+2010-11-12T14:03:04  <janzert> mega1: I don't think it is just recent
+2010-11-12T14:03:23  <lavalamp_> I don't believe chess is anchored
+2010-11-12T14:03:29  <lavalamp_> unless they started it recently
+2010-11-12T14:03:36  <mega1> recent as in past couple of years
+2010-11-12T14:03:49  <janzert> lavalamp_: yeah, I don't think so
+2010-11-12T14:04:08  <janzert> mega1: It's been ongoing for as long as I can remember which is at least 12 years
+2010-11-12T14:04:26  <lavalamp_> "what rating would XXX have today?"
+2010-11-12T14:05:10  <mega1> yeah, masters of old would always rule ;-)
+2010-11-12T14:06:17  <Migi32> to me, only the top 10 and how many people are still better than me are important anyway :)
+2010-11-12T14:09:16  <McLeopold> Migi32: so, 11 total? :P
+2010-11-12T14:09:37  <Migi32> yep :)
+2010-11-12T14:16:47  <contestbot> Top 10 players: bocsimacko(2443), Raschi(2315), asavis(2194), bix0r4ever(2166), shangas(2145), george(2145), davidjliu(2120), Accoun(2108), _Astek_(2096), GreenTea(2070)
+2010-11-12T14:18:00  <Error323> wow
+2010-11-12T14:18:07  <Error323> elo just got cut in half?
+2010-11-12T14:18:32  <McLeopold> janzert: are you guys removing old bot entries entirely?
+2010-11-12T14:18:36  <janzert> basically the arbitrary offset is removed but not the 0 anchor
+2010-11-12T14:19:04  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-11-12T14:19:04  <McLeopold> http://ai-contest.com/forum/viewtopic.php?f=19&t=1090
+2010-11-12T14:19:05  <janzert> McLeopold: yeah, there is a job that runs and deletes submissions that are no longer active
+2010-11-12T14:19:14  <McLeopold> that's what is doing it
+2010-11-12T14:19:29  <McLeopold> Please join another map type discussion
+2010-11-12T14:19:37  <McLeopold> ^ above link
+2010-11-12T14:20:50  <McLeopold> I'm fond of my "jump map" idea. :)
+2010-11-12T14:21:31  <McLeopold> Also, everyone on IRC needs to vote for different map types... or else.
+2010-11-12T14:22:28  <McLeopold> I'm not really good a persuasion.
+2010-11-12T14:23:44  <McLeopold> janzert: does it concern you that I went from 78ish to 168ish in one day?
+2010-11-12T14:23:57  <Migi32> I like the different ideas but whatever you decide on please make it official quite some time before the deadline (which means, like, right now)
+2010-11-12T14:24:45  <McLeopold> Migi32: I don't want you to miss the point.  Talk about "how" it would affect bots.  Not if we should or not.
+2010-11-12T14:25:00  <janzert> McLeopold: yes, but I also understand the problem and am working to correct it :)
+2010-11-12T14:25:14  <Migi32> ok, well one thing is that bots using minimax will probably start faltering if you add maps with 50+ ships
+2010-11-12T14:25:26  <McLeopold> Does it mean I had an inflated rank?  From being a really old bot?
+2010-11-12T14:25:26  <Migi32> 50+ planets*
+2010-11-12T14:25:26  <janzert> at an admittedly slow and often diverted pace
+2010-11-12T14:25:54  <McLeopold> Yeah, or adding more planets.
+2010-11-12T14:26:04  <McLeopold> All bots would be slower with more planets.
+2010-11-12T14:26:10  <janzert> McLeopold: no, it means the current method of using only the past 3 days of games for ranking is too volatile
+2010-11-12T14:26:27  <McLeopold> 3 days?  that's it?
+2010-11-12T14:26:45  <janzert> yep, and it now takes 4 minutes just to run the query for that
+2010-11-12T14:27:36  <Zannick> the table has very very many games in it
+2010-11-12T14:27:43  <McLeopold> I wouldn't mind waited 30 minutes between rank updates.
+2010-11-12T14:27:46  <Migi32> what I would like though is planets started with 1000 ships instead of 100 and then growth would be random between 0 and 50, not only multiples of 10, to give a hard time to algorithms that scale with absolute numbers (like 0-1 knapsack)
+2010-11-12T14:28:11  <McLeopold> Migi32: I agree
+2010-11-12T14:28:22  <Error323> oef that would hurt my system :P
+2010-11-12T14:28:23  <McLeopold> That was my growth map suggestion.
+2010-11-12T14:29:00  <Migi32> ah yes, I only read up to "all growths where multiples of 10"
+2010-11-12T14:29:20  <McLeopold> That was just the agrument to say that it doesn't need to be limited.
+2010-11-12T14:29:42  <McLeopold> Or at least wouldn't change much.
+2010-11-12T14:29:58  <Migi32> how about floating point numbers ;)
+2010-11-12T14:30:19  <Zannick> sent 26.66666666 ships directly to the opponent's planet
+2010-11-12T14:30:47  <McLeopold> 2.6x10^7 ships to planet 1
+2010-11-12T14:30:55  <Migi32> and I will send 26.66666667 ;)
+2010-11-12T14:30:55  <McLeopold> engage!
+2010-11-12T14:31:30  <Error323> i will send i^9
+2010-11-12T14:32:03  <McLeopold> 3 dimensional maps would be fun to watch.  I don't think it would change the game much.
+2010-11-12T14:32:52  <Zannick> i^9 is just i
+2010-11-12T14:32:54  <Zannick> :)
+2010-11-12T14:33:16  <Error323> :D
+2010-11-12T14:33:30  <McLeopold> janzert: I think I've gotten 700 games with my official bot.
+2010-11-12T14:35:52  *** irchs <irchs!~Jan@94-194-33-168.zone8.bethere.co.uk> has joined #aichallenge
+2010-11-12T14:36:38  <lavalamp_> ouch, another thing that would break my bot, >+5 planets
+2010-11-12T14:37:05  <lavalamp_> I feel another map generator run coming on when I get home...
+2010-11-12T14:37:58  <lavalamp_> huh, that could be really interesting...
+2010-11-12T14:38:43  <lavalamp_> would it be possible to make enough small fleets to time out your opponent?
+2010-11-12T14:42:00  <Zannick> there will still be the same limit on number of fleets thanks to coalescing orders
+2010-11-12T14:43:32  <mega1> the leaderboard hasn't been updated in 25 minutes
+2010-11-12T14:43:35  <Error323> janzert: whats the elo update frequency now?
+2010-11-12T14:43:38  <Error323> lol mega1  +)
+2010-11-12T14:44:27  <McLeopold> lavalamp_: it don't think so
+2010-11-12T14:44:45  <janzert> Error323: never right now, I'm working on it manually at the moment :/
+2010-11-12T14:44:51  <McLeopold> I don't create fleet objects, I just add them together based on destination and turn
+2010-11-12T14:44:56  <lavalamp_> I guess it depends on the number of planets there are, not teh number of ships you have
+2010-11-12T14:45:36  *** boegel <boegel!~boegel@91.182.124.84> has quit IRC (Quit: *poof!*)
+2010-11-12T14:45:39  <Error323> janzert: working on it manually?
+2010-11-12T14:45:43  <janzert> the problem is each test iteration takes 5 minutes and my attention wanders in that time :)
+2010-11-12T14:45:46  *** McLeopold <McLeopold!~scott@67.139.105.186> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T14:45:58  <Error323> like computing the scores by hand ^_^
+2010-11-12T14:46:14  *** McLeopold <McLeopold!~scott@67.139.105.186> has joined #aichallenge
+2010-11-12T14:46:18  <janzert> hehe, no but working on the system that does it
+2010-11-12T14:46:55  <Error323> on the live server interesting :P
+2010-11-12T14:47:20  <lavalamp_> janzert, if I updated the scripts to 1. make an additional table (leaderboard_calc) 2. replace the data in that table instead of adding to it 3. do the queries out of that table: would that help you at all?
+2010-11-12T14:47:58  <janzert> hmm? what's in leaderboard_calc?
+2010-11-12T14:48:17  <lavalamp_> Only the most recent leaderboard, instead of every single one
+2010-11-12T14:48:33  <lavalamp_> My memory may be fuzzy, it's been a few days since I looked at it
+2010-11-12T14:48:38  <janzert> nah, there isn't any bottleneck there
+2010-11-12T14:48:54  <janzert> the bottleneck is getting the game result data
+2010-11-12T14:48:56  <Error323> where is the bottleneck?
+2010-11-12T14:48:58  <lavalamp_> ok I must have misunderstood which table
+2010-11-12T14:49:07  <janzert> I'll probably split up the games table soon
+2010-11-12T14:49:17  <Zannick> that's probably what you want to do
+2010-11-12T14:49:19  <lavalamp_> ok then I'll stop bothering you
+2010-11-12T14:49:21  <janzert> basically archive games that are between old submissions
+2010-11-12T14:49:40  <lavalamp_> that works too
+2010-11-12T14:52:05  <Error323> I love the truely awesome amount of gpm
+2010-11-12T14:53:56  <Error323> mega1: ya there?
+2010-11-12T14:54:05  <mega1> Error323: yes
+2010-11-12T14:54:22  <Error323> did you run the bot i send yet? :D
+2010-11-12T14:55:26  <mega1> I'm running work related stuff now, then when windows can be shut down in virtualbox I'll set up a linux vm
+2010-11-12T14:55:38  <janzert> @ratings
+2010-11-12T14:55:39  <contestbot> janzert: User error, it's not my fault.
+2010-11-12T14:55:43  <janzert> @rankings
+2010-11-12T14:55:44  <contestbot> janzert: Top 10 players: Raschi(4347), bocsimacko(4345), asavis(4197), davidjliu(4147), shangas(4139), george(4139), Accoun(4111), _Astek_(4103), GreenTea(4080), dmj111(4074)
+2010-11-12T14:56:07  <Error323> ah ok
+2010-11-12T15:01:28  <McLeopold> @rankings 20
+2010-11-12T15:01:30  <contestbot> McLeopold: Top 20 players: Raschi(4347), bocsimacko(4345), asavis(4197), davidjliu(4147), shangas(4139), george(4139), Accoun(4111), _Astek_(4103), GreenTea(4080), dmj111(4074), hutabhu(4053), jambachili(4027), Doraj8(4021), felixcoto(3997), Error323(3996), Slin-.-(3996), oldman(3996), flowerbot(3971), _iouri_(3970), FlameN(3969)
+2010-11-12T15:01:56  <Error323> \o/
+2010-11-12T15:02:01  * lavalamp_ really tempted to ask for enough rankingns to see myself
+2010-11-12T15:02:09  <McLeopold> Nice, I didn't realize you were ranked so high.
+2010-11-12T15:02:29  <McLeopold> It make me feel better that I can beat you on tcp. :P
+2010-11-12T15:02:44  <lavalamp_> yeah Error323 is ahead of the crowd :/
+2010-11-12T15:03:06  <Zannick> if i asked for enough ranking to see myself contestbot would spam the channel for several minutes
+2010-11-12T15:03:10  <McLeopold> Error323: which tcp version is official?
+2010-11-12T15:03:19  <lavalamp_> maybe it's his fault the TCP ratings are so brutal >:|
+2010-11-12T15:03:20  <Error323> McLeopold: 17.2
+2010-11-12T15:03:23  <McLeopold> Zannick: it would refuse
+2010-11-12T15:03:28  <McLeopold> @rankings 1000
+2010-11-12T15:03:28  <contestbot> McLeopold: Error: Cannot do that many players.
+2010-11-12T15:03:29  <Zannick> or that :P
+2010-11-12T15:03:49  <Error323> what's the max?
+2010-11-12T15:03:55  <Error323> @rankings 50
+2010-11-12T15:03:55  <contestbot> Error323: Error: Cannot do that many players.
+2010-11-12T15:04:02  <Error323> @rankings 30
+2010-11-12T15:04:03  <contestbot> Error323: Top 30 players: Raschi(4347), bocsimacko(4345), asavis(4197), davidjliu(4147), shangas(4139), george(4139), Accoun(4111), _Astek_(4103), GreenTea(4080), dmj111(4074), hutabhu(4053), jambachili(4027), Doraj8(4021), felixcoto(3997), Error323(3996), Slin-.-(3996), oldman(3996), flowerbot(3971), _iouri_(3970), FlameN(3969), joakim_mjardner(3952), dabino(3952), Polsky(3951), jimrogerz(3950), (1 more message)
+2010-11-12T15:04:05  <McLeopold> it's 25 i think
+2010-11-12T15:04:08  <McLeopold> or 30
+2010-11-12T15:04:15  <Error323> @rankings 35
+2010-11-12T15:04:17  <contestbot> Error323: Top 35 players: Raschi(4347), bocsimacko(4345), asavis(4197), davidjliu(4147), shangas(4139), george(4139), Accoun(4111), _Astek_(4103), GreenTea(4080), dmj111(4074), hutabhu(4053), jambachili(4027), Doraj8(4021), felixcoto(3997), Error323(3996), Slin-.-(3996), oldman(3996), flowerbot(3971), _iouri_(3970), FlameN(3969), joakim_mjardner(3952), dabino(3952), Polsky(3951), jimrogerz(3950), (1 more message)
+2010-11-12T15:04:55  <Zannick> but he can't fit more than 28 in one line
+2010-11-12T15:05:05  <Zannick> er, 24
+2010-11-12T15:05:45  <Zannick> hey, my bot climbed about 20 ranks since yesterday
+2010-11-12T15:05:57  <Zannick> hooray top 650
+2010-11-12T15:06:51  <lavalamp_> My bot will meet you half way, I'm going the other direction... :/
+2010-11-12T15:07:02  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-11-12T15:12:50  <Zannick> i love when my bot decides on this strategy http://ai-contest.com/visualizer.php?game_id=7059885
+2010-11-12T15:14:08  <Zannick> well, maybe not all optimal decisions there... :/
+2010-11-12T15:14:25  <p4p4> there was a link to that official server stats page earlier, can't find it.
+2010-11-12T15:14:43  <Zannick> http://ai-contest.com/game_stats.php
+2010-11-12T15:14:58  <p4p4> that's the one, thanks!
+2010-11-12T15:15:07  <lavalamp_> @learn gpm as http://ai-contest.com/game_stats.php
+2010-11-12T15:15:07  <contestbot> lavalamp_: Aye, aye, sir
+2010-11-12T15:15:21  <janzert> @stats
+2010-11-12T15:15:21  <contestbot> janzert: I have 1 registered users with 0 registered hostmasks; 1 owner and 0 admins.
+2010-11-12T15:15:32  <lavalamp_> I figured stats was taken ^^
+2010-11-12T15:16:26  <janzert> @game_stats
+2010-11-12T15:16:27  <contestbot> janzert: I do not know about 'game_stats', but I do know about these similar topics: 'gamestats'
+2010-11-12T15:16:27  <janzert> ?
+2010-11-12T15:16:34  <janzert> @gamestats
+2010-11-12T15:16:35  <contestbot> janzert: gamestats = http://ai-contest.com/game_stats.php
+2010-11-12T15:16:40  <janzert> I thought it was in there
+2010-11-12T15:16:48  <contestbot> Top 10 players: Raschi(4347), bocsimacko(4345), asavis(4197), davidjliu(4147), shangas(4139), george(4139), Accoun(4111), _Astek_(4103), GreenTea(4080), dmj111(4074)
+2010-11-12T15:18:04  <lavalamp_> ah ok
+2010-11-12T15:18:19  <janzert> gpm is probably a good alias though anyway
+2010-11-12T15:19:00  <lavalamp_> yeah, for gamestats I would expect... I dunno, some win/loss ratios or something
+2010-11-12T15:19:38  <janzert> yeah, that page should probably really be something like contest stats
+2010-11-12T15:20:06  <Zannick> contest stats should include languages available and languages used
+2010-11-12T15:20:45  <janzert> that could be added :)
+2010-11-12T15:21:00  <janzert> it's just not something I'm generally worried about all the time
+2010-11-12T15:21:24  <Zannick> i've been considering adding that for the next one, after this one
+2010-11-12T15:21:45  <janzert> I've thought about adding to the start packages page
+2010-11-12T15:22:38  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2010-11-12T15:24:04  *** ColdPhoenix <ColdPhoenix!~Cold-Phoe@87.114.178.132> has joined #aichallenge
+2010-11-12T15:24:40  <p4p4> hey, i still think this stats page is lacking the obvious thing, the total number of bots/players involved
+2010-11-12T15:25:09  <janzert> active bots is easy to check on the leaderboard
+2010-11-12T15:25:14  <p4p4> k.
+2010-11-12T15:25:18  <Zannick> ...not really
+2010-11-12T15:25:28  <janzert> but yeah, it could be integrated
+2010-11-12T15:25:34  <d0ugal> I've got some really weird problems going on. Don't seem to be getting errors or anythin' but games are "dying" on me
+2010-11-12T15:25:42  <Zannick> er, now it gives me the actual last page
+2010-11-12T15:25:43  <d0ugal> like this, http://72.44.46.68/canvas?game_id=989527
+2010-11-12T15:25:45  <d0ugal> what happened :(
+2010-11-12T15:26:05  *** Cold-Phoenix <Cold-Phoenix!~Cold-Phoe@87.113.31.205> has quit IRC (Ping timeout: 240 seconds)
+2010-11-12T15:26:30  <Zannick> http://72.44.46.68/getplayer?player=d0ugal
+2010-11-12T15:26:34  <Zannick> you are sending invalid orders
+2010-11-12T15:26:51  <d0ugal> ohh
+2010-11-12T15:27:04  <d0ugal> That would make sense then
+2010-11-12T15:27:28  <d0ugal> Now to find out where my numbers went wrong :/
+2010-11-12T15:28:22  <p4p4> lol, i'm on the last day of my prepaid/allinonewithusbstick dataplan, and my provider definitely cuts me down, so timeouts/disconnected
+2010-11-12T15:29:06  *** ColdPhoenix <ColdPhoenix!~Cold-Phoe@87.114.178.132> has quit IRC ()
+2010-11-12T15:31:30  <p4p4> thank god, irc isn't sending more than 512 at once !
+2010-11-12T15:34:32  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2010-11-12T15:35:30  <p4p4> just for fun, how many bytes you ppl are spending on tcp on an average day ?
+2010-11-12T15:40:05  * p4p4 died of a tuesday
+2010-11-12T15:45:52  *** irchs <irchs!~Jan@94-194-33-168.zone8.bethere.co.uk> has quit IRC (Quit: irchs)
+2010-11-12T15:54:00  *** irchs <irchs!~Jan@94-194-33-168.zone8.bethere.co.uk> has joined #aichallenge
+2010-11-12T15:54:20  <phreeza> i have no clue
+2010-11-12T15:54:29  <phreeza> i have a single bot running 24/7
+2010-11-12T15:54:36  <phreeza> ho much would that be
+2010-11-12T15:54:43  <phreeza> it uses the full second though
+2010-11-12T15:55:34  *** McLeopold <McLeopold!~scott@67.139.105.186> has quit IRC (Ping timeout: 272 seconds)
+2010-11-12T15:55:55  <lavalamp_> I've got 3 bots running 24/7
+2010-11-12T15:56:04  <lavalamp_> they each play about 1100 games a day
+2010-11-12T15:56:36  *** Snowplan <Snowplan!~snowplan@pool-173-69-213-11.bltmmd.fios.verizon.net> has joined #aichallenge
+2010-11-12T15:57:30  <Snowplan> so a planet can have exactly zero ships
+2010-11-12T15:57:54  <lavalamp_> yes
+2010-11-12T15:58:36  <lavalamp_> 4 others have joined me, that makes me happy: http://ai-contest.com/language_profile.php?lang=Go
+2010-11-12T15:59:02  <Frontier> @repo
+2010-11-12T15:59:03  <contestbot> Frontier: repo = http://code.google.com/p/ai-contest/
+2010-11-12T16:02:41  *** CryBaby <CryBaby!~chatzilla@254.sub-69-98-148.myvzw.com> has left #aichallenge
+2010-11-12T16:05:52  <Frontier> Snowplan: It should only happen after any kind of attack that neutralizes the growth on that planet or when both players attack a neutral with equal forces.
+2010-11-12T16:06:36  <Snowplan> I noticed my first game on the server the distance was just right to cause it
+2010-11-12T16:07:04  <Snowplan> it's all cool now
+2010-11-12T16:11:44  *** irchs <irchs!~Jan@94-194-33-168.zone8.bethere.co.uk> has quit IRC (Quit: irchs)
+2010-11-12T16:14:00  * janzert wishes someone would use Groovy
+2010-11-12T16:14:18  <janzert> so the effort put into adding it doesn't feel wasted :/
+2010-11-12T16:15:13  *** delt0r <delt0r!~delt0r@188-22-167-7.adsl.highway.telekom.at> has joined #aichallenge
+2010-11-12T16:16:12  *** delt0r___ <delt0r___!~delt0r@188-22-164-167.adsl.highway.telekom.at> has quit IRC (Ping timeout: 264 seconds)
+2010-11-12T16:16:49  <contestbot> Top 10 players: bocsimacko(4371), Raschi(4287), asavis(4254), bix0r4ever(4205), shangas(4191), george(4189), davidjliu(4180), _Astek_(4147), dmj111(4115), GreenTea(4108)
+2010-11-12T16:17:29  <Snowplan> will use groovy
+2010-11-12T16:17:57  <janzert> heh, thanks
+2010-11-12T16:18:10  <Error323> whats groovy
+2010-11-12T16:18:23  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-185-122.pools.arcor-ip.net> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T16:18:26  <janzert> another programming language
+2010-11-12T16:22:33  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-185-122.pools.arcor-ip.net> has joined #aichallenge
+2010-11-12T16:22:43  <Frontier> janzert: If you added Pascal I knew someone who would use it.
+2010-11-12T16:37:39  <Snowplan> why does the server close the connection
+2010-11-12T16:41:43  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-185-122.pools.arcor-ip.net> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T16:49:02  *** lavalamp_ <lavalamp_!4507d76a@gateway/web/freenode/ip.69.7.215.106> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T16:50:04  <p4p4> hey, janzert, you've done a great thing, setting up all those languages !
+2010-11-12T16:51:07  <janzert> thanks, I only added a couple of them though. DanielVF did most of them.
+2010-11-12T16:51:17  *** McLeopold <McLeopold!~scott@67.139.105.186> has joined #aichallenge
+2010-11-12T16:52:21  *** phreeza <phreeza!~phreeza@f049174063.adsl.alicedsl.de> has quit IRC (Quit: Computer has gone to sleep)
+2010-11-12T16:54:15  *** fawek <fawek!~faw@chello089079023212.chello.pl> has joined #aichallenge
+2010-11-12T16:54:16  *** p4p4 <p4p4!~chatzilla@82.113.121.51> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T16:59:57  <antimatroid> McLeopold: so do you like the new maps?
+2010-11-12T17:00:11  <McLeopold> Haven't really looked yet.
+2010-11-12T17:00:45  <antimatroid> i don't think the concept of growth maps, it's basically turning it into who can solve a decision problem most optimally, not who can play a a game the best
+2010-11-12T17:01:00  <antimatroid> same with my problem with mario ai, it's not really a game, but a decision problem
+2010-11-12T17:01:30  <antimatroid> think/like* :P
+2010-11-12T17:01:43  <McLeopold> that's part of the game.  How would you take that out?
+2010-11-12T17:02:13  <antimatroid> my final bot is being written as something that just tries to maximise anyway
+2010-11-12T17:02:18  <Accoun> now we have 2 9n places http://ai-contest.com/rankings.php
+2010-11-12T17:03:04  <antimatroid> but on those maps, your moves don't really affect the other player until the game is pretty much decided
+2010-11-12T17:03:24  <Zannick> and 2 31s, and two 41s, and three 55s...
+2010-11-12T17:03:24  <McLeopold> hmm...
+2010-11-12T17:03:59  <antimatroid> there has always been draws
+2010-11-12T17:04:02  <McLeopold> antimatroid: so you would prefer maps where you can affect your opponent sooner than later?
+2010-11-12T17:06:12  <antimatroid> i want maps where the outcome isn't strictly determined by ones ability to expand before even reaching the enemy
+2010-11-12T17:06:30  <antimatroid> otherwise i feel the problem is no longer much of a game but more of a decision problem
+2010-11-12T17:06:46  <antimatroid> i wouldn't be opposed to some maps like that i guess, but it doesn't seem very gamy
+2010-11-12T17:07:35  <McLeopold> antimatroid: I agree, my idea of growth maps wasn't disconnected clusters, but rather planets that are spread out and just take longer to aquire.
+2010-11-12T17:07:56  <Error323> are there new maps on the server?
+2010-11-12T17:08:03  <McLeopold> I really dislike the maps which are to giant blobs on either side of a map.
+2010-11-12T17:09:17  <antimatroid> ahhh okay, amstan suggested two big glog maps yesterday and i wasn't a fan
+2010-11-12T17:09:21  <McLeopold> antimatroid: I'm looking at the maps with some test games right now...
+2010-11-12T17:09:22  <antimatroid> that's what i was referring to
+2010-11-12T17:09:36  <antimatroid> 300-400 are coolest imo
+2010-11-12T17:10:11  <antimatroid> you will get both kinds of symmetry in there, and non radially symmetric maps can have multiple neutrals starting at an equal distance to each player
+2010-11-12T17:10:22  <antimatroid> and varying number of planets :)
+2010-11-12T17:10:52  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-30-224-80.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2010-11-12T17:10:58  <McLeopold> ooh, these maps are revealing weaknesses in my bot!
+2010-11-12T17:11:33  <McLeopold> besides the ones mega1 already revealed...
+2010-11-12T17:13:07  <antimatroid> i don't think it's fair to say some people assumed they would only have maps like the examples, therefore everyone else should be restricted to that
+2010-11-12T17:13:18  <antimatroid> even though many of us haven't been working under any such restriction the whole time
+2010-11-12T17:13:28  *** superflit <superflit!~superflit@140.226.49.160> has quit IRC (Ping timeout: 272 seconds)
+2010-11-12T17:13:51  <McLeopold> If we could push the deadline, that would be awesome.  Everyone get's an extra week for dealing with the new maps.
+2010-11-12T17:13:59  <antimatroid> i also think the closer the players starting angles, the better one needs to be at expanding without being sniped
+2010-11-12T17:14:34  <McLeopold> these maps will definatly change the game.
+2010-11-12T17:14:42  <antimatroid> but it's still a very valid form of map, i don't see how it matters what kind of maps are used in the final contest, provided they're symmetric
+2010-11-12T17:14:57  <McLeopold> Often, the best expansion route is the opposite of you opponent, so you don't really meet up right away.
+2010-11-12T17:15:04  <antimatroid> people were told the example maps aren't exhaustive testing tools
+2010-11-12T17:15:09  <McLeopold> Now it's the same direction, like big center maps.
+2010-11-12T17:15:31  <McLeopold> I think these will reduce the average number of turns per game.
+2010-11-12T17:15:33  <antimatroid> is it not unfair to people who didn't make assumptions to now restrict the domain of possible maps?
+2010-11-12T17:16:14  <McLeopold> antimatroid: well, everyone has to make assumptions somewhere, and processing time has been an issue
+2010-11-12T17:16:33  <McLeopold> so, it is slightly unfair if someone has to do a re-write to support this.
+2010-11-12T17:16:41  <antimatroid> the new maps shouldn't really change processing time
+2010-11-12T17:16:49  <contestbot> Top 10 players: bocsimacko(4363), asavis(4198), shangas(4171), george(4158), davidjliu(4157), bix0r4ever(4154), _Astek_(4121), dmj111(4082), Accoun(4078), GreenTea(4077)
+2010-11-12T17:17:00  <antimatroid> we're not asking to extend max dist to 1000 and have 100 planets
+2010-11-12T17:17:02  <McLeopold> If the planet count is the same or less, probably not too much.
+2010-11-12T17:17:36  <antimatroid> i think planets <= 30 is good
+2010-11-12T17:17:53  <McLeopold> If everything is not "official" yet anyway, just do a couple of days on the official servers with these maps.
+2010-11-12T17:18:07  <antimatroid> it's tricky to remove maps once they're added
+2010-11-12T17:18:27  <antimatroid> we really need dhartmei to stick some on tcp, but i don't know how to get ahold of him
+2010-11-12T17:18:32  <antimatroid> i tried an email address, but it bounced
+2010-11-12T17:18:51  <Error323> probably went in his tarpit :P
+2010-11-12T17:19:58  <antimatroid> j3camero: cough ahem splatter, you about?
+2010-11-12T17:20:42  <McLeopold> I wonder if waterloo could spare an ec2 instance for a tcp server?
+2010-11-12T17:22:00  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has joined #aichallenge
+2010-11-12T17:22:03  <antimatroid> i think if my map gen is used i would prefer to increase the min starting distance between players from 2
+2010-11-12T17:22:21  <antimatroid> it's very boring when they're right next to each other on one edge of the map
+2010-11-12T17:27:38  <McLeopold> not that boring, but maybe at least 4
+2010-11-12T17:28:28  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-76-254-13-248.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-11-12T17:32:19  <Migi32> just make sure that doing nothing or attacking the enemy aren't the only viable moves.
+2010-11-12T17:32:35  <antimatroid> already done
+2010-11-12T17:32:52  <Migi32> ok then no map is boring, just slow to start
+2010-11-12T17:35:51  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2010-11-12T17:37:42  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Remote host closed the connection)
+2010-11-12T17:46:26  *** superflit <superflit!~superflit@140.226.49.160> has joined #aichallenge
+2010-11-12T17:50:00  *** choas <choas!~lars@p5792C0FE.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2010-11-12T17:57:31  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has quit IRC (Quit: NEVER GONNA GIVE YOU UP NEVER GONNA LET YOU DOWN)
+2010-11-12T18:16:49  <contestbot> Top 10 players: bocsimacko(4392), asavis(4179), shangas(4179), Raschi(4156), george(4141), davidjliu(4137), Accoun(4124), bix0r4ever(4123), GreenTea(4086), dmj111(4075)
+2010-11-12T18:24:03  *** Apophis <Apophis!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2010-11-12T18:27:29  <McLeopold> anyone have a planet switching heuristic?
+2010-11-12T18:31:47  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T18:32:45  *** Bobng <Bobng!~T@78.144.194.163> has quit IRC (Ping timeout: 255 seconds)
+2010-11-12T18:50:52  <Mathnerd314> yes
+2010-11-12T18:56:26  <McLeopold> Mathnerd314:  so, how does it work?
+2010-11-12T18:56:39  <McLeopold> do you try and switch planets with the same growth rate?
+2010-11-12T18:56:53  <Mathnerd314> it just works into the strategy
+2010-11-12T18:57:19  <McLeopold> how is that?
+2010-11-12T18:57:40  <Mathnerd314> explaining it would give away my entire strategy
+2010-11-12T18:58:55  *** superflit <superflit!~superflit@140.226.49.160> has quit IRC (Quit: superflit)
+2010-11-12T18:59:05  <Mathnerd314> which is probably enough information to figure it out
+2010-11-12T18:59:35  *** narnach_mb <narnach_mb!~Narnach@p5DF7A46A.dip0.t-ipconnect.de> has quit IRC (Quit: Leaving.)
+2010-11-12T19:04:03  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has joined #aichallenge
+2010-11-12T19:04:06  *** Utkarsh <Utkarsh!~admin@117.201.81.123> has quit IRC (Ping timeout: 255 seconds)
+2010-11-12T19:08:26  *** Apophis <Apophis!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (Read error: Connection reset by peer)
+2010-11-12T19:15:00  *** siconize <siconize!55b6145a@gateway/web/freenode/ip.85.182.20.90> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T19:16:49  <contestbot> Top 10 players: bocsimacko(4433), asavis(4204), shangas(4189), george(4150), davidjliu(4148), Accoun(4144), bix0r4ever(4095), GreenTea(4091), dmj111(4087), jambachili(4063)
+2010-11-12T19:17:05  *** McLeopold <McLeopold!~scott@67.139.105.186> has quit IRC (Quit: Leaving)
+2010-11-12T19:20:08  *** mceier <mceier!~mceier@chello089077208118.chello.pl> has quit IRC (Quit: leaving)
+2010-11-12T19:24:41  *** fawek <fawek!~faw@chello089079023212.chello.pl> has quit IRC (Ping timeout: 240 seconds)
+2010-11-12T19:31:28  *** wdouglas` <wdouglas`!~user@75-92-183-242.war.clearwire-wmx.net> has quit IRC (Ping timeout: 265 seconds)
+2010-11-12T19:33:00  *** iris1 <iris1!~iris1@cpe-69-203-16-175.nyc.res.rr.com> has joined #aichallenge
+2010-11-12T19:48:08  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Remote host closed the connection)
+2010-11-12T19:48:17  *** asdffasf <asdffasf!47bebb38@gateway/web/freenode/ip.71.190.187.56> has quit IRC (Quit: Page closed)
+2010-11-12T20:16:50  <contestbot> Top 10 players: bocsimacko(4462), asavis(4195), shangas(4184), Raschi(4163), george(4157), davidjliu(4150), Accoun(4114), bix0r4ever(4113), GreenTea(4108), dmj111(4089)
+2010-11-12T20:47:08  *** amriedle <amriedle!~amriedle@CPE0013f7f2be12-CM0013f7f2be0e.cpe.net.cable.rogers.com> has joined #aichallenge
+2010-11-12T20:51:46  *** Migi32 <Migi32!~migi@d54C12BD3.access.telenet.be> has quit IRC (Quit: www.ai-contest.com)
+2010-11-12T20:53:50  *** _xvinyl <_xvinyl!~xvinyl@ANantes-256-1-33-33.w86-199.abo.wanadoo.fr> has joined #aichallenge
+2010-11-12T20:57:33  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-76-254-13-248.dsl.pltn13.sbcglobal.net> has quit IRC (Ping timeout: 245 seconds)
+2010-11-12T21:14:24  *** bhasker <bhasker!~bhasker@70-36-216-47.dyn.adsl.mcn.org> has joined #aichallenge
+2010-11-12T21:16:50  *** eburnette <eburnette!621b3c3f@gateway/web/freenode/ip.98.27.60.63> has joined #aichallenge
+2010-11-12T21:17:00  <contestbot> amstan: Error: There was a problem accessing the interface to ai-contest.com
+2010-11-12T21:17:15  <eburnette> I failed the captcha test getting into irc, lol
+2010-11-12T21:17:34  <amstan> @rankings
+2010-11-12T21:17:35  <contestbot> amstan: Top 10 players: bocsimacko(4455), Raschi(4210), asavis(4191), shangas(4177), george(4148), davidjliu(4126), GreenTea(4086), Accoun(4085), bix0r4ever(4074), dmj111(4068)
+2010-11-12T21:17:38  <amstan> there
+2010-11-12T21:22:10  <eburnette> @rankings 50
+2010-11-12T21:22:10  <contestbot> eburnette: Error: Cannot do that many players.
+2010-11-12T21:22:14  <eburnette> @rankings 40
+2010-11-12T21:22:15  *** yasith <yasith!~yasith@112.134.121.8> has quit IRC (Ping timeout: 255 seconds)
+2010-11-12T21:22:16  <contestbot> eburnette: Top 40 players: bocsimacko(4455), Raschi(4210), asavis(4191), shangas(4177), george(4148), davidjliu(4126), GreenTea(4086), Accoun(4085), bix0r4ever(4074), dmj111(4068), hutabhu(4034), jambachili(4028), oldman(4014), felixcoto(4014), Slin-.-(4013), _Astek_(4008), Doraj8(4005), flowerbot(4002), luksian(4002), Xrillo(3966), SUA.khb(3963), murrayr(3948), Polsky(3947), joakim_mjardner(3943), (1 more message)
+2010-11-12T21:32:41  *** bhasker <bhasker!~bhasker@70-36-216-47.dyn.adsl.mcn.org> has quit IRC (Read error: No route to host)
+2010-11-12T21:33:27  *** bhasker <bhasker!~bhasker@70-36-216-47.dyn.adsl.mcn.org> has joined #aichallenge
+2010-11-12T21:35:58  *** bhasker <bhasker!~bhasker@70-36-216-47.dyn.adsl.mcn.org> has quit IRC (Client Quit)
+2010-11-12T21:44:01  <eburnette> zzzzzzzzzzzzzz
+2010-11-12T21:44:21  <eburnette> Did anything get decided on the generator?
+2010-11-12T21:46:03  <antimatroid> eburnette: still waiting i think
+2010-11-12T21:47:03  <antimatroid> looks like poll preference is slightly in favour of using them atm, and I know jeff and amstan liked them, so i would say there's a reasonable chance of it happening though
+2010-11-12T21:48:09  <amstan> i like how people are complaining and saying these things should be announced 1 or even 2 months before the competition ends..
+2010-11-12T21:48:11  <amstan> so..
+2010-11-12T21:48:26  <amstan> last competion was 3 weeks long
+2010-11-12T21:49:06  <eburnette> what was the link to sample maps generated by the latest generator?
+2010-11-12T21:53:23  <antimatroid> i like how people suggest it's just trying to mess the leaderboard up
+2010-11-12T21:53:31  <antimatroid> i've been pushing for these changes for ages
+2010-11-12T21:53:47  <antimatroid> no one did it, i finally get on holidays and do it myself, and everyone bitches about somebody doing something
+2010-11-12T21:54:17  <antimatroid> they have had nothing in stone yet, that's what i'm trying to get, with the generality that had sort of always been promised
+2010-11-12T21:55:50  <janzert> when the status quo lasts for significant lengths of time people start assuming it's really stone
+2010-11-12T21:57:04  <antimatroid> those people would be wrong
+2010-11-12T21:57:30  <antimatroid> i still claim it's unfair not to implement more general maps
+2010-11-12T21:57:53  <antimatroid> people shouldn't get to enfore their own advantage by having made assumptions
+2010-11-12T22:02:25  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Remote host closed the connection)
+2010-11-12T22:02:45  *** Snowplan <Snowplan!~snowplan@pool-173-69-213-11.bltmmd.fios.verizon.net> has left #aichallenge
+2010-11-12T22:02:57  <eburnette> I want to try the new maps, where are some samples?
+2010-11-12T22:07:48  <antimatroid> http://ai-contest.com/forum/download/file.php?id=177 there's 300 maps
+2010-11-12T22:08:29  <antimatroid> 1-100 are with the original generator, 101-200 are with line symmetric maps, 201-300 are combinations of both, and line symmetric maps can have multiple "central neutrals"
+2010-11-12T22:11:20  <antimatroid> oh god, i just managed to cause like the most horribly triple post ever
+2010-11-12T22:11:41  *** Snowplan <Snowplan!~snowplan@pool-173-69-213-11.bltmmd.fios.verizon.net> has joined #aichallenge
+2010-11-12T22:14:24  *** Snowplan <Snowplan!~snowplan@pool-173-69-213-11.bltmmd.fios.verizon.net> has left #aichallenge
+2010-11-12T22:16:50  <contestbot> Top 10 players: bocsimacko(4449), dmj111(4277), Raschi(4199), asavis(4189), shangas(4189), george(4156), SUA.khb(4107), davidjliu(4095), GreenTea(4085), bix0r4ever(4071)
+2010-11-12T22:21:36  *** Barry-Nichols <Barry-Nichols!~Barry@client-80-4-254-77.cht-bng-011.adsl.virginmedia.net> has joined #aichallenge
+2010-11-12T22:25:53  <antimatroid> everyone keeps saying this is changing the maps for the contest too
+2010-11-12T22:26:13  <antimatroid> but i was always under the impression that we never knew what maps would be used in the final contest, wasn't everyone else in here?
+2010-11-12T22:30:07  <janzert> ergh, someone submitted an ocaml bot that compiles on the main server but fails on the workers for some reason.
+2010-11-12T22:33:14  <eburnette> ugh how did this code ever work
+2010-11-12T22:35:14  *** dmj111` <dmj111`!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-11-12T22:35:39  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (Remote host closed the connection)
+2010-11-12T22:35:57  *** shades <shades!~shades@cheshire.telephreak.org> has joined #aichallenge
+2010-11-12T22:36:07  <antimatroid> dmj111': have you taken a look at the new maps at all?
+2010-11-12T22:38:49  *** Barry-Nichols <Barry-Nichols!~Barry@client-80-4-254-77.cht-bng-011.adsl.virginmedia.net> has left #aichallenge ("Leaving")
+2010-11-12T22:41:58  <iris1> Is there a problem with the compile success / failure emails?  I am not getting them any more and I am not sure if it's my email or the server not sending them out.
+2010-11-12T22:49:33  *** phreeza <phreeza!~phreeza@f054169008.adsl.alicedsl.de> has joined #aichallenge
+2010-11-12T23:08:04  *** lavalamp_ <lavalamp_!180dae74@gateway/web/freenode/ip.24.13.174.116> has joined #aichallenge
+2010-11-12T23:10:37  <lavalamp_> I generated some maps with differing growth and ship starting counts
+2010-11-12T23:12:05  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2010-11-12T23:16:52  <contestbot> Top 10 players: bocsimacko(4445), dmj111(4323), Raschi(4274), oldman(4273), shangas(4153), bix0r4ever(4149), asavis(4131), george(4124), jambachili(4087), SUA.khb(4072)
+2010-11-12T23:18:47  <antimatroid> lavalamp_: do you think it's better if people don't know where the "centre" of the map was for generation
+2010-11-12T23:19:12  <lavalamp_> for testing, maybe...
+2010-11-12T23:19:25  <lavalamp_> the point maps are symmetric around planet 0
+2010-11-12T23:19:43  <antimatroid> yes, and my generator then translates them so all coordinates are positive
+2010-11-12T23:19:48  <lavalamp_> I don't know if anyone relies on that or no...
+2010-11-12T23:19:53  <antimatroid> i'm just wondering if that translate amount should  be random
+2010-11-12T23:20:07  <antimatroid> i was told coordinates need to be strictly positive
+2010-11-12T23:20:13  <lavalamp_> ah, isn't it already if it depends on the planet positions?
+2010-11-12T23:20:18  <Zannick> the current generator simply uses the min value of each coord
+2010-11-12T23:20:29  <Zannick> effectively, that means some planets have coords of 0
+2010-11-12T23:20:36  <eburnette> try it in the viewers to see if it works there
+2010-11-12T23:20:44  <Zannick> they don't have to be strictly positive, but nonnegative is good
+2010-11-12T23:20:56  <lavalamp_> antimatroid's maps all seem to work in jbotmanager
+2010-11-12T23:21:11  <antimatroid> but with a line symmetric map, i dont' think you can deduce the centre without knowledge of the amount transposed
+2010-11-12T23:21:18  <antimatroid> because there isn't necessarily a centre neutral
+2010-11-12T23:21:34  <Zannick> didn't you make a center neutral in your generator?
+2010-11-12T23:21:39  <Zannick> or is this another one?
+2010-11-12T23:21:46  <antimatroid> it can do multiple centre neutrals for line symmetric maps
+2010-11-12T23:21:52  <antimatroid> and they don't need to be in the dead centre
+2010-11-12T23:21:55  <lavalamp_> honestly I don't think it's an important detail
+2010-11-12T23:21:58  <Zannick> ah, you added more
+2010-11-12T23:22:05  <antimatroid> you can do more for point symmetric, but they need to be doubled on the other side of the centre line
+2010-11-12T23:22:11  <Zannick> i...don't want to worry about adding those
+2010-11-12T23:22:14  <lavalamp_> people should do the math and figure out what planets are equidistant already
+2010-11-12T23:22:40  *** phreeza <phreeza!~phreeza@f054169008.adsl.alicedsl.de> has quit IRC (Quit: Computer has gone to sleep)
+2010-11-12T23:23:31  <antimatroid> Zannick and eburnette: what do you guys think of the maps?
+2010-11-12T23:23:43  <Zannick> i haven't really looked
+2010-11-12T23:24:12  <Zannick> i like the line symmetric for maps with a center neutral, from the pictures you posted a while back
+2010-11-12T23:24:29  <antimatroid> i'll screen shot one with more centre neutrals for you
+2010-11-12T23:24:48  <eburnette> i'll look as soon as I unbreak my bot
+2010-11-12T23:26:40  *** jmpespxoreax is now known as jmacmaho
+2010-11-12T23:26:45  <antimatroid> http://imgur.com/vp1fA.png there's a line synmetric map with multiple "centre neutrals"
+2010-11-12T23:26:49  <lavalamp_> I posted a bunch of maps in one of the threads
+2010-11-12T23:26:56  <antimatroid> that's one of them
+2010-11-12T23:27:08  <lavalamp_> yeah those are interesting
+2010-11-12T23:27:11  *** jmacmaho is now known as jmpespxoreax
+2010-11-12T23:32:03  *** jmpespxoreax <jmpespxoreax!~notauser@69-165-151-172.dsl.teksavvy.com> has left #aichallenge
+2010-11-12T23:33:20  <Zannick> hm
+2010-11-12T23:33:28  <Zannick> is that 17 planet number 0?
+2010-11-12T23:35:07  *** jmpespxoreax <jmpespxoreax!~notauser@69-165-151-172.dsl.teksavvy.com> has joined #aichallenge
+2010-11-12T23:35:09  <antimatroid> player 1's planet is planet 0, player 2's is planet 1
+2010-11-12T23:35:17  <antimatroid> then the centre planets come next, then the pairs
+2010-11-12T23:35:52  <eburnette> shouldn't center come first, by convention if not rule?
+2010-11-12T23:35:53  *** jmpespxoreax <jmpespxoreax!~notauser@69-165-151-172.dsl.teksavvy.com> has left #aichallenge
+2010-11-12T23:36:18  <Zannick> yeah, i kinda dislike that
+2010-11-12T23:36:18  <antimatroid> i have to generate the players locations first before doing the centers like that
+2010-11-12T23:36:20  <eburnette> My bot doesn't care
+2010-11-12T23:36:28  <antimatroid> it's just easier, it shouldn't break any bot that followed the rules
+2010-11-12T23:36:44  <antimatroid> it can be changed if people really care
+2010-11-12T23:36:55  <antimatroid> but there isn't necessarily a planet at (0,0) on that map
+2010-11-12T23:37:18  <Zannick> planets at (0,0) don't matter, i think, so much as 0=neutral, 1=p1, 2=p2
+2010-11-12T23:37:25  <antimatroid> why?
+2010-11-12T23:37:53  <eburnette> well just for fun then put home planets at random locations in the list
+2010-11-12T23:37:57  <Zannick> the latter is an easier optimization to make to figure out the center planet and starters
+2010-11-12T23:37:57  <antimatroid> people seem to be under the impression that the example map generator was meant to be taken as the official one
+2010-11-12T23:38:14  <Zannick> it was the official one
+2010-11-12T23:38:20  <Zannick> it was never an example
+2010-11-12T23:38:25  <antimatroid> it was always an example
+2010-11-12T23:38:32  <antimatroid> jeff cameron has said numerous times it will not be kept
+2010-11-12T23:38:37  <eburnette> let's see how many bots we can break - change everything possible not specified by the rules
+2010-11-12T23:38:49  <Zannick> well, copybot and my current submission will break
+2010-11-12T23:38:52  <antimatroid> these were the rules
+2010-11-12T23:39:05  <antimatroid> everyone has been told the whole time, don't make assumptions
+2010-11-12T23:39:07  <Zannick> because i optimized for the other maps
+2010-11-12T23:39:10  <eburnette> maybe if enough bots break i'll have a better chance :)
+2010-11-12T23:39:14  <antimatroid> it's unfair to peple who didn't to then restrict the domain of maps
+2010-11-12T23:39:26  <Zannick> i'm more upset because i told other people those things :/
+2010-11-12T23:39:47  <eburnette> (I'm being sarcastic btw)
+2010-11-12T23:40:01  <Zannick> i could probably make a one-line fix, though
+2010-11-12T23:40:08  <Zannick> and disable my special first-turn logic
+2010-11-12T23:40:12  <antimatroid> Zannick: how would your bot break?
+2010-11-12T23:40:17  *** jmpespxoreax <jmpespxoreax!~notauser@69-165-151-172.dsl.teksavvy.com> has joined #aichallenge
+2010-11-12T23:40:27  <antimatroid> and is the first turn logic not based off an assumption you made?
+2010-11-12T23:40:42  <lavalamp_> before this morning, my bot assumed 5 was teh max growth and 23 was the number of planets
+2010-11-12T23:40:52  <lavalamp_> fortunately it wasn't too hard to fix
+2010-11-12T23:41:07  <antimatroid> my bot will just read what it's given
+2010-11-12T23:41:12  <Zannick> on the first turn it says, who owns planet 1? if 1, then it's mine, if 2, then i own 2. no owns 0, and that's equidistant so ignore it for now
+2010-11-12T23:41:19  <antimatroid> i think it'd probably die if planet size went far above 50
+2010-11-12T23:41:20  <eburnette> make a map that has all 0-growth planets, that would be fun
+2010-11-12T23:41:23  <antimatroid> but probably not time out
+2010-11-12T23:41:28  <Zannick> and copybot will break entirely
+2010-11-12T23:41:32  <Zannick> but that's less important
+2010-11-12T23:41:34  <antimatroid> that would actually be quite fun
+2010-11-12T23:42:22  <antimatroid> copybot could be fixed easily enough
+2010-11-12T23:42:26  <eburnette> that should make people get lots of divide by zero exceptions, and eliminate a few more losers
+2010-11-12T23:42:29  <antimatroid> it just needs to go through and pair planets at the start
+2010-11-12T23:42:43  <Zannick> i'm not fixing it :P i don't have time
+2010-11-12T23:42:52  <antimatroid> but i think anyone that assumed map planets would take any particularly order made as stupid an assumption as those who expected only one kind of symmetry
+2010-11-12T23:43:11  <Zannick> :(
+2010-11-12T23:43:12  <antimatroid> tron maps had multiple symmetries
+2010-11-12T23:43:26  <Zannick> okay, i made stupid assumptions
+2010-11-12T23:43:29  <antimatroid> :P, sorry, but i don't want the domain of maps restricted
+2010-11-12T23:43:32  * Zannick ->
+2010-11-12T23:43:35  <eburnette> here's an idea - add a couple of extra planet owners that just sit there and see if anybody will conquer them
+2010-11-12T23:43:49  <antimatroid> extra planet owners?
+2010-11-12T23:43:54  <antimatroid> the game can't go to more than 2 players
+2010-11-12T23:44:01  <antimatroid> that is an entirely new game
+2010-11-12T23:44:06  <eburnette> players 3, 4, 5, rules allow it
+2010-11-12T23:44:12  <Zannick> not the contest rules
+2010-11-12T23:44:28  <Zannick> plus they would be ejected on turn one for not making moves
+2010-11-12T23:44:32  <antimatroid> as soon as n>2 you start having to form coalitions
+2010-11-12T23:44:37  <antimatroid> it's a completely different game
+2010-11-12T23:44:47  <antimatroid> it's like saying, right, your bots are now fighting in a mario kart battle
+2010-11-12T23:45:07  <eburnette> no i mean these aren't AIs or people, it's like some dead civilization with stationary ships
+2010-11-12T23:45:19  <Zannick> eburnette: "neutral"
+2010-11-12T23:45:20  <antimatroid> so it's just another neutral?
+2010-11-12T23:45:33  <antimatroid> or growing neutrals?
+2010-11-12T23:45:37  <Zannick> the engine won't readily support that
+2010-11-12T23:46:02  <eburnette> sort of like neutrals except owner is not == 0
+2010-11-12T23:46:27  <Zannick> i do not believe the engine will support that *
+2010-11-12T23:46:39  <eburnette> sure, lettem grow too, that would be interesting.. timing exactly when to capture them
+2010-11-12T23:47:03  <antimatroid> i like the 0 growth map idea
+2010-11-12T23:47:08  <Zannick> i have a script that lets you run 3 players on a map
+2010-11-12T23:47:13  <eburnette> early when they're cheap? or later if you have to expand
+2010-11-12T23:47:20  <Zannick> so long as you specify player 3 start planet
+2010-11-12T23:47:28  <antimatroid> actually, 0 growth map is an easy tie
+2010-11-12T23:47:38  <antimatroid> always jump around with your full 100 ships
+2010-11-12T23:47:48  <Zannick> no, just never move
+2010-11-12T23:47:54  <antimatroid> yeah or that
+2010-11-12T23:47:59  <antimatroid> :P
+2010-11-12T23:48:33  <antimatroid> although, if you trusted yourself, you could try to tempt them into trying to take you
+2010-11-12T23:48:35  <eburnette> hmm yeah guess you're right
+2010-11-12T23:48:35  <antimatroid> and take the win
+2010-11-12T23:48:42  <antimatroid> and possibly do bette than all draws
+2010-11-12T23:49:15  <eburnette> too bad we can't have negative growth, black holes
+2010-11-12T23:49:17  <antimatroid> although if their bot strictly does nothing, you lose
+2010-11-12T23:49:24  <antimatroid> no one would move there
+2010-11-12T23:49:26  <antimatroid> pretty simple
+2010-11-12T23:49:42  <antimatroid> no sucking action from planets :P
+2010-11-12T23:51:11  <eburnette> actually wouldn't it be better to attack the other home planet? you might get a 1 move growth advantage
+2010-11-12T23:51:30  <eburnette> cause they can't react until next move
+2010-11-12T23:52:10  <Zannick> i'm confused. a 0 growth map has all 0 growth planets, no?
+2010-11-12T23:52:25  <Zannick> so the players won't ever gain ships?
+2010-11-12T23:52:26  <eburnette> home planet has growth
+2010-11-12T23:52:49  <Zannick> oh
+2010-11-12T23:52:55  <Zannick> then either stay or attack
+2010-11-12T23:52:58  <antimatroid> oh, i thought that was 0 too
+2010-11-12T23:53:04  <antimatroid> yeah, ^^ that
+2010-11-12T23:53:09  <Zannick> either way, stay or attack
+2010-11-12T23:53:11  <eburnette> maybe you could make home planets and 1 other have growth to prevent a tie
+2010-11-12T23:53:24  <Zannick> draw unless someone goes for a neutral and loses ships
+2010-11-12T23:53:26  <lavalamp_> my bot shouldn't be having epic battles with ragebot >:(
+2010-11-12T23:54:59  <antimatroid> haha
+2010-11-12T23:55:15  <antimatroid> how does one have an epic battle with ragebot?
+2010-11-12T23:55:27  <lavalamp_> I broke defense completely but it can still attack fine
+2010-11-12T23:55:47  <antimatroid> how old is that revision?
+2010-11-12T23:55:58  <antimatroid> i started a fresh one for the final submission
+2010-11-12T23:56:02  <lavalamp_> of my bot? about 10 minutes
+2010-11-12T23:56:12  <antimatroid> so i can try and but out all the bugs and short cuts i previousloy made
+2010-11-12T23:56:21  <antimatroid> no, from a fresh starter pack
+2010-11-12T23:56:23  <lavalamp_> I'll put it up on tcp when I get defense fixed
+2010-11-12T23:56:34  <antimatroid> i'm days away from even testing this new bot
+2010-11-12T23:56:37  <lavalamp_> I missed something... revision of what?
+2010-11-12T23:56:48  <antimatroid> like, start from a bare starter package
+2010-11-12T23:57:06  <lavalamp_> anyway, g2g... later
+2010-11-12T23:57:14  <eburnette> alright I'm trying your weirdmaps2
+2010-11-12T23:57:25  <antimatroid> they don't disappoint :P
+2010-11-12T23:57:31  <eburnette> my bot is not crashing
+2010-11-12T23:57:53  <antimatroid> no bot should crash unless they made errors
+2010-11-12T23:58:23  <eburnette> but it's not winning much for some reason
+2010-11-12T23:58:26  <antimatroid> although it took me a bit of work to be able to feel my bot a map starting with fleets
+2010-11-12T23:58:41  <antimatroid> is your defense still broken?
+2010-11-12T23:58:51  <antimatroid> i think that becomes more important as the starting angles become closer
+2010-11-12T23:59:00  <antimatroid> and you need to be better at expanding without becoming vulnerable
+2010-11-12T23:59:11  <antimatroid> that's my initial thoughts on them anyway
+2010-11-12T23:59:21  <antimatroid> i haven't got a reasonable bot to test out on them yet
+2010-11-12T23:59:22  <eburnette> we don't need no steenkeng defense

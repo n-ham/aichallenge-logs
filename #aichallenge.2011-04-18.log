@@ -1,0 +1,795 @@
+2011-04-18T00:22:56  *** antimatroid <antimatroid!~nick@102.222.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-18T00:26:20  *** amstan <amstan!~amstan@75-119-241-144.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2011-04-18T00:32:16  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has quit IRC (Ping timeout: 246 seconds)
+2011-04-18T00:43:29  *** amstan__ is now known as amstan
+2011-04-18T01:04:32  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 258 seconds)
+2011-04-18T01:26:48  *** antimatroid <antimatroid!~nick@102.222.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T01:37:44  *** antimatroid <antimatroid!~nick@254.221.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-18T01:39:02  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-04-18T01:54:23  *** ltriant <ltriant!~ltriant@110.174.168.43> has joined #aichallenge
+2011-04-18T01:56:26  <bhasker> anyone around?
+2011-04-18T01:58:27  <bhasker> mcleopold/antimatroid/amstan?
+2011-04-18T01:58:36  <antimatroid> hi
+2011-04-18T01:58:40  <amstan> bhasker?
+2011-04-18T01:58:49  <bhasker> hey i ran into some weird state
+2011-04-18T01:58:54  <bhasker> .a*a.
+2011-04-18T01:59:00  <bhasker> basically when my bot got into this state
+2011-04-18T01:59:03  <bhasker> no new ant is spawning
+2011-04-18T01:59:56  <antimatroid> hmm, i'll take a look later
+2011-04-18T02:09:36  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-04-18T02:17:25  <antimatroid> Ice_Harley: I have no way of handling that case fast enough
+2011-04-18T02:17:30  <antimatroid> and smart enough
+2011-04-18T02:17:57  <antimatroid> it's a bit of a pitty people wont have enough time to do the really interesting ideas
+2011-04-18T02:18:05  <antimatroid> but people insist on having larger maps
+2011-04-18T02:18:40  <antimatroid> which will make language choice even more important
+2011-04-18T02:18:54  <antimatroid> it's going to be a contest of who can do the best stuff in the time limit
+2011-04-18T02:19:05  <antimatroid> and macro strategy of course :P
+2011-04-18T02:21:02  <Ice_Harley> antimatroid: so you just go to closest food everytime?
+2011-04-18T02:21:17  <antimatroid> reusing already moved ants yes
+2011-04-18T02:21:41  <antimatroid> i considered moving to the food square closest to me that minimises the distance to an enemy each iteration, but i don't think that'd work as well
+2011-04-18T02:21:43  <Ice_Harley> I didn't find soluthion for this either
+2011-04-18T02:23:55  <antimatroid> ideally you want to use a game tree for that too
+2011-04-18T02:23:59  <antimatroid> but i'm saving that for battles
+2011-04-18T02:27:59  <Ice_Harley> I thought about trees. What kind of tree you can do? Each node is one move? Or each node is ant from food spawn?
+2011-04-18T02:29:34  <Ice_Harley> First variant will have huge number of nodes. Second - how to handle that when one ant takes food others shold go somewhere?
+2011-04-18T02:37:19  <antimatroid> when i collect food now i already update the information at the food square as to when that will be available for collecting more food
+2011-04-18T02:37:33  <antimatroid> so yeah, i would be moving it to "next to" the food square in the tree
+2011-04-18T02:45:39  <Ice_Harley> but you can't build new position because you don't know where will be other ants on this step
+2011-04-18T02:53:49  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has joined #aichallenge
+2011-04-18T03:06:06  <antimatroid> Ice_Harley: what do you mean?
+2011-04-18T03:08:44  <Ice_Harley> Each node in tree is map position, isn't it?
+2011-04-18T03:09:41  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T03:10:23  <antimatroid> each node in the tree contains a game state
+2011-04-18T03:10:30  <antimatroid> each edge is a strategy
+2011-04-18T03:11:54  <Ice_Harley> yes-yes. So when you create new node where strategy is ant A1 goes to food F1 you need new game state. In this game state A1 is near F1, and instead F1 you have new ant A2. But where are ants A3, A4 and A5?
+2011-04-18T03:12:27  <antimatroid> where they were before unmoves
+2011-04-18T03:12:48  <antimatroid> then for each of those children you move A3, A4 and A5
+2011-04-18T03:13:07  <antimatroid> or A1 and A2 again for collecting food
+2011-04-18T03:14:12  <Ice_Harley> You don't take into account that A1 and A3 are moving simultaneously?
+2011-04-18T03:14:23  <antimatroid> for blocking paths?
+2011-04-18T03:14:24  <janzert> ARGH, a combination of github's SSL certificate and redirect setup trigger a bug in wget such that you can't securely download tarballs using wget, this is making my life difficult in trying to refactor the worker setup scripts in preparation for adding jailuser chroot setup to them so I can then add that to the sandbox.
+2011-04-18T03:14:40  <janzert> I think it's time to go to bed and work on it tomorrow
+2011-04-18T03:14:46  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has joined #aichallenge
+2011-04-18T03:15:08  <antimatroid> one option is to have a map set<pair<int, Location> > to mark when a square will be "taken"
+2011-04-18T03:15:16  <antimatroid> and use that information when path finding
+2011-04-18T03:15:26  <antimatroid> /s/map/set
+2011-04-18T03:15:32  <antimatroid> or just remove map :P
+2011-04-18T03:16:20  <antimatroid> int represents the turn it will be occupied on
+2011-04-18T03:16:55  <antimatroid> but i suspect to be quite limited on time
+2011-04-18T03:17:01  <antimatroid> so i'm not really sure what will work best yet
+2011-04-18T03:17:13  <antimatroid> expect* ergh :P
+2011-04-18T03:17:43  <Ice_Harley> for blocking pathes I think it's much easier to check moves before submitting to server and if two ants go to one square just recalculate path for one of them, marking that square as water
+2011-04-18T03:18:48  <jaycobcoleman> information on the location of water squares isn't reset each turn by default, so watch out doing that.
+2011-04-18T03:20:36  <antimatroid> you can't mark a square as water, you need to retain water information across turns
+2011-04-18T03:20:36  <antimatroid> there are times where you might have ants cross each others paths that you need to account for
+2011-04-18T03:20:36  <antimatroid> but you don't want to say the ant can't walk through the path of another ant at all
+2011-04-18T03:20:36  <antimatroid> that would really block off what you can actually do
+2011-04-18T03:20:36  <antimatroid> for my squares, i have int ant, and vector<int> newAnts, deadAnts
+2011-04-18T03:20:43  <Ice_Harley> jaycobcoleman: it's in temporary game state. I will not change real one
+2011-04-18T03:21:08  <antimatroid> when i move an ant, i place it onto newAnts (same as when i'm inputting state information), then when i increment states or resolve information etc. I move the ants back from newAnts to ant
+2011-04-18T03:22:02  <antimatroid> that way in your game tree for example (or heuristics if you don't mind the odd "crash of ants") you can move an ant onto a square containing another ant before it moves
+2011-04-18T03:22:13  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-04-18T03:22:16  <antimatroid> and in the case of moving enemies with a game tree, you can move them onto a square containing an enemy etc.
+2011-04-18T03:23:18  <sigh> finished my first day of work at Google :D
+2011-04-18T03:23:25  <antimatroid> another thing you will want to do at some point is work out how to retain information about food squares that existed when they went out of visibility of you
+2011-04-18T03:23:41  <jaycobcoleman> sigh: I'm so jealous of you
+2011-04-18T03:23:48  <antimatroid> the annoying thing is you are only implicitly told if it's no longer there when you get back in view by not being told it's there
+2011-04-18T03:23:51  <sigh> :)
+2011-04-18T03:23:53  <antimatroid> sigh: :)
+2011-04-18T03:23:59  <antimatroid> didn't know you were off to google :P
+2011-04-18T03:24:36  <sigh> I don't think I mentioned it in the channel :P
+2011-04-18T03:24:37  <antimatroid> i was against having implicit information like that, but meh
+2011-04-18T03:24:50  <antimatroid> my comment was half indicating that :P
+2011-04-18T03:25:11  <antimatroid> a friend interned there the previous summer and really liked it
+2011-04-18T03:25:15  <antimatroid> especially the food :P
+2011-04-18T03:25:26  <sigh> haha, yeah... the food is awesome
+2011-04-18T03:25:49  <antimatroid> what are you doing there? :P
+2011-04-18T03:26:13  <sigh> just normal software engineering role :P
+2011-04-18T03:27:02  <jaycobcoleman> sigh: What experience do you have that landed you a job with google? I feel like you'd have to have done something pretty damn impressive
+2011-04-18T03:27:25  <sigh> I think it'
+2011-04-18T03:27:38  <sigh> I think it's more that I did quite well in the interviews
+2011-04-18T03:27:52  <antimatroid> ^^ he knows quite a lot too
+2011-04-18T03:28:07  <sigh> it's all algorithms and system design type questions, so you have to be on top of that
+2011-04-18T03:28:24  <jaycobcoleman> What did you do before google?
+2011-04-18T03:28:26  <antimatroid> yeah, i've heard they grill quite well there
+2011-04-18T03:28:43  <antimatroid> most technical jobs require a pretty good grilling don't they?
+2011-04-18T03:28:55  <antimatroid> i've been told the RBA will grill you until you don't know what you're talking about
+2011-04-18T03:28:59  <antimatroid> no matter how long it takes them
+2011-04-18T03:29:14  <sigh> jaycobcoleman: systems developer for a small cloud based mail/web filtering company
+2011-04-18T03:30:15  <jaycobcoleman> I see. I hope to work at google someday. When I'm a few years older perhaps
+2011-04-18T03:30:33  <sigh> :)
+2011-04-18T03:30:47  <sigh> well if you are talking active interesting in things like the AI challenge, that's a good start :P
+2011-04-18T03:31:09  <sigh> you learn a lot of stuff from participating in things like this
+2011-04-18T03:31:28  <sigh> *active interest
+2011-04-18T03:31:42  <jaycobcoleman> I've honestly gained 90% of my programming experience in the last month
+2011-04-18T03:31:55  <sigh> are you in uni?
+2011-04-18T03:32:00  <antimatroid> younger
+2011-04-18T03:32:07  <jaycobcoleman> I'm 17
+2011-04-18T03:32:20  <antimatroid> jaycobcoleman: you're doing fine
+2011-04-18T03:32:23  <sigh> ah, I had hardly programmed much at all before uni :)
+2011-04-18T03:32:29  *** ltriant <ltriant!~ltriant@110.174.168.43> has quit IRC (Quit: Computer has gone to sleep)
+2011-04-18T03:32:30  <antimatroid> i had never written a program before i started uni
+2011-04-18T03:32:32  <sigh> just wrote some stuff for my TI-8s :P
+2011-04-18T03:32:36  <sigh> *TI-83
+2011-04-18T03:32:42  <antimatroid> and didn't do the top maths in college, or physics and chemistry
+2011-04-18T03:32:44  <jaycobcoleman> haha I've done lots of that
+2011-04-18T03:33:29  <sigh> when you are in uni try to get as many internships as possible
+2011-04-18T03:33:30  <antimatroid> jaycobcoleman: do you know of projecteuler.net?
+2011-04-18T03:33:39  <jaycobcoleman> yes indeed
+2011-04-18T03:33:43  <antimatroid> i've done no internships :P
+2011-04-18T03:34:09  <antimatroid> i've had an ra job for over 2 years though, and did a summer research thing
+2011-04-18T03:34:10  <sigh> I did one... wish I had done more
+2011-04-18T03:34:16  <antimatroid> i'm more on track for academia
+2011-04-18T03:34:22  <sigh> that's sort of the same
+2011-04-18T03:34:23  <sigh> yeah
+2011-04-18T03:34:38  <antimatroid> i have actually been working this year :P
+2011-04-18T03:34:43  <sigh> :)
+2011-04-18T03:35:19  <jaycobcoleman> I got offered an internship with linden air cargo today, which I guess relates somehow to programming? I don't know
+2011-04-18T03:35:28  <antimatroid> did you mention the ai challenge when applying/interviewing?
+2011-04-18T03:35:33  <antimatroid> i listed it for gsoc :P
+2011-04-18T03:35:48  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-04-18T03:35:49  <jaycobcoleman> I didn't actually apply
+2011-04-18T03:35:56  <jaycobcoleman> so no
+2011-04-18T03:36:02  <antimatroid> i was talking to sigh :P
+2011-04-18T03:36:15  <jaycobcoleman> There we go. Makes more sense
+2011-04-18T03:36:17  <sigh> antimatroid: I didn't list it on my resume... I mentioned it to some of the interviewers
+2011-04-18T03:36:52  <sigh> my projecteuler record is more noteworthy than my aichallenge record though :P
+2011-04-18T03:37:00  <antimatroid> did you mention that?
+2011-04-18T03:37:02  <antimatroid> i don't mention that
+2011-04-18T03:37:08  <antimatroid> although i've only done 50 something problems
+2011-04-18T03:37:10  <sigh> I mentioned that
+2011-04-18T03:37:12  <antimatroid> and haven't touched it in ages
+2011-04-18T03:37:22  <sigh> well, no one asked me how many problems I had done
+2011-04-18T03:37:30  <jaycobcoleman> animatroid: Is project euler really worth looking into? Cause I just came across it somewhat recently and haven't really gone back to it
+2011-04-18T03:38:03  <antimatroid> jaycobcoleman: it's useful for learning a language, and picking up some skill with problems like that
+2011-04-18T03:38:04  <antimatroid> and a bit of fun
+2011-04-18T03:38:11  <sigh> jaycobcoleman: I would highly recommend it, especially if you want to explore the maths side more
+2011-04-18T03:38:30  <jaycobcoleman> I do like me the maths side
+2011-04-18T03:38:42  <antimatroid> jaycobcoleman: if you are serious about cs and not just programming, i can't recommend doing a dual maths major enough :)
+2011-04-18T03:39:14  <antimatroid> and i'm not very knowledgeable about cs, but i sort of know about the different things :P
+2011-04-18T03:39:55  <sigh> in cs if you know the basic concepts it's much easier to pick up anything else
+2011-04-18T03:40:15  <antimatroid> i think that's the case for everything :P
+2011-04-18T03:40:33  <jaycobcoleman> Well then, to problem number one it is
+2011-04-18T03:40:51  <sigh> antimatroid: yes and no
+2011-04-18T03:40:51  <antimatroid> what language do you use?
+2011-04-18T03:41:12  <sigh> antimatroid: for example in math, ever new subject redefines what is "basic"
+2011-04-18T03:41:48  <sigh> queue hitler topolgy video :P
+2011-04-18T03:41:53  <antimatroid> maybe, it's still good to know the basics
+2011-04-18T03:42:02  <antimatroid> i love that video
+2011-04-18T03:42:05  <sigh> what do you count as the basics for maths?
+2011-04-18T03:42:27  <antimatroid> depends on what areas of maths, is there another word that encompasses more?
+2011-04-18T03:42:32  <antimatroid> everything :P
+2011-04-18T03:42:36  <antimatroid> but you know what i mean
+2011-04-18T03:42:53  <sigh> that was my point, the basics covers too much :P
+2011-04-18T03:42:58  <antimatroid> for pure maths say, knowing about sets, relations, etc. is vital
+2011-04-18T03:43:09  <antimatroid> then you just keep building
+2011-04-18T03:44:24  <jaycobcoleman> animatroid: Where you asking what language I use?
+2011-04-18T03:44:56  <sigh> he was
+2011-04-18T03:45:12  <jaycobcoleman> mostly python
+2011-04-18T03:45:16  <jaycobcoleman> and C++
+2011-04-18T03:45:21  <jaycobcoleman> I know you like that one
+2011-04-18T03:47:42  <antimatroid> anything but java and i wont hate on you too much :P
+2011-04-18T03:48:15  <antimatroid> imo c++ is better for maths, because if you define matrices you can overload operators on them
+2011-04-18T03:48:17  <jaycobcoleman> I don't understand java worth crap
+2011-04-18T03:49:07  <antimatroid> Matrix A = 2*B*(C^4) is a lot better than
+2011-04-18T03:49:07  <antimatroid> Matrix A = smult(2, mult(B, pow(C, 4)))
+2011-04-18T03:49:20  <sigh> antimatroid: you can do that in python too
+2011-04-18T03:49:24  <antimatroid> ah, nevermind then
+2011-04-18T03:49:46  <sigh> infact, numpy already does that for you :P
+2011-04-18T03:50:01  <antimatroid> does it do tensors?
+2011-04-18T03:50:06  <jaycobcoleman> I like numpy :)
+2011-04-18T03:50:45  <sigh> antimatroid: dunno, haven't worked with tensors
+2011-04-18T03:50:55  <antimatroid> i am tempted to do a second normal form game class with utilities represented as map<NStrategy, utilityType>
+2011-04-18T03:51:04  <antimatroid> it's slower, but way easier
+2011-04-18T03:51:38  <jaycobcoleman> I'm using numpy to keep track of the soonest that an enemy ant can be on each square given the information I have
+2011-04-18T03:52:02  <antimatroid> jaycobcoleman: how are you doing that?
+2011-04-18T03:53:46  <jaycobcoleman> everytime I get vision information from my ants I'll assign the value of the vision radius to the square I'm on and then a value one less for each square away from that point, then at the beginning of each turn I'll subtract one from the entire array
+2011-04-18T03:54:36  <antimatroid> a good way would be as follows: create a "time accessible map" set at -1, add all enemy locations to a queue noting the current distance for each location (currently 0) and set those locations as 0 in the accessible map, then while the queue isn't empty, for any adjacent square with accessible at -1, update that to the current squares value + 1, and add that information to the end of the queue
+2011-04-18T03:55:11  <antimatroid> then your accessible map will tell you the shortest turns in which an enemy can reach any square on the map
+2011-04-18T03:55:34  <antimatroid> you can do that from food squares to get closest ant to food, from all ants to partition the map into who can reach what first, etc. etc.
+2011-04-18T03:56:05  <jaycobcoleman> Yes I'm planning on doing something similar
+2011-04-18T03:56:12  <jaycobcoleman> I haven't worked out all the logistics
+2011-04-18T03:57:51  <jaycobcoleman> But I plan to come up with several possible moves for each of my ants and evaluating the likelyhood of their success and then any conflict between two ants regarding movement onto a particular aquare will be resolved by the likelyhood of success
+2011-04-18T03:57:58  <jaycobcoleman> *square
+2011-04-18T03:58:21  <antimatroid> yep, i'm planning to do that just for ants that may land in a battle
+2011-04-18T03:58:24  <antimatroid> and use a game tree for it
+2011-04-18T03:58:40  <antimatroid> i expect time to be tight
+2011-04-18T03:59:01  <jaycobcoleman> I know an unfortunately small amount about game theory
+2011-04-18T03:59:59  <antimatroid> the basics are quite simple
+2011-04-18T04:00:07  <antimatroid> there's a bit of jargon one needs to get used to though
+2011-04-18T04:00:11  <jaycobcoleman> also, I feel like time shouldn't be a concern in this contest, to a reasonable extent anyway.
+2011-04-18T04:00:20  <antimatroid> it will be
+2011-04-18T04:00:27  <antimatroid> and unfortunately it'll be necessary
+2011-04-18T04:00:41  <antimatroid> with a few thousand bots, we need quite a few games for decent rankings, and the contest can't run forever
+2011-04-18T04:01:00  <jaycobcoleman> WE NEED MORE SERVERS!!!
+2011-04-18T04:01:14  <antimatroid> that requires moar money
+2011-04-18T04:01:49  <jaycobcoleman> psh, It's sponsored by google
+2011-04-18T04:02:06  <jaycobcoleman> they've got loads of money
+2011-04-18T04:05:00  <antimatroid> they have given a bit of money previously, and hopefully some this time
+2011-04-18T04:05:15  <antimatroid> but the names mostly there because it looks good for both parties
+2011-04-18T04:05:34  <jaycobcoleman> Yeah I kinda figured that out by this point
+2011-04-18T04:06:04  <antimatroid> it would be silly to remove it unless google actually wanted us to / stopped giving permission
+2011-04-18T04:07:53  <antimatroid> the contest is still quite new, but it's grown well, there was ~800 bots for tron, then ~4700 for planet wars
+2011-04-18T04:08:08  <antimatroid> the contests before that were just for uwaterloo students
+2011-04-18T04:08:21  <jaycobcoleman> rock, paper, scissors?
+2011-04-18T04:08:21  <antimatroid> amstan won the repeated rock paper scissors one
+2011-04-18T04:08:31  <antimatroid> repeated
+2011-04-18T04:08:34  <jaycobcoleman> have you been here the while time?
+2011-04-18T04:08:38  <antimatroid> the bots would play a bunch of games against each other
+2011-04-18T04:08:44  <jaycobcoleman> *whole
+2011-04-18T04:08:46  <antimatroid> i came in for tron
+2011-04-18T04:08:56  <antimatroid> waterloo is in canada, i'm in tasmania, australia :p
+2011-04-18T04:09:12  *** amstan <amstan!~alex@75-119-241-144.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2011-04-18T04:09:15  <jaycobcoleman> yes, of course
+2011-04-18T04:11:41  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-04-18T04:15:12  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-04-18T04:36:19  <jaycobcoleman> animatroid: Thanks a lot, now instead of making my bot I'm busy finding palindromes :P
+2011-04-18T04:40:04  *** antimatroid <antimatroid!~nick@254.221.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T04:42:50  *** antimatroid <antimatroid!~nick@254.221.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-18T04:45:15  *** chris__0076 <chris__0076!~Chris_007@adsl-66-195-23.asm.bellsouth.net> has joined #aichallenge
+2011-04-18T04:47:01  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-254-166.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-04-18T04:47:18  *** antimatroid <antimatroid!~nick@254.221.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T04:48:24  *** antimatroid <antimatroid!~nick@254.221.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-18T05:13:36  *** woudshoo <woudshoo!~user@ironhead.xs4all.nl> has joined #aichallenge
+2011-04-18T05:33:26  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T05:47:35  *** berak <berak!~chatzilla@82.113.106.29> has joined #aichallenge
+2011-04-18T05:53:10  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-18T05:59:20  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-04-18T06:13:15  <antimatroid> smiley1983: did anyone ever respond about putting the OCaml bot up?
+2011-04-18T06:13:34  <antimatroid> if the actual functionality is solid i'd say put it up
+2011-04-18T06:18:19  <antimatroid> sigh: oh yeah
+2011-04-18T06:18:30  <antimatroid> bhasker found a possible bug with ant spawning
+2011-04-18T06:18:40  <sigh> what was that?
+2011-04-18T06:18:41  <antimatroid> something about ...a*a... not spawning an ant
+2011-04-18T06:18:56  <antimatroid> i haven't got around to testing that myself yet
+2011-04-18T06:19:28  <sigh> if you can make a repeatable test case, I'll have a look at it
+2011-04-18T06:19:46  <antimatroid> i'll have a look in a bit
+2011-04-18T06:50:50  *** delt0r_ <delt0r_!~delt0r@188-22-170-87.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-18T06:52:12  *** delt0r___ <delt0r___!~delt0r@188-22-170-252.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-04-18T06:52:26  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 240 seconds)
+2011-04-18T07:01:32  <smiley1983> antimatroid: no, but unless someone's in a hurry to get their hands on the code, I'll probably finish it first. I've got the git repository cloned, but I haven't done the research into how to make a pull request yet.
+2011-04-18T07:01:50  <antimatroid> yep, there's definitely no rush
+2011-04-18T07:02:01  <antimatroid> ps bring it on for first in aus again :P
+2011-04-18T07:02:23  <smiley1983> The basic functionality is (I believe) solid, though.
+2011-04-18T07:02:43  <smiley1983> Congratulations on being first last time, and by such a large margin. :)
+2011-04-18T07:02:43  <antimatroid> i take it you're planning to participate?
+2011-04-18T07:02:49  <smiley1983> Yes.
+2011-04-18T07:02:53  <antimatroid> you were worrying me towards the end
+2011-04-18T07:02:58  <antimatroid> it wasn't clear to me who was best on tcp
+2011-04-18T07:03:02  <antimatroid> (i didn't use antimatroid on tcp)
+2011-04-18T07:03:23  <antimatroid> but thanks :)
+2011-04-18T07:03:33  <smiley1983> Ha. I found it difficult to judge much from the TCP games because the pool of regular opponents was so small
+2011-04-18T07:03:49  <antimatroid> still better than testing on the main site
+2011-04-18T07:03:57  <antimatroid> i didn't even bother with a bot on there for the last month
+2011-04-18T07:03:59  <smiley1983> Oh yes, it was a great blessing
+2011-04-18T07:04:20  <smiley1983> That'll be why I didn't notice you among the top ranks until the very end. :)
+2011-04-18T07:04:37  <antimatroid> yep, i'm tempted to do the same again
+2011-04-18T07:04:42  <antimatroid> it's nice jumping in at the end
+2011-04-18T07:05:15  <smiley1983> Can anyone tell me, for the starter pack: should the distance function return the number of steps an ant has to take, or the LOS distance?
+2011-04-18T07:05:18  <antimatroid> the plan is to make tcp more official this time, so hopefully we can get more people testing on there
+2011-04-18T07:05:28  <antimatroid> LOS?
+2011-04-18T07:05:30  <smiley1983> That would be great.
+2011-04-18T07:05:33  <smiley1983> Line of Sight
+2011-04-18T07:05:36  <antimatroid> distance is the euclidean distance with edges wrapped
+2011-04-18T07:05:41  <antimatroid> check the specs page
+2011-04-18T07:06:11  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification
+2011-04-18T07:06:47  <antimatroid> all distances are using that metric
+2011-04-18T07:07:13  <antimatroid> which is unfortunately tricky to work with when you do vision calculations, be really careful there
+2011-04-18T07:07:39  <smiley1983> ight. I think the python starter bot might be returning number of steps
+2011-04-18T07:07:47  <antimatroid> if you do a simple bfs from all ants simultaneously it doesn't always work properly, you miss some
+2011-04-18T07:07:54  <antimatroid> have you looked at my c++ bot?
+2011-04-18T07:08:02  <antimatroid> that's pretty solid, and reasonably well laid out
+2011-04-18T07:08:42  <smiley1983> I haven't - is it the c++ starter bot or available elsewhere?
+2011-04-18T07:09:27  <antimatroid> the c++ starter bot
+2011-04-18T07:09:27  <smiley1983> also - bfs?
+2011-04-18T07:09:33  <antimatroid> breadth first search
+2011-04-18T07:09:45  <antimatroid> basically, add all ants locations to a queue, then keep "painting outwards"
+2011-04-18T07:10:29  <antimatroid> it's nice for doing stuff like partitioning the squares into which player can reach them first, or finding which ant is closest to a food square etc.
+2011-04-18T07:11:54  <smiley1983> Yes. I'm looking at the c++ code now - I had used the Python one for reference because Python is readable, but I've noticed some incompletenesses. I'll use yours for reference from now, thankyou for pointing me to it
+2011-04-18T07:14:32  <bhasker> antimatroid did you test my case?
+2011-04-18T07:14:57  <antimatroid> bhasker: not yet sorry, got a few other things to do
+2011-04-18T07:15:09  <bhasker> kk
+2011-04-18T07:16:34  <bhasker> i implemented a basic BFS search to find closest ant
+2011-04-18T07:16:38  <bhasker> and extract the path
+2011-04-18T07:16:47  <bhasker> to issue orders
+2011-04-18T07:16:49  <bhasker> but...
+2011-04-18T07:17:03  <bhasker> that bug is stopping my bot from going very far:p
+2011-04-18T07:18:39  <antimatroid> strange, i ran games which flooded the map and never noticed anything like that
+2011-04-18T07:20:12  <bhasker> i can send you a text copy of the map state if you want
+2011-04-18T07:20:16  <bhasker> or a replay
+2011-04-18T07:22:32  <antimatroid> do it to sigh
+2011-04-18T07:22:38  <antimatroid> but he's not here
+2011-04-18T07:22:49  <bhasker> was just reading the logs he is close to where i am
+2011-04-18T07:22:52  <bhasker> now that he works at google
+2011-04-18T07:23:03  <antimatroid> except he's in sydney :P
+2011-04-18T07:23:07  <bhasker> oooh
+2011-04-18T07:23:08  <bhasker> doh
+2011-04-18T07:23:18  <bhasker> i thought he joined the US office
+2011-04-18T07:23:24  <antimatroid> nup
+2011-04-18T07:23:56  <antimatroid> smiley1983: what state are you in?
+2011-04-18T07:27:42  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-04-18T07:28:16  <antimatroid> there you go
+2011-04-18T07:29:50  <smiley1983> I'm in Sydney too
+2011-04-18T07:30:27  <antimatroid> meh, tassie is better :P
+2011-04-18T07:31:24  <smiley1983> Yes, I would consider living there if I wasn't set up here
+2011-04-18T07:31:47  <antimatroid> i'll probably have to move at the end of this year
+2011-04-18T07:31:53  <antimatroid> but i always see myself ending up back here
+2011-04-18T07:32:23  <smiley1983> Do you like bushwalking?
+2011-04-18T07:32:39  <antimatroid> yeah and camping
+2011-04-18T07:32:46  <antimatroid> particularly camping and drinking
+2011-04-18T07:33:05  <smiley1983> Definitely a great place yo live then
+2011-04-18T07:33:40  <antimatroid> my only complaint is nothing in the way of snowboarding/skiing
+2011-04-18T07:33:53  <antimatroid> i've always wanted to, but only ever snowboared for one day
+2011-04-18T07:34:52  <smiley1983> Ah. I've been assured it's fun, but it just doesn't appeal to me for some reason.
+2011-04-18T07:35:34  <antimatroid> i used to skate a fair bit, so it's always seemed like it'd be even better
+2011-04-18T07:35:50  *** berak <berak!~chatzilla@82.113.106.29> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-04-18T07:36:40  <smiley1983> Requires more equipment, and big hills covered in snow, though
+2011-04-18T07:37:07  <antimatroid> yeah that's fine
+2011-04-18T07:37:19  <antimatroid> i'm tempted to move somewhere that's it's easily accessible
+2011-04-18T07:37:47  <smiley1983> Yes, it makes a great deal of sense in snowy places :)
+2011-04-18T07:38:38  <smiley1983> Do you have any idea of the expected duration of this contest?
+2011-04-18T07:38:54  <antimatroid> the number i proposed was 2 months
+2011-04-18T07:39:03  <antimatroid> because tron was too short and planet wars too long
+2011-04-18T07:39:14  <antimatroid> but there's going to be a beta period for like 2 weeks as well, for ironing stuff out
+2011-04-18T07:39:36  <antimatroid> although i'm tempted to change my opinion back to 3 months
+2011-04-18T07:39:44  <antimatroid> so people who come in have plenty of time
+2011-04-18T07:41:21  <smiley1983> Right. I was thinking it might be good to update the front page so casual visitors know something is happening without checking the forums
+2011-04-18T07:42:04  <smiley1983> I checked in sometime in March but didn't look at the forums, and thought nothing was happening yet.
+2011-04-18T07:42:16  <antimatroid> hmmm maybe
+2011-04-18T07:42:21  <smiley1983> I only checked the forums a few days ago and found that the next game had been determined
+2011-04-18T07:42:22  <antimatroid> i'll mention that to amstan
+2011-04-18T07:42:35  <antimatroid> yeah, we've been working for ages
+2011-04-18T07:42:50  <antimatroid> have you taken a look at the symmetric maps?
+2011-04-18T07:43:00  <antimatroid> you can turn symmetric food spawning on too
+2011-04-18T07:43:32  <smiley1983> Yes, the test map I've been using is symmetric
+2011-04-18T07:43:43  <smiley1983> I haven't fiddled with any options, though
+2011-04-18T07:44:32  <antimatroid> --food symmetric
+2011-04-18T07:44:41  <antimatroid> add that to your play_one_game script to do symmetric food
+2011-04-18T07:44:52  <antimatroid> feel free to make another map generator, we want lots of variety
+2011-04-18T07:45:28  <smiley1983> Right. I'll be looking at other things to develop once I'm happy (enough) with my starter pack. :)
+2011-04-18T07:47:15  <antimatroid> are you watching games with the viewer or visualiser?
+2011-04-18T07:47:21  <antimatroid> the visualiser is far superior
+2011-04-18T07:47:48  <smiley1983> Visualiser - I hadn't noticed the viewer
+2011-04-18T07:48:03  <antimatroid> cool, ignore what i said
+2011-04-18T07:48:56  <smiley1983> So far there isn't anything to watch, though, except to confirm that it's making the correct starter bot moves.
+2011-04-18T07:49:25  <antimatroid> yeah okay
+2011-04-18T07:49:34  <antimatroid> i've played around with food collection, which is fun to watch
+2011-04-18T07:49:54  <bhasker> antimatroid another bug in the c++ starter bot
+2011-04-18T07:50:00  <bhasker> it doesn't clear out old food in the grid
+2011-04-18T07:50:00  <antimatroid> :(
+2011-04-18T07:50:07  <antimatroid> ah my bad
+2011-04-18T07:50:14  <bhasker> so if the food is now an ant
+2011-04-18T07:50:20  <bhasker> it still shows up as a food etc
+2011-04-18T07:50:32  <bhasker> so probably in the loop which reads in the state
+2011-04-18T07:50:36  <bhasker> you need to validate all the food
+2011-04-18T07:50:37  <antimatroid> yes it does
+2011-04-18T07:50:45  <antimatroid> well, it should :\
+2011-04-18T07:50:55  <antimatroid> clear() in square.h has isFood = 0
+2011-04-18T07:51:07  <bhasker> it won't right since food information is sent only once when its seen first time?
+2011-04-18T07:51:11  <bhasker> and you have this in your loop
+2011-04-18T07:51:22  <bhasker>     for(int row=0; row<rows; row++)
+2011-04-18T07:51:23  <bhasker>         for(int col=0; col<cols; col++)
+2011-04-18T07:51:23  <bhasker>             if(!grid[row][col].isFood)
+2011-04-18T07:51:23  <bhasker>                 grid[row][col].reset();
+2011-04-18T07:51:29  <bhasker> so it doesn't reset Food Squares
+2011-04-18T07:51:37  <antimatroid> oh, that should be isWater
+2011-04-18T07:51:38  <antimatroid> cheers
+2011-04-18T07:51:53  <bhasker> will food information be sent every turn?
+2011-04-18T07:51:59  <bhasker> all visible food?
+2011-04-18T07:52:02  <antimatroid> if it's visible
+2011-04-18T07:52:04  <bhasker> ah
+2011-04-18T07:52:28  <antimatroid> but if you go out of range of food while it's there, you're only implicitly told it's not there anymore when you come back in range by not being told it's there
+2011-04-18T07:52:31  <bhasker> water squares arent sent right
+2011-04-18T07:52:38  <antimatroid> i really don't like that, but i didn't win that battle
+2011-04-18T07:52:49  <antimatroid> water square information is sent once per bot
+2011-04-18T07:52:56  <bhasker> doh fixing that makes my bot behave better
+2011-04-18T07:52:57  <bhasker> lol
+2011-04-18T07:53:02  <bhasker> that was throwing my bot off
+2011-04-18T07:53:06  <bhasker> my ants will step on each other
+2011-04-18T07:53:11  <bhasker> and die
+2011-04-18T07:53:41  <smiley1983> That reminds me - is it okay for a starter pack to track the turn on which each tile was last seen (for the Visible function) or should it clear this info between turns? It's obviously useful to keep it, but not specified in the starter pack guide.
+2011-04-18T07:55:54  <CIA-33> aichallenge: Nick Ham epsilon * rad32822 / ants/dist/starter_bots/cpp/State.cc : fixed a food information bug - http://bit.ly/fBTQkW
+2011-04-18T07:56:30  <antimatroid> there we go :)
+2011-04-18T07:56:56  <antimatroid> smiley1983: i think i am?
+2011-04-18T07:57:07  <smiley1983> :) Right.
+2011-04-18T07:57:15  <bhasker> hah BFS doesn't scale so well once the search space increases:-\
+2011-04-18T07:57:22  <bhasker> Found food: 105,62
+2011-04-18T07:57:22  <bhasker> Issuing order : 102,43,E
+2011-04-18T07:57:22  <bhasker> time taken: 806.759ms
+2011-04-18T07:57:24  <bhasker> :-\
+2011-04-18T07:57:42  <antimatroid> bhasker: i can do my food collection in under 200ms most of the time
+2011-04-18T07:57:59  <bhasker> well each ant is finding in under 10-15 ms
+2011-04-18T07:58:12  <antimatroid> i am searching from all food squares simultaneously on each iteration
+2011-04-18T07:58:22  <bhasker> ah i am doing reverse
+2011-04-18T07:58:27  <bhasker> i thought of that
+2011-04-18T07:58:27  <antimatroid> moving the ant that can reach one first, including an ant that's already been moved
+2011-04-18T07:58:48  <bhasker> but i am doing a search around each ant
+2011-04-18T07:58:53  <bhasker> to closest food
+2011-04-18T07:58:56  <bhasker> then guiding the ant
+2011-04-18T07:59:02  <antimatroid> expensive :P
+2011-04-18T07:59:08  <bhasker> yes
+2011-04-18T07:59:17  <antimatroid> i can run mine on 100x100 maps with like 90% starting food
+2011-04-18T07:59:36  <bhasker> thats why i will probably replace BFS with an a* to guide the search
+2011-04-18T07:59:38  <woudshoo> bashker: Do you stop searching as soon as all food is asigned an ant?
+2011-04-18T07:59:51  <bhasker> i stop scanning the moment it finds an available free food
+2011-04-18T07:59:59  <antimatroid> a* doesn't help if you don't have a target when you start searching
+2011-04-18T08:00:16  <antimatroid> are you searching from all ants at the same time? or each ant individually?
+2011-04-18T08:00:19  <bhasker> that is easy
+2011-04-18T08:00:24  <bhasker> each ant right now
+2011-04-18T08:00:40  <bhasker> getting target is easy
+2011-04-18T08:00:49  <bhasker> just find in a circle around the ant food that is not tracked
+2011-04-18T08:00:51  <bhasker> by another ant
+2011-04-18T08:00:55  <bhasker> then path to that
+2011-04-18T08:00:58  <bhasker> using a*
+2011-04-18T08:01:09  <antimatroid> i can't imagine that being better
+2011-04-18T08:01:27  <bhasker> a* reduces the node exploration by a lot
+2011-04-18T08:01:44  <bhasker> though the problem is this map wraps around
+2011-04-18T08:01:50  <bhasker> so guiding the search is a little problem
+2011-04-18T08:02:00  <antimatroid> it doesn't complicate it much
+2011-04-18T08:02:10  <antimatroid> no more than to calculate distances
+2011-04-18T08:03:47  <bhasker> http://theory.stanford.edu/~amitp/GameProgramming/MapRepresentations.html#S15
+2011-04-18T08:04:01  <bhasker> thats my reference page for all pathfinding related stuff
+2011-04-18T08:04:20  <antimatroid> that's silly
+2011-04-18T08:04:27  <antimatroid> you use the same a* algorithm
+2011-04-18T08:04:37  <antimatroid> with the same rule, just using the new distance metric
+2011-04-18T08:08:18  <antimatroid> algorithm/heuristic
+2011-04-18T08:17:25  <bhasker> k clearly a bug in my code
+2011-04-18T08:17:39  <bhasker> Ant at: 104,43
+2011-04-18T08:17:39  <bhasker> Found food: 86,48
+2011-04-18T08:17:40  <bhasker> numNodesExplored2971816
+2011-04-18T08:17:46  <bhasker> couldn't have explored 2971816 nodes
+2011-04-18T08:17:50  <antimatroid> lol
+2011-04-18T08:17:53  <bhasker> in a 108x84 map
+2011-04-18T08:18:02  <bhasker> no wonder it took 800ms
+2011-04-18T08:20:28  *** ginDeVine <ginDeVine!~Gindevine@cm-84.215.113.118.getinternet.no> has joined #aichallenge
+2011-04-18T08:26:44  <ginDeVine> Is there a list over which languages that have starter packages?
+2011-04-18T08:26:59  <antimatroid> what language do you want?
+2011-04-18T08:27:32  <ginDeVine> Just curious mostly.
+2011-04-18T08:28:07  <ginDeVine> I was looking for a JavaScript one, but as I didn't find any, I made my own a few days ago..
+2011-04-18T08:28:08  <antimatroid> https://github.com/aichallenge/aichallenge/tree/epsilon/ants/dist/starter_bots
+2011-04-18T08:28:43  <ginDeVine> Thanks :D
+2011-04-18T08:31:34  <smiley1983> bhasker: I was getting worried (for my own prospects) when you were talking about 800ms to find food, I'm glad to hear it was (probably) a bug.
+2011-04-18T08:32:04  <antimatroid> smiley1983: it takes me more than 200ms with lots of food
+2011-04-18T08:33:09  <smiley1983> Which does make sense - even that is a little worrying, since we'll want to do a bit of other processing on top of that, but at least it leaves 4/5 of your allocation untouched.
+2011-04-18T08:33:24  <bhasker> yea it was a bug
+2011-04-18T08:33:31  <antimatroid> not very promising when i want to use a game tree for battle ants
+2011-04-18T08:33:43  <antimatroid> well, multiple game trees
+2011-04-18T08:33:44  <bhasker> now each BFS search is taking only 2ms or so
+2011-04-18T08:34:08  <antimatroid> i've had games with more than 1000 ants :P
+2011-04-18T08:34:24  <smiley1983> Yes, I had game tree plans, and sort of still do... I'm just a bit doubtful about how much use they'll see. :)
+2011-04-18T08:37:48  *** UncleVasya <UncleVasya!kvirc@46.133.175.196> has joined #aichallenge
+2011-04-18T08:38:46  *** Eruonen <Eruonen!onensora@546BF933.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-18T09:03:51  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-04-18T09:06:50  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 258 seconds)
+2011-04-18T09:25:15  <bhasker> k got it working now
+2011-04-18T09:37:39  <bhasker> 66ms to route over 125 ants
+2011-04-18T09:37:42  <bhasker> so not bad
+2011-04-18T09:38:53  <smiley1983> Sounds pretty good really. Should cope with the 1000+ ants scenario (if it happens in contest games)
+2011-04-18T09:39:25  <smiley1983> If its a linear increase in time, which I guess it might not be
+2011-04-18T09:39:57  <bhasker> well it will be a linear increase kind of
+2011-04-18T09:40:01  <bhasker> since i am doing per ant
+2011-04-18T09:40:19  <bhasker> but i guess i will add some customization to spread it over a few turns
+2011-04-18T09:40:30  <smiley1983> Is this matching against the food list, or matching against the map tile by tile?
+2011-04-18T09:40:33  <bhasker> so that at any point i don't move than X number of hosts
+2011-04-18T09:40:42  <bhasker> it explores the map
+2011-04-18T09:40:50  <bhasker> starts at ant location and explores outwards
+2011-04-18T09:40:58  <bhasker> towards the closest food/ant
+2011-04-18T09:41:57  <bhasker> then i just extract the path and make the first move
+2011-04-18T09:42:38  <smiley1983> Right, so it's pathfinding, not just matching ants against closest food.
+2011-04-18T09:42:50  <bhasker> yes it does do a bit of pathfinding
+2011-04-18T09:43:03  <bhasker> it will route around my ants
+2011-04-18T09:43:14  <bhasker> i don't explore nodes which have my ants
+2011-04-18T09:43:25  <bhasker> so that i don't end up stomping my own ants
+2011-04-18T09:44:14  <smiley1983> Though I've noticed that you can move an ant into a tile in the same turn as moving another out - even having two ants swap places. So you may sometimes want to route through your current ant locations
+2011-04-18T09:44:29  <bhasker> replaying http://pastebin.com/QM7LSe9b
+2011-04-18T09:45:02  <bhasker> i could but that complicates stuff, since now i have to special case the first search to be not via my own ant
+2011-04-18T09:45:22  <bhasker> i guess not routing via my ant might have other issues
+2011-04-18T09:45:28  <bhasker> where corridors are narrow
+2011-04-18T09:45:53  <bhasker> ants may end up going all around instead of following ants
+2011-04-18T09:46:07  <smiley1983> This contest will pose many interesting challenges :)
+2011-04-18T09:46:57  <bhasker> yea it will i want to see the strategies evolve
+2011-04-18T09:47:11  <bhasker> it will be a big learning curve similar to planetwars
+2011-04-18T09:47:19  <bhasker> initially we will see a bunch of strategies
+2011-04-18T09:47:25  <bhasker> then it will refine down to a few
+2011-04-18T09:47:28  <bhasker> as time goes on
+2011-04-18T09:50:17  <smiley1983> Thanks for the replay, I haven't seen many yet
+2011-04-18T09:58:45  <bhasker> you are welcome, though i am seeing weird stuff, looks like a lot of the game will be determined by who your neighbour is
+2011-04-18T09:58:57  <bhasker> i played a game with hunterbot/lefty/hunter/mybot
+2011-04-18T09:59:02  <bhasker> and lefty got eliminated
+2011-04-18T09:59:06  <bhasker> and player 1 is now 2x my size
+2011-04-18T09:59:15  <bhasker> turn 500
+2011-04-18T09:59:16  <bhasker> turn  500 stats: ant_count: [565, 0, 150, 244]
+2011-04-18T09:59:16  <bhasker> s
+2011-04-18T09:59:29  <bhasker> i am guessing because mybot spent most time fighting with player 3
+2011-04-18T10:00:55  <bhasker> interesting my bot blocked itself:-\
+2011-04-18T10:01:38  <bhasker> here's another replay http://pastebin.com/MxuRYr2H
+2011-04-18T10:03:40  *** ginDeVine <ginDeVine!~Gindevine@cm-84.215.113.118.getinternet.no> has quit IRC (Quit: ginDeVine)
+2011-04-18T10:15:08  *** Eruonen <Eruonen!onensora@546BF933.cm-12-4d.dynamic.ziggo.nl> has quit IRC (Ping timeout: 260 seconds)
+2011-04-18T10:15:34  *** Eruonen <Eruonen!onensora@546BF933.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-18T10:21:40  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-18T10:22:35  <Stocha> Fighting will most certainly be far more complicated that food gathering. Food doesn't try to move simultaneously while trying to make your life as hard as possible.
+2011-04-18T10:23:37  <bhasker> though i wish they would let ants stack
+2011-04-18T10:23:37  <bhasker> instead of killing the ant if you move onto another of your ants
+2011-04-18T10:27:36  *** contestbot_ <contestbot_!~supybot@69-196-133-131.dsl.teksavvy.com> has joined #aichallenge
+2011-04-18T10:27:36  *** contestbot <contestbot!~supybot@75-119-241-144.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-04-18T10:28:56  *** contestbot_ is now known as contestbot
+2011-04-18T10:28:56  *** ChanServ sets mode: +o contestbot
+2011-04-18T10:28:58  *** bhasker <bhasker!~bhasker@nat/yahoo/x-pfvmtkdzuoohqzzl> has quit IRC (Read error: Connection reset by peer)
+2011-04-18T10:31:36  *** antimatroid <antimatroid!~nick@254.221.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 276 seconds)
+2011-04-18T10:37:50  *** contestbot_ <contestbot_!~supybot@206-248-165-185.dsl.teksavvy.com> has joined #aichallenge
+2011-04-18T10:37:50  *** contestbot <contestbot!~supybot@69-196-133-131.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-04-18T10:40:08  *** contestbot_ is now known as contestbot
+2011-04-18T10:40:09  *** ChanServ sets mode: +o contestbot
+2011-04-18T10:45:00  *** ginDeVine <ginDeVine!~ginDeVine@cm-84.215.113.118.getinternet.no> has joined #aichallenge
+2011-04-18T10:45:20  *** Eruonen <Eruonen!onensora@546BF933.cm-12-4d.dynamic.ziggo.nl> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T10:56:26  *** contestbot_ <contestbot_!~supybot@69-165-158-142.dsl.teksavvy.com> has joined #aichallenge
+2011-04-18T10:56:26  *** contestbot <contestbot!~supybot@206-248-165-185.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-04-18T10:58:20  *** contestbot_ is now known as contestbot
+2011-04-18T10:58:21  *** ChanServ sets mode: +o contestbot
+2011-04-18T11:14:41  *** woudshoo <woudshoo!~user@ironhead.xs4all.nl> has quit IRC (Ping timeout: 276 seconds)
+2011-04-18T11:14:42  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.235.66> has joined #aichallenge
+2011-04-18T11:17:52  *** UncleVasya <UncleVasya!kvirc@46.133.175.196> has quit IRC (Ping timeout: 260 seconds)
+2011-04-18T11:25:06  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-04-18T11:35:45  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T11:46:45  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 251 seconds)
+2011-04-18T11:47:14  *** skynetz <skynetz!~none@unaffiliated/skynetz> has joined #aichallenge
+2011-04-18T11:58:58  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Ping timeout: 248 seconds)
+2011-04-18T12:03:36  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-18T12:06:29  *** superflit <superflit!~superflit@c-71-196-128-246.hsd1.co.comcast.net> has joined #aichallenge
+2011-04-18T12:11:36  <smiley1983> Does anyone know how the passable function is supposed to work for the starter bots?
+2011-04-18T12:11:48  <smiley1983> Should it take account of orders already issued that turn?
+2011-04-18T12:11:58  <smiley1983> Or just exclude water and food tiles?
+2011-04-18T12:12:12  <Naktibalda> second
+2011-04-18T12:12:46  <smiley1983> So only exclude water and food - nothing else? Ignore presence of ants as well?
+2011-04-18T12:12:47  <Naktibalda> 3. Don't attempt to avoid collision with ants.
+2011-04-18T12:12:54  <smiley1983> Right
+2011-04-18T12:12:56  <smiley1983> Thankyou
+2011-04-18T12:13:52  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.235.66> has quit IRC (Ping timeout: 260 seconds)
+2011-04-18T12:14:09  <smiley1983> Ah, sorry, I didn't actually mean starter bot. That's just supposed to avoid water, not even food. However, they suggest a "passable" helper function
+2011-04-18T12:14:35  <smiley1983> I'm guessing the passable function should avoid food, unlike the starter bot logic.
+2011-04-18T12:24:17  *** superflit <superflit!~superflit@c-71-196-128-246.hsd1.co.comcast.net> has quit IRC (Quit: superflit)
+2011-04-18T12:30:41  <skynetz> there's also the unoccupied func
+2011-04-18T12:44:04  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-04-18T12:45:02  *** antimatroid <antimatroid!~nick@42.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-18T12:59:02  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0/20110318052756])
+2011-04-18T13:19:33  *** amstan <amstan!~amstan@69-165-158-142.dsl.teksavvy.com> has joined #aichallenge
+2011-04-18T13:19:34  *** ChanServ sets mode: +o amstan
+2011-04-18T13:26:50  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-04-18T13:28:20  *** kakwa__ <kakwa__!c136e159@gateway/web/freenode/ip.193.54.225.89> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T13:33:13  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-18T13:34:13  <amstan> later tell mcleopold Can you review sigh's seq branch, then merge it?
+2011-04-18T13:41:06  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-04-18T13:58:12  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-04-18T13:59:51  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-04-18T14:06:16  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Ping timeout: 264 seconds)
+2011-04-18T14:12:51  *** bhasker <bhasker!~bhasker@nat/yahoo/x-lxxjjgnnlkfijdbs> has joined #aichallenge
+2011-04-18T14:18:58  *** ginDeVine <ginDeVine!~ginDeVine@cm-84.215.113.118.getinternet.no> has quit IRC (Quit: ginDeVine)
+2011-04-18T14:26:39  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-04-18T14:29:16  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-18T14:45:05  *** andy_ <andy_!4e48bc6e@gateway/web/freenode/ip.78.72.188.110> has joined #aichallenge
+2011-04-18T14:50:54  *** delt0r___ <delt0r___!~delt0r@188-22-16-97.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-18T14:52:07  *** delt0r_ <delt0r_!~delt0r@188-22-170-87.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-04-18T14:54:36  *** Ice_Harley <Ice_Harley!5eb2042b@gateway/web/freenode/ip.94.178.4.43> has joined #aichallenge
+2011-04-18T15:02:40  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Ping timeout: 264 seconds)
+2011-04-18T15:10:27  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-18T15:13:32  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Read error: Connection reset by peer)
+2011-04-18T15:13:44  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-18T15:23:23  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-18T15:31:06  *** Ice_Harley <Ice_Harley!5eb2042b@gateway/web/freenode/ip.94.178.4.43> has quit IRC (Quit: Page closed)
+2011-04-18T15:32:41  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-18T15:33:52  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 240 seconds)
+2011-04-18T15:46:59  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-04-18T16:03:14  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-04-18T16:04:49  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-04-18T16:05:41  *** antimatroid <antimatroid!~nick@42.154.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 264 seconds)
+2011-04-18T16:34:12  <bhasker> anyone interested in watching a replay of my latest iteration , smarter about how it hunts food
+2011-04-18T16:45:27  *** chris__0076 is now known as chris_0076
+2011-04-18T16:56:20  <bhasker> woohoo my bot eliminates all other bots on this map now in 243 turns
+2011-04-18T16:59:34  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has joined #aichallenge
+2011-04-18T16:59:50  <bhasker> for anyone who is interested http://pastebin.com/0rWBtKKF
+2011-04-18T17:00:29  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-04-18T17:02:12  <jaycobcoleman> bhasker: Sorry I missed this, but I imagine this is replay data from your own bot that you're sharing?
+2011-04-18T17:02:16  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110323143040])
+2011-04-18T17:15:16  <skynetz> bhasker, cool
+2011-04-18T17:20:26  <bhasker> yup
+2011-04-18T17:20:38  <bhasker> against hunterbot and lefty so not any good opponents
+2011-04-18T17:20:43  <bhasker> though fun to watch
+2011-04-18T17:27:19  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-04-18T17:27:24  <andy_> can I see the replay online or do I have to download the code?
+2011-04-18T17:38:08  <bhasker> you have to download the code
+2011-04-18T17:38:20  <bhasker> the viewer is local i think there is a hosted viewer as well
+2011-04-18T17:38:42  *** a1k0n <a1k0n!~asloane@nat/yahoo/x-zjmvtmgizjjixmfb> has joined #aichallenge
+2011-04-18T17:45:25  <a1k0n> hi.
+2011-04-18T17:48:00  <bhasker> yo
+2011-04-18T17:49:40  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-04-18T17:52:08  <bhasker> @sigh
+2011-04-18T17:52:08  <contestbot> i know...
+2011-04-18T17:53:44  <sigh> bhasker?
+2011-04-18T17:53:54  <bhasker> were you able to reproduce the issue i noticed yesterday
+2011-04-18T17:53:58  <bhasker> the ant spawning issue
+2011-04-18T17:54:24  <bhasker> though i can't seem to reproduce it now:-\ with my newer bots
+2011-04-18T17:54:33  <bhasker> i wonder if it was just something wrong my bot was doing
+2011-04-18T17:54:43  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-04-18T17:54:58  <sigh> no one pointed me to a good description of the problem :P
+2011-04-18T17:55:07  <sigh> I was just told there was one :)
+2011-04-18T17:55:41  <a1k0n>     "players": ["amstan", "a1k0n", "mega1"],
+2011-04-18T17:55:44  <a1k0n> well shit, now i feel obligated
+2011-04-18T17:55:54  <sigh> :P
+2011-04-18T17:55:55  <amstan> lol
+2011-04-18T17:56:50  <bhasker> i just noticed that when my ants got into a configuration like ...a*a...
+2011-04-18T17:56:55  <bhasker> for some reason no ant was spawning
+2011-04-18T17:57:06  <bhasker> but not sure if it was some other bug that  i wasn't logging
+2011-04-18T17:57:07  <sigh> did the food disappear?
+2011-04-18T17:57:11  <bhasker> nope
+2011-04-18T17:57:28  <bhasker> oh wait hmm it might have been the bug in the c++ starter bot that i discovered later
+2011-04-18T17:57:35  <sigh> heh
+2011-04-18T17:57:44  <sigh> what bug is that?
+2011-04-18T17:57:44  <bhasker> the reset code was not resetting the squares properly
+2011-04-18T17:57:52  <bhasker> i told antimatroid already
+2011-04-18T17:57:56  <bhasker> let me pull up the code
+2011-04-18T17:57:57  <sigh> ah, yeah... that would explain it :)
+2011-04-18T17:58:18  <bhasker>     for(int row=0; row<rows; row++)
+2011-04-18T17:58:18  <bhasker>         for(int col=0; col<cols; col++)
+2011-04-18T17:58:19  <bhasker>             if(!grid[row][col].isWater)
+2011-04-18T17:58:19  <bhasker>                 grid[row][col].reset();
+2011-04-18T17:58:20  <bhasker> this code
+2011-04-18T17:58:23  <bhasker> the isWater check
+2011-04-18T17:58:28  <bhasker> is actually listed as isFood check
+2011-04-18T17:58:33  <bhasker> in the State::reset()
+2011-04-18T17:58:35  <bhasker> check
+2011-04-18T17:58:50  <bhasker> so it won't reset for food squares
+2011-04-18T17:58:50  <sigh> haha
+2011-04-18T17:58:51  <janzert> btw, I believe antimatroid checked in the fix for that earlier
+2011-04-18T17:59:08  <bhasker> took me sometime to track that down, my bots would keep walking into each other
+2011-04-18T17:59:13  <bhasker> and dying near food
+2011-04-18T17:59:46  <sigh> bhasker: if you notice any problems like that again, just verify with the replay what is actually happening
+2011-04-18T18:00:23  <bhasker> will do , though i haven't seen it since and my elementary bot seems reasonably good now
+2011-04-18T18:00:33  <sigh> cool
+2011-04-18T18:00:35  <bhasker> seems to expand quite nicely
+2011-04-18T18:00:41  <bhasker> and doesn't oscillate or get stuck
+2011-04-18T18:01:13  <bhasker> and i seem to be able to pathfind for a few hundred ants without significant slowdown
+2011-04-18T18:01:14  <a1k0n> so ants can spawn on water?
+2011-04-18T18:01:19  <bhasker> no they can't
+2011-04-18T18:01:23  <bhasker> neither can food
+2011-04-18T18:01:46  <a1k0n> oh.  right.  heh.  this is confusing:
+2011-04-18T18:01:47  <a1k0n> Only movement is blocked by water. Ants can see, battle and spawn over water.
+2011-04-18T18:02:00  <a1k0n> meaning they can access food through water
+2011-04-18T18:02:01  <bhasker> haha i pointed this out yesterday as well
+2011-04-18T18:02:08  <bhasker> its meant to be across
+2011-04-18T18:02:11  <a1k0n> yeah
+2011-04-18T18:02:15  <bhasker> i think antimatroid is gonna fix that
+2011-04-18T18:02:48  *** brainiack <brainiack!~marcelo@177.19.70.191> has joined #aichallenge
+2011-04-18T18:05:36  <bhasker> http://pastebin.com/0LgnWjmg
+2011-04-18T18:05:38  <bhasker> march of the ants
+2011-04-18T18:07:19  <janzert> looks like it would be good if someone set up a visualizer pastebin soon :)
+2011-04-18T18:07:37  <bhasker> heh i could set up the visualizer on my website let me do that
+2011-04-18T18:07:38  <bhasker> hold on
+2011-04-18T18:09:41  <bhasker> http://bhasker.net/ants/copy_paste.html
+2011-04-18T18:09:43  <bhasker> done
+2011-04-18T18:10:32  <a1k0n> holy crap that's cool
+2011-04-18T18:11:23  <janzert> nice
+2011-04-18T18:12:19  <bhasker> i just hope there are no exploitable bugs in the applet code
+2011-04-18T18:12:20  *** skynetz <skynetz!~none@unaffiliated/skynetz> has quit IRC (Quit: .)
+2011-04-18T18:12:30  <bhasker> i don't want someone nuking my website
+2011-04-18T18:13:05  <a1k0n> who wrote that visualizer?
+2011-04-18T18:13:10  <sigh> Frontier
+2011-04-18T18:13:10  <bhasker> hmm i forget
+2011-04-18T18:13:11  <amstan> a1k0n: Frontier
+2011-04-18T18:13:22  <a1k0n> very nice
+2011-04-18T18:13:39  *** andy_ <andy_!4e48bc6e@gateway/web/freenode/ip.78.72.188.110> has quit IRC (Ping timeout: 252 seconds)
+2011-04-18T18:13:56  <bhasker> yea its a pretty sweet visualizer
+2011-04-18T18:14:11  <bhasker> k now back to drawing board on strategies now that basics are working
+2011-04-18T18:21:13  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-04-18T18:22:26  <bhasker> 5 copies of my bot playing each other http://pastebin.com/wwQdv7hH
+2011-04-18T18:24:58  <jaycobcoleman> beautiful
+2011-04-18T18:28:28  <bhasker> i can see myself spending a  lot of time fine tuning strategies
+2011-04-18T18:28:36  <bhasker> this would be an interesting contest
+2011-04-18T18:30:42  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-04-18T18:32:25  <jaycobcoleman> are you not competing?
+2011-04-18T18:32:49  <bhasker> i am
+2011-04-18T18:34:25  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-18T18:38:20  *** antimatroid <antimatroid!~nick@42.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-18T19:08:36  <jaycobcoleman> Does anyone know if the current python starter_bot vision code is working now?
+2011-04-18T19:19:41  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-18T19:55:21  *** antimatroid <antimatroid!~nick@42.154.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-04-18T19:55:32  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 258 seconds)
+2011-04-18T19:55:34  *** antimatroid <antimatroid!~nick@42.154.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-18T20:01:07  <Frontier> I did just say something bad to someone.
+2011-04-18T20:03:51  <Frontier> There is a pub I visit regularly and the owner was asking the staff if they know me (because I was the last non-staff guy hanging around). Of course I'm drunk and think *wtf* he has seen me so often here and say "The reason you don't know me is because you are always drunk." Man was he pissed off.
+2011-04-18T20:07:22  <Frontier> bhasker: I made sure the applet runs without a certificate. That means it has no write access to any files and can not execute code on your server. Unless there is a security hole in the JVM.
+2011-04-18T20:08:40  <jbroman> Why is the applet running on the server instead of the client?
+2011-04-18T20:08:54  <Frontier> It runs on the client of course :p
+2011-04-18T20:09:09  <jbroman> So then why would it ever be able to execute code on the server?
+2011-04-18T20:09:38  <Frontier> Maybe trough some applet function (that doesn't exist)
+2011-04-18T20:09:53  <jbroman> Any such function would be accessible with or without the applet.
+2011-04-18T20:10:04  <jbroman> (By writing my own client for whatever interface it exposes.)
+2011-04-18T20:10:29  <jbroman> But whatever…we agree there is zero threat.
+2011-04-18T20:11:00  <Frontier> Seems like this is one of those days where I don't think enough before talking. ;)
+2011-04-18T20:11:31  <jbroman> I was confused even by the original question. But I have been known to be temporarily stupid as well, so…meh.
+2011-04-18T20:13:24  <Frontier> If I created a certified applet it would be able to do all kinds of things on the clients machine, but it really isn't neccesary here.
+2011-04-18T20:13:59  <Frontier> It means no fullscreen mode though for IE users.
+2011-04-18T20:14:10  <jbroman> Let them press F11.
+2011-04-18T20:15:28  <Frontier> The applet will keep it's size on the web page
+2011-04-18T20:16:00  <jbroman> Can you resize applets at runtime from JS?
+2011-04-18T20:16:14  <jbroman> Ah, whatever. Doesn't really matter.
+2011-04-18T20:16:19  <jbroman> IE users are, well, IE users.
+2011-04-18T20:16:33  <Frontier> It is a bit tricky to make it the only element on the page without reloading it and resizing is a bit non-standard ^^
+2011-04-18T20:16:33  <jbroman> Wonder what proportion of people last time around used IE?
+2011-04-18T20:16:54  <jbroman> I'd expect ai-contest.com's IE share to be significantly lower than the average.
+2011-04-18T20:16:56  <Frontier> I don't know, but IE 9 will support the canvas as far as I heard
+2011-04-18T20:17:25  <Frontier> Ask janzert or amstan, they have access to the latest browser stats.
+2011-04-18T20:18:32  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has quit IRC (Quit: Page closed)
+2011-04-18T20:19:51  <Frontier> Last time there was an increase of visits with IE. 10% may be a good estimate.
+2011-04-18T20:35:57  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 240 seconds)
+2011-04-18T20:45:50  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-04-18T20:51:01  *** b33tr00t <b33tr00t!~mik@adsl-89-132-24-179.monradsl.monornet.hu> has joined #aichallenge
+2011-04-18T20:56:18  *** b33tr00t <b33tr00t!~mik@adsl-89-132-24-179.monradsl.monornet.hu> has quit IRC (Quit: quiting)
+2011-04-18T20:59:52  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-04-18T21:33:02  *** jaycobcoleman <jaycobcoleman!d84332d7@gateway/web/freenode/ip.216.67.50.215> has joined #aichallenge
+2011-04-18T21:54:17  *** jmpespxoreax <jmpespxoreax!~nosuchuse@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-04-18T21:54:35  *** Frontier <Frontier!~marco@dslb-088-070-155-076.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-04-18T22:02:09  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-04-18T22:20:12  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 276 seconds)
+2011-04-18T22:22:02  *** computerwiz_222 <computerwiz_222!~andrew@216-58-42-50.cpe.distributel.net> has left #aichallenge
+2011-04-18T22:23:21  *** antimatroid <antimatroid!~nick@42.154.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-04-18T22:31:23  *** j3camero <j3camero!~jeff@207.219.39.71> has joined #aichallenge
+2011-04-18T22:31:47  <j3camero> Ahoy! I just got back from Florida! Now I'm safely back at home.
+2011-04-18T22:31:57  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-18T22:32:11  <j3camero> Hey McLeopold
+2011-04-18T22:33:10  <McLeopold> hi
+2011-04-18T22:33:21  <McLeopold> j3camero: thx for showing up
+2011-04-18T22:33:39  <McLeopold> nothing to report, though, I've been sick for the last 3 days, so no progress
+2011-04-18T22:33:45  <j3camero> I actually just got in. Just got back in the door from the airport.
+2011-04-18T22:33:53  <j3camero> Oh, I hope you're feeling better.
+2011-04-18T22:34:00  <McLeopold> I'm getting there
+2011-04-18T22:34:15  <bhasker> leopold
+2011-04-18T22:34:24  <McLeopold> There's been some more activity as far as bots go, bhasker is working on some good ones
+2011-04-18T22:35:22  <bhasker> haha not good ones,
+2011-04-18T22:35:25  <bhasker> just a basic one
+2011-04-18T22:35:39  <j3camero> Excellent.
+2011-04-18T22:36:44  <j3camero> Is anyone showing interest in writing content for the website? Maybe some tutorials. I find it's good to have a tutorial for using the visualizer and other client-side tools, and also another tutorial that starts with the starter package and leads the person through a series of small changes that raise their ranking.
+2011-04-18T22:39:08  <McLeopold> I would recommend Stocha for that, if he's willing
+2011-04-18T22:39:25  <McLeopold> He's done a *lot* of testing and is fairly active on the forums
+2011-04-18T22:40:09  <McLeopold> antimatroid has done a lot on the wiki already, I'm sure that could be converted over easily
+2011-04-18T22:40:25  <j3camero> Excellent. Good to hear. That's something that I have up until now always neglected until the last moment.
+2011-04-18T22:40:30  <McLeopold> amstan: did you get a test server going yet?
+2011-04-18T22:40:42  <amstan> nope, i'm still working on that
+2011-04-18T22:41:01  <amstan> j3camero: antimatroid has been writing content for the website
+2011-04-18T22:41:12  <j3camero> amstan: excellent.
+2011-04-18T22:41:28  <j3camero> Okay I gotta hit the sack. Big day tomorrow.
+2011-04-18T22:42:12  <McLeopold> cya
+2011-04-18T22:48:45  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-04-18T22:51:29  *** delt0r_ <delt0r_!~delt0r@188-22-167-104.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-18T22:52:44  *** delt0r___ <delt0r___!~delt0r@188-22-16-97.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-04-18T23:01:42  <bhasker> leopold let me show you a replay of my latest iteration
+2011-04-18T23:02:57  <bhasker> http://pastebin.com/wwQdv7hH
+2011-04-18T23:03:26  <McLeopold> bhasker: I'll have to look at it later.  Also, ants.zeroviz.us will do replay pastes soon.
+2011-04-18T23:03:39  <bhasker> oh i uploaded the visualizer
+2011-04-18T23:03:42  <bhasker> to my website
+2011-04-18T23:03:48  <bhasker> bhasker.net/ants/copy_paste.html
+2011-04-18T23:11:10  <j3camero> Love that visualizer. bhasker did you make that?
+2011-04-18T23:16:35  <amstan> j3camero: frontier did it
+2011-04-18T23:18:58  <bhasker> nope
+2011-04-18T23:19:01  <bhasker> i just uploaded it
+2011-04-18T23:20:32  <bhasker> need some good bots to test against
+2011-04-18T23:24:45  <jaycobcoleman> Wish I could provide. Still in construction :P
+2011-04-18T23:29:45  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 276 seconds)
+2011-04-18T23:40:08  <janzert> I looked at browser stats the other day and it was still about 4.25% that were using IE <= 8
+2011-04-18T23:46:23  <jaycobcoleman> I don't think those statistics have our target audience in mind
+2011-04-18T23:46:48  <janzert> ? the 4.25% is the visitors to ai-contest.com
+2011-04-18T23:47:19  <janzert> I have no idea what the general population percentage is :)
+2011-04-18T23:47:54  <jaycobcoleman> This is shocking
+2011-04-18T23:48:02  <amstan> http://en.wikipedia.org/wiki/File:Web_browser_usage_share.svg
+2011-04-18T23:48:43  <jaycobcoleman> Oh god. It's horrifying
+2011-04-18T23:50:20  * janzert wonders what the source of data is for that
+2011-04-18T23:50:24  <bhasker> hah most people don't care about the browser they just use whatever came with their pc
+2011-04-18T23:50:26  <janzert> is it visitors to wikipedia?
+2011-04-18T23:50:26  <bhasker> laptop
+2011-04-18T23:50:26  <bhasker> etc
+2011-04-18T23:50:52  <bhasker> even though IE is steadily losing ground, its still the default browser on most systems sold today
+2011-04-18T23:53:41  <amstan> janzert: no, here's more: http://en.wikipedia.org/wiki/Web_browser_usage_share
+2011-04-18T23:54:25  <janzert> yeah, I figured it out eventualy. basically it is the median values from 4 or 5 different sources including wikipedia
+2011-04-18T23:56:38  <jaycobcoleman> Ahhh yes. A nice steady decline
+2011-04-18T23:56:46  <amstan> yes
+2011-04-18T23:57:38  <janzert> although taking the medians of market share percentages seems a rather dubious way to make a chart since you'll notice the total percentage no longer adds up to 100% (it's somewhere around 102%)
+2011-04-18T23:58:11  <jaycobcoleman> You got me in a statisticsy mood now. Let's see how AT&T is doing

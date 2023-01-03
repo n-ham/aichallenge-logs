@@ -1,0 +1,669 @@
+2011-05-16T00:27:40  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-05-16T00:34:45  *** computerwiz_222 <computerwiz_222!~andrew@216-246-248-55.cpe.distributel.net> has quit IRC (Remote host closed the connection)
+2011-05-16T00:39:26  <McLeopold> janzert: when using secure jails, I'm not getting output from the bots
+2011-05-16T00:40:16  <janzert> not sure what could cause that
+2011-05-16T00:40:33  <McLeopold> I'm running with full logging
+2011-05-16T00:40:34  <janzert> so play_one_game times out all the bots on the first move?
+2011-05-16T00:40:53  <McLeopold> Well, I think it's only from within the worker...
+2011-05-16T00:41:06  <McLeopold> I need to compare options then...
+2011-05-16T00:41:38  <McLeopold> within the worker for a functional test, both timeout
+2011-05-16T00:42:32  <janzert> I guess I'd start by checking if play_one_game works
+2011-05-16T00:42:37  <McLeopold> playgame is find
+2011-05-16T00:47:00  <McLeopold> wait, no, playgame does a timeout as well
+2011-05-16T00:48:04  <McLeopold> janzert: have you gotten a bot to reply to input inside of a jail?
+2011-05-16T00:50:33  <McLeopold> janzert: this is my current guess -- shlex.split(shell_command.replace('\\','/'))
+2011-05-16T00:56:31  <janzert> yes, play_one_game works fine with secure jails here
+2011-05-16T00:56:48  <amstan> McLeopold: works for hypertriangle too
+2011-05-16T00:58:10  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC ()
+2011-05-16T00:58:19  <McLeopold> ['sudo', '-u', 'jailuser2', 'schroot', '-u', 'jailuser2', '-c', 'jailuser2', '-d', '/home/jailuser', 'python', 'submission_test/TestBot.py']
+2011-05-16T00:58:30  <McLeopold> It seems like the last 2 shouldn't be split?
+2011-05-16T00:59:09  <janzert> why not?
+2011-05-16T00:59:28  <McLeopold> It's a guess
+2011-05-16T00:59:34  <janzert> they are the program to run and the argument to give it
+2011-05-16T00:59:55  <McLeopold> if that's how schroot works, the good
+2011-05-16T00:59:58  <janzert> btw, the shlex.split happens even when not run in a secure jail
+2011-05-16T01:01:08  <janzert> and taking a look at the schroot man page again, it seems like that should be correct
+2011-05-16T01:02:38  <McLeopold> okay, let me try on hypertriangle
+2011-05-16T01:03:25  <janzert> I've got the setup scripts running from scratch here again to test my latest changes, but I can check after it finishes as well
+2011-05-16T01:15:49  <CIA-48> aichallenge: Contest Worker epsilon * r67d7533 / (4 files in 2 dirs): added some worker debugging - http://bit.ly/mqV1pA
+2011-05-16T01:16:10  <McLeopold> amstan: any issue with pulling that as contest on hypertriangle?
+2011-05-16T01:16:25  <amstan> ?
+2011-05-16T01:17:25  <McLeopold> contest@aichallengebeta:!/aichallenge$ git pull  (yes/no)
+2011-05-16T01:18:15  <amstan> probably not, why would there be?
+2011-05-16T01:18:29  <McLeopold> it's your machine, just want to be sure
+2011-05-16T01:18:50  <amstan> np, you can do it
+2011-05-16T01:18:56  <amstan> i don't have the stuff open now
+2011-05-16T01:21:01  <janzert> why the changes to sandbox.py, they don't seem to make any functional change?
+2011-05-16T01:22:16  <McLeopold> So I can pass a --debug switch to worker.py, and a --secure_jail switch to playgame.py
+2011-05-16T01:22:47  <janzert> how do the changes in sandbox.py effect that?
+2011-05-16T01:23:19  <janzert> ahh, nevermind I figured it out :P
+2011-05-16T01:23:30  <janzert> so you can pass in an explicit None and get the default
+2011-05-16T01:23:51  <McLeopold> yeah, otherwise the server_info setting takes over
+2011-05-16T01:24:01  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-16T01:24:40  <McLeopold> although single quote to double quote was probably a bit pedantic
+2011-05-16T01:25:44  <janzert> especially since my slightly preferred style there would be double quotes :P
+2011-05-16T01:26:12  <McLeopold> I avoid double quotes unless I really want a lot of single quotes in a string
+2011-05-16T01:27:27  <janzert> I generally default to double quotes, except for certain situations, primarily dictionary keys
+2011-05-16T01:30:19  *** chris__0076 <chris__0076!~Chris_007@adsl-74-190-49-211.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T01:31:33  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-05-16T01:31:52  <Frontier> good morning
+2011-05-16T01:31:57  <McLeopold> howdy
+2011-05-16T01:32:49  *** chris___0076 <chris___0076!~Chris_007@adsl-74-176-220-147.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T01:33:10  <CIA-48> aichallenge: Contest Worker epsilon * rb3dca5f / worker/worker.py : ignore cleanup in debug mode - http://bit.ly/iIQPn3
+2011-05-16T01:36:08  <CIA-48> aichallenge: janzert epsilon * racb8be2 / (setup/server_setup.py setup/worker_setup.py): Try not to stomp on contest file ownership in setup scripts - http://bit.ly/lLM5qU
+2011-05-16T01:38:39  <Frontier> Contest Worker? An anonymous commit?
+2011-05-16T01:38:50  <McLeopold> janzert: what's the cwd of a jail user when running the bot command?
+2011-05-16T01:39:01  <McLeopold> Frontier: that was me using bad git info :(
+2011-05-16T01:40:38  <Frontier> ok, I just did not know that works on git.
+2011-05-16T01:40:51  <Frontier> *github
+2011-05-16T01:41:39  <McLeopold> I always for get
+2011-05-16T01:43:38  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-05-16T01:44:42  <Frontier> the engine works again for me, yay! I had trouble with it trying to writing to /srv/chroot
+2011-05-16T01:45:16  <McLeopold> janzert: any status on an answer to the working dir question?
+2011-05-16T01:46:26  <McLeopold> It seems like it is /home/jailuser?
+2011-05-16T01:46:31  <McLeopold> without a number?
+2011-05-16T01:46:39  <janzert> that's what it appears to the sandboxed program yes
+2011-05-16T01:47:10  <McLeopold> so, what's really going on?
+2011-05-16T01:48:06  <janzert> on the outside it is /srv/chroot/jailuser<number>/root/home/jailuser, which is a unionfs and any data written will actually be at /srv/chroot/jailuser<number>/scratch/...
+2011-05-16T01:48:39  <janzert> it's a chroot so the /srv/chroot/jailuser<number>/root appears to be the root of the filesystem to the programs inside it
+2011-05-16T01:49:18  <McLeopold> Where does the command run at then?  I'm getting a 'cant find MyBot.py'
+2011-05-16T01:49:39  <janzert> in /home/jailuser
+2011-05-16T01:49:49  <McLeopold> I have a submission_test dir in there
+2011-05-16T01:50:03  <McLeopold> so, it's not in the correct location to run the MyBot.py
+2011-05-16T01:50:05  <janzert> the sandbox copies the working directory you give for the bot to that spot
+2011-05-16T01:50:30  <McLeopold> shouldn't it copy the contents of the dir instead?
+2011-05-16T01:50:41  <janzert> that's what I mean
+2011-05-16T01:50:52  <McLeopold> so, that's a bug then
+2011-05-16T01:51:08  <janzert> it's working here though
+2011-05-16T01:51:11  <McLeopold> but it doesn't make sense that you guys see things working
+2011-05-16T01:51:41  <janzert> see the Jail.prepare_with method
+2011-05-16T01:51:42  <McLeopold> Unless the worker is getting the wrong dir maybe
+2011-05-16T01:52:13  <McLeopold> does an ending slash matter?
+2011-05-16T01:52:34  <janzert> does it to "cp -r"?
+2011-05-16T01:53:33  <janzert> it is using cp -r <working directory given> <jail home directory> to make the copy
+2011-05-16T01:53:37  <Frontier> hmm things like that may depend on the distribution
+2011-05-16T01:55:15  <McLeopold> janzert: playgame passes a '.' for the working dir, worker does something different
+2011-05-16T01:56:20  <janzert> playgame changes to the bot directory before calling the sandbox?
+2011-05-16T01:56:37  <McLeopold> no, it just assumes where you run it is your working dir
+2011-05-16T01:57:12  <janzert> but that isn't the bot's working directory so should never work
+2011-05-16T01:57:29  <McLeopold> so, if I fix it, jails will break for you then :)
+2011-05-16T01:58:35  <janzert> to be sure, I'm talking about what ends up as the bot_cwd variable at line 40 of engine.py
+2011-05-16T01:58:54  <janzert> and is the first argument to the Sandbox constructor
+2011-05-16T01:59:03  <Frontier> McLeopold: Did you add the "status" array to the replays and if so, does it use the same values as the "playerstatus" field described in the wiki?
+2011-05-16T01:59:38  <McLeopold> janzert: yes, playgame hardcodes to '.', which I am fixing
+2011-05-16T02:00:03  <McLeopold> and when I do, I think you'll see the issue I get with worker, where the dir name is copied to the jailuser
+2011-05-16T02:00:07  <McLeopold> not the contents
+2011-05-16T02:00:13  <McLeopold> Frontier: I'll check later tonight
+2011-05-16T02:01:35  <janzert> @#$^%!@#$%, stupid print functions
+2011-05-16T02:01:36  <contestbot> janzert: User error -- Replace user.
+2011-05-16T02:01:50  <janzert> python 2 has a print statement for crying out loud
+2011-05-16T02:03:03  <McLeopold> it also has future imports
+2011-05-16T02:05:26  * janzert isn't going to discuss print functions because all I'm going to do is start screaming
+2011-05-16T02:06:03  <janzert> I do see playgame is using the "." so that means the whole ants/ directory structure is getting copied into the sandbox
+2011-05-16T02:06:35  <McLeopold> janzert: so, you prefer the print statement over the print function?
+2011-05-16T02:06:50  <janzert> I prefer to stick with standard python 2 style
+2011-05-16T02:07:06  <janzert> if I was writing python 3 then I'd prefer print functions
+2011-05-16T02:07:14  <McLeopold> Noted.  I was preparing for 3
+2011-05-16T02:09:41  <janzert> so the working directory passed into the sandbox should be the directory you want the commands run from
+2011-05-16T02:09:59  <janzert> and the commands run should assume they are run from that directory obviously :)
+2011-05-16T02:10:20  <McLeopold> yes, but I think if I actually did that, it would be broken
+2011-05-16T02:10:22  <janzert> the current playgame follows both those rules but in a rather wierd way :P
+2011-05-16T02:11:24  <janzert> basically it looks like instead of setting up the commands to run from the bots directory it sets them up to run from the current directory
+2011-05-16T02:12:11  <janzert> since the working directory is given as '.' and the bot command is "python dist/sample_bits/python/LeftyBot.py" for example
+2011-05-16T02:12:25  <McLeopold> with playgame, someone should be able to pass in a command, which could be "python my/dir/struct/MyBot.py"
+2011-05-16T02:12:38  <McLeopold> so, the command has the dir info inside of it
+2011-05-16T02:12:59  <McLeopold> okay, we are saying the same thing :)
+2011-05-16T02:13:41  <janzert> so long as the sandboxes are running non-secure or the my/dir/struct/ is under the current working directory that will work fine
+2011-05-16T02:13:46  <McLeopold> we can make playgame take 2 params for each bot, or we can try and parse it out properly
+2011-05-16T02:14:04  <janzert> I would just leave it the way it is
+2011-05-16T02:14:04  <McLeopold> worker is a whole different story
+2011-05-16T02:14:37  <janzert> it will work fine for people using it themselves since they won't be running in secure mode anyway
+2011-05-16T02:15:20  <McLeopold> but, worker passes ("../ants/submission_test/", "python TestBot.py"), and the jail has a "submission_test" dir.  Shouldn't the contents be copied?
+2011-05-16T02:16:08  <janzert> what does "cp -r ../ants/submission_test/ some_test_destination" do?
+2011-05-16T02:16:37  <McLeopold> not the contents
+2011-05-16T02:16:47  <McLeopold> you need a splat on the end
+2011-05-16T02:16:49  <janzert> also using a relative path like that is going to cause the behaviour to be dependent on the scripts current working directory
+2011-05-16T02:17:14  <janzert> don't use * cause you won't get any .dot files
+2011-05-16T02:17:18  <McLeopold> I think I mentioned making these module dir to solve that
+2011-05-16T02:17:59  <janzert> I would recommend getting an absolute directory to pass to the sandbox
+2011-05-16T02:18:02  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-16T02:18:21  <McLeopold> I think I can make one from the server_info stuff
+2011-05-16T02:18:21  <janzert> then you can run worker.py from anywhere and have it run correctly
+2011-05-16T02:20:55  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-16T02:23:34  <janzert> ok, I see the problem with the jail copying going on
+2011-05-16T02:27:56  <CIA-48> aichallenge: janzert epsilon * r8b7d530 / worker/sandbox.py : Ensure working directory contents are copied into sandbox - http://bit.ly/mf8SQT
+2011-05-16T02:27:58  <janzert> see if that does it for you
+2011-05-16T02:28:03  <McLeopold> k
+2011-05-16T02:29:42  * janzert hates that copying a directory behavior based changes whether or not the target given exists
+2011-05-16T02:29:54  <janzert> I should know better since it has tripped me up before
+2011-05-16T02:30:49  *** chris___0076 <chris___0076!~Chris_007@adsl-74-176-16-36.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T02:31:13  <smiley1983> Are other people finding that the visualize_locally.py script doesn't work? copy_paste.html still works.
+2011-05-16T02:32:09  <McLeopold> smiley1983: I've recently added launching the visualizer to playgame.py.  Are you using that?
+2011-05-16T02:33:22  *** chris__0076 <chris__0076!~Chris_007@adsl-74-190-49-211.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T02:34:10  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-51-114.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T02:34:11  <smiley1983> McLeopold: I noticed that, but on my system both playgame and visualize_locally give me a blank page in chromium.
+2011-05-16T02:34:48  <McLeopold> I ran into that bug, it's probably a bad relative path.
+2011-05-16T02:35:06  <McLeopold> wait, that was an IE issue...
+2011-05-16T02:35:22  <smiley1983> The replay.html file contains the game data, but loads a blank page. I'll go and check it in firefox...
+2011-05-16T02:35:33  <McLeopold> if you check your game_logs dir, there should be a replay.html
+2011-05-16T02:35:35  *** chris___0076 <chris___0076!~Chris_007@adsl-74-176-16-36.asm.bellsouth.net> has quit IRC (Ping timeout: 250 seconds)
+2011-05-16T02:36:06  <McLeopold> janzert: dir copy is better, checking some other stuff
+2011-05-16T02:38:09  <smiley1983> The replay.html is being generated in the viewer dir, and I don't seem to have a game_logs dir. Firefox also loads a blank page.
+2011-05-16T02:38:28  <McLeopold> when's the last time you pulled?
+2011-05-16T02:38:41  <smiley1983> A few minutes ago
+2011-05-16T02:38:56  <McLeopold> using play_one_game.sh?
+2011-05-16T02:39:42  <McLeopold> it has a "--log_dir game_logs" switch
+2011-05-16T02:40:08  <smiley1983> ... Ha! Thankyou! play_one_game works. I had made my own game-running scripts, I should be able to work out the problem from this.
+2011-05-16T02:40:14  <smiley1983> Sorry to have bothered you. :)
+2011-05-16T02:40:26  <McLeopold> np, I switched a lot of the switches around lately
+2011-05-16T02:40:49  <smiley1983> I found some of them and updated my scripts, obviously missed some.
+2011-05-16T02:40:53  <McLeopold> the logging is much better, you can pipe bot output anywhere now
+2011-05-16T02:48:56  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 264 seconds)
+2011-05-16T02:49:07  <McLeopold> janzert: no luck on playgame :(
+2011-05-16T02:49:41  <janzert> no luck in what way?
+2011-05-16T02:49:51  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-16T02:49:56  <McLeopold> I still get timeouts with the secure jails
+2011-05-16T02:49:58  <janzert> it does still work here btw. I checked that before pusing
+2011-05-16T02:50:00  <janzert> pushing
+2011-05-16T02:50:30  <janzert> ok, how about running the sandbox directly does that work?
+2011-05-16T02:51:04  <janzert> let me get a command line for you
+2011-05-16T02:53:45  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Client Quit)
+2011-05-16T03:04:04  <janzert> heh, ok so play_one_game works fine but something is going on trying to use the sandbox command line directly here as well
+2011-05-16T03:04:15  <McLeopold> okay
+2011-05-16T03:04:29  <McLeopold> I'm going to commit the playgame fix, to be consistent with the worker
+2011-05-16T03:04:51  <janzert> how?
+2011-05-16T03:05:33  <janzert> I mean how can it be consistent with the worker when we don't necessarily know the "correct" working directory
+2011-05-16T03:05:50  <janzert> or more specifically what are you using to get the working directory?
+2011-05-16T03:06:19  <CIA-48> aichallenge: McLeopold epsilon * r5ad7d7a / (ants/playgame.py worker/compiler.py worker/worker.py): fixed working dir of playgame - http://bit.ly/l8GfP9
+2011-05-16T03:06:39  <McLeopold> janzert: get_cmd_wd does the fix for me
+2011-05-16T03:07:10  <McLeopold> so "python test/MyBot.py" returns ("/real/path/test", "python MyBot.py")
+2011-05-16T03:07:36  <antimatroid1> McLeopold: then your ants will see the outcome of all battles it's involved in
+2011-05-16T03:07:38  <janzert> what about "../mybot/Mybot"?
+2011-05-16T03:08:17  <McLeopold> the worker is passing the correct commands defined here: https://github.com/aichallenge/aichallenge/blob/epsilon/worker/compiler.py#L227
+2011-05-16T03:08:34  <McLeopold> janzert: look at the code, it should work
+2011-05-16T03:08:44  <janzert> and "../mylanguage/interpreter ../mybot/MyBot.mylanguage"? :)
+2011-05-16T03:08:58  <McLeopold> janzert: that last one may fail :)
+2011-05-16T03:09:14  <janzert> I guess I'm saying I think an option argument might be better way to go
+2011-05-16T03:09:33  <janzert> although actually there probably isn't a way to make the latter one work sanely
+2011-05-16T03:10:06  <McLeopold> antimatroid: yes
+2011-05-16T03:10:41  <McLeopold> antimatroid: if you have a lone scout ant, and it dies, it gets to see who it killed
+2011-05-16T03:11:27  <McLeopold> antimatroid: ants move -> vision calc -> battle -> birth
+2011-05-16T03:12:03  <McLeopold> antimatroid: although, I'm thinking of this as well: birth -> move -> vision -> battle
+2011-05-16T03:12:40  <McLeopold> that last one prevents the boost from spawning an ant, slightly harder to spawn under contention
+2011-05-16T03:14:18  <janzert> bah, on my development VM sandbox.py command line works, on my server test vm it doesn't
+2011-05-16T03:15:36  <janzert> and play_one_game, even with the latest playgame.py, works fine on both
+2011-05-16T03:15:59  <McLeopold> hypertriangle worker works now!
+2011-05-16T03:17:49  <janzert> the box where it's not working, does "./sandbox.py -o echo test" give you a "response: test" line?
+2011-05-16T03:17:51  <antimatroid1> McLeopold: do you mean move->birth?
+2011-05-16T03:18:00  <janzert> and how about without the -o argument
+2011-05-16T03:18:50  <antimatroid1> you will get more draws for food doing that?
+2011-05-16T03:19:04  <McLeopold> janzert: No more responses. Terminating.
+2011-05-16T03:19:13  <McLeopold> so, no
+2011-05-16T03:19:35  <McLeopold> antimatroid: I was specifying the order in which things are calculated in the engine
+2011-05-16T03:19:50  <janzert> heh, so even where it's not working correctly for me I still get that response
+2011-05-16T03:20:17  <McLeopold> antimatroid: it means you have to be next to food *before* your ant moves, so you have to wait a turn
+2011-05-16T03:20:40  <McLeopold> janzert: I guess your not in jail?  Get out of jail free card? :p
+2011-05-16T03:24:19  <antimatroid1> McLeopold: I don't get the difference
+2011-05-16T03:24:26  <antimatroid1> except your ant spawns after the change of turn
+2011-05-16T03:24:44  <McLeopold> which you can't then control right away
+2011-05-16T03:25:16  <antimatroid1> yeah okay, i think that's more confusing than anything :P
+2011-05-16T03:25:28  <McLeopold> it is...
+2011-05-16T03:25:34  <antimatroid1> and it could still spawn then too
+2011-05-16T03:25:37  <antimatroid1> the new ant that is
+2011-05-16T03:25:57  <McLeopold> I just don't like the boost in speed you get from walking towards food
+2011-05-16T03:26:03  <antimatroid1> why not?
+2011-05-16T03:26:11  <McLeopold> I guess it can be a technique for faster growth
+2011-05-16T03:26:27  <antimatroid1> everyone gets the same deal
+2011-05-16T03:26:51  <McLeopold> because, if 2 players are distance 20 from the same spot, random food shouldn't give either an advantage in speed
+2011-05-16T03:28:18  <antimatroid1> ... symmetric food spawning == win
+2011-05-16T03:28:25  <antimatroid1> it's too hard to make things fair asymmetrically
+2011-05-16T03:28:30  <McLeopold> Frontier: is there anyway to speed up the replays?
+2011-05-16T03:28:54  <McLeopold> antimatroid1: it's a nitpick, so it's not worth messing with
+2011-05-16T03:30:09  <CIA-48> aichallenge: McLeopold epsilon * rd62f535 / setup/server_setup.py : fixed php memcache package - http://bit.ly/mTkEwN
+2011-05-16T03:31:33  <Frontier> McLeopold: ah well, good question. You have to convince me that is is bad to make the speed configurable through 3 settings you must enter in a text input box
+2011-05-16T03:32:01  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-05-16T03:32:16  <McLeopold> Frontier: I'll do anything to be able to control speed.
+2011-05-16T03:32:46  *** amstan <amstan!~amstan@69-165-142-155.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-05-16T03:33:06  <McLeopold> It's just, the front page of the website needs to look exciting, and the ants move around like molasses.
+2011-05-16T03:33:13  <Frontier> bad answer :p. what do you have in mind? clicking on + everytime you load a replay?
+2011-05-16T03:34:03  <McLeopold> http://hypertriangle.com:13080/
+2011-05-16T03:34:11  <Frontier> lol, we can add a constructor field to override settings of course. and we should do that really to avoid having people with fullscreen mode as default not seeing the front page
+2011-05-16T03:34:13  <McLeopold> Frontier: you already have a save settings...
+2011-05-16T03:35:02  <Frontier> hypertriangle renders a crazy bunch of red and black text, horizontal lines and escape sequences
+2011-05-16T03:35:32  <antimatroid1> is the visualiser on that page meant to error on me?
+2011-05-16T03:35:43  <janzert> McLeopold: I thought you pointed me at http://stackoverflow.com/questions/1442411/using-memcache-vs-memcached-with-php before as the reason to use php-memcached not php-memcache
+2011-05-16T03:35:43  <McLeopold> looks like it's trying to load an apache dir listing...
+2011-05-16T03:36:00  <McLeopold> janzert: that wasn't me
+2011-05-16T03:36:32  <Frontier> it looks like ... it lives and browses the file system. it evolved, omg. reddit this!!!11oneeleven
+2011-05-16T03:37:16  <McLeopold> okay, maybe it was me, but it's a small detail
+2011-05-16T03:37:42  <janzert> 2011-04-07T00:20:00  <McLeopold> http://stackoverflow.com/questions/1442411/using-memcache-vs-memcached-with-php
+2011-05-16T03:38:04  <janzert> heh, was busy looking for it :P
+2011-05-16T03:38:28  <Frontier> Fetching replay from: games/  <-- this is wrong obviously.
+2011-05-16T03:38:30  <McLeopold> yeah, I read the page and then thought, crap, I've seen this before :p
+2011-05-16T03:38:37  <McLeopold> Frontier: memcache issue...
+2011-05-16T03:39:15  <Frontier> oh how does that happen? i mean how can "games/0/0.replay" become "games/" ?
+2011-05-16T03:39:40  <CIA-48> aichallenge: McLeopold epsilon * rcde2531 / website/index.php : fixed var issue with default game - http://bit.ly/jnofuy
+2011-05-16T03:39:49  <McLeopold> Frontier: btw, it's now "/games/0"
+2011-05-16T03:39:58  <McLeopold> thx to the magic of mod_rewrite
+2011-05-16T03:42:42  <Frontier> McLeopold: currently I set the playback speed as 1 turn / second, but keep the playback time at max 1 minute. That means any game longer than 60 turns gets sped up. That doesn't work too well with a simple +/-. So I wonder if I should drop the automagic speed correction or make it configurable.
+2011-05-16T03:43:27  *** chris__0076 <chris__0076!~Chris_007@adsl-74-190-55-100.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T03:43:31  <McLeopold> It's some fairly simple math to set it either way.  I like that idea
+2011-05-16T03:44:04  <janzert> can't +/- buttons change based on a percentage?
+2011-05-16T03:44:22  <McLeopold> http://hypertriangle.com:13080/  looking kinda good
+2011-05-16T03:44:22  <janzert> say 25% faster or slower each time they're pressed
+2011-05-16T03:44:23  <Frontier> ?
+2011-05-16T03:45:15  <Frontier> janzert: sure, the point is I have a time limit in place: no replay runs longer than a minute no matter what the speed setting is.
+2011-05-16T03:45:15  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Quit: WeeChat 0.3.4)
+2011-05-16T03:45:50  <janzert> ahh, I thought the time limit was just for an initial speed calculation
+2011-05-16T03:46:11  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-51-114.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-16T03:46:15  <Frontier> who would want to watch a 900 turns game at 1 or 2 turns a second? that would take 7:30 to watch
+2011-05-16T03:46:30  <McLeopold> well, for a starting speed, sure, but you want to be able to slow it down when reviewing a match
+2011-05-16T03:46:47  <janzert> I certainly would when wanting to check out a specific part of the battle
+2011-05-16T03:47:11  <Frontier> ... which makes it difficult again to save that setting, because it depends on the actual replay length :p
+2011-05-16T03:47:39  *** berak <berak!~chatzilla@89.204.137.133> has joined #aichallenge
+2011-05-16T03:48:08  <McLeopold> for now, don't save it
+2011-05-16T03:48:16  <McLeopold> but at least give the controls
+2011-05-16T03:48:20  <janzert> can't you set a moves to play per second variable when first loading based on the replay length then just modify that variable faster or slower when requested by the buttons?
+2011-05-16T03:49:05  <janzert> you could even save it as a default speed as well if you want to provide a quick way for them to get back to a reasonable speed
+2011-05-16T03:49:05  <Frontier> yeah sure, so no saving of the speed setting.
+2011-05-16T03:50:24  *** delt0r___ <delt0r___!~delt0r@188-22-164-144.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-05-16T03:50:55  <McLeopold> janzert: http://hypertriangle.com:13080/games/6 2 timeouts, for sample_bots, that is worrisome
+2011-05-16T03:51:22  *** delt0r___ <delt0r___!~delt0r@188-22-22-219.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-16T03:52:18  <janzert> http://hypertriangle.com:13080/visualizer.php?game_id=6 also seems worrisome
+2011-05-16T03:52:46  <McLeopold> open that issue up for sigh
+2011-05-16T03:53:08  <janzert> I don't even know what to file ;)
+2011-05-16T03:53:14  <Frontier> Yeah, someone else reported that as well with one of the start ants dying after 4 turns like this
+2011-05-16T03:53:24  <janzert> you or Frontier are almost certainly better to diagnose that
+2011-05-16T03:53:29  <McLeopold> janzert: that's a bug in the ants.py engine
+2011-05-16T03:54:22  <Frontier> May I assume this happens when a bot times out?
+2011-05-16T03:54:22  <McLeopold> refresh the front page, game 7 ran \o/
+2011-05-16T03:54:23  <antimatroid1> that is a really old game
+2011-05-16T03:54:44  *** berak <berak!~chatzilla@89.204.137.133> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-05-16T03:54:53  <McLeopold> antimatroid1: these are games being produced right now on hypertriangle!
+2011-05-16T03:54:58  <McLeopold> submit your bots!
+2011-05-16T03:55:30  *** berak <berak!~chatzilla@89.204.137.133> has joined #aichallenge
+2011-05-16T03:55:48  <Frontier> oh I see I have to change the colors above player number 4 again ;)
+2011-05-16T03:57:10  <Frontier> btw I issued a "later tell sigh" about the bug in replay 6. I haven't seen him here for a while though
+2011-05-16T03:57:24  <Frontier> @seen sigh
+2011-05-16T03:57:24  <contestbot> Frontier: sigh was last seen in #aichallenge 3 days, 19 hours, 36 minutes, and 18 seconds ago: <sigh> oh one thing with js closures... if you aren't careful with closures you can create cyclic references which aren't handled well in all browsers
+2011-05-16T04:00:34  <McLeopold> Fronter: can there be options to strip the UI from the replay, for the front page?
+2011-05-16T04:05:34  <Frontier> arr, just make a flash video already ;). I'll do that.
+2011-05-16T04:05:46  <Frontier> I mean... strip the ui as an option
+2011-05-16T04:06:06  <antimatroid1> McLeopold: oh, didn't realise that :P
+2011-05-16T04:06:26  <McLeopold> I think compilation is failing though :(
+2011-05-16T04:06:29  <Frontier> what should be visible besides the map? scores, ant counts, ...?
+2011-05-16T04:06:32  <antimatroid1> yeah
+2011-05-16T04:06:44  <McLeopold> Frontier: just remove buttons
+2011-05-16T04:06:52  <McLeopold> links should still work
+2011-05-16T04:10:57  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-16T04:12:17  *** stocha <stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-05-16T04:12:19  <stocha> hello.
+2011-05-16T04:12:33  <stocha> how do one submit a bot ?
+2011-05-16T04:12:42  *** chris___0076 <chris___0076!~Chris_007@adsl-74-190-124-242.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T04:13:42  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-05-16T04:14:28  *** chris__0076 <chris__0076!~Chris_007@adsl-74-190-55-100.asm.bellsouth.net> has quit IRC (Ping timeout: 258 seconds)
+2011-05-16T04:17:08  <smiley1983> Will I hurt the temporary hypertriangle server if I make an account and attempt to upload the ocaml starter package?
+2011-05-16T04:17:22  <McLeopold> probably not
+2011-05-16T04:18:17  <smiley1983> I might try that then :)
+2011-05-16T04:21:17  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-05-16T04:21:28  *** chris__0076 <chris__0076!~Chris_007@adsl-74-190-54-182.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T04:21:28  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-05-16T04:21:34  <antimatroid1> it didn't like it when i tried to create an account :\
+2011-05-16T04:22:06  <antimatroid1> as if passwords need to be 8 characters
+2011-05-16T04:23:08  <janzert> yeah, I'd like to see that restriction removed too
+2011-05-16T04:23:17  <janzert> it's not like we're a bank ;)
+2011-05-16T04:24:28  <antimatroid1> it shouldn't really be necessary for a bank either
+2011-05-16T04:24:42  <antimatroid1> they usually block your account for 24 hours if you screw the password up 3 times or so
+2011-05-16T04:25:08  *** chris___0076 <chris___0076!~Chris_007@adsl-74-190-124-242.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-05-16T04:29:30  *** chris___0076 <chris___0076!~Chris_007@adsl-74-176-15-118.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T04:30:06  <dr-> smiley1983, you have successfuly created an account ?
+2011-05-16T04:30:22  <Frontier> you do know what a brute force password attack is?
+2011-05-16T04:31:22  <Frontier> I think who ever set a minimum length of 8 had good intentions
+2011-05-16T04:32:22  *** chris__0076 <chris__0076!~Chris_007@adsl-74-190-54-182.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T04:33:04  <Frontier> Maybe one of the 5000 participants thinks the whole challenge is unfair and starts to crack user's passwords. :)
+2011-05-16T04:33:35  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 276 seconds)
+2011-05-16T04:33:58  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-16T04:34:37  <Frontier> Do you remember the HL2 source code leak? Gabe Newell, CEO of Valve had 'gaben' as his password -.-. With a minimum length of 8 this would not happen
+2011-05-16T04:36:50  <janzert> yeah, it'd be gabenewell :P
+2011-05-16T04:36:50  <Ice_Harley> would be "gabenewell"
+2011-05-16T04:36:57  <janzert> hehe
+2011-05-16T04:36:57  <Ice_Harley> )
+2011-05-16T04:37:48  <Ice_Harley> Frontier, ok somebody has my pass. What can he do?
+2011-05-16T04:37:50  <janzert> you have to get a hold of the contest database to start cracking passwords and at that point we're screwed anyway
+2011-05-16T04:38:08  <antimatroid1> .. i still haven't got a confirmation email
+2011-05-16T04:38:50  <dr-> i think the tmp server isn't ready to registration
+2011-05-16T04:39:23  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-15-163.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T04:39:53  <janzert> antimatroid1: looks like email isn't setup
+2011-05-16T04:40:17  <janzert> just click the "Click Here" link at the bottom of the page after registering
+2011-05-16T04:41:38  <janzert> if you already closed that page then you'll need someone that has an account on hypertriangle to set the confirmation manually
+2011-05-16T04:41:49  *** chris___0076 <chris___0076!~Chris_007@adsl-74-176-15-118.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T04:43:04  <Frontier> with your account password guessed right, or brute forced, someone can replace your bot with an own bot of course any time you upload
+2011-05-16T04:43:52  <janzert> which isn't like accessing my bank account ;)
+2011-05-16T04:43:59  <antimatroid1> i clicked the confirm link but still can't login :\
+2011-05-16T04:44:17  <janzert> antimatroid1: hmm, it worked for me http://hypertriangle.com:13080/profile.php?user_id=29
+2011-05-16T04:44:21  <dr-> many ppl have the same password for several websites, that's the problem
+2011-05-16T04:44:44  <antimatroid1> i am profile 28 :\
+2011-05-16T04:44:59  <antimatroid1> i posted one of my main passwords in here a few weeks ago
+2011-05-16T04:45:10  <janzert> dr-: and forcing them to use a password with at least length 8 won't do anything to change that
+2011-05-16T04:45:11  <antimatroid1> i'm pretty sure it's now different for anything i care about
+2011-05-16T04:45:20  <antimatroid1> yeah, i just throw a 1 on the end :P
+2011-05-16T04:46:09  <Frontier> yesterday, a satire show asked someone in the pedestian prescinct to give them all their bank account information so they can look for that on the internet and remove it. the person was so aware of securing personal data that she agreed.
+2011-05-16T04:46:34  <janzert> how do you think fishing works? :)
+2011-05-16T04:47:02  <janzert> or phishing if you prefer
+2011-05-16T04:47:31  <Frontier> I don't know, I am no phish I hope/think
+2011-05-16T04:48:04  <antimatroid1> what are you..
+2011-05-16T04:49:25  <Frontier> well I remember a mail from my bank written with a complete lack of grammar asking me to enter my pin. i found it rather funny
+2011-05-16T04:52:16  <Ice_Harley> janzert, look at forum and delete spam, please
+2011-05-16T04:52:39  <Frontier> oh no, are they back?
+2011-05-16T04:53:37  <janzert> one seems to slip through every so often still
+2011-05-16T04:54:09  <Ice_Harley> they are only active users on forum now
+2011-05-16T05:34:02  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-176-225-232.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T05:36:04  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-15-163.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T05:51:05  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-176-225-232.asm.bellsouth.net> has quit IRC (Ping timeout: 260 seconds)
+2011-05-16T06:03:39  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-55-40.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T06:13:27  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-05-16T06:18:46  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T06:20:58  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-16T06:30:28  <antimatroid1> wtf is "differential viewpoints"?
+2011-05-16T06:56:22  <Frontier> and does the stuff on hypertriangle work in IE8?
+2011-05-16T06:57:41  <Frontier> It seems to me that since the the visualizer had been moved into a php widget the Java version doesn't get triggered any more. At least I cannot use "java=true" to override it in other browsers
+2011-05-16T07:01:38  *** BtbN <BtbN!btbn@btbn.de> has joined #aichallenge
+2011-05-16T07:13:37  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-05-16T07:18:49  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-05-16T07:53:01  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Quit: *poof!*)
+2011-05-16T08:04:51  <Frontier> hmm, now I seem to need modrewrite or something like that to load replays?
+2011-05-16T08:29:18  <antimatroid1> wtf amazon and wikipedia
+2011-05-16T08:29:31  <antimatroid1> they both have the wrong season listed for "Rapture's Delight" the american dad episode
+2011-05-16T08:29:58  <antimatroid1> by amazon i of course mean imdb :P
+2011-05-16T08:36:51  <CIA-48> aichallenge: janzert epsilon * r66fc2c0 / worker/sandbox.py : Correct read timeouts in the sandbox - http://bit.ly/mwrB5k
+2011-05-16T08:36:52  <CIA-48> aichallenge: janzert epsilon * r7f1a3b0 / (setup/server_setup.py website/index.php): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/lEFJNN
+2011-05-16T08:43:35  <CIA-48> aichallenge: janzert epsilon * r123607e / worker/sandbox.py : Set the correct timeout parameter - http://bit.ly/l7k8JB
+2011-05-16T08:45:12  <CIA-48> aichallenge: janzert epsilon * r4e2beb1 / worker/sandbox.py : Fix parameter name typo - http://bit.ly/l6Hilz
+2011-05-16T08:45:37  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-16T08:53:50  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-16T08:58:59  <Frontier> 1s * 6 players * 600 turns = 1 hour for one game to complete :p
+2011-05-16T09:03:44  *** Bhaskerh <Bhaskerh!~androirc@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-05-16T09:17:18  <Ice_Harley> antimatroid1, one guy on russian forum is asking about C++ bot. He doesn't have time.h file. File from VS2010 doesn't work for him
+2011-05-16T09:21:18  <antimatroid1> Ice_Harley: I'll take a look
+2011-05-16T09:21:23  <antimatroid1> i really need to update that bot anyway, i'll do that now
+2011-05-16T09:21:50  <Ice_Harley> ok
+2011-05-16T09:22:41  <antimatroid1> where is it? :P
+2011-05-16T09:23:46  <Ice_Harley> what?
+2011-05-16T09:24:04  <antimatroid1> the forum thread?
+2011-05-16T09:24:12  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 240 seconds)
+2011-05-16T09:24:16  <Ice_Harley> http://www.sdchess.net/phpBB2/viewtopic.php?f=7&t=454&p=10427#p10427
+2011-05-16T09:24:35  <Ice_Harley> it's russian anyway :)
+2011-05-16T09:24:43  <antimatroid1> wtf chrome
+2011-05-16T09:24:55  <antimatroid1> where's my translate bewton :(
+2011-05-16T09:24:59  <Ice_Harley> but they all know english, you can post there
+2011-05-16T09:27:28  *** Blarg <Blarg!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-16T09:31:24  <antimatroid1> Ice_Harley: I don't get how Timer.h isn't found for them?
+2011-05-16T09:31:36  <antimatroid1> oh wait, maybe they aren't linking it all properly
+2011-05-16T09:31:44  <antimatroid1> i'll post in the forum in a bit
+2011-05-16T09:31:50  <Ice_Harley> time.h not timer.h
+2011-05-16T09:31:57  <antimatroid1> oh okay :\
+2011-05-16T09:31:59  <antimatroid1> hmmm
+2011-05-16T09:32:08  <antimatroid1> that's usually just worked for me
+2011-05-16T09:35:39  <Ice_Harley> i open your bot and have same problems in VS2008
+2011-05-16T09:36:38  <antimatroid1> code::blocks people!
+2011-05-16T09:36:41  <antimatroid1> :P
+2011-05-16T09:36:45  <antimatroid1> are you using it normally?
+2011-05-16T09:36:55  <antimatroid1> or are you using a different language?
+2011-05-16T09:37:10  <Ice_Harley> i use C#
+2011-05-16T09:38:04  <Ice_Harley> i forgot averything about C++ years ago :) Maybe problems because of using windows?
+2011-05-16T09:39:52  <antimatroid1> it used to work on windows for me no problems
+2011-05-16T09:40:14  <Ice_Harley> no timeval type in windows time.h
+2011-05-16T09:40:44  <antimatroid1> :\ i have used that exact timer in windows before
+2011-05-16T09:40:55  <antimatroid1> it's the same one i used for tron and pw
+2011-05-16T09:40:58  <antimatroid1> except a bit cleaner
+2011-05-16T09:41:28  <antimatroid1> but yeah, it's not good if it only works for some compilers/whatever
+2011-05-16T09:42:06  <Ice_Harley> i found that #include <winsock2.h> needed
+2011-05-16T09:42:13  *** _0x47 <_0x47!~slash@p5B25F2BF.dip.t-dialin.net> has joined #aichallenge
+2011-05-16T09:44:07  <Frontier> winsock in an environment that allows no network connections?
+2011-05-16T09:44:17  <antimatroid1> did that make it work magically?
+2011-05-16T09:44:50  <Frontier> I bet winsock2.h includes some basic header file like type.h or windows.h that is needed.
+2011-05-16T09:45:35  <antimatroid1> Ice_Harley: can you try windows.h or type.h?
+2011-05-16T09:45:43  <antimatroid1> i can make it catch that on windows computers
+2011-05-16T09:46:09  <Frontier> That was a VERY wild guess, I'm not using Windows or C much
+2011-05-16T09:46:23  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-05-16T09:46:59  <antimatroid1> i know, but it's a reasoanble guess
+2011-05-16T09:47:07  *** berak <berak!~chatzilla@89.204.137.133> has quit IRC (Remote host closed the connection)
+2011-05-16T09:47:27  <antimatroid1> i just stripped the r line stuff and added back in enemyAnts and food vectors
+2011-05-16T09:47:34  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-16T09:48:50  <Ice_Harley> windows.h help too
+2011-05-16T09:49:09  <Ice_Harley> new problem now: gettimeofday not found
+2011-05-16T09:55:45  <Ice_Harley> seems gettimeofday it unix only function. And windows people should use something like GetSystemTime
+2011-05-16T09:57:04  <antimatroid1> i assure you i have previously used it on windows
+2011-05-16T09:57:12  <antimatroid1> but it could be the compiler
+2011-05-16T09:57:20  <antimatroid1> i am not overly knowledgeable on these things
+2011-05-16T09:57:47  <jbroman> Worst-case, you can conditionally implement it using the Windows API.
+2011-05-16T09:57:58  <antimatroid1> i don't want it to be that messy :(
+2011-05-16T09:58:07  <antimatroid1> i want beginners to be able to go through it and learn the language better
+2011-05-16T09:58:23  <jbroman> Hahaha, portable C is a lie.
+2011-05-16T09:59:08  <jbroman> (That's overly broad, but I like to pretend Windows does not exist for this reason.)
+2011-05-16T10:00:47  <antimatroid1> i have stopped caring about windows :P
+2011-05-16T10:00:51  <antimatroid1> but i kind of have to here
+2011-05-16T10:03:57  <Frontier> i have to know how to configure apache2 now. Since I don't use it solely for ants and don't generally mess up the config, I cannot use the build script to configure it, but there are now mod_rewrite rules required to load replays.
+2011-05-16T10:05:36  <smiley1983> Portable C has one set of functions for Windows, and one set of functions for all the POSIX systems. (maybe a bit general, but represents what I've seen)
+2011-05-16T10:07:36  <antimatroid1> i would have been using mingw on windows
+2011-05-16T10:09:57  <janzert> Frontier: if using ubuntu or something that uses the same apache configuration directory setup you should still be able to drop an appropriately filled out apache_site.template in the setup directory into your apache sites-available directory and an appropriate link to it from sites-enabled
+2011-05-16T10:10:13  <janzert> both located in /etc/apache2 on ubuntu
+2011-05-16T10:11:07  <janzert> that'll set it up as a virtualhost
+2011-05-16T10:11:16  <Frontier> yeah, as I said, I need to learn the apache configuration stuff now. I try to only add some appropriate rewrite rules
+2011-05-16T10:11:49  <Frontier> I don't even know what a virtualhost is
+2011-05-16T10:12:52  <janzert> :) it's the most common way to host multiple domains off one server basically
+2011-05-16T10:16:15  <Frontier> janzert: was it your idea then to use mod_rewrite instead of a php function?
+2011-05-16T10:16:29  <janzert> nope
+2011-05-16T10:17:14  <janzert> from what I can tell the mod_rewrite isn't really needed it just is being used to cleanup the game replay urls a bit
+2011-05-16T10:18:20  <antimatroid1> Ice_Harley: do you think they all realise the edges are wrapped?
+2011-05-16T10:18:25  <antimatroid1> i've had a read through of the thread
+2011-05-16T10:19:22  <Ice_Harley> i think yes. But if not, they will realise it very quickly.
+2011-05-16T10:21:20  <antimatroid1> is symmetric food spawning default yet?
+2011-05-16T10:21:28  <Ice_Harley> why are you asking? What message made you think so?
+2011-05-16T10:21:39  <antimatroid1> just had a read through
+2011-05-16T10:21:45  <antimatroid1> didn't see that mentioned anywhere
+2011-05-16T10:23:12  <Frontier> janzert: I found the problem: I didn't realize there were double {{ and }} in the template file that when I copied the rules. Those become single brackets once the variables are replaced.
+2011-05-16T10:26:40  *** Bhaskerh <Bhaskerh!~androirc@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: AndroIRC)
+2011-05-16T10:29:17  <antimatroid1> well crap, i can't find anything promising for using gettimeofday generally on windows :(
+2011-05-16T10:29:21  <antimatroid1> bloody windows, why must it exist
+2011-05-16T10:30:29  <janzert> Frontier: ahh
+2011-05-16T10:32:08  <Frontier> antimatroid1: on windows you use QueryPerformanceTimer, which uses a hardware timer
+2011-05-16T10:32:20  <smiley1983> I'm having trouble running matches with non-Python bots with the current contest code. I run play_one_game.sh and it runs. I make a copy, it runs. I modify the copy so one of the bots points to the Python starter, it runs. I modify the same bot so it points to a compiled binary starter (cpp or ocaml) and it crashes with "OSError: [Errno 2] No such file or directory"
+2011-05-16T10:32:37  <Frontier> you get the frequency of the hardware by calling QueryPerformanceFrequency
+2011-05-16T10:33:31  <antimatroid1> Frontier: it would be nice if it was the same thing across os's :P
+2011-05-16T10:33:36  <Ice_Harley> Frontier, engine use walltime
+2011-05-16T10:34:07  <smiley1983> Also, if I modify it to run "ocamlrun /path/to/bytecode" that fails as well, so it seems to only like python bots atm.
+2011-05-16T10:34:12  <antimatroid1> i could just let people deal with the timer themselves
+2011-05-16T10:37:31  <janzert> smiley1983: and running the same bot command in the same directory as playgame is run from the bot works?
+2011-05-16T10:38:22  <smiley1983> Yes
+2011-05-16T10:38:23  <Frontier> Ice_Harley: QueryPerformanceCounter is wall time, not cpu time. You just have to do "counter / frequency" to get a value in seconds
+2011-05-16T10:39:20  <smiley1983> janzert: When I type dist/starter_bots/cpp/MyBot from the ants directory, the program runs
+2011-05-16T10:39:50  <janzert> if that works and it doesn't with the engine I'm not sure what might be going on
+2011-05-16T10:40:11  <smiley1983> I can't seem to see the error output from playgame.pt
+2011-05-16T10:40:14  <smiley1983> *py
+2011-05-16T10:40:26  <smiley1983> It looks like it should be outputting the bot paths on stderr
+2011-05-16T10:40:33  <smiley1983> but when I redirect stderr I get nothiong
+2011-05-16T10:40:37  <smiley1983> *nothing
+2011-05-16T10:41:20  <janzert> Mcleopold has done a lot of logging and error handling refactoring lately I really don't know how things are working now
+2011-05-16T10:42:19  <smiley1983> Ah, it's only outputting that info if it gets the wrong number of bots, perhaps I can get it by passing too few
+2011-05-16T10:43:29  <smiley1983> Hm, it hasn't introduced any errors in its path processing (which is what I had been expecting).
+2011-05-16T10:43:52  <smiley1983> It would be nice if Python would tell you *which* file doesn't exist
+2011-05-16T10:44:38  <janzert> it should be at least showing a traceback that allows you to find exactly where the call is being made
+2011-05-16T10:46:04  <smiley1983> File "../worker/engine.py", line 42, in run_game   sandbox.start(bot_cmd)
+2011-05-16T10:46:37  <smiley1983> This is with a freshly cloned copy of the repo, if that's relevant
+2011-05-16T10:47:14  <janzert> yep, I got cpp compiled here to test with and see it
+2011-05-16T10:50:40  <CIA-48> aichallenge: Marco Leise epsilon * rf5eb17a / worker/sandbox.py : Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/lWAHyN
+2011-05-16T10:50:41  <CIA-48> aichallenge: Marco Leise epsilon * r14b6e56 / (11 files in 4 dirs):
+2011-05-16T10:50:41  <CIA-48> aichallenge: visualizer: copy_paste.html: UTF-8 characters display correctly now; visualizer
+2011-05-16T10:50:41  <CIA-48> aichallenge: is non-interactive on the front page; edited two player colors; scrollbar is
+2011-05-16T10:50:41  <CIA-48> aichallenge: hidden in fullscreen mode; fixed two bugs in the square cursor -
+2011-05-16T10:50:42  <CIA-48> aichallenge: http://bit.ly/m9TO0x
+2011-05-16T10:54:40  <janzert> looks like McLeopold's new get_cmd_cwd function isn't working correctly
+2011-05-16T10:56:46  <smiley1983> Right - it's not something to do with my setup then :)
+2011-05-16T11:08:26  *** fgump <fgump!~fgump__@188.74.82.177> has joined #aichallenge
+2011-05-16T11:10:32  *** orivej <orivej!~orivej@host-6-152-66-217.spbmts.ru> has quit IRC (Ping timeout: 264 seconds)
+2011-05-16T11:13:16  <CIA-48> aichallenge: janzert epsilon * r339a77f / ants/playgame.py : Attempt to fix playgame command handling - http://bit.ly/lVIZR7
+2011-05-16T11:13:16  <CIA-48> aichallenge: janzert epsilon * r9ea549c / (12 files in 5 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/leIcWY
+2011-05-16T11:13:24  <janzert> smiley1983: see if that works for you
+2011-05-16T11:17:14  *** stocha <stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Ping timeout: 252 seconds)
+2011-05-16T11:18:24  <smiley1983> janzert: yes, that has fixed it. :)
+2011-05-16T11:25:49  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-16T11:26:03  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-05-16T11:28:36  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-05-16T11:33:23  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 258 seconds)
+2011-05-16T11:38:08  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-05-16T11:39:22  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-16T11:49:21  <CIA-48> aichallenge: Marco Leise epsilon * rf72a642 / (4 files in 2 dirs): visualizer: added configuration override as additional constructor argument; visualizer widget disables fullscreen when in non-interactive mode - http://bit.ly/lYrhCo
+2011-05-16T11:49:21  <CIA-48> aichallenge: Marco Leise epsilon * rca3d472 / ants/playgame.py : Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/juQtma
+2011-05-16T11:50:14  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-05-16T11:51:21  *** delt0r_ <delt0r_!~delt0r@188-22-170-194.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-16T11:52:45  *** delt0r___ <delt0r___!~delt0r@188-22-22-219.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-05-16T12:08:59  *** berak <berak!~chatzilla@89.204.137.195> has joined #aichallenge
+2011-05-16T12:11:02  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-05-16T12:33:14  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-05-16T12:33:56  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-05-16T12:40:28  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-16T13:04:40  *** bhasker <bhasker!~bhasker@nat/yahoo/x-hjcijykfrlaiyxev> has joined #aichallenge
+2011-05-16T13:35:39  *** choas <choas!~lars@p5792C6E3.dip.t-dialin.net> has joined #aichallenge
+2011-05-16T13:46:11  <CIA-48> aichallenge: Marco Leise epsilon * r615b502 / (5 files in 2 dirs): visualizer: added speed setting; added button hints - http://bit.ly/iXQfar
+2011-05-16T13:47:55  <Frontier> McLeopold: ^ there is the speed setting. It calculates a speed based on 100 seconds duration, then it corrects that speed to be within 2 to 5 turns/second. And last not least the player's config setting is multiplied with that value.
+2011-05-16T13:49:13  <McLeopold> nice
+2011-05-16T13:50:10  <McLeopold> just need to get the keyboard +/- hooked up
+2011-05-16T13:50:49  <McLeopold> Frontier: I get some weird names for players
+2011-05-16T13:51:15  *** fgump <fgump!~fgump__@188.74.82.177> has quit IRC (Quit: Leaving)
+2011-05-16T13:52:06  <Frontier> can you tell me what you see?
+2011-05-16T13:53:44  <McLeopold> a^~...player1 a^~ (cross) player 3
+2011-05-16T13:55:02  <Frontier> hmm, no utf-8 encoding
+2011-05-16T13:55:44  <Frontier> which browser is it?
+2011-05-16T13:55:48  <McLeopold> chrome
+2011-05-16T13:56:08  <Frontier> cant be, im using it too
+2011-05-16T13:56:23  <Frontier> ah wait... do you use the html template?
+2011-05-16T13:57:10  <McLeopold> I'm getting it from playgame.py, which does the launch with visualize_locally
+2011-05-16T13:57:45  <CIA-48> aichallenge: Marco Leise epsilon * re441f5b / ants/visualizer/replay.html.template : visualizer: fixed encoding in the html template - http://bit.ly/ilkZfS
+2011-05-16T13:58:25  <Frontier> sorry, i forgot about that file
+2011-05-16T13:58:34  <McLeopold> oooh, stars
+2011-05-16T14:01:45  *** skynetz <skynetz!~none@unaffiliated/skynetz> has joined #aichallenge
+2011-05-16T14:12:38  *** Ice_Harley <Ice_Harley!b25e0bc0@gateway/web/freenode/ip.178.94.11.192> has joined #aichallenge
+2011-05-16T14:16:40  *** Naktibalda_ <Naktibalda_!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-16T14:16:57  <Frontier> And many thanks to Andrew Rossignol for the great web site design.
+2011-05-16T14:29:36  *** mcstar <mcstar!~mcstar@adsl-89-132-7-188.monradsl.monornet.hu> has joined #aichallenge
+2011-05-16T14:33:05  *** Blarg_ <Blarg_!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-16T14:35:14  *** Blarg <Blarg!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 251 seconds)
+2011-05-16T14:42:23  <Frontier> I'm off for today
+2011-05-16T15:04:10  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-05-16T15:04:19  <stocha> i tryed a few time to create an accout. And failed.
+2011-05-16T15:10:24  <Blarg_> The contest hasn't started yet.
+2011-05-16T15:10:37  <a1k0n> is the new site up?
+2011-05-16T15:11:32  <Blarg_> Nope, still the old site.
+2011-05-16T15:14:13  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-16T15:16:43  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-05-16T15:17:37  *** amstan <amstan!~alex@142.222.92.23> has joined #aichallenge
+2011-05-16T15:17:37  *** ChanServ sets mode: +o amstan
+2011-05-16T15:18:10  *** computerwiz_222 <computerwiz_222!~andrew@142.222.92.24> has joined #aichallenge
+2011-05-16T15:33:25  * amstan 's mind is blown by bitcoin
+2011-05-16T15:40:07  <McLeopold> how so?
+2011-05-16T15:41:22  <amstan> morgages mostly, since there won't be any purpose to store your money in banks(besides interest), so banks won't have money to loan
+2011-05-16T15:42:57  <a1k0n> i was just pointing out today that bitcoins are almost worth $8 on mtgox, which implies a market capitalization of over $46 million
+2011-05-16T15:43:50  <a1k0n> that is... totally insane for an experimental open source thing
+2011-05-16T15:48:08  <amstan> a1k0n: lol
+2011-05-16T15:48:11  <amstan> yeah, fun
+2011-05-16T15:49:44  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-05-16T15:51:24  <a1k0n> btw if you can do fractional reserve banking with cash you can do it with bitcoin.  you just don't have a federal reserve to print more money for you if your clients want their money back
+2011-05-16T15:52:35  <a1k0n> but someone with substantial bitcoin holdings could lend out guaranteed money
+2011-05-16T16:01:09  <delt0r_> a1k0n: if there is a cap on the total --fractional reserve does not work.
+2011-05-16T16:01:15  <delt0r_> bitcoin has a cap
+2011-05-16T16:01:35  <a1k0n> ah, that is true
+2011-05-16T16:01:45  <a1k0n> i forgot about that
+2011-05-16T16:02:33  <a1k0n> it isn't a technological limitation, more of a protocol
+2011-05-16T16:02:54  <delt0r_> well in the Austrian school of Economics --the whole boom/bust cycle is caused by fractional banking and the "perpetual" increase of currency
+2011-05-16T16:03:06  <a1k0n> right, so the gold standard is supposedly a good thing to emulate
+2011-05-16T16:03:09  <delt0r_> as the theory goes
+2011-05-16T16:03:30  <a1k0n> one could create an alternate bitcoin market, exactly the same way, without the cap.  and so far in bitcoin's history none of the capping mechanisms have come into play
+2011-05-16T16:03:48  <delt0r_> well the gold standard has a lot in common with modern currency... bascially that golds worth is far above its utility
+2011-05-16T16:04:12  <delt0r_> so it can still crash... but yea--you have a natural cap on suply
+2011-05-16T16:04:56  <delt0r_> a1k0n: true... but "hash cash" has problems of over supply with increasing cpu power
+2011-05-16T16:05:06  <delt0r_> it can't stay scarce
+2011-05-16T16:05:28  <a1k0n> well, that's why there's a protocol on which everyone agrees to self-adjust difficulty to mint coins once every ten minutes
+2011-05-16T16:05:40  <a1k0n> which is also a natural cap to make growth linear instead of exponential i guess
+2011-05-16T16:05:52  <a1k0n> an asymptotic cap on log-money
+2011-05-16T16:06:26  <delt0r_> yea---tbh i remain unconvinced its a improvement over a central clearing house
+2011-05-16T16:06:38  <delt0r_> in the bitcoin case at least
+2011-05-16T16:07:09  <delt0r_> I don't like how transaction are validated ---localized fraud can still occur
+2011-05-16T16:07:19  <a1k0n> we'll see i guess.  it's a great experiment
+2011-05-16T16:07:28  <a1k0n> how so?
+2011-05-16T16:07:39  <delt0r_> for example here in Vienna a bunch of fake 10EU notes are going around
+2011-05-16T16:07:42  <a1k0n> they're validated by appearing in a new block right?
+2011-05-16T16:08:33  <delt0r_> but when i trade. its not validated immediately. You have to wait till you have all the information
+2011-05-16T16:08:46  <a1k0n> right
+2011-05-16T16:09:27  <delt0r_> Like the fake 10EU notes... you detect the fraud... later and are out of pocket to the tune of 10EU
+2011-05-16T16:09:43  <delt0r_> These are really good fakes btw
+2011-05-16T16:09:57  <delt0r_> only the UV missing and the metal strip
+2011-05-16T16:10:02  <delt0r_> even has the water marks
+2011-05-16T16:10:20  <a1k0n> so you're saying in a point-of-sale type situation where you can just "beam" a bitcoin transaction to someone and walk away, it's trivial to just fake it
+2011-05-16T16:10:41  <delt0r_> yea--not quite trivial
+2011-05-16T16:10:43  <a1k0n> that is true; nothign is certain until a vlidation comes through
+2011-05-16T16:10:48  <delt0r_> but not really hard either
+2011-05-16T16:10:54  <a1k0n> yeah they have to have a fake block in reserve
+2011-05-16T16:10:59  <delt0r_> yep
+2011-05-16T16:11:12  <delt0r_> so you still need to generate the "hashcash"
+2011-05-16T16:11:15  <a1k0n> which means... they could just "redeem" it as a regular bitcoin for currently $375 USD
+2011-05-16T16:11:15  <delt0r_> lol
+2011-05-16T16:11:33  <a1k0n> so.. that kind of fraud wouldn't be worth it.  shrug.
+2011-05-16T16:11:34  <delt0r_> its gone up that much?
+2011-05-16T16:11:36  <a1k0n> anyway.  lunch.
+2011-05-16T16:11:41  <delt0r_> l8r
+2011-05-16T16:11:42  <a1k0n> yes, it's trading for $7.50 on mtgox
+2011-05-16T16:11:43  <a1k0n> it's insane
+2011-05-16T16:11:57  <delt0r_> it was 2 last i looked
+2011-05-16T16:22:10  *** Ice_Harley <Ice_Harley!b25e0bc0@gateway/web/freenode/ip.178.94.11.192> has quit IRC (Quit: Page closed)
+2011-05-16T16:26:18  *** computerwiz_222 <computerwiz_222!~andrew@142.222.92.24> has quit IRC (Read error: Connection reset by peer)
+2011-05-16T16:42:07  *** berak <berak!~chatzilla@89.204.137.195> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-05-16T17:02:49  *** Naktibalda_ <Naktibalda_!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110422205559])
+2011-05-16T17:03:37  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-05-16T17:11:41  *** amstan <amstan!~alex@142.222.92.23> has quit IRC (Quit: Konversation terminated!)
+2011-05-16T17:49:01  *** _0x47 <_0x47!~slash@p5B25F2BF.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-05-16T17:54:28  *** choas <choas!~lars@p5792C6E3.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-05-16T18:03:17  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-05-16T18:04:16  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-05-16T18:09:37  <CIA-48> aichallenge: McLeopold epsilon * r6360eb9 / (ants/playgame.py worker/worker.py worker/submission_hash.py): workers can download and cache maps now - http://bit.ly/iFllwP
+2011-05-16T18:10:58  *** skynetz <skynetz!~none@unaffiliated/skynetz> has quit IRC (Quit: .)
+2011-05-16T18:29:47  *** antimatroid1 <antimatroid1!~nick@14.221.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 250 seconds)
+2011-05-16T18:41:46  *** antimatroid <antimatroid!~nick@14.221.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-05-16T18:46:25  *** Kingpin13 is now known as Kingpin14
+2011-05-16T19:10:55  *** jmpespxo1eax <jmpespxo1eax!~nosuchuse@206-248-163-86.dsl.teksavvy.com> has joined #aichallenge
+2011-05-16T19:13:19  *** jmpespxoreax <jmpespxoreax!~nosuchuse@unaffiliated/jmpespxoreax> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T19:17:22  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has quit IRC (Ping timeout: 240 seconds)
+2011-05-16T19:18:21  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-05-16T19:39:09  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-05-16T19:40:59  <McLeopold> janzert: http://pastebin.com/qREgJmn3 got this after running a game from the worker, not sure if I should worry.
+2011-05-16T19:42:56  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 276 seconds)
+2011-05-16T19:51:51  *** delt0r___ <delt0r___!~delt0r@188-22-161-62.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-16T19:53:12  *** delt0r_ <delt0r_!~delt0r@188-22-170-194.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T20:05:07  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 246 seconds)
+2011-05-16T20:09:22  *** Kingpin14 is now known as Kingpin13
+2011-05-16T20:12:14  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-05-16T20:12:29  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-05-16T20:16:51  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Ping timeout: 252 seconds)
+2011-05-16T20:18:47  <McLeopold> @later tell janzert manager/server_info needs to have other read writes for the php exec command to work, otherwise the python import fails
+2011-05-16T20:18:47  <contestbot> McLeopold: Yep.
+2011-05-16T20:19:18  <McLeopold> @later tell janzert read permissions for others that is
+2011-05-16T20:19:18  <contestbot> McLeopold: Yes master!
+2011-05-16T20:37:37  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-05-16T20:39:34  *** mcstar <mcstar!~mcstar@adsl-89-132-7-188.monradsl.monornet.hu> has quit IRC (Remote host closed the connection)
+2011-05-16T20:41:29  <CIA-48> aichallenge: McLeopold epsilon * r6a42640 / (5 files in 3 dirs): attempt to fix TrueSkill update from api_game_result.php - http://bit.ly/loNw5i
+2011-05-16T20:41:59  <_flag> Have the spawn and battle radiuses been officially changed to 1 and 4?
+2011-05-16T20:51:23  *** bhasker <bhasker!~bhasker@nat/yahoo/x-hjcijykfrlaiyxev> has quit IRC (Ping timeout: 276 seconds)
+2011-05-16T20:51:27  <CIA-48> aichallenge: janzert epsilon * rf15165a / setup/server_setup.py : Drop read restrictions on manager server_info.py since scripts are run from webserver user - http://bit.ly/iiRtzf
+2011-05-16T20:54:18  <janzert> contestbot: later tell McLeopold those exceptions look like the worker script exited before the input threads on a sandbox had finished closing, not a big worry and not a simple thing to completely fix without risking the whole script having the potential to deadlock
+2011-05-16T20:54:18  <contestbot> janzert: Ready to serve, my lord.
+2011-05-16T21:05:26  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-16T21:40:52  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-05-16T22:06:01  *** antimatroid <antimatroid!~nick@14.221.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 250 seconds)
+2011-05-16T22:18:50  *** antimatroid <antimatroid!~nick@161.329.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-05-16T22:23:23  *** McLeopold <McLeopold!~Scott@c-71-197-206-130.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-16T22:39:19  *** chris__0076 <chris__0076!~Chris_007@adsl-74-190-130-181.asm.bellsouth.net> has joined #aichallenge
+2011-05-16T22:40:42  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-55-40.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-16T22:55:31  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-05-16T23:16:22  *** amstan <amstan!~amstan@69-165-142-155.dsl.teksavvy.com> has joined #aichallenge
+2011-05-16T23:16:22  *** ChanServ sets mode: +o amstan
+2011-05-16T23:39:39  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge

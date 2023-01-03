@@ -1,0 +1,254 @@
+2011-01-03T00:25:45  *** amriedle <amriedle!~amriedle@CPE0013f7f2be12-CM0013f7f2be0e.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-01-03T00:29:04  <jmcarthur> i love this line of code in my engine:   waitBots t f = sync (,) `on` timeoutMaybe t . liftIO . f . botStdout
+2011-01-03T00:29:55  <jmcarthur> it's a function that takes a timeout duration, a function that takes a file handle argument and returns some data, two bot processes, and returns a pair of Maybes with the data from each bot from that turn
+2011-01-03T00:30:11  <jmcarthur> the components of the pair are Nothing when bots time out
+2011-01-03T00:31:14  <jmcarthur> it handles all the asynchronous IO behind the scenes
+2011-01-03T00:31:43  <jmcarthur> well, you supply the IO function itself, but it handles doing it concurrently and interrupting it for the timeout and stuff
+2011-01-03T00:32:26  <antimatroid1> jmcarthur: what are you writing your engine in?
+2011-01-03T00:32:50  <antimatroid1> i did a very very horrible on in c++, i never want to try and write another one of those in c++
+2011-01-03T00:33:09  <jmcarthur> haskell
+2011-01-03T00:33:19  <jmcarthur> what else would i write it in? ;)
+2011-01-03T00:33:29  <antimatroid1> :)
+2011-01-03T00:33:34  <antimatroid1> i'm slowly learning haskell atm
+2011-01-03T00:33:42  <antimatroid1> i'm sick of templates in c++
+2011-01-03T00:33:52  <jmcarthur> yeah, C++ templates kind of suck
+2011-01-03T00:33:59  <antimatroid1> they are horrific
+2011-01-03T00:34:13  <antimatroid1> and opening up / communicating with processes with c++ was a real pain
+2011-01-03T00:34:26  <jmcarthur> map<pair<int,int>,vector<string>>     hell no
+2011-01-03T00:34:42  <antimatroid1> ?
+2011-01-03T00:34:47  <jmcarthur> Map (Int, Int) [String]    hell yes
+2011-01-03T00:34:59  <antimatroid1> hehe
+2011-01-03T00:35:11  <jmcarthur> yes i know [] and vector are different
+2011-01-03T00:35:25  <antimatroid1> close enough for waht i use them for
+2011-01-03T00:36:08  <antimatroid1> can i set operator precedence in haskell?
+2011-01-03T00:36:13  <jmcarthur> yes
+2011-01-03T00:36:43  <jmcarthur> for example, you would put this on its own line:   infixr 0 $
+2011-01-03T00:37:09  <jmcarthur> that says ($) is right associative and binds as loosely as possible
+2011-01-03T00:37:15  <antimatroid1> i hate c++ for not letting me change that
+2011-01-03T00:37:30  <antimatroid1> like if i have matrices, i can't do A*B^2, it has to be A*(B^2)
+2011-01-03T00:38:05  <jmcarthur> in most languages i wouldn't even bother with operator overloading. to easy to make things confusing
+2011-01-03T00:38:08  <jmcarthur> *too
+2011-01-03T00:38:18  <antimatroid1> most of my programming is maths
+2011-01-03T00:38:32  <antimatroid1> i'd prefer to stay consistent with maths notation than type out function names all over the place
+2011-01-03T00:38:57  <jmcarthur> math notation isn't consistent enough to be worth being consistent with, IMO
+2011-01-03T00:39:04  <antimatroid1> like, multiply(A, power(B, 2)) is just gross
+2011-01-03T00:39:14  <antimatroid1> it is for that kind of thing
+2011-01-03T00:39:20  <jmcarthur> multiple A (power B 2)    is okay to me
+2011-01-03T00:39:25  <jmcarthur> *multiply
+2011-01-03T00:39:50  <antimatroid1> A*B^2 is much preferred to me
+2011-01-03T00:39:55  <antimatroid1> especially if the equation gets more complex
+2011-01-03T00:40:01  <jmcarthur> syntax schmyntax
+2011-01-03T00:40:50  <janzert> dmj111: the only WHR implementation I know of for sure is by an arimaa community member, Woh. I recall he released a windows gui but I'm not sure of any code.
+2011-01-03T00:41:57  <antimatroid1> i thought it was a condition on entry that your code was shared at the end?
+2011-01-03T00:42:36  <jmcarthur> this contest? no
+2011-01-03T00:43:04  <antimatroid1> arimaa
+2011-01-03T00:43:16  <jmcarthur> oh i wouldn't know anything about it
+2011-01-03T00:43:20  <jmcarthur> nevermind me
+2011-01-03T00:43:21  <antimatroid1> what is WHR?
+2011-01-03T00:43:41  <janzert> antimatroid1: no, you have to allow omar to have continued use of the binary you submit is all
+2011-01-03T00:43:55  <janzert> WHR, Whole History Ratings
+2011-01-03T00:43:57  <antimatroid1> janzert: ahhh okay
+2011-01-03T00:44:12  <janzert> a rating system developed by the author of bayeselo
+2011-01-03T00:44:31  <antimatroid1> i wish all this stuff wasn't so hard
+2011-01-03T00:44:42  <antimatroid1> the ai writing is the fun part, at least for me
+2011-01-03T00:44:55  <janzert> I think I'm the only arimaa bot developer that releases his code on a regular basis
+2011-01-03T00:46:13  <antimatroid1> is that because people are lazy or very private about their code?
+2011-01-03T00:46:21  <antimatroid1> i guess it's different when it's the same game every year
+2011-01-03T00:46:44  <janzert> yeah, I think they want to maintain a competitive advantage
+2011-01-03T00:46:53  <janzert> I delay my releases by a year
+2011-01-03T00:47:10  <janzert> for the same reason
+2011-01-03T00:47:17  <antimatroid1> yep, fair enough
+2011-01-03T00:47:32  <antimatroid1> gives you a year to make sure you don't release a $20,000 secret :P
+2011-01-03T00:47:39  <janzert> :)
+2011-01-03T00:47:53  <janzert> not likely
+2011-01-03T00:47:59  <antimatroid1> i will slowly make a bot over the next year
+2011-01-03T00:48:49  <janzert> I might release this year's bot early, since I'm in the process of starting over from scratch anyway
+2011-01-03T00:49:41  *** Utkarsh <Utkarsh!~admin@117.201.80.216> has quit IRC (Read error: Connection reset by peer)
+2011-01-03T00:49:59  *** Utkarsh <Utkarsh!~admin@117.201.80.216> has joined #aichallenge
+2011-01-03T00:51:29  <antimatroid1> why are bots called engines for arimaa?
+2011-01-03T00:52:08  <janzert> they're called both really, bots is probably the more common term
+2011-01-03T00:52:20  <janzert> I borrowed the 'engine' term from chess engines
+2011-01-03T00:52:43  <janzert> and I don't know where the term came from there :)
+2011-01-03T00:55:13  <antimatroid1> where is the most recent copy of your bot online?
+2011-01-03T00:56:00  <janzert> all my arimaa stuff is at http://arimaa.janzert.com/
+2011-01-03T00:56:43  <janzert> the 2010 version will probably be released the beginning of march
+2011-01-03T00:58:29  <janzert> and don't expect pretty or even very well commented code :/
+2011-01-03T01:00:47  <antimatroid1> i never do
+2011-01-03T01:00:55  <antimatroid1> i don't provide other people with amazing comments
+2011-01-03T01:01:18  <antimatroid1> if they're lucky i might comment what a function is doing and it may be up to date
+2011-01-03T01:03:46  <antimatroid1> "We did the factorial function earlier and it's the product of a number and the factorial of that number minus one. Such a recursive application doesn't make sense with zero, because factorials are defined only for positive integers"
+2011-01-03T01:03:52  <antimatroid1> errr, isn't 0! := 1?
+2011-01-03T01:03:55  <janzert> I generally figure I'm doing good to just try and make the code itself readable, anything above that you should consider pure luck
+2011-01-03T01:04:37  <antimatroid1> that's what i was always taught
+2011-01-03T01:04:56  <antimatroid1> this is from learnyouahaskell
+2011-01-03T01:04:58  <jmcarthur> yes, 0! is usually consider to be 1
+2011-01-03T01:05:04  <jmcarthur> *considered
+2011-01-03T01:05:35  <janzert> http://en.wikipedia.org/wiki/Factorial "0! is a special case that is explicitly defined to be 1."
+2011-01-03T01:06:08  <jmcarthur> it's easy to argue for it either way though. after all, it's kind of weird that product [0..n] is 0 for all n
+2011-01-03T01:06:24  <jmcarthur> complicates the definition a bit
+2011-01-03T01:06:30  <jmcarthur> of factorial, i mean
+2011-01-03T01:07:16  <antimatroid1> not really, no lots of something is nothing
+2011-01-03T01:07:34  <antimatroid1> 0! = 1 is a bit unintuitive though
+2011-01-03T01:10:36  <antimatroid1> i think i will be happy with haskell
+2011-01-03T01:10:40  <antimatroid1> happier than with c++
+2011-01-03T01:12:18  <jmcarthur> doesn't take much to be happier than with c++ ;)
+2011-01-03T01:13:59  <antimatroid1> my biggest beef with c++ is templates
+2011-01-03T01:14:05  <antimatroid1> other than that i manage to get most things done
+2011-01-03T01:14:28  <antimatroid1> although i like class variables in haskell
+2011-01-03T01:14:42  <jmcarthur> type classes you mean?
+2011-01-03T01:14:55  <antimatroid1> type variables* and type classes
+2011-01-03T01:15:03  <jmcarthur> ah
+2011-01-03T01:15:14  <antimatroid1> i have always wanted something like type variables in c++
+2011-01-03T01:15:29  <jmcarthur> i assume you are talking about parametric polymorphism
+2011-01-03T01:16:03  <antimatroid1> can you do stuff like | a == [b]    with type variables?
+2011-01-03T01:16:21  <jmcarthur> you mean see if two types are equivalent?
+2011-01-03T01:16:26  <antimatroid1> or are they just for function definition type things?
+2011-01-03T01:16:27  <jmcarthur> you can with an extension
+2011-01-03T01:17:06  <jmcarthur> you can say things like  foo :: (a b ~ c) => a Int -> b -> c
+2011-01-03T01:17:23  <jmcarthur> the (a b ~ c) part says you want c to be the same as (a b)
+2011-01-03T01:17:35  <jmcarthur> of course in this case you could have just said   foo :: a Int -> b -> a b
+2011-01-03T01:18:16  <jmcarthur> what you wrote was what's called a guard, and yeah, it's value-level only
+2011-01-03T01:19:18  <antimatroid1> yeah i know it's a guard, my question is can i use type variables in guards, so say i have a list, i might want to do something different to a list of lists of anything than to a list of somethigs where somethings aren't a list
+2011-01-03T01:19:55  <jmcarthur> that would be an invalid situation in the first place
+2011-01-03T01:19:59  <antimatroid1> there was a time when i wanted to do something like that, but i can't remember the exact example
+2011-01-03T01:20:04  <antimatroid1> i have a feeling it was to do with tensors
+2011-01-03T01:20:11  <jmcarthur> if it's a list of lists for one pattern then it's a list of lists for all patterns
+2011-01-03T01:20:39  <antimatroid1> what if i am decreasing the dimensions in a tensor at each step, eventually  i might get back to 1 dimension and want to do something different
+2011-01-03T01:21:43  <jmcarthur> if the dimensions are expressed at the type level then you could use type classes to give different behavior for each type
+2011-01-03T01:21:43  <antimatroid1> i had a cool function for working out expected utilities from mixed strategies in n-player simultaneous games, i would do a sort of dot product with each players mixed strategy on what was left of the tensor, reducing the dimensions at each step
+2011-01-03T01:22:08  <antimatroid1> until eventually you ended up with a single scalar that was the players expected utility, but i since came up with a more efficient way of doing it (not anywhere near as cool though :((
+2011-01-03T01:22:28  <jmcarthur> or you could use a GADT so that the type can depend on the constructor
+2011-01-03T01:50:43  *** nann <nann!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2011-01-03T01:54:30  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T02:34:59  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2011-01-03T02:39:15  <antimatroid1> "Consider the expression sum (map sqrt [1..130]). Because $ has such a low precedence, we can rewrite that expression as sum $ map sqrt [1..130], saving ourselves precious keystrokes!" :D
+2011-01-03T02:42:02  *** Rommel <Rommel!8ad990d9@gateway/web/freenode/ip.138.217.144.217> has joined #aichallenge
+2011-01-03T02:42:13  <sigh> well, you didn't actually save any keystrokes there, but it's the thought that counts
+2011-01-03T02:42:47  *** Rommel <Rommel!8ad990d9@gateway/web/freenode/ip.138.217.144.217> has quit IRC (Client Quit)
+2011-01-03T02:46:15  <antimatroid1> :P
+2011-01-03T02:48:38  *** antimatroid <antimatroid!~Nick@233.130-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-01-03T02:50:59  *** antimatroid1 <antimatroid1!~Nick@210.109-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 272 seconds)
+2011-01-03T03:23:34  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2011-01-03T03:26:31  *** delt0r___ <delt0r___!~delt0r@188-22-164-135.adsl.highway.telekom.at> has joined #aichallenge
+2011-01-03T03:27:43  *** delt0r_ <delt0r_!~delt0r@188-22-164-135.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T03:29:02  *** delt0r_ <delt0r_!~delt0r@188-22-164-135.adsl.highway.telekom.at> has joined #aichallenge
+2011-01-03T03:30:55  *** delt0r___ <delt0r___!~delt0r@188-22-164-135.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T03:36:29  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-01-03T04:09:22  *** perror <perror!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2011-01-03T04:20:16  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2011-01-03T04:56:25  *** medrimonia <medrimonia!~Medrimoni@ABordeaux-158-1-43-174.w90-55.abo.wanadoo.fr> has joined #aichallenge
+2011-01-03T05:59:49  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2011-01-03T06:04:02  *** delt0r___ <delt0r___!~delt0r@188-22-169-59.adsl.highway.telekom.at> has joined #aichallenge
+2011-01-03T06:05:27  *** delt0r_ <delt0r_!~delt0r@188-22-164-135.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-01-03T06:58:11  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-01-03T07:30:33  *** amstan <amstan!~alex@69-196-133-132.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T07:38:40  *** mega1 <mega1!~mega1@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2011-01-03T07:42:16  *** Error323 <Error323!~fhuizing@145-116-230-164.uilenstede.casema.nl> has quit IRC (*.net *.split)
+2011-01-03T07:52:32  *** n9thbit <n9thbit!~n9thbit@86-41-95-79-dynamic.b-ras2.chf.cork.eircom.net> has joined #aichallenge
+2011-01-03T07:57:58  *** Error323 <Error323!~fhuizing@145-116-230-164.uilenstede.casema.nl> has joined #aichallenge
+2011-01-03T08:19:35  *** yasith <yasith!~yasith@124.43.56.179> has joined #aichallenge
+2011-01-03T09:31:49  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-01-03T09:34:14  *** wh1teside_ <wh1teside_!~admin@adsl-70-131-121-214.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T09:36:11  *** wh1teside <wh1teside!~admin@adsl-70-131-58-208.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-01-03T11:42:57  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T11:47:29  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-01-03T11:47:29  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-01-03T11:48:12  *** Utkarsh <Utkarsh!~admin@117.201.80.216> has quit IRC (Remote host closed the connection)
+2011-01-03T11:48:33  *** Utkarsh <Utkarsh!~admin@117.201.80.216> has joined #aichallenge
+2011-01-03T12:07:36  <jmcarthur> antimatroid: heh, yeah, no keystrokes saved when converting parens to ($), but it's a bit more readable once you get used to it, IMO
+2011-01-03T12:08:53  <jmcarthur> antimatroid: in that particular example i think i would have written it as  sum . map sqrt $ [1.130]  though, because [1..130] looks like something that i will be turning into a function parameter later and writing it that way means i might be able to just drop it off so that the function looks like  foo = sum . map sqrt
+2011-01-03T12:11:02  *** bhasker <bhasker!~bhasker@nat/yahoo/x-hwwhkjvmnkxadiuz> has joined #aichallenge
+2011-01-03T12:20:36  *** Sylph2 <Sylph2!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has joined #aichallenge
+2011-01-03T12:22:56  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has quit IRC (Ping timeout: 250 seconds)
+2011-01-03T12:23:30  *** meneky <meneky!82755de1@gateway/web/freenode/ip.130.117.93.225> has joined #aichallenge
+2011-01-03T12:57:15  *** amstan <amstan!~alex@69-196-133-132.dsl.teksavvy.com> has joined #aichallenge
+2011-01-03T12:57:15  *** ChanServ sets mode: +o amstan
+2011-01-03T13:02:12  *** amstan <amstan!~alex@69-196-133-132.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T13:03:20  *** fmeyer <fmeyer!~fmeyer@189.64.109.35> has joined #aichallenge
+2011-01-03T13:07:14  *** SmkMnstr <SmkMnstr!~laurdel@onegrandcircle.com> has quit IRC (Remote host closed the connection)
+2011-01-03T13:11:13  *** SmkMnstr <SmkMnstr!~smk@onegrandcircle.com> has joined #aichallenge
+2011-01-03T13:11:58  *** medrimonia1 <medrimonia1!~medrimoni@ABordeaux-158-1-43-174.w90-55.abo.wanadoo.fr> has joined #aichallenge
+2011-01-03T13:12:45  *** medrimonia <medrimonia!~Medrimoni@ABordeaux-158-1-43-174.w90-55.abo.wanadoo.fr> has left #aichallenge
+2011-01-03T13:13:38  *** amstan <amstan!~alex@69-196-133-132.dsl.teksavvy.com> has joined #aichallenge
+2011-01-03T13:13:38  *** ChanServ sets mode: +o amstan
+2011-01-03T13:14:30  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-01-03T13:33:32  *** medrimonia1 <medrimonia1!~medrimoni@ABordeaux-158-1-43-174.w90-55.abo.wanadoo.fr> has left #aichallenge
+2011-01-03T13:37:28  *** medrimonia1 <medrimonia1!~medrimoni@ABordeaux-158-1-43-174.w90-55.abo.wanadoo.fr> has joined #aichallenge
+2011-01-03T13:47:35  *** yasith <yasith!~yasith@124.43.56.179> has quit IRC (Ping timeout: 260 seconds)
+2011-01-03T14:04:37  *** delt0r_ <delt0r_!~delt0r@188-22-168-124.adsl.highway.telekom.at> has joined #aichallenge
+2011-01-03T14:05:48  *** delt0r___ <delt0r___!~delt0r@188-22-169-59.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T14:29:16  *** medrimonia1 is now known as medrimonia
+2011-01-03T14:36:17  *** Utkarsh <Utkarsh!~admin@117.201.80.216> has quit IRC (Read error: Connection reset by peer)
+2011-01-03T14:45:00  *** Utkarsh <Utkarsh!~admin@117.201.82.93> has joined #aichallenge
+2011-01-03T14:49:26  *** Utkarsh <Utkarsh!~admin@117.201.82.93> has quit IRC (Ping timeout: 260 seconds)
+2011-01-03T14:53:19  *** bhasker <bhasker!~bhasker@nat/yahoo/x-hwwhkjvmnkxadiuz> has quit IRC (Ping timeout: 255 seconds)
+2011-01-03T14:54:03  *** bhasker <bhasker!~bhasker@nat/yahoo/x-rucerhiujgyrzqcd> has joined #aichallenge
+2011-01-03T14:54:57  *** perror <perror!~fleury@aldebaran.labri.fr> has quit IRC (Quit: Bye all !)
+2011-01-03T14:57:09  *** dr- <dr-!~dr@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-01-03T15:01:46  *** fmeyer <fmeyer!~fmeyer@189.64.109.35> has quit IRC (Read error: Connection reset by peer)
+2011-01-03T15:18:44  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-01-03T15:23:07  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-tmazufzkajkeuqnw> has joined #aichallenge
+2011-01-03T15:24:41  *** delt0r___ <delt0r___!~delt0r@188-22-20-93.adsl.highway.telekom.at> has joined #aichallenge
+2011-01-03T15:25:49  *** delt0r_ <delt0r_!~delt0r@188-22-168-124.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T15:26:16  *** bhasker <bhasker!~bhasker@nat/yahoo/x-rucerhiujgyrzqcd> has quit IRC (Ping timeout: 250 seconds)
+2011-01-03T15:28:34  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-01-03T15:39:44  *** ebrahim <ebrahim!~ebrahim@unaffiliated/ebrahim> has joined #aichallenge
+2011-01-03T15:42:11  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-01-03T15:42:52  *** dr- <dr-!~dr@ble59-7-88-161-172-151.fbx.proxad.net> has quit IRC (Ping timeout: 272 seconds)
+2011-01-03T15:45:39  *** delt0r_ <delt0r_!~delt0r@188-22-20-93.adsl.highway.telekom.at> has joined #aichallenge
+2011-01-03T15:46:06  *** Sylph2 <Sylph2!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has quit IRC ()
+2011-01-03T15:47:01  *** delt0r___ <delt0r___!~delt0r@188-22-20-93.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T15:47:11  *** ebrahim <ebrahim!~ebrahim@unaffiliated/ebrahim> has quit IRC (Ping timeout: 260 seconds)
+2011-01-03T15:47:24  *** ebrahim <ebrahim!~ebrahim@2.182.64.38> has joined #aichallenge
+2011-01-03T15:47:24  *** ebrahim <ebrahim!~ebrahim@unaffiliated/ebrahim> has joined #aichallenge
+2011-01-03T15:59:09  *** ebrahim <ebrahim!~ebrahim@unaffiliated/ebrahim> has quit IRC (Remote host closed the connection)
+2011-01-03T15:59:51  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-01-03T16:01:25  *** amstan <amstan!~alex@69-196-133-132.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T16:26:56  *** mega1 <mega1!~mega1@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 250 seconds)
+2011-01-03T16:27:48  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2011-01-03T16:57:48  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-01-03T17:07:06  *** amriedle <amriedle!~amriedle@CPE0013f7f2be12-CM0013f7f2be0e.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-01-03T17:08:03  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2011-01-03T17:26:30  *** pgpaskar_ <pgpaskar_!~phor@nat/uwaterloo/x-czsuycedzmpkgjln> has quit IRC (Read error: Operation timed out)
+2011-01-03T17:26:34  *** pgpaskar_ <pgpaskar_!~phor@nat/uwaterloo/x-lzsiarkklxvbiuuo> has joined #aichallenge
+2011-01-03T17:27:59  *** wh1teside <wh1teside!~admin@adsl-70-131-58-208.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T17:32:36  *** wh1teside <wh1teside!~admin@adsl-70-131-58-208.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-01-03T17:38:10  *** RubiconCross <RubiconCross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2011-01-03T17:40:14  *** acieroid` <acieroid`!~acieroid@wtf.awesom.eu> has joined #aichallenge
+2011-01-03T17:41:46  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has quit IRC (*.net *.split)
+2011-01-03T17:41:46  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has quit IRC (*.net *.split)
+2011-01-03T17:41:46  *** CIA-112 <CIA-112!~CIA@208.69.182.149> has quit IRC (*.net *.split)
+2011-01-03T17:41:46  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has quit IRC (*.net *.split)
+2011-01-03T17:42:00  *** CIA-6 <CIA-6!~CIA@208.69.182.149> has joined #aichallenge
+2011-01-03T17:46:49  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has joined #aichallenge
+2011-01-03T18:29:59  *** RubiconCross <RubiconCross!~RubiconCr@adsl-99-60-5-16.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2011-01-03T18:34:39  *** amstan <amstan!~alex@bas1-toronto05-1176311266.dsl.bell.ca> has joined #aichallenge
+2011-01-03T18:34:39  *** ChanServ sets mode: +o amstan
+2011-01-03T18:35:42  *** delt0r_ <delt0r_!~delt0r@188-22-20-93.adsl.highway.telekom.at> has quit IRC (Quit: Leaving)
+2011-01-03T19:21:47  *** fmeyer <fmeyer!~fmeyer@186.220.216.14> has joined #aichallenge
+2011-01-03T19:48:37  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-01-03T19:52:28  *** n9thbit <n9thbit!~n9thbit@86-41-95-79-dynamic.b-ras2.chf.cork.eircom.net> has quit IRC (Quit: n9thbit)
+2011-01-03T19:59:49  *** fmeyer <fmeyer!~fmeyer@186.220.216.14> has quit IRC (Ping timeout: 260 seconds)
+2011-01-03T20:07:27  *** antimatroid1 <antimatroid1!~Nick@42.068.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-01-03T20:08:44  *** antimatroid <antimatroid!~Nick@233.130-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 255 seconds)
+2011-01-03T20:19:27  *** amstan <amstan!~alex@bas1-toronto05-1176311266.dsl.bell.ca> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T20:23:38  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-01-03T20:46:22  *** amstan <amstan!~alex@bas1-toronto05-1176311266.dsl.bell.ca> has joined #aichallenge
+2011-01-03T20:46:22  *** ChanServ sets mode: +o amstan
+2011-01-03T21:07:39  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-tmazufzkajkeuqnw> has quit IRC (Ping timeout: 265 seconds)
+2011-01-03T21:56:26  *** meneky_ <meneky_!55351ba3@gateway/web/freenode/ip.85.53.27.163> has joined #aichallenge
+2011-01-03T22:03:51  *** meneky_ <meneky_!55351ba3@gateway/web/freenode/ip.85.53.27.163> has quit IRC (Quit: Page closed)
+2011-01-03T22:21:40  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (Remote host closed the connection)
+2011-01-03T22:27:38  *** Rubicon-|-Cross <Rubicon-|-Cross!RubiconCro@adsl-69-232-216-210.dsl.pltn13.pacbell.net> has joined #aichallenge
+2011-01-03T22:35:32  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2011-01-03T22:51:27  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-69-232-216-210.dsl.pltn13.pacbell.net> has joined #aichallenge
+2011-01-03T23:00:52  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-69-232-216-210.dsl.pltn13.pacbell.net> has quit IRC (Ping timeout: 240 seconds)
+2011-01-03T23:19:43  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Read error: Connection reset by peer)
+2011-01-03T23:20:01  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-01-03T23:24:51  *** amstan <amstan!~alex@bas1-toronto05-1176311266.dsl.bell.ca> has quit IRC (Quit: Konversation terminated!)
+2011-01-03T23:31:16  *** amstan <amstan!~alex@bas1-toronto05-1176311266.dsl.bell.ca> has joined #aichallenge
+2011-01-03T23:31:16  *** ChanServ sets mode: +o amstan
+2011-01-03T23:34:38  *** amstan <amstan!~alex@bas1-toronto05-1176311266.dsl.bell.ca> has quit IRC (Remote host closed the connection)
+2011-01-03T23:45:31  *** tapwater <tapwater!~tapwater@pool-72-64-104-180.dllstx.fios.verizon.net> has quit IRC (Quit: tapwater)
+2011-01-03T23:49:24  *** fmeyer <fmeyer!~fmeyer@186.220.216.14> has joined #aichallenge
+2011-01-03T23:58:46  *** amriedle <amriedle!~amriedle@CPE0013f7f2be12-CM0013f7f2be0e.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)

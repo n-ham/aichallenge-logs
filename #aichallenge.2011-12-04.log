@@ -1,0 +1,1780 @@
+2011-12-04T00:11:35  *** delt0r_ <delt0r_!~bob@188-23-92-121.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-04T00:14:24  *** amstan_ <amstan_!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (Read error: No route to host)
+2011-12-04T00:14:25  *** amstan__ <amstan__!~amstan@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-04T00:14:25  *** ChanServ sets mode: +o amstan__
+2011-12-04T00:15:21  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-04T00:28:41  *** rwest__ <rwest__!~rwest@c-24-63-48-172.hsd1.ma.comcast.net> has joined #aichallenge
+2011-12-04T00:28:41  *** rwest_ <rwest_!~rwest@c-24-63-48-172.hsd1.ma.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T00:31:13  *** Surya <Surya!4ec01c28@gateway/web/freenode/ip.78.192.28.40> has quit IRC (Quit: Page closed)
+2011-12-04T00:35:08  *** rwest_ <rwest_!~rwest@c-24-63-48-172.hsd1.ma.comcast.net> has joined #aichallenge
+2011-12-04T00:38:20  *** rwest__ <rwest__!~rwest@c-24-63-48-172.hsd1.ma.comcast.net> has quit IRC (Ping timeout: 244 seconds)
+2011-12-04T00:53:47  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-12-04T00:53:55  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T00:54:23  <ChrisH_> antimatroid: how's your bot coming along?
+2011-12-04T00:54:42  <antimatroid> i mostly finished all my info stuff but now i have some weird bug
+2011-12-04T00:54:48  <antimatroid> it was taking up to like 1second to output "go" wtf?
+2011-12-04T00:54:58  <antimatroid> but i'm busy doing other stuff i've been neglecting today
+2011-12-04T00:55:00  <antimatroid> what about you?
+2011-12-04T00:55:46  <antimatroid> i settled on just recalculating hill information every time i see a previously unseen square or a hill has been discovered/razed
+2011-12-04T00:56:03  <antimatroid> I had to fix up my battle partition stuff too
+2011-12-04T00:56:16  <ChrisH_> just found a bug, + sign should have been -, it was making my ants go away from enemy hills in some cases. so now my newest bot is starting to beat my current bot consistently, good sign
+2011-12-04T00:56:30  <antimatroid> that's good
+2011-12-04T00:57:00  <antimatroid> i have no idea what's causing this, i flush everytime i output something and yet the timer is at like 25ms before the end of the turn and then 1300ms after i output go
+2011-12-04T00:57:17  <antimatroid> and it only happens like randomly once every 100 or so turns
+2011-12-04T00:57:26  <ChrisH_> could it be an OS scheduling issue?
+2011-12-04T00:57:34  <antimatroid> maybe
+2011-12-04T00:57:44  <antimatroid> i don't know anything about that kind of stuff :P
+2011-12-04T00:58:02  <ChrisH_> I've seen that in my testing, especially if the disk decides to do something in the middle of a game.
+2011-12-04T00:58:20  <ChrisH_> how do you test?
+2011-12-04T01:00:35  <antimatroid> usually with very specific examples i've set up and outputting info to a file
+2011-12-04T01:00:45  <antimatroid> for this it's popping up when I run a game
+2011-12-04T01:00:49  <janzert> once every hundred turns seems pretty frequent for a 1+ second pause caused by the OS, it seems like you'd notice something like that during general use
+2011-12-04T01:00:59  <antimatroid> i just feed my bot input data from a file and output stuff to a file
+2011-12-04T01:01:09  <ChrisH_> do you use the --serial option when running games?
+2011-12-04T01:01:23  <antimatroid> janzert: yeah i don't think it's the os's fault
+2011-12-04T01:01:41  <antimatroid> i've never had that problem previously as far as i know, and it's happening at a specific point of the code every time
+2011-12-04T01:01:45  <antimatroid> there's no way it's not me somewhere
+2011-12-04T01:01:49  <ChrisH_> I recommend it, because otherwise all the bots in the game compete for CPU at the same time and I've seen very inconsistent timings in that case
+2011-12-04T01:01:58  <antimatroid> i haven't used that
+2011-12-04T01:02:04  <antimatroid> although it's playing against lefty and hunter
+2011-12-04T01:02:20  <ChrisH_> yeah, not likely the problem then
+2011-12-04T01:02:48  <ChrisH_> I still recommend using --serial though, in provides much more consistent time behavior when you're running the game and all bots locally
+2011-12-04T01:02:55  <antimatroid> yep
+2011-12-04T01:02:58  <antimatroid> i will add that
+2011-12-04T01:03:28  *** jstrong <jstrong!~jstrong@189.229.21.108> has quit IRC (Quit: Leaving.)
+2011-12-04T01:04:28  <ChrisH_> antimatroid: whatever the problem is, it sounds very frustrating, but if it's always a specific spot in the code that helps narrow it down.
+2011-12-04T01:04:51  <antimatroid> not when the piece of code between them is "cout << "go" << endl;" :P
+2011-12-04T01:05:20  <antimatroid> that's as helpful as not knowing where the problem is at all
+2011-12-04T01:05:41  <antimatroid> it seems to me like i'm outputting a heap of stuff and not flushing it or something
+2011-12-04T01:05:50  <antimatroid> but i am adament that i'm not
+2011-12-04T01:06:13  <antimatroid> is there an easy way to get my output for a game?
+2011-12-04T01:06:14  <ChrisH_> that could be, but I'm pretty sure <<endl will cause a flush
+2011-12-04T01:06:20  <antimatroid> yeah it would then
+2011-12-04T01:06:21  <ChrisH_> use the -O option
+2011-12-04T01:06:38  <ChrisH_> it will write the bot output to the game_logs directory
+2011-12-04T01:06:42  <antimatroid> but if it outputted heaps before  and didn't endl it it could potentially take ages to flush
+2011-12-04T01:06:50  <antimatroid> that's the only reasonable explanation i can think of
+2011-12-04T01:07:06  <janzert> antimatroid: maybe just try a cout << endl; before the first timing call and see if the problem disappears?
+2011-12-04T01:07:19  <antimatroid> janzert: that's a good idea
+2011-12-04T01:07:26  <antimatroid> it'll at least tell me it's happening cause of that
+2011-12-04T01:07:36  * janzert nods
+2011-12-04T01:08:39  <ChrisH_> janzert: what's the syntax for doing those * emotes?
+2011-12-04T01:08:50  <janzert>  start with /me
+2011-12-04T01:08:57  <ChrisH_> thx
+2011-12-04T01:09:30  *** u_ <u_!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 244 seconds)
+2011-12-04T01:09:31  <antimatroid> it's definitely the cout << endl;
+2011-12-04T01:11:01  <antimatroid> it's only losing like 10ms now
+2011-12-04T01:11:08  <antimatroid> but that's still not right
+2011-12-04T01:11:58  <AntDroid> got frustrated with my ants moving to the target in queue instead of encircling it when there is a friendly ant in front.
+2011-12-04T01:12:22  <AntDroid> antimatroid: can you try C style printf and see what would happen?
+2011-12-04T01:14:19  <antimatroid> remind me again? printf("go \n"); doesn't seem to flush?
+2011-12-04T01:15:26  <AntDroid> call fflush() after
+2011-12-04T01:16:16  <antimatroid> claims too few parameters?
+2011-12-04T01:16:50  <AntDroid> fflush(stdout);
+2011-12-04T01:17:22  <ChrisH_> it's been a while since I did C++, but I seem to remember that C++ streams and C io calls don't necessarily play nice together when it comes to buffering and flushing, etc.
+2011-12-04T01:17:44  <ChrisH_> i thought they had separate buffers
+2011-12-04T01:17:58  <rmmh> yeah they interact strangely, you might not want to intermix them
+2011-12-04T01:18:30  <antimatroid> problem's still there
+2011-12-04T01:18:59  <AntDroid> fflush is just a hack for the printf() i've suggested to try if the cout << endl is really the problem
+2011-12-04T01:19:36  <antimatroid> i'm going to check the output
+2011-12-04T01:19:42  <thestinger> ChrisH_: they sync by default (makes it really slow though)
+2011-12-04T01:19:47  <thestinger> you can turn off sync though
+2011-12-04T01:20:06  <ChrisH_> thestinger: ahhh, thanks for the correction
+2011-12-04T01:20:08  <thestinger>     std::ios::sync_with_stdio(false);
+2011-12-04T01:20:17  <ChrisH_> yeah, that rings a bell now
+2011-12-04T01:20:19  <thestinger> but then you can't mix them
+2011-12-04T01:20:26  <AntDroid> antimatroid: that means cout <<endl is not the problem, so maybe you could look elsewhere
+2011-12-04T01:20:42  <antimatroid> yes, but the problem is occuring when i cout endl
+2011-12-04T01:20:53  <antimatroid> which would suggest there's something not getting flushed no?
+2011-12-04T01:21:07  <ChrisH_> wow, it's been over six years since I did C++ regularly, hard to believe, that was my bread and butter for a long time
+2011-12-04T01:21:08  <antimatroid> i literally check the time before and after doing this
+2011-12-04T01:21:12  <antimatroid> and it's using the time there
+2011-12-04T01:21:12  <thestinger> antimatroid: do you have sync between stdio and iostream off for stdout?
+2011-12-04T01:21:27  <antimatroid> probably
+2011-12-04T01:21:37  <antimatroid> i have "std::cout.sync_with_stdio(0);"
+2011-12-04T01:21:55  <antimatroid> i'd always found that made it faster
+2011-12-04T01:21:59  <thestinger> yeah
+2011-12-04T01:22:01  <thestinger> it should
+2011-12-04T01:22:10  *** WW_ <WW_!1898a819@gateway/web/freenode/ip.24.152.168.25> has joined #aichallenge
+2011-12-04T01:22:11  <thestinger>  std::ios::sync_with_stdio(false);
+2011-12-04T01:22:17  <thestinger> try that, so it's off for stderr/stdin too
+2011-12-04T01:22:36  <antimatroid> i always found 0/1 faster than false/true
+2011-12-04T01:22:41  <antimatroid> although that's probably compiler specific
+2011-12-04T01:23:31  <thestinger> they're the same
+2011-12-04T01:23:41  <thestinger> take the md5sum of your binary and recompile with false instead of 0
+2011-12-04T01:24:44  <antimatroid> when i was on windows i tested them and there was a difference
+2011-12-04T01:25:11  <thestinger> with debugging symbols, etc. off?
+2011-12-04T01:25:19  <antimatroid> no idea :P
+2011-12-04T01:25:59  <janzert> antimatroid: it wasn't changing the 0 to false that he was suggesting above though
+2011-12-04T01:26:03  <janzert> in case you missed that
+2011-12-04T01:26:08  <antimatroid> no i got that :)
+2011-12-04T01:26:10  <antimatroid> i was just noting
+2011-12-04T01:26:23  <antimatroid> didn't fix the problem either :(
+2011-12-04T01:26:37  * antimatroid starts combing his source code
+2011-12-04T01:26:50  <antimatroid> i've searched every file for cout's
+2011-12-04T01:30:35  <janzert> grep "cout\|stdout" * :/
+2011-12-04T01:31:14  <ChrisH_> antimatroid: regarding your thought that a big output without a flush could be the problem: most implementations of std::cout that I've seen will only buffer a few K-bytes before doing an automatic flush anyway
+2011-12-04T01:31:36  <antimatroid> i'm looking for anything wrong at this point
+2011-12-04T01:32:51  <ChrisH_> antimatroid: since it only happens every ~100 turns, is there anything in your code that is only performed that often?
+2011-12-04T01:32:52  <janzert> you mentioned testing with direct file input/output, are you seeing it when actually running under the engine too?
+2011-12-04T01:33:05  <antimatroid> i'm not sure it's that infrequent
+2011-12-04T01:33:12  <thestinger> try cstdio :P
+2011-12-04T01:33:19  <antimatroid> i'm only seeing it with the engine atm
+2011-12-04T01:34:04  <ChrisH_> are you writing a log of logging to stderr?
+2011-12-04T01:34:14  <ChrisH_> (a lot of logging)
+2011-12-04T01:35:02  <antimatroid> all my logging is straight to an output file
+2011-12-04T01:35:04  <antimatroid> i can see that
+2011-12-04T01:38:23  <ChrisH_> does it happen during the whole game or only in the later stages?
+2011-12-04T01:39:56  <ChrisH_> and do you see python using a lot of CPU during the game if you run top or your OS equivalent?
+2011-12-04T01:43:19  *** WW_ <WW_!1898a819@gateway/web/freenode/ip.24.152.168.25> has quit IRC (Quit: Page closed)
+2011-12-04T01:44:07  <antimatroid> i just look near the start of the game
+2011-12-04T01:44:09  <antimatroid> like first 40 turns
+2011-12-04T01:44:19  <antimatroid> but it isn't consistent on the turn which is also annoying
+2011-12-04T01:44:40  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-12-04T01:46:12  <ChrisH_> if you set the turntime for the game below the typical delay, does the engine cause your bot to timeout?
+2011-12-04T01:46:49  *** praveen <praveen!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has joined #aichallenge
+2011-12-04T01:47:55  <ChrisH_> it sounds to me like the game engine is not ready to read your moves, and when the flush happens your code is blocking waiting for the write to complete, but the game engine isn't reading from the pipe for some reason, and when it finally does then your code starts running again and measures the delay
+2011-12-04T01:50:12  <ChrisH_> if this theory is correct then the problem would be some sort of systematic but irregular delay in the python runtime, not sure what that could be though
+2011-12-04T01:51:16  <AntDroid> i've seen an output in the commandline that says: INFO: invalid o x y D # duplicate order, where x and y seems to be row and col and D is direction. what does that mean? that i sent that specific line twice?
+2011-12-04T01:51:28  <ChrisH_> another test would be to run the game with all bots being your code (remove the sample bots) and see if the delay happens to all instances of your bot
+2011-12-04T01:51:30  <ChrisH_> AntDroid: yes
+2011-12-04T01:51:49  <ChrisH_> AntDroid: you sent to orders for the same ant
+2011-12-04T01:52:01  <pairofdice> AntDroid: GreedyBot does that a lot
+2011-12-04T01:53:10  <ChrisH_> antimatroid: also a game between three of your bot could ferret out if the delay happens on the same turn for all instances of your bot or on different turns in the same game
+2011-12-04T01:53:56  <AntDroid> it might be a bug then. i have code to take care of that but i may have missed something.
+2011-12-04T01:56:01  *** janzert <janzert!~janzert@97-83-124-17.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T01:56:50  <antimatroid> okay that's just weird
+2011-12-04T01:57:02  <antimatroid> not happening on the same turn, and one of them just did it after i just output endl
+2011-12-04T01:58:12  <pairofdice> AntDroid, just be sure that it's not one of the sample bots first
+2011-12-04T01:59:10  *** janzert <janzert!~janzert@97-83-124-17.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-12-04T02:00:09  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has quit IRC (Quit: Leaving.)
+2011-12-04T02:00:21  * antimatroid cries
+2011-12-04T02:01:40  <ChrisH_> antimatroid: what about the timeout test, is the delay always around 1sec? if so, set the turn time to 500ms and see if your bots timeout because of the delay or not
+2011-12-04T02:02:06  <antimatroid> ChrisH_: the delay is currently down at around 10ms
+2011-12-04T02:02:23  <ChrisH_> oh
+2011-12-04T02:02:27  <thestinger> antimatroid: the engine does that iirc
+2011-12-04T02:02:35  <janzert> are you sure whatever you're using for timing has a resolution higher than that?
+2011-12-04T02:02:37  <thestinger> it has 10ms pauses between every 50 lines or something like that
+2011-12-04T02:03:15  <antimatroid> http://pastebin.com/AD2ZhaiQ
+2011-12-04T02:03:17  <ChrisH_> i remember someone saying the engine checks for timeout every 10ms, not sure if that is related
+2011-12-04T02:03:17  <antimatroid> that's my timer
+2011-12-04T02:03:22  <antimatroid> but it had larger time things before
+2011-12-04T02:03:36  <janzert> thestinger: this is the time it is taking him to output the "go" line
+2011-12-04T02:04:03  <antimatroid> it took the 10 seconds after janzerts extra cout << endl line just before
+2011-12-04T02:04:05  <antimatroid> 10ms
+2011-12-04T02:05:47  <ChrisH_> well i'm still curious if the engine is receiving the "go\n" before or after the delay, which is why I suggest the timeout test, so maybe removing the extra cout<<endl would let you test that again
+2011-12-04T02:05:53  <janzert> antimatroid: check clock_getres()
+2011-12-04T02:06:02  <janzert> that'll give you the resolution of gettimeofday
+2011-12-04T02:06:33  <thestinger> doesn't that get you the res of clock_gettime()?
+2011-12-04T02:06:40  <thestinger> I guess they're probably the same
+2011-12-04T02:07:12  <janzert> yeah, I suppose they may not be
+2011-12-04T02:07:30  <thestinger> gettimeofday() is actually deprecated in POSIX:2008 :P
+2011-12-04T02:07:41  <thestinger> but I think you need -lrt to use clock_gettime()
+2011-12-04T02:08:01  <thestinger> the engine does a 10ms pause before reading anything
+2011-12-04T02:08:03  <thestinger> and then reads 100 lines
+2011-12-04T02:08:04  <ChrisH_> also, if the other 50 lines of output show smaller time steps than 10ms, then that would indicate a higher resolution.
+2011-12-04T02:08:08  <thestinger> then another 10ms pause
+2011-12-04T02:08:10  <thestinger> etc.
+2011-12-04T02:08:16  <antimatroid> ChrisH_: most of the time now the delay is happening with a "cout << endl;" line
+2011-12-04T02:08:18  <thestinger> so the minimum time to output your orders is 10ms
+2011-12-04T02:08:44  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T02:09:02  <janzert> thestinger: yes, but unless he is filling the stdout buffer before the engine can read it, that shouldn't be an effect here
+2011-12-04T02:09:23  <antimatroid> what am I calling? clock_getres(gettimeofday, ?);
+2011-12-04T02:09:26  <thestinger> no
+2011-12-04T02:09:41  <antimatroid> thestinger: want to pastebin your timer for me? :P
+2011-12-04T02:09:43  <janzert> and in the first 40 turns I doubt he is outputing enough to overflow the buffer
+2011-12-04T02:09:48  <antimatroid> that way i can see if it's that
+2011-12-04T02:09:50  <thestinger> antimatroid: http://pubs.opengroup.org/onlinepubs/9699919799/
+2011-12-04T02:10:03  <ChrisH_> if thestinger's explaination of the engine's logic is correct, then I think he has a good point
+2011-12-04T02:10:03  <thestinger> I just use gettimeofday() because the new replacement stuff needs -lrt
+2011-12-04T02:10:15  <thestinger> http://pastie.org/2963242
+2011-12-04T02:10:17  <thestinger> look
+2011-12-04T02:10:22  <thestinger> it pauses for 10ms before it starts reading
+2011-12-04T02:10:26  <thestinger> so you fill the buffer, and output go
+2011-12-04T02:10:35  <thestinger> it will take 10ms at minimum to read it all
+2011-12-04T02:11:12  <thestinger> it probably takes under 10ms for you to do the output
+2011-12-04T02:11:19  <ChrisH_> it also means that if you have 200 ants to give orders for, you can't do it in less than 30ms because that loop in the engine will have to go around 3 times to read 200 orders plus a "go" line
+2011-12-04T02:11:20  <thestinger> so the engine is still sleeping when you get to "go"
+2011-12-04T02:11:53  <antimatroid> i don't get what i'm calling?
+2011-12-04T02:12:03  <antimatroid> what do i pass to clock_getred?
+2011-12-04T02:12:05  <antimatroid> getres?
+2011-12-04T02:12:31  <thestinger> antimatroid: int res = clock_getres(CLOCK_MONOTONIC, NULL);
+2011-12-04T02:12:50  <thestinger> and try using clock_gettime() to measure time
+2011-12-04T02:13:17  <thestinger> CLOCK_MONOTONIC isn't wall clock time, it's an arbitrary number which increases at the same rate as wall clock time
+2011-12-04T02:13:38  <thestinger> CLOCK_REALTIME is the actual time, but the res is probably lower
+2011-12-04T02:13:58  <thestinger> oh
+2011-12-04T02:15:05  <thestinger> and you have to define _C_POSIX_SOURCE to a year/month and use -lrt to compile
+2011-12-04T02:15:21  <thestinger> #define _POSIX_C_SOURCE 200809L
+2011-12-04T02:15:35  <thestinger> before your includes
+2011-12-04T02:15:53  <thestinger> anyway, I think it's just the time.sleep(0.01) the engine does
+2011-12-04T02:16:01  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-04T02:16:11  <janzert> is >8kb of orders data for a single turn in the first 100 turns actually likely?
+2011-12-04T02:16:27  <antimatroid> http://pastebin.com/FgY7pAZK
+2011-12-04T02:16:35  <antimatroid> i get that when i try to do int res = clock_getres(CLOCK_MONOTONIC, NULL);
+2011-12-04T02:17:02  <antimatroid> err
+2011-12-04T02:17:05  <janzert> since you have to completely fill the OS buffers before that sleep will have any effect on this timing that antimatroid is doing
+2011-12-04T02:17:06  <antimatroid> but with gettimeofday
+2011-12-04T02:17:17  <antimatroid> so what is a ClOCK_MONOTONIC?
+2011-12-04T02:17:26  <thestinger> antimatroid: are you using -lrt and defining _POSIX_C_SOURCE?
+2011-12-04T02:17:32  <antimatroid> i have no idea what you guys are going on about with timer stuff :P
+2011-12-04T02:17:47  <antimatroid> thestinger: I couldn't find -lrt in code::blocks
+2011-12-04T02:17:50  <antimatroid> i'll look agian
+2011-12-04T02:17:50  <ChrisH_> janzert: I think you are wrong. what if the engine has just issued the sleep when his code submits it's orders?
+2011-12-04T02:17:58  <thestinger> antimatroid: add it to the end of the compiler command
+2011-12-04T02:18:07  <janzert> it'll all go into the OS buffers until they fill
+2011-12-04T02:18:13  <antimatroid> ChrisH_: but i submit the orders when i find them, it should happen in other places if that's the case
+2011-12-04T02:18:38  <ChrisH_> but doesn't the flush block until the pipe is read from?
+2011-12-04T02:18:55  <ChrisH_> if not then ignore me
+2011-12-04T02:19:02  <thestinger> I don't think so
+2011-12-04T02:19:09  <thestinger> then my bot would take forever to run :P
+2011-12-04T02:19:10  <ChrisH_> ok, nevermind then
+2011-12-04T02:19:44  <thestinger>     timespec start_time;
+2011-12-04T02:19:45  <antimatroid> thestinger: i can't find the compiler command, only flags to tic box
+2011-12-04T02:19:46  <thestinger>     clock_gettime(CLOCK_MONOTONIC, &start_time);
+2011-12-04T02:19:57  <ChrisH_> thestinger: why, do you flush after every line or something
+2011-12-04T02:20:05  <thestinger> ChrisH_: yes, atm I do
+2011-12-04T02:20:18  <ChrisH_> ok, that's curious
+2011-12-04T02:20:43  <janzert> you're half right actually
+2011-12-04T02:20:55  <janzert> it'll flush the bots buffer, but still keep the engine buffer
+2011-12-04T02:21:10  <janzert> so 4kb of order data is probably the actual cutoff
+2011-12-04T02:21:52  *** janzert <janzert!~janzert@97-83-124-17.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T02:21:54  <ChrisH_> yeah, but that's a LOT of orders
+2011-12-04T02:22:21  <antimatroid> interesting
+2011-12-04T02:22:26  <antimatroid> i think the timer might be borked
+2011-12-04T02:22:36  <antimatroid> i it just skipped from 1 to 4 ms
+2011-12-04T02:22:38  <ChrisH_> it's not unheard of
+2011-12-04T02:22:40  <antimatroid> when just couting get time
+2011-12-04T02:23:04  *** janzert <janzert!~janzert@97-83-124-17.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-12-04T02:23:08  <antimatroid> thestinger: are you willing to share your timer code?
+2011-12-04T02:23:15  <thestinger> I don't have any atm
+2011-12-04T02:23:17  <thestinger> but
+2011-12-04T02:23:26  <thestinger> use uintmax_t to do any conversions/calculations
+2011-12-04T02:23:27  <thestinger> not double
+2011-12-04T02:24:10  <thestinger> antimatroid: are you just using what you put in the C++ starter?
+2011-12-04T02:24:17  <antimatroid> yeah
+2011-12-04T02:24:24  <antimatroid> except stripping that junk for windows
+2011-12-04T02:25:08  <thestinger> I think it might be wrong
+2011-12-04T02:25:15  <thestinger>         startTime = (double)timer.tv_sec+((double)timer.tv_usec/1000000.0);
+2011-12-04T02:25:30  <thestinger> you probably want usec accuract, so you want to turn tv_sec into usec
+2011-12-04T02:25:33  <thestinger> accuracy*
+2011-12-04T02:27:48  <thestinger> sec
+2011-12-04T02:29:39  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T02:31:28  <thestinger> antimatroid: http://pastie.org/2963294 try this
+2011-12-04T02:31:51  <thestinger> gets microsecond accuracy rather than millisecond though
+2011-12-04T02:32:42  <thestinger> hopefully it doesn't ever overflow... I didn't really think it over :P
+2011-12-04T02:33:16  <thestinger> oh, comment is wrong now
+2011-12-04T02:33:25  <antimatroid> it seems to work better
+2011-12-04T02:34:47  <thestinger> I think it might overflow though
+2011-12-04T02:35:35  <antimatroid> yeah i changed those to doubles and converted to milliseconds
+2011-12-04T02:35:50  <antimatroid> i probably don't need the double part
+2011-12-04T02:35:58  <thestinger> oh, I know what it should do
+2011-12-04T02:36:20  <thestinger> you don't need to convert timeval to something else
+2011-12-04T02:36:27  <thestinger> that's the proper way, I forgot
+2011-12-04T02:37:04  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-12-04T02:38:24  <antimatroid> what?
+2011-12-04T02:38:32  <thestinger> like you just store timeval start_time
+2011-12-04T02:38:34  <thestinger> sec
+2011-12-04T02:38:38  <antimatroid> http://pastebin.com/fgeBVLht
+2011-12-04T02:38:40  <antimatroid> that seems to work
+2011-12-04T02:38:51  <antimatroid> oh yeah
+2011-12-04T02:38:52  <antimatroid> okayt
+2011-12-04T02:39:01  <thestinger> I think that will overflow int though
+2011-12-04T02:39:44  <antimatroid> if it worked with double?
+2011-12-04T02:39:47  <antimatroid> long in?
+2011-12-04T02:39:52  <thestinger> sec
+2011-12-04T02:40:34  <thestinger> http://pastie.org/private/75fvn0s53b2ow830ffzcvq
+2011-12-04T02:40:35  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T02:40:36  <thestinger> that's better
+2011-12-04T02:40:56  <thestinger> really long line but whatever
+2011-12-04T02:41:20  <thestinger> that won't ever overflow because you leave it as internal types until you want the delta
+2011-12-04T02:41:59  <thestinger> tv_sec is a long int (seconds since 1970 or whatever)
+2011-12-04T02:42:07  <thestinger> so if you multiply it by a number, that's huge
+2011-12-04T02:42:32  <antimatroid> http://pastebin.com/vjDgUPbs
+2011-12-04T02:42:34  <antimatroid> how about that?
+2011-12-04T02:42:54  <thestinger> well, you want ms right?
+2011-12-04T02:42:58  <antimatroid> yeah
+2011-12-04T02:43:15  <antimatroid> my last one gives it
+2011-12-04T02:43:35  <thestinger> http://pastie.org/2963324
+2011-12-04T02:43:48  <thestinger> in ms now
+2011-12-04T02:43:50  *** SUITOR <SUITOR!~alexdelun@189.225.168.128> has joined #aichallenge
+2011-12-04T02:44:13  <antimatroid> done
+2011-12-04T02:44:15  <antimatroid> i like it
+2011-12-04T02:44:20  <antimatroid> cheers
+2011-12-04T02:44:44  <antimatroid> now to see if that was my problem :P
+2011-12-04T02:46:18  *** SUITOR <SUITOR!~alexdelun@189.225.168.128> has quit IRC ()
+2011-12-04T02:47:39  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-04T02:49:25  <thestinger> anyway the return type doesn't have to be uintmax_t now since it's just ms
+2011-12-04T02:50:55  <mleise> is uintmax_t == unsigned long ?
+2011-12-04T02:51:00  <thestinger> no
+2011-12-04T02:51:11  <thestinger> it's probably 128 bit
+2011-12-04T02:51:13  <thestinger> xD
+2011-12-04T02:51:36  <thestinger> UINTMAX_MAX
+2011-12-04T02:51:41  <thestinger> is the macro for it, sec
+2011-12-04T02:52:17  <thestinger> oh, it's just 64-bit
+2011-12-04T02:52:25  <thestinger> on x86_64 gcc
+2011-12-04T02:52:38  <thestinger> the idea is that it's the largest int the implementation could use for something
+2011-12-04T02:52:55  *** CowTipperVirus <CowTipperVirus!411e19be@gateway/web/freenode/ip.65.30.25.190> has joined #aichallenge
+2011-12-04T02:53:12  <thestinger> so yeah, it's uint64_t which is the same as unsigned long long or unsigned long
+2011-12-04T02:53:20  <mleise> "for something" may exclude sse numbers when they can't be handled the same way as ints
+2011-12-04T02:53:25  <CowTipperVirus> Hey guys, has anybody else had the ai viewer mess up (not displaying most buttons) w/ the latest firefox?
+2011-12-04T02:53:59  <mleise> CowTipperVirus: lol, stuff like this happens with every major release starting from version 4
+2011-12-04T02:54:09  *** praveen <praveen!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T02:54:13  <thestinger> CowTipperVirus: no, it works fine
+2011-12-04T02:54:29  <mleise> but I may just have to extend the filter for the shadow effect
+2011-12-04T02:54:30  <antimatroid> thestinger: should i use int or uintmax_T?
+2011-12-04T02:54:39  <thestinger> just leave it as uintmax_t
+2011-12-04T02:54:43  <antimatroid> k
+2011-12-04T02:54:45  <CowTipperVirus> mleise: mean you have the bug too?
+2011-12-04T02:54:53  <mleise> i mean disable shadows in that version of FF.
+2011-12-04T02:55:14  <mleise> no i don't have the latest FireFox, but as the developer of the visualizer I know the issue
+2011-12-04T02:55:28  <CowTipperVirus> mleise: cool, thanks, I'll give it a shot
+2011-12-04T02:55:40  <mleise> which version of FF is it exactly?
+2011-12-04T02:55:58  <antimatroid> oh wait, i need double
+2011-12-04T02:56:02  <thestinger> 8.0.1 is the latest stable :P
+2011-12-04T02:56:04  <antimatroid> thestinger: double will work fine yeah?
+2011-12-04T02:56:10  <mleise> It is a Windows only problem btw. since they introduced a new renderer for Windows a while back, so thestinger wont see it on Linux
+2011-12-04T02:56:18  <CowTipperVirus> mleise: latest stable windows sys, 8.0.1
+2011-12-04T02:56:18  <antimatroid> i pass functions a maxTimeProportion
+2011-12-04T02:56:25  <thestinger> antimatroid: yeah, that will be fine
+2011-12-04T02:56:28  <thestinger> since it's just ms
+2011-12-04T02:56:33  <antimatroid> just making sure :P
+2011-12-04T02:56:38  <antimatroid> i don't trust myself at this point
+2011-12-04T02:56:45  <CowTipperVirus> mleise: btw, works when it's not fullscreen
+2011-12-04T02:56:46  <thestinger> just leave the internal thing the same
+2011-12-04T02:57:05  <thestinger> like, start() stores a timeval and then getTime() gives you the delta based on a new timeval
+2011-12-04T02:57:28  <thestinger> you can make the return type anything that can store the max turn time in ms
+2011-12-04T02:57:29  <mleise> antimatroid: the times come from a hardware clock. it is impossible that you get the numbers as 134352355235-bit integers from there ^^
+2011-12-04T02:58:36  <antimatroid> and my problem is still there :(
+2011-12-04T02:58:37  <mleise> CowTipperVirus: Not really. It is a matter of size
+2011-12-04T02:58:54  <mleise> You may notice some pixels are missing on the buttons on the left
+2011-12-04T02:59:01  <thestinger> antimatroid: is it just a 10ms delay?
+2011-12-04T02:59:08  *** CowTipperVirus_ <CowTipperVirus_!411e19be@gateway/web/freenode/ip.65.30.25.190> has joined #aichallenge
+2011-12-04T02:59:11  <antimatroid> it was 7 that time
+2011-12-04T02:59:17  <thestinger> try only flushing at the end
+2011-12-04T02:59:26  <thestinger> like replace endl; with '\n'; except at the end
+2011-12-04T02:59:38  <CowTipperVirus_> mleise: disabling hardware accel fixed it
+2011-12-04T02:59:43  <thestinger> I couldn't figure out which was better
+2011-12-04T02:59:46  <antimatroid> the 7 second delay is happening with a "cout << endl;" line
+2011-12-04T02:59:55  <antimatroid> i don't like flushing just at the end either
+2011-12-04T02:59:58  <mleise> CowTipperVirus_: nice workaround ;)
+2011-12-04T03:00:07  <antimatroid> 7ms*
+2011-12-04T03:00:17  <CowTipperVirus_> mleise: what was your suggestion about shadows? prefer to use the < hammer approach if I can :)
+2011-12-04T03:01:24  *** CowTipperVirus <CowTipperVirus!411e19be@gateway/web/freenode/ip.65.30.25.190> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T03:02:11  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-12-04T03:03:21  <mleise> antimatroid: you get 7 ms delay when flushing?
+2011-12-04T03:03:46  <antimatroid> mleise: there's something wrong with my bot
+2011-12-04T03:03:48  <mleise> do you send more than 64kb over the pipe?
+2011-12-04T03:03:51  <antimatroid> and i can't work out what
+2011-12-04T03:04:04  <antimatroid> i have no idea what the problem is:P
+2011-12-04T03:04:15  <antimatroid> i had it doing 1000ms last night
+2011-12-04T03:04:20  <antimatroid> same problem
+2011-12-04T03:04:33  <mleise> so.. why don't you run it in a profiler?
+2011-12-04T03:04:51  <mleise> use no inlining and keep the line number information
+2011-12-04T03:05:33  <antimatroid> that would require me to go and learn how to use a profiler :P
+2011-12-04T03:05:38  <mleise> If you are on Linux, then OProfile is a good choice, although it is a bit overwhelming at first
+2011-12-04T03:05:39  <antimatroid> and take out all my inline functions etc.
+2011-12-04T03:05:58  <antimatroid> i'm going to just comb my source code :P
+2011-12-04T03:06:05  <antimatroid> i'm sure i'm doing something retarded somewhere to cause it
+2011-12-04T03:06:13  <mleise> antimatroid: ok, then keep the inline functions. It's just that they wont show up seperately in the output then
+2011-12-04T03:06:49  <mleise> ok :)
+2011-12-04T03:07:32  <CowTipperVirus_> mleise: just poking again, what was your shadow suggestion?
+2011-12-04T03:07:54  <thestinger> you can disable inlining with a compiler argument
+2011-12-04T03:08:39  <thestinger> gcc rarely cares about your views on inlining anyway :)
+2011-12-04T03:08:45  <CowTipperVirus_> I thought he was using C#, don't think it has many compiler args
+2011-12-04T03:09:16  <thestinger> MyBot.cpp:133:8: warning: inlining failed in call to ‘Steps::~Steps()’: --param inline-unit-growth limit reached [-Winline]
+2011-12-04T03:09:44  <thestinger> that's the default destructor for a tiny struct :)
+2011-12-04T03:10:04  <CowTipperVirus_> yeah... as soon as this competition is over I'm going to put in a push request for their compiler flags... the C/C++ -o3 -funroll-loops is just retarded
+2011-12-04T03:10:18  <CowTipperVirus_> seriously... -o2 -march=native
+2011-12-04T03:10:32  <CowTipperVirus_> maybe... MAYbe some other flags
+2011-12-04T03:10:37  <thestinger> -O3 is better for "small" programs like this
+2011-12-04T03:10:38  *** analyst74 <analyst74!~analyst74@74-115-199-33.eng.wind.ca> has joined #aichallenge
+2011-12-04T03:10:58  <mleise> CowTipperVirus_: I've fixed the problem in the source code repository
+2011-12-04T03:11:01  <CowTipperVirus_> got a sample of code I was playing around w/ where the funroll loops slows it down on my pc by a factor of 10 or more
+2011-12-04T03:11:01  <thestinger> -funroll-loops is a really bad thing most of the time without PGO
+2011-12-04T03:11:08  <thestinger> CowTipperVirus_: yeah, but -O3 is fine
+2011-12-04T03:11:24  <CowTipperVirus_> thestinger: meh... doubt it
+2011-12-04T03:11:27  <thestinger> it's just not fine to compile a massive program like firefox completely with -O3 and no PGO
+2011-12-04T03:11:40  <CowTipperVirus_> gcc manual doesn't recommend it unless you can prove your app
+2011-12-04T03:11:52  <CowTipperVirus_> it makes optimizations that may not really help
+2011-12-04T03:11:57  <thestinger> http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+2011-12-04T03:12:40  <thestinger> it doesn't do anything bad at -O3 unless the program is too big for gcc to properly analyze it
+2011-12-04T03:12:51  <mleise> -funroll-loops is also losing weight with the processors becoming smarter about loops
+2011-12-04T03:13:00  <thestinger> yeah, -funroll-loops is often bad
+2011-12-04T03:13:17  <thestinger> if you compile with PGO, gcc will unroll loops where it's a good thing
+2011-12-04T03:13:24  <thestinger> you shouldn't ever explicitly enable it without testing
+2011-12-04T03:13:27  <CowTipperVirus_> yeah, I agree w/ the link, but some of the optimizations enabled by -o3 should have warnings
+2011-12-04T03:13:40  <CowTipperVirus_> PGO?
+2011-12-04T03:13:49  <thestinger> profile-guided optimization
+2011-12-04T03:14:13  <thestinger> build with -fprofile-generate, run the program through a benchmarking profile, then rebuild with -fprofile-use
+2011-12-04T03:14:31  <thestinger> firefox is built like that by default
+2011-12-04T03:14:32  <CowTipperVirus_> interesting, never heard of that... will have to look into it :)
+2011-12-04T03:14:45  <thestinger> it lets the compiler actually see which branches are taken most
+2011-12-04T03:14:48  <thestinger> which code is hot/cold
+2011-12-04T03:14:55  <mleise> I recently see more and more software use -O3 in the make file. Sounds like it is stable now and doing more good than bad on the average. Or people really just want to write -O9999 and not care about the consequences.
+2011-12-04T03:14:55  <CowTipperVirus_> yeah, makes tons of sense
+2011-12-04T03:14:58  <thestinger> which functions should be inlined, which loops to unroll
+2011-12-04T03:15:03  <thestinger> like a JIT, but compiled ahead of time
+2011-12-04T03:15:24  <thestinger> mleise: anything over -O3 is meaningless with gcc
+2011-12-04T03:15:39  <CowTipperVirus_> lol, yeah... :) has the - - -omg_just_go_fast look to it
+2011-12-04T03:15:43  <mleise> I tried PGO once and it *failed*. The program became slower than without PGO.
+2011-12-04T03:15:43  <thestinger> with clang -O4 is basically an alias for '-O3 -flto'
+2011-12-04T03:16:02  <thestinger> mleise: which compiler?
+2011-12-04T03:16:07  <thestinger> I think gcc just got it with 4.6
+2011-12-04T03:16:33  <CowTipperVirus_> but yeah... the ai challenge has a bunch of retarded flags set, big bummer
+2011-12-04T03:16:43  <CowTipperVirus_> and of all the flags, seriously... not setting march
+2011-12-04T03:16:45  <mleise> thestinger: some older version of gcc
+2011-12-04T03:16:57  <thestinger> oh
+2011-12-04T03:17:14  <CowTipperVirus_> if I had noticed earlier in the competition I would have requested a change, but so far in I think it would be too big of a change for them to do anything
+2011-12-04T03:17:16  <thestinger> sorry, link-time optimization first appeared in 4.6
+2011-12-04T03:17:18  <thestinger> I got confused xD
+2011-12-04T03:17:55  <thestinger> CowTipperVirus_: -O3 is definitely sane for a small program, but the way they compile isn't very good
+2011-12-04T03:17:58  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T03:18:01  <mleise> are link time optimizations part of ld then?
+2011-12-04T03:18:05  <thestinger> well
+2011-12-04T03:18:08  <mleise> or part of g++
+2011-12-04T03:18:21  <thestinger> when gcc compiles a .o, it loses all the internal representation
+2011-12-04T03:18:29  <thestinger> so you don't get optimization for your whole program
+2011-12-04T03:18:41  <thestinger> a function in one .o cannot be inlined into another, or changed based on what happens in other files
+2011-12-04T03:18:50  <CowTipperVirus_> thestinger: k, I'll let you have that one
+2011-12-04T03:19:08  <thestinger> with -flto, it basically keeps all the information in the .o so it can do optimization across the whole program
+2011-12-04T03:19:43  <thestinger> CowTipperVirus_: -funroll-loops is a bad idea though
+2011-12-04T03:19:44  <mleise> You know what is funny? That byte-code languages now have features that make them faster than native compiled languages. Like devirtualizing method calls
+2011-12-04T03:19:59  <thestinger> that's what PGO is for :)
+2011-12-04T03:20:36  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-04T03:20:44  <thestinger> I'm sure JIT compilers will eventually be faster than AOT ones though, because you can't just distribute your code with -march=native
+2011-12-04T03:20:54  <mleise> that's interesting. we need that stuff in D some day ;)
+2011-12-04T03:21:11  <thestinger> llvm actually has a JIT, so there's a C++ JIT/REPL now
+2011-12-04T03:21:23  <thestinger> http://root.cern.ch/drupal/content/cling
+2011-12-04T03:22:31  <thestinger> CowTipperVirus_: if people want -funroll-loops they can actually enable it with a pragma
+2011-12-04T03:22:46  <thestinger> http://gcc.gnu.org/onlinedocs/gcc/Function-Specific-Option-Pragmas.html
+2011-12-04T03:23:04  <CowTipperVirus_> thestinger: I agree... which is why I'm going to try and get them to change it in the next competition
+2011-12-04T03:23:18  <CowTipperVirus_> thestinger: because I can't "un-enable" it very easily
+2011-12-04T03:23:23  <thestinger> CowTipperVirus_: are you using C++?
+2011-12-04T03:23:30  <CowTipperVirus_> thestinger: yeah
+2011-12-04T03:23:33  <thestinger> it's not enabled for the C++11 build
+2011-12-04T03:23:38  <thestinger> just switch your extension to .cpp
+2011-12-04T03:23:47  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-04T03:23:54  <thestinger> and use -std=c++0x locally
+2011-12-04T03:24:12  <thestinger> or -std=c++11 if you're using gcc 4.7 like I am :)
+2011-12-04T03:24:34  <thestinger> and clang 3.0
+2011-12-04T03:24:43  <CowTipperVirus_> thestinger: didn't even think to try that... good workaround. for now I just changed my code so the compiler wouldn't figure out the size of the loop at compile time
+2011-12-04T03:24:45  <mleise> maybe he uses MSVC++?
+2011-12-04T03:25:01  <mleise> CowTipperVirus_: YOU DID WHAT?
+2011-12-04T03:25:05  <thestinger> well, C++03 will still compile as C++11
+2011-12-04T03:25:15  <thestinger> unless you actually use 'auto' with the old meaning
+2011-12-04T03:25:25  <CowTipperVirus_> mleise: well... the funroll-loops was owning it
+2011-12-04T03:25:34  <CowTipperVirus_> can't unroll something if you don't know what it is :)
+2011-12-04T03:25:35  <mleise> hmm. ok.
+2011-12-04T03:25:50  <thestinger> CowTipperVirus_: you an also use a pragma to disable it
+2011-12-04T03:26:03  <mleise> -fno-unroll-loops ?
+2011-12-04T03:26:09  <thestinger> yeah
+2011-12-04T03:26:12  <thestinger> you use the optimize pragma
+2011-12-04T03:26:18  <CowTipperVirus_> thestinger: looked into that, was pretty sure the cl flag would override it
+2011-12-04T03:26:19  <pairofdice> ...you can just upload your own makefile
+2011-12-04T03:26:32  <thestinger> pairofdice: no, the server doesn't use your Makefile
+2011-12-04T03:26:33  <pairofdice> Can't you?
+2011-12-04T03:26:34  <CowTipperVirus_> pairofdice: doesn't matter... look at their code, won't use your makefile
+2011-12-04T03:26:58  <thestinger> they compile each file into a .o with -O3, then link it together with -O2
+2011-12-04T03:26:58  <pairofdice> Weird, it's said on the website that it should use one if provided
+2011-12-04T03:27:14  <CowTipperVirus_> nice! can you provide a link?
+2011-12-04T03:27:21  <CowTipperVirus_> would love to get them to do that
+2011-12-04T03:27:26  <thestinger> https://github.com/aichallenge/aichallenge/blob/epsilon/worker/compiler.py#L320
+2011-12-04T03:27:29  <CowTipperVirus_> lol, ofc...then people would do the thread
+2011-12-04T03:27:53  <CowTipperVirus_> what's command -parallelize-loops or something
+2011-12-04T03:28:05  <thestinger> just use a .cpp extension and it won't use -funroll-loops :P
+2011-12-04T03:28:53  <thestinger> or push no-unroll-loops onto the optimize stack
+2011-12-04T03:29:12  <CowTipperVirus_> wow... wtf, that's the only diff between the two languages
+2011-12-04T03:29:19  <CowTipperVirus_> seriously... why would they be different???
+2011-12-04T03:29:38  <thestinger> well, using -funroll-loops was a bad idea
+2011-12-04T03:29:50  <thestinger> but maybe they don't want to change it before the next contest
+2011-12-04T03:29:56  <thestinger> but they didn't use it for the new C++11 option
+2011-12-04T03:30:13  <CowTipperVirus_> yeah, and I'm not going to petition for that... because of that exact reason
+2011-12-04T03:30:15  <CowTipperVirus_> yeah
+2011-12-04T03:30:40  <thestinger> iirc, amstan said they are going to make C++11 and C99 the default for the next contest anyway
+2011-12-04T03:30:45  <CowTipperVirus_> how can your code push something on the optimize stack or override cl options anyway?
+2011-12-04T03:31:10  <thestinger> http://gcc.gnu.org/onlinedocs/gcc/Function-Specific-Option-Pragmas.html <- like that
+2011-12-04T03:32:25  <thestinger> #pragma GCC optimize ("no-unroll-loops")
+2011-12-04T03:32:26  <thestinger> I think
+2011-12-04T03:32:29  <CowTipperVirus_> thestinger: cool... thanks
+2011-12-04T03:32:55  <thestinger> test it though, you might also have to push it
+2011-12-04T03:32:59  <thestinger> you can also set a global optimization level
+2011-12-04T03:33:22  <CowTipperVirus_> thestinger: will def look into that to see if it helps.  doubt it'll get much saving from letting the compiler know the loop time, but worth a shot
+2011-12-04T03:33:31  <thestinger> #pragma GCC optimize ("O2")
+2011-12-04T03:33:39  <thestinger> etc.
+2011-12-04T03:33:45  <CowTipperVirus_> thestinger: now I'm almost positive that'll get overriden
+2011-12-04T03:33:49  <CowTipperVirus_> ridden*
+2011-12-04T03:33:55  <thestinger> #pragma GCC push_options
+2011-12-04T03:33:57  <thestinger> #pragma GCC optimize ("O0")
+2011-12-04T03:33:59  <thestinger> like that
+2011-12-04T03:34:02  <thestinger> I think you need both lines
+2011-12-04T03:34:11  <thestinger> then you can #pragma GCC pop_options to undo them
+2011-12-04T03:34:23  <thestinger> so you can set per-function, per-block, etc. optimization
+2011-12-04T03:35:00  <CowTipperVirus_> wow, have to be pretty hardcore to profile that much of your code
+2011-12-04T03:35:57  <thestinger> http://stackoverflow.com/a/2188780 there's also that
+2011-12-04T03:36:13  <thestinger> CowTipperVirus_: well, in the linux kernel they use the gcc attributes _everywhere_
+2011-12-04T03:36:16  <thestinger> and profile everything
+2011-12-04T03:36:53  <thestinger> #define likely(x)       __builtin_expect((x),1)
+2011-12-04T03:36:55  <thestinger> #define unlikely(x)     __builtin_expect((x),0)
+2011-12-04T03:37:04  <thestinger> and then you tell the compiler if a condition will be likely or unlikely
+2011-12-04T03:37:10  <thestinger> if (likely(some_condition)) { }
+2011-12-04T03:37:21  <thestinger> obviously need to profile
+2011-12-04T03:37:41  <CowTipperVirus_> yeah... way too much work
+2011-12-04T03:38:07  <CowTipperVirus_> I could see it mattering there though
+2011-12-04T03:38:47  <thestinger> http://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/X86-Built_002din-Functions.html#X86-Built_002din-Functions
+2011-12-04T03:39:02  <thestinger> that lets you use SSE vector stuff, etc.
+2011-12-04T03:40:16  <thestinger> http://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Other-Builtins.html
+2011-12-04T03:40:30  <thestinger> prefetching stuff to cache, etc.
+2011-12-04T03:40:55  <CowTipperVirus_> yeah, my understanding is those should come automatically if you allow march compiler options
+2011-12-04T03:40:59  <pairofdice> Looks like xathis is about to lose #1
+2011-12-04T03:41:21  <thestinger> CowTipperVirus_: compilers are still really bad at vectorization
+2011-12-04T03:41:23  <CowTipperVirus_> pairofdice: oh noes... he'll have to write v2
+2011-12-04T03:41:26  <CowTipperVirus_> lol
+2011-12-04T03:41:28  <pairofdice> heh
+2011-12-04T03:41:52  <thestinger> like x86_64 implies a level of SSE support
+2011-12-04T03:42:13  <thestinger> but you still have to do it manually if you actually want it to be used for stuff other than memset, etc.
+2011-12-04T03:42:22  <thestinger> maybe clang will be better
+2011-12-04T03:42:41  <thestinger> clang/llvm still make slower code than gcc most of the time though :)
+2011-12-04T03:42:57  <CowTipperVirus_> yeah... I'm an electrical engineer by trade, power electronics, mostly the hardware and controls side
+2011-12-04T03:43:14  <CowTipperVirus_> the latter forces me to dabble in code occasionally, not my main job though, and others are way better at it
+2011-12-04T03:43:26  <CowTipperVirus_> anyway, writing code for a dsp I have to do stupid shit like that all the time
+2011-12-04T03:43:48  <CowTipperVirus_> the compilers are insanely bad at optimizing on those things
+2011-12-04T03:44:06  <ChrisH_> pairofdice: yeah, I think pguillory will pass him soon.
+2011-12-04T03:45:24  <thestinger> I haven't really bothered trying to optimize at all yet beyond changing my algorithms
+2011-12-04T03:46:03  <CowTipperVirus_> yeah, realistically I'm not taking much of a penalty, so I don't care
+2011-12-04T03:46:12  <thestinger> I'm lazy, so I'm just using std::unordered_set, std::unordered_map, 2D std::vector, etc. everywhere
+2011-12-04T03:46:16  <CowTipperVirus_> but the loops thing... omg... like I said, 10x - 20x is noticable
+2011-12-04T03:46:39  <thestinger> yeah, it slows down my bot a lot too
+2011-12-04T03:46:58  <CowTipperVirus_> the std::vector is actually really fast if you compile w/ the -no-exceptions flag
+2011-12-04T03:47:02  <CowTipperVirus_> err -fno-?
+2011-12-04T03:47:07  <thestinger> yeah
+2011-12-04T03:47:12  <thestinger> well
+2011-12-04T03:47:33  <thestinger> the thing is that I could have a 2D array as a big block of memory
+2011-12-04T03:47:46  <thestinger> and instead I have pointers to arrays, which probably slows it down a lot
+2011-12-04T03:48:05  <thestinger> because I'm not resizing any of the arrays
+2011-12-04T03:48:17  <CowTipperVirus_> if it's known at compile time, that should go away in optimizations I'd assume
+2011-12-04T03:48:26  <thestinger> it doesn't
+2011-12-04T03:48:40  <thestinger> gcc won't change container types/semantics
+2011-12-04T03:48:49  <CowTipperVirus_> yeah... I'm also allocating a bunch of arrays on the heap, might be able to drop some on the stack for performance
+2011-12-04T03:49:02  <CowTipperVirus_> dunno... may actually hurt me
+2011-12-04T03:49:05  <thestinger> well I would still put them on the heap
+2011-12-04T03:49:17  <thestinger> but as a 1D array with row * cols + col indexing
+2011-12-04T03:49:21  <thestinger> instead of pointers to arrays
+2011-12-04T03:49:28  <CowTipperVirus_> yeah
+2011-12-04T03:49:28  <ChrisH_> pairofdice: pguillory should get another game in about 45 minutes, and I'm expecting one in about 30, so it should be interesting to see what happens
+2011-12-04T03:49:42  <pairofdice> Yeah
+2011-12-04T03:50:02  <pairofdice> You both have higher mu than xathis
+2011-12-04T03:50:06  <ChrisH_> xathis's last game was the same as mine, so he's due in 30 mins also
+2011-12-04T03:50:09  <CowTipperVirus_> thestinger: thanks for the convo, out for the night
+2011-12-04T03:50:13  <thestinger> cya
+2011-12-04T03:50:27  <CowTipperVirus_> sweet, g'luck ChrisH
+2011-12-04T03:50:43  <ChrisH_> i think my bot is about equal or slightly worse than xathis right now, but pguillory is clearly better, it's just a matter of time
+2011-12-04T03:50:55  *** CowTipperVirus_ <CowTipperVirus_!411e19be@gateway/web/freenode/ip.65.30.25.190> has quit IRC (Quit: Page closed)
+2011-12-04T03:51:37  <ChrisH_> but who knows what xathis has been working on for the last two months. he'll probably put a upload a super bot just before finals and whip us all
+2011-12-04T03:51:49  <thestinger> he's had his bot on tcp sometimes
+2011-12-04T03:51:58  <thestinger> I think he definitely worked on it a lot more
+2011-12-04T03:52:05  <ChrisH_> yeah, i've seen that but haven't looked at the games
+2011-12-04T03:52:41  <ChrisH_> i've got a few bug fixes and improvements ready for my next version as well, so we'll see
+2011-12-04T04:00:10  <thestinger> heh, pguillory is using Go too now - I didn't realize that
+2011-12-04T04:00:45  <thestinger> I'm liking C++ a lot now that I've learned the C++11 stuff :)
+2011-12-04T04:01:34  <ChrisH_> yeah, he switched mid stream, I saw him comment in IRC that it wasn't as fast, but he liked it was easier to work with so he was switching anyway
+2011-12-04T04:02:07  <thestinger> C++11 has local type inference like Go (auto v = something() instead of v := something())
+2011-12-04T04:02:10  <thestinger> and lambdas/closures
+2011-12-04T04:02:18  <thestinger> so I'm not really missing anything from python/Go
+2011-12-04T04:02:24  <ChrisH_> we have to do more hand optimization in Go than you C++ guys, but luckily there is an easy to use profiler built into Go that makes it easy to find the hot spots
+2011-12-04T04:02:24  <thestinger> it's just really verbose/ugly :)
+2011-12-04T04:02:39  <thestinger> yeah, I learned C++ for this contest
+2011-12-04T04:02:42  <thestinger> I already knew Go
+2011-12-04T04:02:54  <ChrisH_> cool
+2011-12-04T04:03:27  <ChrisH_> I did PW in Java and it was fast enough, but syntactially a poor fit for this kind of coding, so it was some ugly looking stuff
+2011-12-04T04:03:35  <thestinger> yeah
+2011-12-04T04:03:48  <ChrisH_> but I'm liking Go for the most part
+2011-12-04T04:03:53  *** Euphony <Euphony!617e344f@gateway/web/freenode/ip.97.126.52.79> has joined #aichallenge
+2011-12-04T04:03:55  <thestinger> I wouldn't be having much fun if I was using the pre-C++11 language
+2011-12-04T04:04:19  <thestinger> I've ended up using lambdas a _lot_ because I don't like using classes for code-reuse most of the time
+2011-12-04T04:04:36  <thestinger> well, I also don't really understand how you would do reuse via classes for lots of stuff
+2011-12-04T04:06:25  <thestinger> the syntax is definitely pretty bad though
+2011-12-04T04:07:32  <ChrisH_> yeah, this sort of code strikes me as more functional/procedural in nature
+2011-12-04T04:08:00  <bmh> thestinger: that's because object orientation is an anti-pattern :)
+2011-12-04T04:08:28  <thestinger> bmh: well, OOP is fine but not the Java/C++ style hurrr make a singleton style OOP :P
+2011-12-04T04:08:29  <ChrisH_> bmh: that depends how you use it
+2011-12-04T04:08:51  <bmh> ChrisH_: I am a functional programming warrior ;)
+2011-12-04T04:09:05  * bmh gets paid to write Java.
+2011-12-04T04:09:06  <ChrisH_> i'm a multi-paradigm guy myself
+2011-12-04T04:09:06  <thestinger> bmh: I think you would be pretty amused by how I'm coding C++
+2011-12-04T04:09:29  <thestinger> lambdas/higher-order functions everywhere, everything that's not a container/loop-control var is basically const
+2011-12-04T04:09:33  <thestinger> etc.
+2011-12-04T04:09:48  <ChrisH_> but one thing I agree on, deep inheritance structures are a red flag
+2011-12-04T04:09:58  <thestinger> meh, inheritance
+2011-12-04T04:10:24  <thestinger> composition all the way :)
+2011-12-04T04:10:33  <ChrisH_> but i like encapsulating behaviors and data for lots of reasons, but not so much for these ai contests
+2011-12-04T04:11:11  <ChrisH_> and i also like functional stuff when appopriate
+2011-12-04T04:11:26  <bmh> thestinger: do you know about closures in GNU C?
+2011-12-04T04:11:49  <thestinger> I thought they were just nested functions?
+2011-12-04T04:12:13  <thestinger> C++ actually has proper lambdas that can capture state, and I can abuse them with references
+2011-12-04T04:12:46  <thestinger> [this](Location loc) { grid[loc.row][loc.col].last_seen = turn; }
+2011-12-04T04:12:48  <bmh> yeah... they are just nested function. It's neat to avoid polluting the namespace.
+2011-12-04T04:12:59  <bmh> That's an abomination.
+2011-12-04T04:13:06  <thestinger> yeah.
+2011-12-04T04:13:16  <thestinger> it lets me have a single function for painting on radius info
+2011-12-04T04:13:21  <bmh> if I can make my bot do something *other* than crash, I'm still hoping for "best Haskell bot"
+2011-12-04T04:14:07  <bmh> I haven't thought of a combat strategy better than "sample until I run out of time"
+2011-12-04T04:14:18  <thestinger> also it only infers the return type with a single statement...
+2011-12-04T04:14:34  <thestinger> [](int i)->int { return i * 2; };
+2011-12-04T04:14:37  <thestinger> that's the full syntax
+2011-12-04T04:14:43  <antimatroid> thestinger: do you ever sleep?
+2011-12-04T04:14:49  <thestinger> antimatroid: what's sleep?
+2011-12-04T04:14:56  <antimatroid> it's glorius
+2011-12-04T04:15:00  <thestinger> I'm sick atm actually, so I'm not really sleeping
+2011-12-04T04:15:00  <antimatroid> glorious
+2011-12-04T04:15:09  <bmh> What timezone are you in?
+2011-12-04T04:15:22  <thestinger> EST
+2011-12-04T04:15:31  <bmh> jeeze. (PST represent)
+2011-12-04T04:15:36  <antimatroid> EST?
+2011-12-04T04:15:40  <pairofdice> EEST
+2011-12-04T04:15:43  <antimatroid> +?
+2011-12-04T04:16:06  <thestinger> UTC-5 atm
+2011-12-04T04:16:12  <thestinger> unless they move DST around again :)
+2011-12-04T04:16:14  <antimatroid> EST = +11GMT == eastern standard time to me
+2011-12-04T04:16:25  <antimatroid> well +10, but atm we have daylight savings
+2011-12-04T04:16:46  <thestinger> I actually slept from like 5pm to 8pm to I'm pretty much screwed now
+2011-12-04T04:16:48  <bmh> 'eh? EST is like GMT-5 or so
+2011-12-04T04:16:58  <thestinger> so I'm pretty much screwed now*
+2011-12-04T04:17:03  <thestinger> bmh: yeah -5
+2011-12-04T04:17:10  <thestinger> -4 when it's EDT
+2011-12-04T04:17:45  <bmh> I once worked on a financial business app. There was a lot of mucking with timezones and market openings and closings.
+2011-12-04T04:17:52  <bmh> Not fun. (Praise be to Joda, though)
+2011-12-04T04:17:57  <thestinger> eww, time
+2011-12-04T04:18:11  <bmh> sleep time
+2011-12-04T04:18:16  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Quit: Page closed)
+2011-12-04T04:19:47  *** Jak_o_Shadows1 <Jak_o_Shadows1!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-12-04T04:21:06  <ChrisH_> well, I just lost to FlagCapper and Murashka.
+2011-12-04T04:22:33  <thestinger> the version I uploaded on nov 30th seems to be doing well on the official site :)
+2011-12-04T04:22:48  <thestinger> http://aichallenge.org/profile.php?user=2255 sigma just needs to drop a bit
+2011-12-04T04:22:56  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Ping timeout: 248 seconds)
+2011-12-04T04:22:59  <thestinger> definitely way better than my pre-combat bot xD
+2011-12-04T04:23:22  <ChrisH_> yeah, combat makes a huge difference
+2011-12-04T04:23:43  <thestinger> my last bot actually had .1 more skill than this one does
+2011-12-04T04:23:51  <thestinger> but that's only because sigma dropped so low
+2011-12-04T04:23:56  <thestinger> because I was keeping it activated
+2011-12-04T04:24:11  <ChrisH_> the competition is a little stronger now too
+2011-12-04T04:24:28  <thestinger> yeah
+2011-12-04T04:24:31  <thestinger> tcp is a lot more intense
+2011-12-04T04:24:44  <thestinger> it seems like everyone has combat now on tcp
+2011-12-04T04:26:25  <thestinger> maybe it's only because they're using 4s per turn...
+2011-12-04T04:26:42  <ChrisH_> maybe
+2011-12-04T04:26:56  <ChrisH_> gotta go, bye
+2011-12-04T04:27:05  *** ChrisH_ <ChrisH_!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-12-04T04:28:59  *** Jak_o_Shadows1 <Jak_o_Shadows1!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-12-04T04:29:28  *** dzukpp <dzukpp!5cf4fb23@gateway/web/freenode/ip.92.244.251.35> has joined #aichallenge
+2011-12-04T04:31:01  *** choas <choas!~lars@d86-33-20-27.cust.tele2.at> has joined #aichallenge
+2011-12-04T04:31:51  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-12-04T04:31:58  *** Ashoka <Ashoka!70875382@gateway/web/freenode/ip.112.135.83.130> has quit IRC (Quit: Page closed)
+2011-12-04T04:38:18  <thestinger> http://llvm.org/docs/CodingStandards.html#micro_anonns <- I need to do this for my classes
+2011-12-04T04:44:22  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T04:46:44  *** artart78_ is now known as artart78
+2011-12-04T04:47:27  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T04:52:49  <Euphony> In the last game, pguillory got another step closer to overtaking xathis. If pguillory overtakes him, maybe xathis will upload a new bot.
+2011-12-04T04:54:35  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T04:58:21  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has joined #aichallenge
+2011-12-04T05:01:55  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-04T05:05:16  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-12-04T05:10:50  <antimatroid> hmmm
+2011-12-04T05:10:53  <antimatroid> thestinger: you still here?
+2011-12-04T05:11:19  <thestinger> yeah
+2011-12-04T05:12:02  <antimatroid> i think the timer is still borked
+2011-12-04T05:12:07  <antimatroid> or my computer is borked
+2011-12-04T05:13:03  <thestinger> I think it's fine now
+2011-12-04T05:13:09  <thestinger>         return (current_time.tv_sec - start_time.tv_sec) * 1000 +
+2011-12-04T05:13:11  <thestinger>                (current_time.tv_usec - start_time.tv_usec) / 1000;
+2011-12-04T05:13:12  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-12-04T05:13:19  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T05:13:20  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T05:13:35  <thestinger> it just converts the sec delta to msec and usec to msec
+2011-12-04T05:13:41  <thestinger> shouldn't be any overflows or anything
+2011-12-04T05:14:31  <antimatroid> http://pastebin.com/B5NR7S94
+2011-12-04T05:14:42  <antimatroid> if i compile that ant run like "./antibot > out.txt"
+2011-12-04T05:14:50  <antimatroid> it occasionally just jumps
+2011-12-04T05:15:39  <thestinger> the loop is probably faster than the clock resolution
+2011-12-04T05:17:08  <thestinger> what CPU do you have?
+2011-12-04T05:18:35  *** antimatroid1 <antimatroid1!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T05:18:41  <thestinger> the kernel could just be doing a context switch and letting something else run on that core for a bit
+2011-12-04T05:19:20  <thestinger> works for me :P
+2011-12-04T05:19:32  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 255 seconds)
+2011-12-04T05:19:40  <antimatroid1> possibly
+2011-12-04T05:20:01  <antimatroid1> but my bots problem happens at a specific place
+2011-12-04T05:20:06  <antimatroid1> that can't be a cooincident
+2011-12-04T05:23:15  *** Wraithan <Wraithan!~Wraithan@c-67-189-110-252.hsd1.or.comcast.net> has joined #aichallenge
+2011-12-04T05:27:59  *** antimatroid1 <antimatroid1!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-12-04T05:29:38  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T05:30:42  <antimatroid> wtf
+2011-12-04T05:30:46  <antimatroid> it just jumped from 9 to 18
+2011-12-04T05:30:57  <antimatroid> i restarted too
+2011-12-04T05:33:42  <antimatroid> i guess i could compate with clock time and see if it is just my computer being a pita
+2011-12-04T05:33:48  <antimatroid> compare*
+2011-12-04T05:33:58  <thestinger> it's multicore right?
+2011-12-04T05:34:50  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 255 seconds)
+2011-12-04T05:36:02  <antimatroid> nope
+2011-12-04T05:36:08  <thestinger> oh
+2011-12-04T05:36:15  <antimatroid> pretty sure it's not
+2011-12-04T05:36:29  <thestinger> you're running linux right?
+2011-12-04T05:42:43  <antimatroid> yeah, ubuntu
+2011-12-04T05:43:03  *** kaemo <kaemo!~kmo@d48-118.icpnet.pl> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T05:44:37  <thestinger> you could run your bot with higher cpu priority (nice -n 19 ./MyBot) but you'll need to be root or change limits.conf
+2011-12-04T05:45:22  <thestinger> schedtool even lets you give something realtime priority, but then everything else will freeze while it's running if you only have 1 core :)
+2011-12-04T05:45:28  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-04T05:46:26  <antimatroid> how do i be root? :P
+2011-12-04T05:46:42  <antimatroid> i'm not good with linux either :P
+2011-12-04T05:48:53  <thestinger> well, iirc Ubuntu has root disabled so just do 'sudo -i'
+2011-12-04T05:48:56  <thestinger> in a terminal
+2011-12-04T05:53:11  <antimatroid> that seems to have worked better
+2011-12-04T05:53:40  <thestinger> oh
+2011-12-04T05:53:50  <thestinger> I told you the backwards way of doing it xD
+2011-12-04T05:53:55  <thestinger> nice -n 19 is lowest priority
+2011-12-04T05:54:00  <antimatroid> aha
+2011-12-04T05:54:06  <antimatroid> but it worked when i did that?
+2011-12-04T05:54:11  *** mj41 <mj41!~mj41_nby@80.82.144.206> has joined #aichallenge
+2011-12-04T05:54:18  <thestinger> nice -n -20 is highest priority (lower is higher prio)
+2011-12-04T05:55:15  <thestinger> antimatroid: well, maybe it gave the engine more time to do stuff :P
+2011-12-04T05:55:15  *** amstan__ <amstan__!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T05:55:21  *** amstan__ <amstan__!~amstan@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-04T05:55:21  *** ChanServ sets mode: +o amstan__
+2011-12-04T05:55:41  <thestinger> antimatroid: if you really have 1 core I wouldn't worry about it
+2011-12-04T05:55:52  <thestinger> your bot has to compete for cycles with the engine
+2011-12-04T05:56:08  <antimatroid> i don't mind that so much, i just want to make sure my bot isn't broken
+2011-12-04T05:56:18  <antimatroid> it's mildy annoying for debugging
+2011-12-04T05:56:21  <antimatroid> but i can live with it
+2011-12-04T05:57:04  *** nick_ <nick_!52ef1513@gateway/web/freenode/ip.82.239.21.19> has joined #aichallenge
+2011-12-04T05:57:08  <nick_> hello
+2011-12-04T05:57:30  *** nick_ is now known as Guest77607
+2011-12-04T05:57:43  *** Guest77607 is now known as noctopuss
+2011-12-04T05:58:06  <noctopuss> i don't understand viewradius
+2011-12-04T05:58:19  <thestinger> it's the radius each of your ants can see
+2011-12-04T05:58:25  <noctopuss> it should be a radius, but python visible function takes the square root of this value
+2011-12-04T05:58:34  <thestinger> you receive information on tiles that are visible to your ants
+2011-12-04T05:58:36  <thestinger> well
+2011-12-04T05:58:39  <thestinger> you're passed viewradius2
+2011-12-04T05:58:39  <noctopuss> thestinger: i just dumped that value, it was 77
+2011-12-04T05:58:42  <thestinger> not viewradius
+2011-12-04T05:58:51  <noctopuss> oh yes sorry
+2011-12-04T05:58:56  <noctopuss> viewradius2
+2011-12-04T05:59:21  <thestinger> it's just viewradius^2, so it can be an integer
+2011-12-04T05:59:22  <noctopuss> thestinger: so what is viewradius2 ?
+2011-12-04T05:59:28  <noctopuss> oh
+2011-12-04T05:59:41  <noctopuss> why doing that ?
+2011-12-04T05:59:48  <noctopuss> why just not taking
+2011-12-04T05:59:54  <noctopuss> int(viewradius)
+2011-12-04T06:00:11  <thestinger> because then it's not the same
+2011-12-04T06:00:14  <thestinger> like attackradius2 is 5
+2011-12-04T06:00:25  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Read error: Operation timed out)
+2011-12-04T06:00:26  <thestinger> so you can attack 2 tiles away forwards, but you can also attack 2 forwards and 1 to the side
+2011-12-04T06:00:34  <thestinger> not the same as attackradius=2
+2011-12-04T06:00:42  <noctopuss> all right
+2011-12-04T06:00:49  <noctopuss> thx thestinger
+2011-12-04T06:00:53  <thestinger> np
+2011-12-04T06:03:03  *** mj41 <mj41!~mj41_nby@80.82.144.206> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T06:09:31  *** george_ <george_!56ae9f3d@gateway/web/freenode/ip.86.174.159.61> has quit IRC (Quit: Page closed)
+2011-12-04T06:17:13  *** mj41 <mj41!~mj41_nby@80.82.144.206> has joined #aichallenge
+2011-12-04T06:21:27  <noctopuss> thestinger: i understand the fact that not having a round number allow to get a different range
+2011-12-04T06:22:01  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T06:22:03  <noctopuss> thestinger: but I don't understand how I can have this exact range if if the sq of the number then the sqrt
+2011-12-04T06:22:37  <noctopuss> s/if th/i do th/
+2011-12-04T06:24:29  <pairofdice> Err
+2011-12-04T06:24:49  <noctopuss> int(sqrt(77)) will ever do 8 .. isn't it ?
+2011-12-04T06:25:29  <thestinger> why would you truncate it to an int?
+2011-12-04T06:26:08  <thestinger> you can compare euclidean_distance2 and a radius2
+2011-12-04T06:26:26  <noctopuss> thestinger: i need to review some math bases ^^
+2011-12-04T06:26:29  <noctopuss> thx :)
+2011-12-04T06:26:31  <thestinger> or euclidean_distance and a radius, but that's more work (you need to call sqrt)
+2011-12-04T06:34:43  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-04T06:38:50  *** marijnfs <marijnfs!~marijn@80-219-197-15.dclient.hispeed.ch> has joined #aichallenge
+2011-12-04T06:47:47  *** choas <choas!~lars@d86-33-20-27.cust.tele2.at> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T06:54:27  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T06:54:31  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has joined #aichallenge
+2011-12-04T06:58:20  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T07:03:12  *** ermacchi <ermacchi!~akumafan@97.102.64.204> has joined #aichallenge
+2011-12-04T07:03:48  <ermacchi> quote :cookie
+2011-12-04T07:03:54  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-04T07:05:26  <ermacchi> hi dvladim
+2011-12-04T07:06:18  <ermacchi> New Kids on the Block - Step By Step
+2011-12-04T07:07:35  *** ermacchi <ermacchi!~akumafan@97.102.64.204> has quit IRC (Quit: Leaving)
+2011-12-04T07:11:50  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Read error: Operation timed out)
+2011-12-04T07:21:07  *** Conorach <Conorach!~cono@90.170.78.100> has joined #aichallenge
+2011-12-04T07:23:07  <noctopuss> thestinger: thx a lot, until now i was wondering why my bot was freezing over 70 ants :P
+2011-12-04T07:23:30  <noctopuss> now i know that move and see require differant distance calculation !
+2011-12-04T07:24:06  <noctopuss> see = euclidean, move = manhanttan
+2011-12-04T07:24:28  <noctopuss> *Manhattan*
+2011-12-04T07:24:53  <noctopuss> now i can win the contest :P
+2011-12-04T07:25:21  <thestinger> well, manhattan distance doesn't get you a real distance to something
+2011-12-04T07:25:43  <thestinger> just the minimum (assuming there was no water)
+2011-12-04T07:28:04  <noctopuss> thestinger: i'm using a* search,
+2011-12-04T07:28:30  <noctopuss> thestinger: can't I say it's a form of manhattan distance calculation ?
+2011-12-04T07:28:37  <noctopuss> as long as it calculates the real path
+2011-12-04T07:28:49  <Conorach> hmmm, you could call it 'real distance'
+2011-12-04T07:29:00  <noctopuss> i'll call it that way then :P
+2011-12-04T07:29:21  <thestinger> noctopuss: well, if you're using it in A* heuristic it's fine :)
+2011-12-04T07:29:25  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T07:29:36  <Conorach> because it is the real amount of steps needed to get to the destination, as opposed to the minimum if no obstacles, or the euclidian, like the bird flies.
+2011-12-04T07:29:37  <noctopuss> thestinger: cool then :)
+2011-12-04T07:29:54  <Conorach> but in the end it's all words until your bot actually moves that way ;)
+2011-12-04T07:30:06  <noctopuss> ^^
+2011-12-04T07:30:09  <Conorach> and nobody will really care what distance is used in the end ;)
+2011-12-04T07:30:25  <thestinger> C++ is silly
+2011-12-04T07:30:29  <noctopuss> people who will open the source of the top 5 player
+2011-12-04T07:30:30  <noctopuss> will
+2011-12-04T07:30:43  <thestinger> I put all the structs/classes in anonymous namespaces and gcc turns it into a binary with 50% smaller size now xD
+2011-12-04T07:31:03  <noctopuss> ><
+2011-12-04T07:31:20  <noctopuss> thestinger: a quite strange optimization
+2011-12-04T07:31:53  <thestinger> well, before I guess the compiler assumed that inlining stuff would lead to a larger size, because other translation units might have used them
+2011-12-04T07:37:27  *** g0llum <g0llum!~g0llum@89.204.153.32> has joined #aichallenge
+2011-12-04T07:45:03  *** olexs <olexs!~Leviathan@drms-590c5463.pool.mediaWays.net> has joined #aichallenge
+2011-12-04T07:58:01  *** delt0r_ <delt0r_!~bob@188-23-92-121.adsl.highway.telekom.at> has quit IRC (Ping timeout: 244 seconds)
+2011-12-04T08:06:43  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-04T08:11:58  *** delt0r_ <delt0r_!~bob@178-191-178-160.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-04T08:15:38  *** jstemmer <jstemmer!~cheetah@mrpwn.stemmertech.com> has joined #aichallenge
+2011-12-04T08:28:46  *** mj41 <mj41!~mj41_nby@80.82.144.206> has quit IRC (Ping timeout: 244 seconds)
+2011-12-04T08:32:29  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T08:35:16  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has joined #aichallenge
+2011-12-04T08:35:26  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has quit IRC (Quit: Leaving)
+2011-12-04T08:36:32  *** xathis <xathis!~xathis@f054013212.adsl.alicedsl.de> has joined #aichallenge
+2011-12-04T08:46:55  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** Conorach <Conorach!~cono@90.170.78.100> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** marijnfs <marijnfs!~marijn@80-219-197-15.dclient.hispeed.ch> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** ejls_ <ejls_!~Epsilon01@mszy.mhost.fr> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** spacebat_ <spacebat_!~spacebat@ubermonkey.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** xathis <xathis!~xathis@f054013212.adsl.alicedsl.de> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** g0llum <g0llum!~g0llum@89.204.153.32> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** artart78 <artart78!~artart78@unaffiliated/artart78> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** delt0r_ <delt0r_!~bob@178-191-178-160.adsl.highway.telekom.at> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** analyst74 <analyst74!~analyst74@74-115-199-33.eng.wind.ca> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** olexs <olexs!~Leviathan@drms-590c5463.pool.mediaWays.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** sorki <sorki!~sorki@fedora/sorki> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** nplus <nplus!~chatzilla@unaffiliated/simont> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** GeorgeJ <GeorgeJ!~GeorgeJ@unaffiliated/georgej> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** jnwhiteh <jnwhiteh!~jnwhiteh@WoWUIDev/WoWI/Featured/Dongle/cladhaire> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** Minthos <Minthos!~minthos@94.100.24.226> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** MikeyG <MikeyG!mikeyg@mg2.org> has quit IRC (*.net *.split)
+2011-12-04T08:46:55  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-47-163.dsl.hstntx.swbell.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** jstemmer <jstemmer!~cheetah@mrpwn.stemmertech.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** Lithosphere <Lithosphere!~lithosphe@unaffiliated/lithosphere> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** juuso_ <juuso_!~ajlappal@gateway/shell/tkk.fi/x-nsefjtaqsaxmhvjr> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** klutometis <klutometis!klutometis@pdpc/supporter/professional/klutometis> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** Sir_Ragnarok <Sir_Ragnarok!~quassel@178-118-64-174.access.telenet.be> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** dai-ra <dai-ra!~irssi@546A1E17.cm-12-3a.dynamic.ziggo.nl> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** j3camero <j3camero!~j3camero@129.97.134.34> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** rb_ <rb_!~jamesq@cpc21-rdng21-2-0-cust111.15-3.cable.virginmedia.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** durarara <durarara!~durarara@rps6699.ovh.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** Ttech <Ttech!ttech@botters/staff/ttech> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** Clex <Clex!~clex@mna75-14-88-182-134-18.fbx.proxad.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** f4hy <f4hy!~f4hy@QWE9.MATH.CMU.EDU> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** cbad <cbad!~cbad@fsf/member/cbad> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** bugnuts <bugnuts!~bugnuts@pool-74-108-37-233.nycmny.fios.verizon.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:56  *** tcoppi <tcoppi!~nuclear@2001:470:7:59::2> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** antonh <antonh!antonh@lenin.acc.umu.se> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** seletskiy <seletskiy!~s.seletsk@195.19.70.1> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** hkraal <hkraal!~henk@83.98.233.11> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** Fluxid <Fluxid!~fluxid@schranz.io> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** Kaji <Kaji!koen@oege.ie.hva.nl> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** Thinq <Thinq!~qq@84-253-243-204.bb.dnainternet.fi> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** magikmw <magikmw!~magikmw@mail.michalwalczak.eu> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** andar <andar!~andrew@S010600179adc70b4.gv.shawcable.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** deafferret <deafferret!~jhannah@li118-245.members.linode.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** mawif <mawif!~mawif@li268-7.members.linode.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** isbric <isbric!~isbric@c-915be255.020-12-6875761.cust.bredbandsbolaget.se> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** a1k0n <a1k0n!~andy@hep.cat> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** Insti <Insti!~insti@0x535db61a.naenxx9.dynamic.dsl.tele.dk> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** timos <timos!~timos@79.140.41.37> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** delt0r <delt0r!~bob@weissmann.cibiv.univie.ac.at> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** oele2 <oele2!wapper@eth1.mine.nu> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** raemde <raemde!~raemde@dslb-088-073-196-245.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** modafinil <modafinil!u515@gateway/web/irccloud.com/x-anxmulfgmqjstajz> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** Zepp <Zepp!~m2ellis@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** Raimondi <Raimondi!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:57  *** Israfel <Israfel!~jeff@99-0-14-82.lightspeed.frokca.sbcglobal.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** AndrewBC <AndrewBC!~andrewbc@scarlet.andrewbc.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** zostay <zostay!~Hanenkamp@99-106-123-44.lightspeed.tpkaks.sbcglobal.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** Extrarius <Extrarius!~Extrarius@cpe-70-125-154-130.satx.res.rr.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** rofer <rofer!javagamer@ip-69-162-134-31.static.chi2.systeminplace.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** rmmh <rmmh!~none@host-80-87.flgaroy.clients.pavlovmedia.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** emilk <emilk!~emilk@h-129-109.a258.priv.bahnhof.se> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** jix <jix!~jix@dronf.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** Seeker` <Seeker`!~cjo20@gateway/shell/ubottu/x-vpjcieijsbuwdzab> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** rwest <rwest!~rwest@static-72-93-205-7.bstnma.fios.verizon.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** bysin <bysin!~bysin@184.91.98.0> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** Wraithan <Wraithan!~Wraithan@c-67-189-110-252.hsd1.or.comcast.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** mansfeld <mansfeld!~andrew@robopoly/watson> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** ruser <ruser!~nomad@23.19.120.250> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** suid <suid!~xyzzy@kudzu.se> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** ivan`_ <ivan`_!~ivan@li125-242.members.linode.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** rintaun <rintaun!~rintaun@projectxero.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** sh4wn <sh4wn!~Lucas@85.17.199.76> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** murr4y <murr4y!~murray@ec2-79-125-51-116.eu-west-1.compute.amazonaws.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** Zannick <Zannick!~mick@unaffiliated/zannick> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** Kommander <Kommander!~Kommander@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** magiik <magiik!~magik@unaffiliated/magiik> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** Apophis <Apophis!~apophis@217-162-209-17.dynamic.hispeed.ch> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** rexou <rexou!rexou@gateway/shell/bshellz.net/x-jrszdlwpsitkkyjh> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** gazpachoking <gazpachoking!~gazpachok@c-67-163-203-66.hsd1.pa.comcast.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** Bluedgis <Bluedgis!~redgis@88-191-147-49.rev.dedibox.fr> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** staalebk <staalebk!chiller@driftfun.no> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** CIA-53 <CIA-53!~CIA@cia.atheme.org> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** smly- <smly-!~smly-@sage.naist.jp> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** jmcarthur <jmcarthur!~jake@pool-72-89-247-53.nycmny.fios.verizon.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** dom7b5 <dom7b5!~corey@c-50-129-17-2.hsd1.in.comcast.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:58  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-49-150.asm.bellsouth.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** bugnuts2 <bugnuts2!~davis@mailrelay1.pbclients.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** welterde <welterde!welterde@thinkbase.srv.welterde.de> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** Alexer <Alexer!alexer@alexer.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** Katiska <Katiska!rysae@otitsun.oulu.fi> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** aperiodic <aperiodic!~dlp@li258-89.members.linode.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** lahwran <lahwran!lahwran@unaffiliated/lahwran> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** noctopuss <noctopuss!52ef1513@gateway/web/freenode/ip.82.239.21.19> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** Euphony <Euphony!617e344f@gateway/web/freenode/ip.97.126.52.79> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** cwc <cwc!402e02c9@gateway/web/freenode/ip.64.46.2.201> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** amstan__ <amstan__!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** kurti <kurti!~kurti@unaffiliated/kurti> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** bqf <bqf!~bqf@dslb-088-077-118-234.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** BenJackson <BenJackson!~bjj@kronos.home.ben.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** luizribeiro <luizribeiro!~luiz@tempest.luizribeiro.org> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** Elderwolf <Elderwolf!~elderwolf@totoro.bloodmagic.com> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** tobiassjosten <tobiassjosten!~tobias@tobiassjosten.net> has quit IRC (*.net *.split)
+2011-12-04T08:46:59  *** ChanServ <ChanServ!ChanServ@services.> has quit IRC (*.net *.split)
+2011-12-04T08:47:03  *** Fluxid <Fluxid!~fluxid@schranz.io> has joined #aichallenge
+2011-12-04T08:47:03  *** mawif <mawif!~mawif@li268-7.members.linode.com> has joined #aichallenge
+2011-12-04T08:47:07  *** isbric <isbric!~isbric@c-915be255.020-12-6875761.cust.bredbandsbolaget.se> has joined #aichallenge
+2011-12-04T08:47:08  *** delt0r <delt0r!~bob@weissmann.cibiv.univie.ac.at> has joined #aichallenge
+2011-12-04T08:47:09  *** seletskiy <seletskiy!~s.seletsk@195.19.70.1> has joined #aichallenge
+2011-12-04T08:47:24  *** andar <andar!~andrew@S010600179adc70b4.gv.shawcable.net> has joined #aichallenge
+2011-12-04T08:52:29  *** rb <rb!~jamesq@cpc21-rdng21-2-0-cust111.15-3.cable.virginmedia.com> has joined #aichallenge
+2011-12-04T08:52:33  *** rb is now known as 31NAACW1K
+2011-12-04T08:52:53  *** tcoppi <tcoppi!~nuclear@2001:470:7:59::2> has joined #aichallenge
+2011-12-04T08:52:53  *** Sir_Ragnarok <Sir_Ragnarok!~quassel@178-118-64-174.access.telenet.be> has joined #aichallenge
+2011-12-04T08:52:53  *** a1k0n <a1k0n!~andy@hep.cat> has joined #aichallenge
+2011-12-04T08:52:53  *** durarara <durarara!~durarara@rps6699.ovh.net> has joined #aichallenge
+2011-12-04T08:52:53  *** Insti <Insti!~insti@0x535db61a.naenxx9.dynamic.dsl.tele.dk> has joined #aichallenge
+2011-12-04T08:52:53  *** hkraal <hkraal!~henk@83.98.233.11> has joined #aichallenge
+2011-12-04T08:52:53  *** Kaji <Kaji!~koen@oege.ie.hva.nl> has joined #aichallenge
+2011-12-04T08:52:53  *** Redgis <Redgis!~Nex@pla93-6-78-227-186-164.fbx.proxad.net> has joined #aichallenge
+2011-12-04T08:52:53  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-12-04T08:52:53  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has joined #aichallenge
+2011-12-04T08:52:53  *** Clex <Clex!~clex@mna75-14-88-182-134-18.fbx.proxad.net> has joined #aichallenge
+2011-12-04T08:52:53  *** amstan__ <amstan__!~amstan@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-04T08:52:53  *** deafferret <deafferret!~jhannah@li118-245.members.linode.com> has joined #aichallenge
+2011-12-04T08:52:53  *** dai-ra <dai-ra!~irssi@546A1E17.cm-12-3a.dynamic.ziggo.nl> has joined #aichallenge
+2011-12-04T08:52:53  *** bqf <bqf!~bqf@dslb-088-077-118-234.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T08:52:53  *** tobiassjosten <tobiassjosten!~tobias@tobiassjosten.net> has joined #aichallenge
+2011-12-04T08:52:53  *** timos <timos!~timos@79.140.41.37> has joined #aichallenge
+2011-12-04T08:52:54  *** BenJacks1n <BenJacks1n!~bjj@kronos.home.ben.com> has joined #aichallenge
+2011-12-04T08:52:54  *** Elderwol1 <Elderwol1!~elderwolf@totoro.bloodmagic.com> has joined #aichallenge
+2011-12-04T08:52:54  *** luizribe` <luizribe`!~luiz@tempest.luizribeiro.org> has joined #aichallenge
+2011-12-04T08:52:54  *** xathis <xathis!~xathis@f054013212.adsl.alicedsl.de> has joined #aichallenge
+2011-12-04T08:52:54  *** jstemmer <jstemmer!~cheetah@mrpwn.stemmertech.com> has joined #aichallenge
+2011-12-04T08:52:54  *** delt0r_ <delt0r_!~bob@178-191-178-160.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-04T08:52:54  *** olexs <olexs!~Leviathan@drms-590c5463.pool.mediaWays.net> has joined #aichallenge
+2011-12-04T08:52:54  *** g0llum <g0llum!~g0llum@89.204.153.32> has joined #aichallenge
+2011-12-04T08:52:54  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T08:52:54  *** Conorach <Conorach!~cono@90.170.78.100> has joined #aichallenge
+2011-12-04T08:52:54  *** marijnfs <marijnfs!~marijn@80-219-197-15.dclient.hispeed.ch> has joined #aichallenge
+2011-12-04T08:52:54  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-04T08:52:54  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-12-04T08:52:54  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-04T08:52:54  *** analyst74 <analyst74!~analyst74@74-115-199-33.eng.wind.ca> has joined #aichallenge
+2011-12-04T08:52:54  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-12-04T08:52:54  *** ejls_ <ejls_!~Epsilon01@mszy.mhost.fr> has joined #aichallenge
+2011-12-04T08:52:54  *** artart78 <artart78!~artart78@unaffiliated/artart78> has joined #aichallenge
+2011-12-04T08:52:54  *** spacebat_ <spacebat_!~spacebat@ubermonkey.net> has joined #aichallenge
+2011-12-04T08:52:54  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-12-04T08:52:54  *** Lithosphere <Lithosphere!~lithosphe@unaffiliated/lithosphere> has joined #aichallenge
+2011-12-04T08:52:54  *** sorki <sorki!~sorki@fedora/sorki> has joined #aichallenge
+2011-12-04T08:52:54  *** nplus <nplus!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-12-04T08:52:54  *** heinrich5991 <heinrich5991!~hein5991@unaffiliated/heinrich5991> has joined #aichallenge
+2011-12-04T08:52:54  *** GeorgeJ <GeorgeJ!~GeorgeJ@unaffiliated/georgej> has joined #aichallenge
+2011-12-04T08:52:54  *** jnwhiteh <jnwhiteh!~jnwhiteh@WoWUIDev/WoWI/Featured/Dongle/cladhaire> has joined #aichallenge
+2011-12-04T08:52:54  *** juuso_ <juuso_!~ajlappal@gateway/shell/tkk.fi/x-nsefjtaqsaxmhvjr> has joined #aichallenge
+2011-12-04T08:52:54  *** MikeyG <MikeyG!mikeyg@mg2.org> has joined #aichallenge
+2011-12-04T08:52:54  *** Minthos <Minthos!~minthos@94.100.24.226> has joined #aichallenge
+2011-12-04T08:52:54  *** klutometis <klutometis!klutometis@pdpc/supporter/professional/klutometis> has joined #aichallenge
+2011-12-04T08:52:54  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-47-163.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-12-04T08:53:04  *** f4hy <f4hy!~f4hy@QWE9.MATH.CMU.EDU> has joined #aichallenge
+2011-12-04T08:53:04  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-12-04T08:53:05  *** oele2 <oele2!wapper@eth1.mine.nu> has joined #aichallenge
+2011-12-04T08:53:05  *** raemde <raemde!~raemde@dslb-088-073-196-245.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T08:53:05  *** modafinil <modafinil!u515@gateway/web/irccloud.com/x-anxmulfgmqjstajz> has joined #aichallenge
+2011-12-04T08:53:05  *** Zepp <Zepp!~m2ellis@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-12-04T08:53:05  *** Raimondi <Raimondi!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has joined #aichallenge
+2011-12-04T08:53:14  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/session> has joined #aichallenge
+2011-12-04T08:53:14  *** noctopuss <noctopuss!52ef1513@gateway/web/freenode/ip.82.239.21.19> has joined #aichallenge
+2011-12-04T08:53:14  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has joined #aichallenge
+2011-12-04T08:53:14  *** Euphony <Euphony!617e344f@gateway/web/freenode/ip.97.126.52.79> has joined #aichallenge
+2011-12-04T08:53:14  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-04T08:53:14  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has joined #aichallenge
+2011-12-04T08:53:14  *** cwc <cwc!402e02c9@gateway/web/freenode/ip.64.46.2.201> has joined #aichallenge
+2011-12-04T08:53:17  *** Thinq <Thinq!~qq@84-253-243-204.bb.dnainternet.fi> has joined #aichallenge
+2011-12-04T08:53:17  *** bugnuts <bugnuts!~bugnuts@pool-74-108-37-233.nycmny.fios.verizon.net> has joined #aichallenge
+2011-12-04T08:53:17  *** cbad <cbad!~cbad@S0106001c101b4163.ed.shawcable.net> has joined #aichallenge
+2011-12-04T08:53:17  *** antonh <antonh!antonh@lenin.acc.umu.se> has joined #aichallenge
+2011-12-04T08:53:17  *** kurti <kurti!~kurti@v36631.1blu.de> has joined #aichallenge
+2011-12-04T08:53:17  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-04T08:53:17  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-12-04T08:53:17  *** Israfel <Israfel!~jeff@99-0-14-82.lightspeed.frokca.sbcglobal.net> has joined #aichallenge
+2011-12-04T08:53:17  *** AndrewBC <AndrewBC!~andrewbc@scarlet.andrewbc.net> has joined #aichallenge
+2011-12-04T08:53:17  *** zostay <zostay!~Hanenkamp@99-106-123-44.lightspeed.tpkaks.sbcglobal.net> has joined #aichallenge
+2011-12-04T08:53:20  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/session> has quit IRC (Changing host)
+2011-12-04T08:53:20  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has joined #aichallenge
+2011-12-04T08:53:45  *** magikmw <magikmw!~magikmw@mail.michalwalczak.eu> has joined #aichallenge
+2011-12-04T08:53:45  *** j3camero <j3camero!~j3camero@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-12-04T08:53:45  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-04T08:53:45  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T08:53:45  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T08:53:45  *** Wraithan <Wraithan!~Wraithan@c-67-189-110-252.hsd1.or.comcast.net> has joined #aichallenge
+2011-12-04T08:53:45  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T08:53:45  *** jmcarthur <jmcarthur!~jake@pool-72-89-247-53.nycmny.fios.verizon.net> has joined #aichallenge
+2011-12-04T08:53:45  *** dom7b5 <dom7b5!~corey@c-50-129-17-2.hsd1.in.comcast.net> has joined #aichallenge
+2011-12-04T08:53:45  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has joined #aichallenge
+2011-12-04T08:53:45  *** rmmh <rmmh!~none@host-80-87.flgaroy.clients.pavlovmedia.com> has joined #aichallenge
+2011-12-04T08:53:45  *** Extrarius <Extrarius!~Extrarius@cpe-70-125-154-130.satx.res.rr.com> has joined #aichallenge
+2011-12-04T08:53:45  *** rofer <rofer!javagamer@ip-69-162-134-31.static.chi2.systeminplace.net> has joined #aichallenge
+2011-12-04T08:53:45  *** murr4y <murr4y!~murray@ec2-79-125-51-116.eu-west-1.compute.amazonaws.com> has joined #aichallenge
+2011-12-04T08:53:45  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-49-150.asm.bellsouth.net> has joined #aichallenge
+2011-12-04T08:53:45  *** emilk <emilk!~emilk@h-129-109.a258.priv.bahnhof.se> has joined #aichallenge
+2011-12-04T08:53:45  *** jix <jix!~jix@dronf.net> has joined #aichallenge
+2011-12-04T08:53:45  *** Zannick <Zannick!~mick@unaffiliated/zannick> has joined #aichallenge
+2011-12-04T08:53:45  *** Seeker` <Seeker`!~cjo20@gateway/shell/ubottu/x-vpjcieijsbuwdzab> has joined #aichallenge
+2011-12-04T08:53:45  *** Kommander <Kommander!~Kommander@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-12-04T08:53:45  *** rwest <rwest!~rwest@static-72-93-205-7.bstnma.fios.verizon.net> has joined #aichallenge
+2011-12-04T08:53:45  *** bugnuts2 <bugnuts2!~davis@mailrelay1.pbclients.com> has joined #aichallenge
+2011-12-04T08:53:45  *** magiik <magiik!~magik@unaffiliated/magiik> has joined #aichallenge
+2011-12-04T08:53:45  *** Apophis <Apophis!~apophis@217-162-209-17.dynamic.hispeed.ch> has joined #aichallenge
+2011-12-04T08:53:45  *** bysin <bysin!~bysin@184.91.98.0> has joined #aichallenge
+2011-12-04T08:53:45  *** rexou <rexou!rexou@gateway/shell/bshellz.net/x-jrszdlwpsitkkyjh> has joined #aichallenge
+2011-12-04T08:53:45  *** welterde <welterde!welterde@thinkbase.srv.welterde.de> has joined #aichallenge
+2011-12-04T08:53:45  *** gazpachoking <gazpachoking!~gazpachok@c-67-163-203-66.hsd1.pa.comcast.net> has joined #aichallenge
+2011-12-04T08:53:45  *** mansfeld <mansfeld!~andrew@robopoly/watson> has joined #aichallenge
+2011-12-04T08:53:45  *** Alexer <Alexer!alexer@alexer.net> has joined #aichallenge
+2011-12-04T08:53:45  *** Bluedgis <Bluedgis!~redgis@88-191-147-49.rev.dedibox.fr> has joined #aichallenge
+2011-12-04T08:53:45  *** ruser <ruser!~nomad@23.19.120.250> has joined #aichallenge
+2011-12-04T08:53:45  *** suid <suid!~xyzzy@kudzu.se> has joined #aichallenge
+2011-12-04T08:53:45  *** ivan`_ <ivan`_!~ivan@li125-242.members.linode.com> has joined #aichallenge
+2011-12-04T08:53:45  *** rintaun <rintaun!~rintaun@projectxero.net> has joined #aichallenge
+2011-12-04T08:53:45  *** sh4wn <sh4wn!~Lucas@85.17.199.76> has joined #aichallenge
+2011-12-04T08:53:45  *** staalebk <staalebk!chiller@driftfun.no> has joined #aichallenge
+2011-12-04T08:53:45  *** CIA-53 <CIA-53!~CIA@cia.atheme.org> has joined #aichallenge
+2011-12-04T08:53:45  *** Katiska <Katiska!rysae@otitsun.oulu.fi> has joined #aichallenge
+2011-12-04T08:53:45  *** lahwran <lahwran!lahwran@unaffiliated/lahwran> has joined #aichallenge
+2011-12-04T08:53:45  *** aperiodic <aperiodic!~dlp@li258-89.members.linode.com> has joined #aichallenge
+2011-12-04T08:53:45  *** smly- <smly-!~smly-@sage.naist.jp> has joined #aichallenge
+2011-12-04T08:59:45  *** Ttech <Ttech!ttech@72.14.179.207> has joined #aichallenge
+2011-12-04T09:00:10  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-12-04T09:02:02  *** ChanServ <ChanServ!ChanServ@services.> has joined #aichallenge
+2011-12-04T09:02:03  *** wolfe.freenode.net sets mode: +o ChanServ
+2011-12-04T09:02:36  *** Fluxid is now known as Guest73419
+2011-12-04T09:02:36  *** Ttech is now known as Guest64586
+2011-12-04T09:13:57  <antimatroid> do people have a max search path?
+2011-12-04T09:14:01  <antimatroid> and if so what do you use? :P
+2011-12-04T09:16:28  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T09:21:25  *** ejls_ is now known as ejls
+2011-12-04T09:23:58  <AntDroid> 9 out of 10 games timed out. wtf! this internet connection sucks. how can i properly test my bot now.
+2011-12-04T09:27:31  <bretep> So, I finished last and my mu increased. How does that work?
+2011-12-04T09:29:17  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-04T09:29:39  <thestinger> bretep: what's your bot's name?
+2011-12-04T09:30:54  <bretep> peterb
+2011-12-04T09:31:10  <bretep> Might be because I played against the 2th and another decent bot
+2011-12-04T09:32:23  *** UncleVasya <UncleVasya!kvirc@46-133-176-232.dialup.umc.net.ua> has joined #aichallenge
+2011-12-04T09:32:38  <thestinger> bretep: well, you tied for 3rd with 4 people
+2011-12-04T09:32:49  <thestinger> and one was higher ranked than you
+2011-12-04T09:33:28  <thestinger> well, I guess only mu matters for that
+2011-12-04T09:33:38  <bretep> So, if you royally lose together with a few others you can rise in rank. :p
+2011-12-04T09:33:48  <thestinger> the 3 people you tied with have slightly higher mu
+2011-12-04T09:33:52  <pairofdice> Misery loves company
+2011-12-04T09:33:54  <pairofdice> Or something
+2011-12-04T09:33:56  <thestinger> so you did better than expected :)
+2011-12-04T09:34:13  <pairofdice> pguillory 0.18 away from xathis
+2011-12-04T09:34:42  <xathis> uh oh :D
+2011-12-04T09:35:03  <pairofdice> err... 0.16
+2011-12-04T09:36:49  <UncleVasya> xathis: Did you compete in Planet Wars?
+2011-12-04T09:36:57  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has joined #aichallenge
+2011-12-04T09:37:22  <xathis> UncleVasya: no i did not know of the contest back then
+2011-12-04T09:38:05  <UncleVasya> good :)
+2011-12-04T09:44:33  * antimatroid is struggling to get decent food collection going on a 200x200 map
+2011-12-04T09:44:47  *** mj41 <mj41!~mj41_nby@80.82.144.206> has joined #aichallenge
+2011-12-04T09:44:56  <antimatroid> xathis: does your map go alright on 200x200?
+2011-12-04T09:45:00  <antimatroid> bot*
+2011-12-04T09:45:25  <UncleVasya> olexs, I've downloaded tools.zip but AntsTesting 0.5 still works on my machine.
+2011-12-04T09:45:41  <xathis> antimatroid: i never tried, but i don't think we'll get such big maps for 2 players
+2011-12-04T09:46:07  <antimatroid> i'm currently testing mine on a 3 player map that's close to that
+2011-12-04T09:47:55  <UncleVasya> antimatroid: Is there any information about what will be after that contest? Another one, Zeta or something else?
+2011-12-04T09:48:05  <UncleVasya> *this contest
+2011-12-04T09:48:09  <antimatroid> no such information exists
+2011-12-04T09:48:17  <antimatroid> as far as i know
+2011-12-04T09:48:17  <UncleVasya> thanks
+2011-12-04T09:48:28  <antimatroid> i think most people would be interested on getting zeta going
+2011-12-04T09:49:00  <antimatroid> what i really want is official tcp servers for old contest games
+2011-12-04T09:49:04  <antimatroid> and possibly a few others
+2011-12-04T09:50:18  <antimatroid> probably keep the one user account policy but allow people to reset their ranking for any game?
+2011-12-04T09:50:19  *** kincody <kincody!b4972a65@gateway/web/freenode/ip.180.151.42.101> has joined #aichallenge
+2011-12-04T09:50:29  <antimatroid> i think that might work best
+2011-12-04T09:51:16  <antimatroid> ie. doesn't really matter if someone doesn't update for a worse bot and it's in your own interest to update it if you've improved your bot
+2011-12-04T09:55:31  *** marijnfs <marijnfs!~marijn@80-219-197-15.dclient.hispeed.ch> has left #aichallenge
+2011-12-04T09:56:01  <UncleVasya> The other side is that some people who like to share their code after the end of the contests will not share it anymore.
+2011-12-04T09:57:17  *** NotABug <NotABug!5d0b0f4d@gateway/web/freenode/ip.93.11.15.77> has joined #aichallenge
+2011-12-04T09:59:20  <UncleVasya> And some bots sourcers for tron and pw already shared so there will be a mess in ranks among newbies: someone developing from scratch, someone patching open sourced bots.
+2011-12-04T09:59:54  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has joined #aichallenge
+2011-12-04T10:00:27  <UncleVasya> but again, from the other side, it might increase the value of currently going 'main' contest: people can be sure that everyone starts from zero.
+2011-12-04T10:02:04  <antimatroid> yeah i think it would be fair game to share code at that point
+2011-12-04T10:02:09  <antimatroid> some people might become stiffer but whatever
+2011-12-04T10:02:21  <antimatroid> it would be great for beginners and people who want to just play around/test ideas
+2011-12-04T10:02:46  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T10:03:11  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has quit IRC (Client Quit)
+2011-12-04T10:08:40  *** noctopuss <noctopuss!52ef1513@gateway/web/freenode/ip.82.239.21.19> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T10:17:42  <bretep> Someone made a good but public?
+2011-12-04T10:19:28  *** zyberkiddy <zyberkiddy!75cfc692@gateway/web/freenode/ip.117.207.198.146> has joined #aichallenge
+2011-12-04T10:20:23  <UncleVasya> bretep: Is lpace 18 good enough?
+2011-12-04T10:21:32  *** ahoj <ahoj!50bc4a07@gateway/web/freenode/ip.80.188.74.7> has joined #aichallenge
+2011-12-04T10:21:45  <UncleVasya> antimatroid: there are to "player %num%" strings in the cell maps. What's the difference?
+2011-12-04T10:22:10  <bretep> I don't know if I like it that everyone can upload a bot that has the skill of the 18th.
+2011-12-04T10:24:09  <UncleVasya> I thought by public you mean compiled binary-file to test against your bot locally.
+2011-12-04T10:24:58  <UncleVasya> I can give a link to .exe but I know that sharing code is against rules.
+2011-12-04T10:27:33  <antimatroid> someone released their code?
+2011-12-04T10:27:43  <UncleVasya> bretep: To make it clear, our conversation with _antimatroid was about previous contests.
+2011-12-04T10:27:59  *** zyberkiddy <zyberkiddy!75cfc692@gateway/web/freenode/ip.117.207.198.146> has left #aichallenge
+2011-12-04T10:28:03  * antimatroid is confused
+2011-12-04T10:28:30  <UncleVasya> antimatroid: I think bretep saw we're talking about shared code and was  awared.
+2011-12-04T10:28:36  *** zyberkiddy <zyberkiddy!~zyberkidd@117.207.198.146> has joined #aichallenge
+2011-12-04T10:29:43  <jix> binaries can be disassembled to figure out the exact strategies used are, .jar files can even be decompiled.. I wouldn't share them
+2011-12-04T10:29:47  <zyberkiddy> can someone provide links to profile of users(top prefered) which uses diffusion for exploration?
+2011-12-04T10:30:24  *** Hexren <Hexren!~hexren@port-92182.pppoe.wtnet.de> has joined #aichallenge
+2011-12-04T10:30:26  *** Hexren <Hexren!~hexren@port-92182.pppoe.wtnet.de> has left #aichallenge
+2011-12-04T10:30:36  <Minthos> xathis I think? his ants look pretty diffuse to me
+2011-12-04T10:31:14  <xathis> Minthos: i'm not using diffusion
+2011-12-04T10:31:14  <zyberkiddy> xathis? i dont think so.. he tends to go diagonally only..
+2011-12-04T10:31:41  *** Vetox <Vetox!7aa4eafa@gateway/web/freenode/ip.122.164.234.250> has joined #aichallenge
+2011-12-04T10:31:43  <xathis> zyberkiddy: that's just a side effect of how i implemented my pathfinding
+2011-12-04T10:31:50  <Vetox> Hey guys
+2011-12-04T10:31:57  <UncleVasya> hi
+2011-12-04T10:32:01  <Vetox> I ran into a little problem
+2011-12-04T10:32:04  <jix> IIRC my currently uploaded bot uses diffusion for exploration but it's not a top bot
+2011-12-04T10:32:30  <UncleVasya> jix: where is it?
+2011-12-04T10:32:34  <zyberkiddy> jix: let me check ur plays
+2011-12-04T10:32:35  <Vetox> When I click on play_one_game.py nothing happens
+2011-12-04T10:32:35  <UncleVasya> Vetox: go ahead
+2011-12-04T10:32:52  <jix> http://aichallenge.org/profile.php?user=4501
+2011-12-04T10:32:59  <zyberkiddy> Vertox: may be python problem
+2011-12-04T10:33:06  <Minthos> Vetox: it's a python script, you need to run it with a python interpreter
+2011-12-04T10:33:15  <zyberkiddy> play_one_game.PY ??
+2011-12-04T10:33:19  <Vetox> I installed python from their website.
+2011-12-04T10:33:39  <zyberkiddy> it should be play_one_game.sh or .cmd
+2011-12-04T10:34:14  <Vetox> its .cmd accidently typed .py
+2011-12-04T10:34:28  <Vetox> and I have python 3.2.2
+2011-12-04T10:35:16  <bretep> Using windows?
+2011-12-04T10:35:20  <Vetox> yes
+2011-12-04T10:35:28  <UncleVasya> Vetox: try to add pause to the end of play_one_game.cmd
+2011-12-04T10:35:41  <bretep> I think you need to add python to the path then
+2011-12-04T10:35:47  <olexs> python 3.2.2 wont work afaik, you need 2.6.x or 2.7.x
+2011-12-04T10:36:00  <zyberkiddy> take cmd using run and then browse(cd) upto ur tools folder.. then rum manually typing name.. You can see error message
+2011-12-04T10:36:04  <pairofdice> it works fine with 3.2
+2011-12-04T10:36:12  <UncleVasya> olexs: hi.
+2011-12-04T10:36:19  <olexs> UncleVasya: hey
+2011-12-04T10:36:29  <UncleVasya> olexs: I've downloaded tools.zip but AntsTesting 0.5 still works on my machine.
+2011-12-04T10:36:35  <bretep> Open the cmd file in notepad or something like htat
+2011-12-04T10:36:50  <olexs> UncleVasya: okay... could you give me a link?
+2011-12-04T10:36:55  <Vetox> Opened it and added "pause" to the end
+2011-12-04T10:36:56  <bretep> If there is no 'python' before playgame.py add it there
+2011-12-04T10:37:17  <UncleVasya> yes, I'll upload it now.
+2011-12-04T10:37:22  <olexs> thanks
+2011-12-04T10:38:02  <Vetox> The first word is python "%~dp0playgame.py"
+2011-12-04T10:38:07  <Vetox> python "%~dp0playgame.py"
+2011-12-04T10:38:14  <antimatroid> janzert: any ideas on the proportion of larger maps we intend to use?
+2011-12-04T10:38:34  <bretep> Seems good, what error does it give?
+2011-12-04T10:38:35  <antimatroid> i'm unsure about whether to go for cheaper stuff that works well on larger maps
+2011-12-04T10:38:42  <antimatroid> or just let my bot not perform as well on larger maps
+2011-12-04T10:39:11  <Vetox> @bretep Not sure. the cmd prompt opens and closes in a second
+2011-12-04T10:39:12  <contestbot_> Vetox: You have no gotten any error messages recently, so here's a random one just to let you know that we care.
+2011-12-04T10:40:23  <bretep> Open cmd and go to it manually, then you're certain it won't close :v
+2011-12-04T10:40:36  <Vetox> Am uninstalling 3.2.2 and installing 2.7.2
+2011-12-04T10:40:37  <pairofdice> vetox, sounds like you need to add python to path or call python.exe with a direct path
+2011-12-04T10:40:38  <Vetox> ok
+2011-12-04T10:40:39  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-12-04T10:40:43  <olexs> shift-rightclick in the folder - "Open command prompt here"
+2011-12-04T10:40:46  <pairofdice> Vetox: don't
+2011-12-04T10:40:49  <olexs> saves you the "going there manually"
+2011-12-04T10:41:00  <bretep> Open CMD and try python
+2011-12-04T10:41:13  <bretep> I guess it isn't in the path variable
+2011-12-04T10:41:13  <pairofdice> just make it c:\python32\python instead of python
+2011-12-04T10:41:28  <UncleVasya> Vetox: hmm, have you saved file with 'pause' before launching again?
+2011-12-04T10:41:35  <Vetox> Yes
+2011-12-04T10:41:44  <AntDroid> just type cmd in the address bar and press enter when you are in the tools folder
+2011-12-04T10:41:47  <UncleVasya> It is needed specially for you to see the error message.
+2011-12-04T10:41:52  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T10:42:59  *** ahoj <ahoj!50bc4a07@gateway/web/freenode/ip.80.188.74.7> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T10:44:01  <Vetox> Python is not recognized as an internal or external batch command....or something similar
+2011-12-04T10:44:17  <pairofdice> Yeah,
+2011-12-04T10:44:45  *** Garf <Garf!~Garf@78-22-80-252.access.telenet.be> has joined #aichallenge
+2011-12-04T10:44:57  <AntDroid> python is not set in the Path environment variable
+2011-12-04T10:44:59  <bretep> http://docs.python.org/using/windows.html got to 3.3.1. Excursus: Setting environment variables
+2011-12-04T10:45:10  <UncleVasya> Vetox: It seems like you need to add python directory to your PATH in the system settings.
+2011-12-04T10:45:26  <Vetox> How do I do that?
+2011-12-04T10:45:42  <bretep> See link :)
+2011-12-04T10:46:06  <Vetox> Oops. Didnt realize the link was for me :P
+2011-12-04T10:46:15  <pairofdice> If you don't want to bother with that just call python with  c:\python32\python
+2011-12-04T10:46:17  <UncleVasya> olexs: http://ompldr.org/vYmwxNg/AntsTesting_0_5_a.7z
+2011-12-04T10:46:26  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has joined #aichallenge
+2011-12-04T10:46:41  <pairofdice> (or wherever your python.exe is)
+2011-12-04T10:46:48  <olexs> UncleVasya: thank you, I'll try that
+2011-12-04T10:47:42  <UncleVasya> btw, many thanks for the guy who adviced me to use that uploader :)
+2011-12-04T10:48:35  <UncleVasya> Vetox: Wnen you'll solve your problem try Ants Testing too ;)
+2011-12-04T10:48:42  <Vetox> Sure
+2011-12-04T10:49:30  <olexs> UncleVasya: it crashed when I clicked "start", "ar" is not a valid integer value
+2011-12-04T10:49:40  <pairofdice> yeah, omp is a lot better than the file factory hell :)
+2011-12-04T10:49:48  <UncleVasya> You tried cell maps?
+2011-12-04T10:49:53  <pairofdice> even with unicorns
+2011-12-04T10:50:00  <olexs> I enabled all maps
+2011-12-04T10:50:05  <Vetox> So I have to set the path where my python.exe is right?
+2011-12-04T10:50:28  <UncleVasya> yep, I forgot. It exactly what i was doing before was involved into this conversation :)
+2011-12-04T10:50:41  <olexs> so cell maps don't work? :)
+2011-12-04T10:51:01  <UncleVasya> temporary condition.
+2011-12-04T10:51:16  <UncleVasya> try other types now.
+2011-12-04T10:51:16  <Vetox> PYTHONPATH=C:\Python27
+2011-12-04T10:51:40  <Vetox> I set this in System Environment variables but still doesnt work  PYTHONPATH=C:\Python27
+2011-12-04T10:51:53  <jix> Is there a chance of getting the gcc for c++11 updated to 4.6?
+2011-12-04T10:52:19  <UncleVasya> There are 2 strings with players count in them and I must ask antimatroid which one to use.
+2011-12-04T10:52:20  <pairofdice> Vetox, grrrrar.
+2011-12-04T10:52:26  <Vetox> 'python' is not recognized as an internal or external command, operable program or batch file.
+2011-12-04T10:52:36  <Vetox> Still get the same error.......
+2011-12-04T10:52:45  <Vetox> Now in feeling kinda dumb..........
+2011-12-04T10:52:48  <UncleVasya> if it is his maps
+2011-12-04T10:53:40  <pairofdice> Add it to path, not pythonpath
+2011-12-04T10:53:46  <pairofdice> and make sure it's the right place
+2011-12-04T10:54:00  <g0llum> Vetox, you must append that to path, not pythonpath
+2011-12-04T10:54:33  <UncleVasya> olexs: Do another maps work for you?
+2011-12-04T10:54:42  <pairofdice> Path should be a long string, just add ;C:\yourpythondir
+2011-12-04T10:55:02  <olexs> UncleVasya: running it on maze maps only right now, looks good so far
+2011-12-04T10:56:49  <UncleVasya> against mine? :)
+2011-12-04T10:57:27  <olexs> I did a few test plays against yours earlier, mine doesn't do too badly actually
+2011-12-04T10:57:29  <Vetox> Oh I got it
+2011-12-04T10:57:48  <Vetox> There is already a Path Variable....I should append c:\python27 to it
+2011-12-04T10:57:52  <Vetox> ..........
+2011-12-04T10:57:54  <pairofdice> ...
+2011-12-04T10:58:11  <olexs> the version that is on aichallenge currently should at the very least make it into the top100
+2011-12-04T10:58:30  <olexs> it just takes ages -.-
+2011-12-04T10:58:45  <Vetox> Now i got it working :)
+2011-12-04T10:58:59  <Vetox> Incorrect number of bots for map.  Need 4, got 5
+2011-12-04T10:59:04  <Vetox> I get this error now :(
+2011-12-04T10:59:12  <pairofdice> Figure it out :)
+2011-12-04T10:59:53  <Vetox> Hehe...Done and done :)
+2011-12-04T11:00:00  <Vetox> Thanks guys :D
+2011-12-04T11:00:04  <UncleVasya> You don't like the speed of the server while rising. When your bot is going down, you want it to be as slow as possible :D
+2011-12-04T11:01:13  <UncleVasya> Vetox: Ants Testing makes a correct play_one_game.cmd by itself. You use only the nice gui.
+2011-12-04T11:01:16  <pairofdice> You can remove all but two bots and add --fill option
+2011-12-04T11:01:31  <pairofdice> So you don't have to constantly change the amount of bots when you change maps
+2011-12-04T11:01:50  <zyberkiddy> are those servers in server_stats page shows physical separate servers or no. of instances of games in servers?
+2011-12-04T11:02:00  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-12-04T11:10:08  <Vetox> Hurrah!!!!! Finally got mt tutorial.cmd working!!!!
+2011-12-04T11:11:30  <pairofdice> grats
+2011-12-04T11:13:15  *** Guest73419 is now known as Fluxid
+2011-12-04T11:13:52  *** jbroman <jbroman!~jbroman@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-12-04T11:16:15  <UncleVasya> olexs: fixed. Uploading.
+2011-12-04T11:18:21  *** amstan__ is now known as amstan
+2011-12-04T11:18:28  *** Vetox <Vetox!7aa4eafa@gateway/web/freenode/ip.122.164.234.250> has quit IRC (Quit: Page closed)
+2011-12-04T11:19:08  *** contestbot_ is now known as contestbot
+2011-12-04T11:22:35  <UncleVasya> olexs: http://ompldr.org/vYmwxbw/AntsTesting_0_5_b.7z
+2011-12-04T11:23:50  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (Quit: Leaving)
+2011-12-04T11:26:29  *** NotABug <NotABug!5d0b0f4d@gateway/web/freenode/ip.93.11.15.77> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T11:32:07  *** amstan <amstan!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T11:39:49  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-12-04T11:39:59  *** zyberkiddy <zyberkiddy!~zyberkidd@117.207.198.146> has left #aichallenge
+2011-12-04T11:40:57  *** NotABug <NotABug!5d0b0f4d@gateway/web/freenode/ip.93.11.15.77> has joined #aichallenge
+2011-12-04T11:42:37  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-04T11:43:09  <pairofdice> "This usually means they won all of those initial games (and probably got no 2-player games given that they don't change your ranking as much as winning an 8 would)" Ummm, 2 player games change your rank the fastest. No?
+2011-12-04T11:43:25  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has joined #aichallenge
+2011-12-04T11:43:52  <olexs> well, winning an 8-player game against 7 strong opponents should increase your rank a lot
+2011-12-04T11:43:52  <pairofdice> http://forums.aichallenge.org/viewtopic.php?f=25&t=2036
+2011-12-04T11:44:14  <pairofdice> Yes, but if you have a strong opponent in 1v1 it increases more
+2011-12-04T11:44:49  <pairofdice> Atleast that's what I got when I read the TrueSkill docs
+2011-12-04T11:52:53  <olexs> finally, the new version gets a clean win over the long-undefeated "champion"... http://paste.aichallenge.org/mBNAJ/
+2011-12-04T11:56:15  *** Rob__ <Rob__!188d390e@gateway/web/freenode/ip.24.141.57.14> has joined #aichallenge
+2011-12-04T11:58:28  <UncleVasya> very interesting map!
+2011-12-04T11:59:11  *** Rob__ <Rob__!188d390e@gateway/web/freenode/ip.24.141.57.14> has quit IRC (Client Quit)
+2011-12-04T12:07:05  *** NotABug <NotABug!5d0b0f4d@gateway/web/freenode/ip.93.11.15.77> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T12:08:46  <UncleVasya> olexs: can you post the map somewhere?
+2011-12-04T12:09:08  <UncleVasya> I found it had to retrieve it from the replay data.
+2011-12-04T12:09:21  <UncleVasya> *retrieve map
+2011-12-04T12:11:12  *** u_ <u_!~u_@adsl-75-57-180-214.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-12-04T12:19:41  *** jacob_strauss <jacob_strauss!bc4ebc51@gateway/web/freenode/ip.188.78.188.81> has joined #aichallenge
+2011-12-04T12:20:22  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-04T12:21:10  <olexs> UncleVasya: http://paste.aichallenge.org/TcVIK/ here you go, raw from this paste is same as map file
+2011-12-04T12:21:38  <olexs> I got it out of a replay on ants paste as well, don't know where it originates from, but it's interesting for tests
+2011-12-04T12:21:39  <UncleVasya> thank you
+2011-12-04T12:24:43  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T12:26:27  <pairofdice> Damn python
+2011-12-04T12:26:42  <UncleVasya> slow?
+2011-12-04T12:26:49  <pairofdice> Very
+2011-12-04T12:27:25  <pairofdice> Now I just want to wrtie a bot in another language
+2011-12-04T12:27:30  <pairofdice> write
+2011-12-04T12:31:06  <bqf> pairofdice: are you aware that you can use pypy on the official servers?
+2011-12-04T12:31:19  *** UncleVasya <UncleVasya!kvirc@46-133-176-232.dialup.umc.net.ua> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T12:33:11  <bretep> No more pypy, I'm currently #1 in pypy and want to keep that spot :v
+2011-12-04T12:34:29  <bqf> :)
+2011-12-04T12:35:44  <CIA-53> aichallenge: McLeopold epsilon * r4a2883c / (sql/2_generate_matchup.sql sql/opponent.sql): fix max games bug - http://git.io/c15ZMw
+2011-12-04T12:35:45  <CIA-53> aichallenge: McLeopold epsilon * rc98c078 / ants/visualizer/js/Util.js : Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/Y2oaCQ
+2011-12-04T12:35:54  *** UncleVasya <UncleVasya!kvirc@31.144.206.193> has joined #aichallenge
+2011-12-04T12:37:43  <pairofdice> I don't really want to figure pypy out
+2011-12-04T12:38:54  <CIA-53> aichallenge: McLeopold epsilon * r871de4d / (sql/2_generate_matchup.sql sql/opponent.sql): fix max games bug bug - http://git.io/FE7zGA
+2011-12-04T12:39:56  <bqf> pairofdice: "figure out"? best case is "rename .py to .pypy and reupload"
+2011-12-04T12:40:57  <bqf> if you're using python3 that won't work, of course. downloading and installing pypy should be a breeze as well though, and after that you just run "pypy MyBot.py" instead of "python MyBot.py"
+2011-12-04T12:41:33  *** Surya <Surya!4ec01c28@gateway/web/freenode/ip.78.192.28.40> has joined #aichallenge
+2011-12-04T12:42:07  <McLeopold> pypy supports most of python3
+2011-12-04T12:42:29  <bqf> it does? wow, i guess i'm behind on pypy development. time to go check it out again :)
+2011-12-04T12:42:34  <pairofdice> Ahh
+2011-12-04T12:42:40  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-12-04T12:42:57  <pairofdice> Okay, it runs 'considerably' faster with pypy
+2011-12-04T12:44:05  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has joined #aichallenge
+2011-12-04T12:44:55  <pairofdice> That was less painfull than expected
+2011-12-04T12:44:59  <pairofdice> thanks
+2011-12-04T12:46:44  <UncleVasya> antimatroid: I've read some part of your conversation about problem with timeout. Have you solved it?
+2011-12-04T12:47:53  <UncleVasya> I'm interested because it seems I have near the same problem.
+2011-12-04T12:49:55  <bqf> pairofdice: you're welcome. and yes, pypy is nice for some light number crunching, which ants is (unless you count battle) ;)
+2011-12-04T12:58:15  *** praveen <praveen!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has joined #aichallenge
+2011-12-04T13:03:30  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-04T13:03:38  *** kincody <kincody!b4972a65@gateway/web/freenode/ip.180.151.42.101> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T13:15:02  *** olexs1 <olexs1!~Leviathan@drms-590ce4b7.pool.mediaWays.net> has joined #aichallenge
+2011-12-04T13:16:35  *** cowbandit <cowbandit!484cfedc@gateway/web/freenode/ip.72.76.254.220> has joined #aichallenge
+2011-12-04T13:17:04  <mleise> So Gnome 3 has been unmasked on Gentoo and I am shocked.
+2011-12-04T13:17:23  *** olexs <olexs!~Leviathan@drms-590c5463.pool.mediaWays.net> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T13:17:59  <mleise> No shutdown / hibernate option? I have to an additional layer in the audio pipeline (pulseaudio)? I cannot use Compiz?
+2011-12-04T13:19:53  <mleise> But hey, I can set my online status to either busy or available with two clicks
+2011-12-04T13:23:57  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T13:27:26  *** UncleVasya <UncleVasya!kvirc@31.144.206.193> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T13:30:21  *** praveen <praveen!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has quit IRC (Quit: Page closed)
+2011-12-04T13:37:50  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Quit: leaving)
+2011-12-04T13:44:59  *** amstan <amstan!~amstan@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-04T13:44:59  *** ChanServ sets mode: +o amstan
+2011-12-04T13:48:15  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-04T13:53:27  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-12-04T13:53:30  *** Sion <Sion!53b14ef7@gateway/web/freenode/ip.83.177.78.247> has joined #aichallenge
+2011-12-04T13:53:49  <Sion> Hi
+2011-12-04T13:54:30  <Sion> Is there any admins from aichallenge.org here?
+2011-12-04T13:55:06  <McLeopold> hi
+2011-12-04T13:55:20  <amstan> Sion: hi
+2011-12-04T13:55:55  <Sion> @amstain hi
+2011-12-04T13:55:56  <contestbot> Sion: I have no idea what you mean.
+2011-12-04T13:56:28  *** ChanServ sets mode: -o amstan
+2011-12-04T13:57:07  <Sion> I mean, Is there any admins from aichallenge.org here? so they can help me with my problem.
+2011-12-04T13:57:16  <amstan> Sion: yes, we're admins
+2011-12-04T13:57:20  <amstan> Sion: what's the problem?
+2011-12-04T13:58:48  <Sion> ok good, I have tryed to sign up, and it seams like it is working, but i cant log in.
+2011-12-04T13:59:12  <amstan> did you recieve a confirmation email?
+2011-12-04T14:00:06  <Sion> yes, and i followes the link and ome to a site that sayed that i can log in now
+2011-12-04T14:00:38  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T14:01:07  <amstan> Sion: so have you tried logging in?
+2011-12-04T14:01:18  <Sion> yes
+2011-12-04T14:01:23  <amstan> and?
+2011-12-04T14:01:31  <Sion> not working
+2011-12-04T14:01:35  <amstan> how so?
+2011-12-04T14:02:03  <Sion> it says login failed
+2011-12-04T14:02:36  *** cwc <cwc!402e02c9@gateway/web/freenode/ip.64.46.2.201> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T14:03:04  <amstan> Sion: maybe you forgot your password, have you tried that password recovery?
+2011-12-04T14:03:49  <Sion> yes and i got this message: The user name supplied was not found in our records.
+2011-12-04T14:04:19  <Sion> I have also tried to make another acount, but that didnt work either
+2011-12-04T14:04:50  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T14:05:02  <amstan> Sion: check the other tab
+2011-12-04T14:06:32  <amstan> Sion: ping me if you still have issues
+2011-12-04T14:14:48  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T14:15:25  <Sion> ok, i think im gona be fine now
+2011-12-04T14:15:33  <Sion> bye
+2011-12-04T14:16:06  *** Sion <Sion!53b14ef7@gateway/web/freenode/ip.83.177.78.247> has left #aichallenge
+2011-12-04T14:20:58  <bugnuts> McLeopold: on the map spec - it does not say it but is it possible to have a cell which is not visible from anywhere on the map (min land distance^2 > 77)
+2011-12-04T14:21:23  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-04T14:23:31  *** ikaros_ <ikaros_!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-12-04T14:30:36  <_flag> McLeopold: Have the map generator/generators that are going to be used for the final contest been decided?
+2011-12-04T14:30:56  *** dom7b5 <dom7b5!~corey@c-50-129-17-2.hsd1.in.comcast.net> has quit IRC (Ping timeout: 248 seconds)
+2011-12-04T14:34:46  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-04T14:35:23  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has quit IRC (Remote host closed the connection)
+2011-12-04T14:39:06  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has joined #aichallenge
+2011-12-04T14:39:21  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has quit IRC (Client Quit)
+2011-12-04T14:43:06  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-04T14:49:49  *** xathis <xathis!~xathis@f054013212.adsl.alicedsl.de> has quit IRC ()
+2011-12-04T14:50:27  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has joined #aichallenge
+2011-12-04T14:50:57  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Read error: Operation timed out)
+2011-12-04T14:51:56  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has quit IRC (Client Quit)
+2011-12-04T14:57:12  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-12-04T14:59:05  <bretep> Are there any past maps that could be usefull for testing combat?
+2011-12-04T15:00:18  <olexs1> bretep: http://paste.aichallenge.org/TcVIK/ this one is good for 1-on-1 testing, pretty straightforward
+2011-12-04T15:00:31  <olexs1> http://paste.aichallenge.org/mBNAJ/ game example
+2011-12-04T15:01:32  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Quit: Konversation terminated!)
+2011-12-04T15:02:07  <bretep> Any maps with something like stationary bots as opponents?
+2011-12-04T15:02:42  <rmmh> ai state visualization? what's that
+2011-12-04T15:03:12  <olexs1> rmmh: https://github.com/j-h-a/aichallenge/blob/vis_overlay/VIS_OVERLAY.md
+2011-12-04T15:04:03  <rmmh> I kinda want to write a real-time python visualizer
+2011-12-04T15:04:10  <cowbandit> how would you download that map?
+2011-12-04T15:04:18  <bretep> There's a java version that is real time
+2011-12-04T15:04:25  <rmmh> I know, I just don't like it
+2011-12-04T15:04:37  <olexs1> cowbandit: click on "view raw" and save that as a map file
+2011-12-04T15:04:47  <cowbandit> ah kk thanks
+2011-12-04T15:14:23  <bretep> If I click here on raw I get a replay file; http://paste.aichallenge.org/wDdqr/
+2011-12-04T15:14:29  <bretep> How can I extract the map?
+2011-12-04T15:18:28  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-12-04T15:20:07  <olexs1> bretep: take the first link, with the empty map
+2011-12-04T15:20:32  <olexs1> or if you want the map from the replay, you'll need to get it out of the json data
+2011-12-04T15:20:55  *** dom7b5 <dom7b5!~corey@c-50-129-17-2.hsd1.in.comcast.net> has joined #aichallenge
+2011-12-04T15:21:38  <olexs1> McLeopold: ants paste needs a function to download a map file from the replay, I think :)
+2011-12-04T15:21:53  <bretep> Agreed!
+2011-12-04T15:22:16  <olexs1> all the data is there, it just needs to be put together in text and prefixed with "players n, rows x, cols y"
+2011-12-04T15:24:52  <olexs1> next thing I want to implement is recognition of idling enemies (timed out or crashed), my battle system should kill them with no losses given the information. maps like this one can come in helpful
+2011-12-04T15:28:17  <McLeopold> olexs1: if you write a replay to map converter in python, I'll hook it up
+2011-12-04T15:28:56  <olexs1> hm... my python is quite rusty, but I'll give it a try
+2011-12-04T15:29:24  <McLeopold> bugnuts: it is acceptable to have a large water area, so that a tile may not ever be visible to a bot
+2011-12-04T15:29:40  <janzert> McLeopold: that just looking at latest=1 isn't/wasn't a bug
+2011-12-04T15:29:42  <McLeopold> _flag: no, we will still accept map generators
+2011-12-04T15:29:43  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-04T15:29:52  <McLeopold> janzert: how so?
+2011-12-04T15:29:52  <janzert> it's suppose to look at the whole population of available opponents
+2011-12-04T15:29:53  <bugnuts> I expect that will break some peoples exploration code in an entertaining way
+2011-12-04T15:30:15  <McLeopold> janzert: that included deactivated bots, so the game_limit was too low
+2011-12-04T15:31:04  <janzert> actually that change shouldn't make any difference
+2011-12-04T15:31:25  <olexs1> is the activated/deactivated thing working properly? I missed the moment when my last submission deactivated itself after 3 days, but its game rate didnt noticeably change
+2011-12-04T15:31:36  <janzert> it is still looking at the whole population to get the count for the percentage number
+2011-12-04T15:32:18  <janzert> or I guess you got that in the second commit
+2011-12-04T15:32:28  <olexs1> and the "n players still ahead" indicator still appeared in my profile, which I assume means that the bot was still in queue despite being deactivated
+2011-12-04T15:32:38  <janzert> but anyway it was deliberate that it looks at the full population for the hard cutoff
+2011-12-04T15:33:11  <janzert> in either case I now think the hard cutoff should just be removed, but first I plan to cut it in about half
+2011-12-04T15:33:31  <bmh> sorry if anyone is currently on my server. I need the CPU for a while
+2011-12-04T15:35:01  <Extrarius> McLeopold: Have you done anything with using 'worms' to generate maps? I made a proof of concept (generates 1/4 a map then tiles it - would need more work to allow rotational symmetry etc): http://pastebin.com/WBDkKFFj
+2011-12-04T15:36:14  <McLeopold> janzert: when doing a quick check against xathis, about 7 bots were within 30 ranks, and 7 were at > 1000, for the first 14
+2011-12-04T15:36:30  <McLeopold> the game limit was 1 game below the max
+2011-12-04T15:36:49  <McLeopold> most of the population was at 0 or 1, deactivated bots
+2011-12-04T15:37:06  <McLeopold> so this was making the game limit far to large
+2011-12-04T15:37:07  <janzert> basically the soft push to even out games is working so well that the hard cutoff takes out way to many opponents
+2011-12-04T15:37:17  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T15:37:25  <McLeopold> the soft push is the modified match quality?
+2011-12-04T15:37:31  <janzert> right
+2011-12-04T15:37:48  <McLeopold> ok, matches looked really bad, and it was the hard cutoff
+2011-12-04T15:38:00  <McLeopold> I'm okay with it going away
+2011-12-04T15:38:20  <Kommander> i had a shot at xathis earlier but my bot crashed in the middle :(
+2011-12-04T15:38:35  <McLeopold> Extrarius: post some sample maps on paste for me
+2011-12-04T15:39:15  <CIA-53> aichallenge: janzert epsilon * r2d123e5 / (sql/2_generate_matchup.sql sql/opponent.sql): Lower hard game limit percentage to 5% with plan to completely remove - http://git.io/zfQnrw
+2011-12-04T15:39:25  <McLeopold> olexs1: if you are deactivated, the n players ahead will still count down
+2011-12-04T15:39:41  <McLeopold> you may still get a game if you match well with someone else, just not a seed
+2011-12-04T15:39:54  <McLeopold> then, if you reactivate, you'll probably get chosen fairly quickly
+2011-12-04T15:40:20  <olexs1> okay
+2011-12-04T15:41:06  <Extrarius> McLeopold: I have some posts on there somewhere, but I'll post some from current working version (that one is an older version)
+2011-12-04T15:41:24  <McLeopold> janzert: the more even the matches are, the less difference that percentage makes
+2011-12-04T15:42:13  <janzert> hmm?
+2011-12-04T15:42:38  <janzert> the higher the percentage the smaller the pool of opponents to make an even match
+2011-12-04T15:42:54  <McLeopold> janzert: if the 5th percentile and the 12.5th percentile have the same game count...
+2011-12-04T15:43:13  <McLeopold> if everyone has the same game count...
+2011-12-04T15:43:18  <janzert> right
+2011-12-04T15:43:33  <McLeopold> if only we could :)
+2011-12-04T15:43:34  <Wraithan> How easy is it to fork aichallenge's code base to come up with ones own competitions?
+2011-12-04T15:43:47  <McLeopold> Wraithan: one click on github :)
+2011-12-04T15:43:58  <Wraithan> McLeopold: helpful.
+2011-12-04T15:44:14  <janzert> also notice that it's the percentile number of games + 1
+2011-12-04T15:44:25  <McLeopold> You must know python, mysql, php and be fairly good and stream programming
+2011-12-04T15:44:32  <Wraithan> I meant, is it designed with reuse for other competitions in mind?
+2011-12-04T15:44:41  <McLeopold> janzert: oops, did I leave that in?
+2011-12-04T15:44:50  <janzert> that's purposeful too :)
+2011-12-04T15:45:25  <McLeopold> Extrarius: import win32console? wtf?
+2011-12-04T15:45:28  <janzert> the percentile is an upper bound on the number of players removed from use
+2011-12-04T15:45:48  <janzert> i.e. if everyone had the same number of games everyone would still be available for play
+2011-12-04T15:45:54  <janzert> otherwise no one would be
+2011-12-04T15:46:46  *** ikaros_ <ikaros_!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-12-04T15:48:23  <bmh> ok, my TCP server is back up. Now running as a user 'jail' instead of someone with actual powers.
+2011-12-04T15:51:40  *** cowbandit <cowbandit!484cfedc@gateway/web/freenode/ip.72.76.254.220> has quit IRC (Quit: Page closed)
+2011-12-04T15:52:18  <McLeopold> http://aichallenge.org/visualizer.php?game=161159&user=4513
+2011-12-04T15:52:33  <rmmh> haha
+2011-12-04T15:55:13  <Extrarius> McLeopold: http://paste.aichallenge.org/f2NMQ/
+2011-12-04T15:57:52  <Extrarius> McLeopold: http://paste.aichallenge.org/r3QfG/
+2011-12-04T15:58:16  *** delt0r_ <delt0r_!~bob@178-191-178-160.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T16:04:58  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-12-04T16:08:21  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (Quit: Leaving)
+2011-12-04T16:09:57  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has joined #aichallenge
+2011-12-04T16:10:57  *** delt0r_ <delt0r_!~bob@178-190-64-24.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-04T16:12:28  *** jacob_strauss <jacob_strauss!bc4ebc51@gateway/web/freenode/ip.188.78.188.81> has quit IRC (Quit: Page closed)
+2011-12-04T16:24:46  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-12-04T16:25:53  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T16:27:12  *** Redgis <Redgis!~Nex@pla93-6-78-227-186-164.fbx.proxad.net> has quit IRC (Quit: ... mains libres)
+2011-12-04T16:28:08  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-04T16:30:30  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T16:31:46  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T16:35:23  *** Banoth <Banoth!bccbd22e@gateway/web/freenode/ip.188.203.210.46> has joined #aichallenge
+2011-12-04T16:46:09  *** xar0l <xar0l!4086e103@gateway/web/freenode/ip.64.134.225.3> has joined #aichallenge
+2011-12-04T16:49:34  <CIA-53> aichallenge: McLeopold epsilon * r06711af / website/visualizer.php : show all user's stderr for admins - http://git.io/JSw9pA
+2011-12-04T16:51:14  *** xar0l <xar0l!4086e103@gateway/web/freenode/ip.64.134.225.3> has quit IRC (Quit: Page closed)
+2011-12-04T16:51:18  <McLeopold> can someone tell me if  they can see their own stderr for an official game?
+2011-12-04T16:53:06  *** jejeje <jejeje!5bc8a831@gateway/web/freenode/ip.91.200.168.49> has joined #aichallenge
+2011-12-04T16:53:51  *** jejeje <jejeje!5bc8a831@gateway/web/freenode/ip.91.200.168.49> has left #aichallenge
+2011-12-04T16:54:19  *** treeform_ <treeform_!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T16:54:43  *** jojojo <jojojo!5bc8a831@gateway/web/freenode/ip.91.200.168.49> has joined #aichallenge
+2011-12-04T16:57:52  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T17:00:52  <antimatroid> McLeopold; do we have any idea of what proportion of maps will be above 150x150 in the final contest?
+2011-12-04T17:01:25  <antimatroid> it's important to know whether a bot is going to need to work well on large maps in the final contest or not
+2011-12-04T17:05:28  <McLeopold> antimatroid: 0%
+2011-12-04T17:05:35  <antimatroid> ?
+2011-12-04T17:05:44  <antimatroid> i thought max map size was 200x200?
+2011-12-04T17:05:45  <McLeopold> oh, maybe higher
+2011-12-04T17:05:56  <McLeopold> antimatroid: area is limited to 25000
+2011-12-04T17:06:15  <McLeopold> which is 158.1^2
+2011-12-04T17:06:32  <antimatroid> that's including water yes?
+2011-12-04T17:06:36  <McLeopold> yes
+2011-12-04T17:06:43  <McLeopold> each dimension is limited to 200
+2011-12-04T17:06:48  <antimatroid> hmmm okay
+2011-12-04T17:06:54  <antimatroid> is there a minimum map size?
+2011-12-04T17:06:58  <McLeopold> yes
+2011-12-04T17:07:04  <McLeopold> 900 area per player
+2011-12-04T17:07:12  <antimatroid> and what's the minimum starting path length between hills? :P
+2011-12-04T17:07:16  <McLeopold> 20
+2011-12-04T17:07:19  <antimatroid> what about min dimension?
+2011-12-04T17:07:27  <McLeopold> no min dimension
+2011-12-04T17:07:31  <bmh> antimatroid: you're running out of free variables ;)
+2011-12-04T17:07:31  <BenJacks1n> wow, I leave for a few days, I'm 6th
+2011-12-04T17:08:06  <antimatroid> well, i guess there is a min
+2011-12-04T17:08:17  <antimatroid> 900/200
+2011-12-04T17:08:17  <McLeopold> based on area, yeah
+2011-12-04T17:08:24  <McLeopold> 1800/200
+2011-12-04T17:08:31  <McLeopold> 2 player min :)
+2011-12-04T17:08:33  <antimatroid> derp :P
+2011-12-04T17:08:41  <antimatroid> so it has to be at least as wide as the view radius
+2011-12-04T17:08:44  <antimatroid> that's what i wanted :P
+2011-12-04T17:09:16  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has joined #aichallenge
+2011-12-04T17:09:17  <antimatroid> i don't think my "painting" vision thing works otherwise
+2011-12-04T17:09:35  <antimatroid> and i use translation values in turn 0 to set up a lot of stuff
+2011-12-04T17:10:23  <olexs1> http://aichallenge.org/visualizer.php?game=161906&user=871 aww come on
+2011-12-04T17:12:20  <olexs1> can this cutoff be made like, 10 turns longer? it's not the first time I see it end a game literally 2-3 turns before a hill is taken
+2011-12-04T17:13:11  <olexs1> also, "not razing hills" is a bad cutoff reason for that game, since the only hills still there have huge hives underneath, and it's impossible to raze a single hill with a hive under it
+2011-12-04T17:17:02  <bretep> lol
+2011-12-04T17:19:41  <avdg> just take it over, there is a way to raze a hill with a big hive
+2011-12-04T17:19:44  <bretep> Do the ants in the hiv count for the 90% cutoff, btw?
+2011-12-04T17:20:10  <avdg> (well, if the enemy allows it)
+2011-12-04T17:20:32  <olexs1> avdg: I can't possibly step on it, since every turn it spawns a new ant
+2011-12-04T17:20:55  <avdg> if it moves, you can take over
+2011-12-04T17:21:35  <olexs1> it can't move, because it gets killed by my ants standing ready to take the hill
+2011-12-04T17:21:37  * bretep notes if I have a load of ants in the hive and surrounded, do not let them move
+2011-12-04T17:21:38  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T17:22:23  <avdg> well, they can still kill each other by taking over places
+2011-12-04T17:22:26  <olexs1> every turn, one ant gets spawned. even if I let it live and move away, next one will spawn immediately, since the hive is still full
+2011-12-04T17:22:49  <avdg> not if you put an ant on top of it
+2011-12-04T17:22:49  <olexs1> I can still kill them all and take the hive afterwards, but not if the cutoff terminates the game mid-fight
+2011-12-04T17:23:10  <olexs1> avdg: sadly, you're wrong
+2011-12-04T17:23:26  <rmmh> bots should get bonuses if they run extra-fast
+2011-12-04T17:23:27  <olexs1> if you watch the game carefully, my ants do step on it after killing the one ant
+2011-12-04T17:23:30  <rmmh> in the matchmaking
+2011-12-04T17:23:34  <bretep> Ant on top gets a collision with the new ant I think
+2011-12-04T17:23:35  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-04T17:23:47  <avdg> raze comes before spawn
+2011-12-04T17:24:05  <olexs1> then how come I didn't raze that hill?
+2011-12-04T17:24:28  <avdg> did you actually move an ant on top of it?
+2011-12-04T17:24:36  <olexs1> watch the game slowly. every single turn.
+2011-12-04T17:25:03  <bretep> Yes he did
+2011-12-04T17:25:16  <olexs1> and yet he still spawned on top of my ant
+2011-12-04T17:26:40  *** speakeasy <speakeasy!~speakeasy@host217-44-182-9.range217-44.btcentralplus.com> has joined #aichallenge
+2011-12-04T17:26:53  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T17:27:00  <BenJacks1n> http://aichallenge.org/visualizer.php?game=158597&user=3473
+2011-12-04T17:27:06  <BenJacks1n> that's probably somewhat of a preview of the finals
+2011-12-04T17:27:17  <BenJacks1n> me, pguillory, A, a1k0n, xathis
+2011-12-04T17:28:49  <olexs1> according to specs, actually, I should have razed that hill. but it did not happen
+2011-12-04T17:29:20  <olexs1> since raze should come before spawn... except apparently it does not
+2011-12-04T17:30:19  <bmh> BenJacks1n: If I make my bot not melt, I'll see you in the finals ;)
+2011-12-04T17:31:57  <BenJacks1n> I didn't mean to presume to still be in the top 10 then
+2011-12-04T17:31:59  <BenJacks1n> I meant more style of game
+2011-12-04T17:32:39  <bmh> I should probably start writing hill finding and combat
+2011-12-04T17:32:48  <McLeopold> raze is after attack and collision
+2011-12-04T17:33:54  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T17:34:06  <olexs1> McLeopold: there is no collision (exactly one of my ants is moving in per turn), and no attack (no enemy ants except the ones that get spawned right on top of me)
+2011-12-04T17:34:23  *** goffrie <goffrie!~goffrie@69-165-162-182.dsl.teksavvy.com> has joined #aichallenge
+2011-12-04T17:35:25  <olexs1> technically, the hill should be razed at turn 819
+2011-12-04T17:36:05  <McLeopold> hive counts are considered for cutoffs
+2011-12-04T17:36:20  <BenJacks1n> not sure they should be
+2011-12-04T17:36:26  <BenJacks1n> imperfect play can lose even with a hive
+2011-12-04T17:36:27  <McLeopold> olexs1: if you move an ant onto another ant, that is a colission and they both die
+2011-12-04T17:36:45  <olexs1> McLeopold: but I don't move on top of other ants... or do I?..
+2011-12-04T17:36:52  *** g0llum <g0llum!~g0llum@89.204.153.32> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T17:37:30  <McLeopold> the collision happens before the attack
+2011-12-04T17:37:35  <olexs1> damn it... could it really be that I move onto the enemy ant instead of killing him first
+2011-12-04T17:37:53  <olexs1> crap :) thanks for clearing that up
+2011-12-04T17:37:59  <McLeopold> olexs1: it's a known issue, you can't raze a hill if the hive is not empty
+2011-12-04T17:38:07  <BenJacks1n> you can
+2011-12-04T17:38:10  <McLeopold> as long as the hill owner doesn't move off
+2011-12-04T17:38:12  <BenJacks1n> if they move off it for you
+2011-12-04T17:38:18  <BenJacks1n> many people will
+2011-12-04T17:38:21  <BenJacks1n> my bot probably would
+2011-12-04T17:39:04  <BenJacks1n> McLeopold: were you doing the top-20-by-mu lists?
+2011-12-04T17:40:09  <McLeopold> no, but I can
+2011-12-04T17:40:21  <olexs1> right... so basically I need to keep one space near a hill free for the enemy to step aside and die there, and at the same time move onto the hill
+2011-12-04T17:40:51  <McLeopold> olexs1: maybe, if the bot cooperates, but I think it was smart enough not to move
+2011-12-04T17:41:28  <olexs1> well I need to at least give him the choice :)
+2011-12-04T17:41:56  <McLeopold> yeah, I'll consider something to prevent the cutoff, if it makes sense and the other agree
+2011-12-04T17:44:25  <McLeopold> the only other thing you could do is not collect food so that maybe the cutoff won't trigger
+2011-12-04T17:44:35  <McLeopold> or start suiciding yourself to turn it off
+2011-12-04T17:44:47  *** speakeasy <speakeasy!~speakeasy@host217-44-182-9.range217-44.btcentralplus.com> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T17:49:55  <antimatroid> not if they aren't moving
+2011-12-04T17:50:02  <antimatroid> whoops, was scrolled up :P
+2011-12-04T17:52:40  *** Banoth <Banoth!bccbd22e@gateway/web/freenode/ip.188.203.210.46> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T17:52:47  *** mj41 <mj41!~mj41_nby@80.82.144.206> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T17:57:23  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-12-04T17:58:58  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T18:03:33  *** treeform_ <treeform_!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-04T18:17:59  *** jstrong <jstrong!~jstrong@189.229.21.108> has joined #aichallenge
+2011-12-04T18:27:17  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 248 seconds)
+2011-12-04T18:30:52  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-12-04T18:32:33  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T18:38:11  *** Garf <Garf!~Garf@78-22-80-252.access.telenet.be> has quit IRC (Quit: Make a new plan, Stan!)
+2011-12-04T18:40:59  <CIA-53> aichallenge: McLeopold epsilon * rf143f24 / (19 files): removed bad cell maze maps - http://git.io/ww3QQg
+2011-12-04T18:41:01  <CIA-53> aichallenge: McLeopold epsilon * rcba97dd / (14 files in 3 dirs): remove map other maps - http://git.io/YY3xdA
+2011-12-04T18:50:15  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Quit: http://www.cyphase.com/)
+2011-12-04T18:50:54  <BenJacks1n> McLeopold:  cool query for http://forums.aichallenge.org/viewtopic.php?f=25&t=2036&sid=0536aea6a3fc613f267b4a0ebf2024c0
+2011-12-04T18:56:33  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-04T18:57:00  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-04T19:02:36  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T19:04:05  *** Conorach <Conorach!~cono@90.170.78.100> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T19:07:15  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T19:15:51  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-12-04T19:25:23  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has quit IRC (Read error: Operation timed out)
+2011-12-04T19:29:32  *** Surya <Surya!4ec01c28@gateway/web/freenode/ip.78.192.28.40> has quit IRC (Quit: Page closed)
+2011-12-04T19:31:51  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-04T19:39:05  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has quit IRC (Quit: ... mains libres)
+2011-12-04T19:40:00  *** Anilm3 <Anilm3!~anil@147.Red-83-32-41.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-04T19:43:51  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T19:45:15  *** Anilm3 <Anilm3!~anil@147.Red-83-32-41.dynamicIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-12-04T19:53:26  *** jab_bott <jab_bott!5163fc1b@gateway/web/freenode/ip.81.99.252.27> has joined #aichallenge
+2011-12-04T20:01:53  <rmmh> are the workers 64-bit?
+2011-12-04T20:04:34  <amstan> rmmh: yes
+2011-12-04T20:17:56  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has quit IRC (Remote host closed the connection)
+2011-12-04T20:20:34  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-12-04T20:22:05  <antimatroid> ohhh
+2011-12-04T20:22:09  <antimatroid> dmj111 is 26th
+2011-12-04T20:22:35  <antimatroid> i think they discovered the contest late, they are someone to look out for
+2011-12-04T20:22:47  <antimatroid> hehe, they had to move from python to c++
+2011-12-04T20:24:01  *** AntDroid_ <AntDroid_!781c39b6@gateway/web/freenode/ip.120.28.57.182> has joined #aichallenge
+2011-12-04T20:25:56  <bhasker> evening
+2011-12-04T20:31:23  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-04T20:31:43  <amstan> contestbot: seen janzert
+2011-12-04T20:31:43  <contestbot> amstan: janzert was last seen in #aichallenge 4 hours, 45 minutes, and 49 seconds ago: <janzert> otherwise no one would be
+2011-12-04T20:34:21  <amstan> contestbot: seen mcleopold
+2011-12-04T20:34:21  <contestbot> amstan: mcleopold was last seen in #aichallenge 2 hours, 49 minutes, and 45 seconds ago: <McLeopold> or start suiciding yourself to turn it off
+2011-12-04T20:41:55  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 244 seconds)
+2011-12-04T20:46:11  *** Euphony <Euphony!617e344f@gateway/web/freenode/ip.97.126.52.79> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T20:56:41  <amstan> contestbot: seen j3camero
+2011-12-04T20:56:41  <contestbot> amstan: j3camero was last seen in #aichallenge 6 weeks, 1 day, 5 hours, 43 minutes, and 5 seconds ago: <j3camero> If you are finding that some of the testing tools suck, please consider making better ones. We generally release whatever tools at the beginning, but the contestants always end up making better ones.
+2011-12-04T20:57:51  <antimatroid> except this time we had mleise :P
+2011-12-04T20:59:03  <janzert> amstan: heard from jeff at all if he is planning to come?
+2011-12-04T20:59:13  <amstan> janzert: i haven't gotten any replies
+2011-12-04T20:59:19  <janzert> :(
+2011-12-04T20:59:28  <amstan> from anyone but bmh.. so..
+2011-12-04T20:59:48  <amstan> but from past experiences, he might pop in here at any time
+2011-12-04T21:00:02  <amstan> so i'm hoping for that
+2011-12-04T21:00:06  <janzert> yep
+2011-12-04T21:04:35  <amstan> McLeopold: ping
+2011-12-04T21:08:29  <bhasker> antimatroid around?
+2011-12-04T21:10:25  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T21:10:29  <_flag> So there seem to be very few games on the official server played on either random_walk maps or maze maps, are they being phased out?
+2011-12-04T21:12:47  <janzert> _flag: it's just that right now the generators for those have yet to be updated to always produce good maps and a large number of the cell maps have been added in the meantime
+2011-12-04T21:15:09  *** olexs1 <olexs1!~Leviathan@drms-590ce4b7.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-12-04T21:15:16  <_flag> janzert: Okay, thanks. Do you think the contest will end as planned or might it be extended like last year?
+2011-12-04T21:15:33  <amstan> _flag: it was never extended
+2011-12-04T21:15:36  <_flag> Because it's getting awfully close and it would be nice to have the final maps ready
+2011-12-04T21:15:37  <janzert> ? it has never been extended that I'm aware of
+2011-12-04T21:15:42  <_flag> Really?
+2011-12-04T21:15:46  <janzert> nope
+2011-12-04T21:15:46  <amstan> _flag: never
+2011-12-04T21:15:49  <a1k0n> hmm, to resubmit or not to resubmit
+2011-12-04T21:15:55  <_flag> I thought pw was a month or so longer than intended?
+2011-12-04T21:16:03  <janzert> nope
+2011-12-04T21:16:18  <janzert> it was a month or so longer than this one, but that was planned from the start of it
+2011-12-04T21:16:19  <_flag> Okay, nevermind then
+2011-12-04T21:16:47  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Quit: Leaving.)
+2011-12-04T21:17:34  <amstan> i also emphasize that you shouldn't make expectations how maps should be beyond the game specs
+2011-12-04T21:17:57  <amstan> if some maps don't respect those, that's our bad, and you can expect we'll fix it, but nothing more
+2011-12-04T21:18:47  *** keith__ <keith__!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-04T21:19:15  <_flag> Obviously I wouldn't do that intentionally, but there is always a possibility that if I only test on the maps that are avaliable that I would never know if I am making a mistake that might hurt me on other maps
+2011-12-04T21:27:03  *** aarossig <aarossig!~andrew@216-246-248-122.cpe.distributel.net> has joined #aichallenge
+2011-12-04T21:28:30  <a1k0n> the solution: test on all possible maps
+2011-12-04T21:29:49  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-04T21:36:31  *** Antimony_ <Antimony_!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T21:37:12  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 244 seconds)
+2011-12-04T21:37:15  *** Antimony_ is now known as Antimony
+2011-12-04T21:45:03  <Antimony> seen antimatroid
+2011-12-04T21:46:12  <janzert> @seen antimatroid
+2011-12-04T21:46:12  <contestbot> janzert: antimatroid was last seen in #aichallenge 48 minutes and 21 seconds ago: <antimatroid> except this time we had mleise :P
+2011-12-04T21:46:29  *** gkhjh <gkhjh!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-12-04T21:51:03  <BenJacks1n> a1k0n: thanks for resubmitting ;-)
+2011-12-04T21:51:10  <a1k0n> :|
+2011-12-04T21:51:17  <BenJacks1n> also re: test on all possible maps, I did make such a script
+2011-12-04T21:51:20  <BenJacks1n> takes quite a while to run...
+2011-12-04T21:55:10  *** BenJacks1n is now known as BenJackson
+2011-12-04T21:55:17  <BenJackson> where did that 1 come from
+2011-12-04T21:56:11  <Antimony> I've become pessimistic about being able to get combat working before the end of the contest
+2011-12-04T21:57:00  <BenJackson> I was pretty pessimistic about my last couple of submits
+2011-12-04T21:57:10  <BenJackson> not winning as reliably as I'd like
+2011-12-04T21:57:27  <BenJackson> but suddenly I break into the top 10 and I'm excited about hacking again ;-)
+2011-12-04T21:58:52  <a1k0n> i think i'm done with my bot
+2011-12-04T22:00:37  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 248 seconds)
+2011-12-04T22:06:06  *** gkhjh <gkhjh!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-12-04T22:08:30  <BenJackson> hence the resub?
+2011-12-04T22:08:34  <a1k0n> yeah
+2011-12-04T22:08:50  <a1k0n> this version is measurably stronger than the last one but i'm not sure whether it's the strongest of all
+2011-12-04T22:09:22  <BenJackson> mine was a huge improvement over the earlier ones but despite having some variation in my own bots it's probably overspecialized
+2011-12-04T22:10:26  <jab_bott> I'm worried about combat too - I've taken so long to get anything half-decent in terms of exploration and food-gathering - combat, defence, and hill-attacking seems like a lot in the short-time remaining :/
+2011-12-04T22:11:54  <bmh> a1k0n: what did you change?
+2011-12-04T22:12:04  <jab_bott> I'm in the middle of porting it to C and that's taking longer than I expected (my C is a bit rusty and I forgot how much effort error-checking and good memory management takes)
+2011-12-04T22:12:12  <BenJackson> use c++
+2011-12-04T22:12:22  <BenJackson> at least you can encapsulate the memory management
+2011-12-04T22:12:27  <BenJackson> even if you don't use any other features
+2011-12-04T22:13:10  *** keith___ <keith___!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-04T22:14:48  <jab_bott> I wanted to use objective-c, but that's not available so I wrote some obj-c-like behaviour in C, including a FOR_IN macro and alloc/init/dealloc style functions on each object type - didn't bother with reference counting though as I can easily know at an object-level when things are done with for most cases
+2011-12-04T22:15:47  *** jstrong <jstrong!~jstrong@189.229.21.108> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T22:16:00  *** amstan_ <amstan_!~alex@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-04T22:16:00  *** ChanServ sets mode: +o amstan_
+2011-12-04T22:16:59  <jab_bott> implementing lists and queues and the like in C was good for brushing up on my C skills :D
+2011-12-04T22:19:57  *** keith___ <keith___!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has quit IRC (Ping timeout: 265 seconds)
+2011-12-04T22:31:27  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has quit IRC (Quit: Leaving.)
+2011-12-04T22:33:06  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T22:35:21  *** jstrong <jstrong!~jstrong@189.229.21.108> has joined #aichallenge
+2011-12-04T22:46:38  *** Kommander <Kommander!~Kommander@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has quit IRC ()
+2011-12-04T22:46:47  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T22:49:30  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-04T22:54:36  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T23:11:25  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Quit: Leaving.)
+2011-12-04T23:13:13  *** antimatroid1 <antimatroid1!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-04T23:13:13  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-12-04T23:14:27  *** amstan_ <amstan_!~alex@69-196-130-230.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-12-04T23:14:36  * amstan was looking at a1k0n's strategy post: http://forums.aichallenge.org/viewtopic.php?f=24&t=2044
+2011-12-04T23:14:45  <amstan> yes... i know some of these words...
+2011-12-04T23:14:49  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T23:14:55  <a1k0n> many of them are irrelevant.  the idea is simple
+2011-12-04T23:15:16  <amstan> yes, but i have no idea what you are saying
+2011-12-04T23:15:23  <a1k0n> :(
+2011-12-04T23:15:31  <a1k0n> my post is way too long
+2011-12-04T23:15:47  <amstan> a1k0n: maybe add pictures
+2011-12-04T23:16:25  <amstan> i remember your postmortem, i really liked that animation which showed who could get to certain squares the fastest
+2011-12-04T23:17:06  <a1k0n> yeah, like ben's too on the forums
+2011-12-04T23:20:09  *** jab_bott <jab_bott!5163fc1b@gateway/web/freenode/ip.81.99.252.27> has quit IRC (Quit: Page closed)
+2011-12-04T23:24:17  *** nalaginrut <nalaginrut!~nalaginru@113.97.236.159> has joined #aichallenge
+2011-12-04T23:24:19  *** AdrianG <AdrianG!~speed@unaffiliated/amphetamine> has joined #aichallenge
+2011-12-04T23:29:14  *** Antimony_ <Antimony_!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has joined #aichallenge
+2011-12-04T23:31:41  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T23:31:54  *** Antimony_ is now known as Antimony
+2011-12-04T23:40:06  *** AdrianG <AdrianG!~speed@unaffiliated/amphetamine> has quit IRC ()
+2011-12-04T23:40:11  *** antimatroid1 <antimatroid1!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-12-04T23:43:21  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Ping timeout: 245 seconds)
+2011-12-04T23:58:27  *** delt0r_ <delt0r_!~bob@178-190-64-24.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)

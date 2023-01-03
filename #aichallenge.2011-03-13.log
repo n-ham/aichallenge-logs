@@ -1,0 +1,633 @@
+2011-03-13T00:08:06  <bss03> antimatoid: When codeing C++, I generally prefer '<<' to be the "human readable".
+2011-03-13T00:08:49  <antimatroid> bss03: it's sort of like that now, except i'm catching << for file streams and doing the save format then
+2011-03-13T00:08:58  <antimatroid> i'm not very happy with it like that though
+2011-03-13T00:09:07  <bss03> antimatroid: Then a write() and read() function that does the network/file/other marshaling.
+2011-03-13T00:10:19  <bss03> '<<' available as a non-operator with print() '>>' available as a non-operator with scan().
+2011-03-13T00:10:48  <antimatroid> one wouldn't input a game except in the save format
+2011-03-13T00:11:05  <antimatroid> it's actually really hard to write down a game with more than 2 players
+2011-03-13T00:11:16  <antimatroid> but this will handle any number ignoring memory limits
+2011-03-13T00:11:27  <bss03> But, I can at C++ from the POSIX-or-bust C mentallity. so (C++=C) print=printf scan=scanf write=write read=read.
+2011-03-13T00:11:44  <bss03> s/can/come/
+2011-03-13T00:14:26  <bss03> jmcarthur: What is a "distro that doesn't suck" when it some to managing cabal packages as distro packages.
+2011-03-13T00:15:15  <bss03> jmcarthur: From what I understand, it is pretty easy to take a cabalized package and turn it into a policy-compliant .deb, but I haven't been following all the Haskell packaging work in Debian.
+2011-03-13T00:56:12  *** delt0r_ <delt0r_!~delt0r@188-22-174-76.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-13T00:57:51  *** delt0r___ <delt0r___!~delt0r@188-22-173-94.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-13T00:58:03  <antimatroid> bss03: what are your thoughts on not including a "no parameter" constructer if it makes no sense to use it?
+2011-03-13T01:08:01  <bss03> antimatroid: Declare one as private, then don't implement it.
+2011-03-13T01:08:55  <bss03> antimatroid: I'm working under the assumption that this class is entirely non-struct-like.
+2011-03-13T01:10:16  <bss03> The private -> no implementation way prevents use from outside the class, and gives a linker error if you accidentally use it inside the class.
+2011-03-13T01:12:58  <antimatroid> i have everything as structs, but i have been considering switching this back to classes
+2011-03-13T01:13:10  <antimatroid> this is my general game theory library
+2011-03-13T01:13:29  <antimatroid> i'm cleaning everything up because i want to use it for thesis stuff this year
+2011-03-13T01:13:54  <antimatroid> i'll put it up on github once i've cleaned things more
+2011-03-13T01:14:39  <bss03> I generally try and reserve the "struct" keyword for POD.
+2011-03-13T01:14:52  <antimatroid> it's all i use normally :P
+2011-03-13T01:15:05  <antimatroid> i'm a communist when it comes to programming, everything is public
+2011-03-13T01:15:30  <antimatroid> but people can really mess things up with this library if the start changing things themselves
+2011-03-13T01:16:22  <bss03> Having to deal with a lot of C and some ugly C++/ESQL/C mixes, having the semantic anchor of "struct" -> "POD" is helpful for retaining sanity.
+2011-03-13T01:17:14  <bss03> In "pure" C++ though, I don't have much opinion; I guess use whichever saves you the most typing. :P
+2011-03-13T01:18:00  <bss03> If everything is public, hasing a no-arg constructor probably does "make sense" though.
+2011-03-13T01:18:38  <antimatroid> nah, the point is it makes no sense to make a pure/mixed strategy without having game dimensions, so without passing that it can't construct something that is usable
+2011-03-13T01:18:45  <antimatroid> and i use pure strategies for indexing tensors
+2011-03-13T01:18:58  <antimatroid> as they internally store the index value
+2011-03-13T01:19:19  <antimatroid> a similar thing happens with mixed strategies but for more efficiently calculating lots of expected utilities
+2011-03-13T01:21:31  <antimatroid> bss03: what's more appealing? :P
+2011-03-13T01:21:31  <antimatroid> NStrategy strategy(game.dimensions); or
+2011-03-13T01:21:31  <antimatroid> NStrategy strategy = game.NStrategy();
+2011-03-13T01:22:15  <bss03> I'm a big fan of the Factory pattern, so I like the later.
+2011-03-13T01:22:41  <antimatroid> i like the later too
+2011-03-13T01:22:45  <antimatroid> it just seems less standard
+2011-03-13T01:23:05  <antimatroid> and it's longer, which is pretty much against my life rules
+2011-03-13T01:24:32  <bss03> Well, I guess the techincal argument would be "Does it make sense to have a NStrategy without a specific game object in mind?"
+2011-03-13T01:24:40  <bss03> If so, the first.  If not, the second.
+2011-03-13T01:24:55  <antimatroid> no, that's the reason i don't include the constructers, i need game.dimensions
+2011-03-13T01:26:13  <bss03> Since everything is public, couldn't use just create a "uninitialized" NStrategy and then populate it based on something other than game.dimensions?
+2011-03-13T01:26:22  <bss03> s/use/users/
+2011-03-13T01:27:17  <antimatroid> a normal strategy is really just a vector of ints of length noPlayers, but for increment functions and calculating indexes for tensors i need to know the dimensions
+2011-03-13T01:27:25  <antimatroid> and otherwise you would need the number of players anyway
+2011-03-13T01:27:35  <bss03> I think if you class is only designed to work a certain way, the access levels should reflect it, which likely means making something private, the class non-struct-like, and doing the "private -> no implementation" thing with the default constructors you dont' like.
+2011-03-13T01:27:56  <antimatroid> you strictly need the dimensions for a mixed strategy because each player assigns a probability distribution across their strategy vector
+2011-03-13T01:31:10  <bss03> I'm an insufferacle purish though.  It comes from having to be pragmatic at my DJ, while also having to work around earlier "pragmatism".
+2011-03-13T01:31:25  <bss03> *insufferable purist
+2011-03-13T01:37:19  <antimatroid> bah i hate you c++
+2011-03-13T01:37:32  <antimatroid> yet again not being allowed to overload operator precedence makes my life difficult
+2011-03-13T01:46:04  *** vikhyat <vikhyat!~vikhyat@117.195.138.162> has joined #aichallenge
+2011-03-13T03:04:30  <bss03> It's understandable though, even in Haskell the operator precedence is semi-"baked in" to the parser.
+2011-03-13T03:04:40  <antimatroid> i don't like that
+2011-03-13T03:05:14  <antimatroid> rules would be the same, don't overload it unless the use is obvious
+2011-03-13T03:05:44  *** vikhyat <vikhyat!~vikhyat@117.195.138.162> has quit IRC (Quit: Leaving)
+2011-03-13T03:05:47  <antimatroid> i haven't learnt much haskell yet, but i love the type system
+2011-03-13T03:06:55  <bss03> That's one of the things that attracked me to the language.  I was looking for something staticly typed with good type inference.
+2011-03-13T03:08:28  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T03:11:27  <antimatroid> yeah, i've been gravitating towards haskell for a while, just haven't learnt it well enough yet
+2011-03-13T03:11:31  <antimatroid> it's so confusing :P
+2011-03-13T03:12:24  <sigh> yay... i feel better knowing that even math speople find it confusing
+2011-03-13T03:12:32  <sigh> *maths people
+2011-03-13T03:12:46  <bss03> Walking through jmcarthur's "starter pack" is enlightening to me.
+2011-03-13T03:13:42  <bss03> It seems to be a pretty dense application of MTL, which seems to be the norm for doing imperative stuff in Haskell.
+2011-03-13T03:14:08  <antimatroid> sigh: has anyone ever said haskell isn't confusing?
+2011-03-13T03:14:23  <bss03> Lots of people. :P
+2011-03-13T03:14:30  <antimatroid> heathens
+2011-03-13T03:15:19  <bss03> "toy" programs are easy, almost deceptively so.
+2011-03-13T03:15:55  <sigh> Every time I pick up haskell I end up having to relearn monads
+2011-03-13T03:17:41  <bss03> Well, it hurts that "learn monads" isn't really a single task.
+2011-03-13T03:17:54  <sigh> yeah
+2011-03-13T03:18:23  <bss03> The [] monad is significantly different in *behavior* than the STM or IO monad, although the interface is the same.
+2011-03-13T03:18:31  <sigh> I might try to write a haskell bot, but I looked at jmcarthur's starter pack and couldn't make head or tail of it :P
+2011-03-13T03:19:01  <sigh> bss03: yeah, that's the thing... and there are a million *tutorials* on monads which all say different things
+2011-03-13T03:19:15  <antimatroid> your mums a monad, yeah!!!
+2011-03-13T03:19:18  <bss03> sigh: I'm working through it slowly.  Eventually, I'll add some documetnation to make it easier to read.
+2011-03-13T03:19:32  <sigh> cool :)
+2011-03-13T03:19:54  <bss03> sigh: Also, having even a do-nothing except query a bunch of things example would help A LOT.
+2011-03-13T03:20:14  <sigh> example of what?
+2011-03-13T03:20:19  <bss03> Which is what I'm doing in parallel.
+2011-03-13T03:20:23  <bss03> example "bot".
+2011-03-13T03:20:27  <sigh> ah, yeah
+2011-03-13T03:21:30  <bss03> Right now, there isn't one -- jmcarthur is focusing on it's use as a library, I think.
+2011-03-13T03:23:47  <sigh> monads is like all the parts of maths I find difficult, amazingly generic definition with no real appreciation of the motivation behind it
+2011-03-13T03:26:51  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-13T03:27:02  <bss03> sigh: If you just want to *use* monads, focus on the *behavior* of IO, and probably some of the MTL.  If you want to *write* a Monad, it helps to understand a little of of maths.
+2011-03-13T03:27:53  <bss03> I recommend the typeclassopedia for wrapping your head around how "simple" Monads really are to *write*.
+2011-03-13T03:28:36  <sigh> hmmm... ok
+2011-03-13T03:32:41  <antimatroid> we got the most awesome grill for uni on thursday, used it once, then have a 5 day weekend
+2011-03-13T03:32:49  <antimatroid> worst possible time ever to have a 5 day weekend
+2011-03-13T03:33:04  <sigh> o_O
+2011-03-13T03:33:24  <sigh> why do you have a 5 day weekend?
+2011-03-13T03:33:33  <antimatroid> fridays and tuesdays off every week :P
+2011-03-13T03:33:36  <bss03> So, during the weekend you don't have access to the grill?  :(
+2011-03-13T03:33:53  <antimatroid> bss03: too far to bother going to the uni just for that
+2011-03-13T03:33:57  <antimatroid> it's like a 30 minute ride
+2011-03-13T03:34:04  <antimatroid> 20 or so by car
+2011-03-13T03:34:07  <bss03> Aah.
+2011-03-13T03:56:00  *** Frontier <Frontier!~marco@dslb-088-071-179-227.pools.arcor-ip.net> has joined #aichallenge
+2011-03-13T03:58:34  *** UncleVasya <UncleVasya!kvirc@46.133.99.127> has joined #aichallenge
+2011-03-13T04:03:26  <antimatroid> these two functions do the same thing, but the first is more efficient Oo
+2011-03-13T04:03:27  <antimatroid> http://pastebin.com/c9KQ30EP
+2011-03-13T04:03:29  *** kaemo <kaemo!~mad5ci@aeij192.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-13T04:05:51  *** Frontier1 <Frontier1!~marco@dslb-088-071-179-227.pools.arcor-ip.net> has joined #aichallenge
+2011-03-13T04:05:51  *** Frontier <Frontier!~marco@dslb-088-071-179-227.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-13T04:07:45  <Frontier1> *sigh*
+2011-03-13T04:08:04  <sigh> *Frontier1*
+2011-03-13T04:08:15  <Frontier1> that doesnt work :p
+2011-03-13T04:08:35  <Frontier1> so there is something strange about the spawn locations of new ants
+2011-03-13T04:08:58  <sigh> what is strange, specifically?
+2011-03-13T04:09:17  <Frontier1> take a look at this replay: http://marco-leise.homedns.org/antgui/work/visualizer.php?game_id=4#visualizer
+2011-03-13T04:09:43  <sigh> it's not loading
+2011-03-13T04:09:56  <sigh> as far as I know the ant spawning hasn't changed
+2011-03-13T04:10:50  <sigh> connection timed out
+2011-03-13T04:10:52  <Frontier1> all right I know why it isn't loading.
+2011-03-13T04:12:07  <Frontier1> im not at home ^^. shi... well there is for example the red ant. it converts food into ants. the food disappears correctly, but the new ant shows up a few squares away
+2011-03-13T04:12:59  <Frontier1> if you create a replay yourself you will see what i mean
+2011-03-13T04:13:22  <sigh> hmm... I'll have a look
+2011-03-13T04:13:32  <Frontier1> If you cannot insert it into your database, you can use the offline viewer and load the text into it directly
+2011-03-13T04:13:34  <sigh> this happens everytime an ant spawns from food?
+2011-03-13T04:13:54  <sigh> or only on specific occasions?
+2011-03-13T04:14:20  <Frontier1> not on very short games. it seems to happen when there is a lot going on. maybe some ant locations get mixed up over the course of a long game
+2011-03-13T04:14:55  <Frontier1> But it happens right from turn 0 on in that case
+2011-03-13T04:15:47  <_flag> Question: When I play games, sometimes food turning into an ant will trigger more food (previously out of range) to turn into ants, and sometimes it won't. Is this expected?
+2011-03-13T04:16:52  <sigh> _flag: I think this is a bug in the spawning
+2011-03-13T04:17:48  <_flag> sigh: okay, thanks
+2011-03-13T04:18:42  <sigh> ... and I can see where the bug is
+2011-03-13T04:18:52  <Frontier1> :D
+2011-03-13T04:19:00  <sigh> not your bug Frontier1
+2011-03-13T04:19:05  <sigh> Frontier1: how do I replicate your game?
+2011-03-13T04:19:20  <sigh> I can load your replay
+2011-03-13T04:19:46  <Frontier1> i use 4.replay in the replays folder
+2011-03-13T04:20:08  <Frontier1> ants/www/visualizer/replays/4.replay
+2011-03-13T04:21:29  <sigh> where is that?
+2011-03-13T04:21:46  <Frontier1> you have to pull the new version from the repo
+2011-03-13T04:22:01  <sigh> from aichallenge/aichallenge?
+2011-03-13T04:22:20  <Frontier1> yeah, from the original
+2011-03-13T04:22:52  <_flag> sigh: I'm guessing the engine adds new ants to the ant list before resolving all the new spawns?
+2011-03-13T04:22:58  <sigh> _flag: yeah
+2011-03-13T04:24:04  <Frontier1> i can't follow you
+2011-03-13T04:24:41  <sigh> Frontier1: what do you mean?
+2011-03-13T04:25:15  <sigh> Frontier1: ok, I see the replay, which food is causing problems?
+2011-03-13T04:25:59  <Frontier1> do you see a big map and ants spawning seemingly at random?
+2011-03-13T04:27:26  <sigh> I haven't run it yet :)
+2011-03-13T04:27:33  <sigh> I'll look at it now
+2011-03-13T04:27:54  <Frontier1> I thought you both found a bug? *confused*
+2011-03-13T04:28:58  * Frontier1 is about to breakfast and drink some coffee to be able to follow.
+2011-03-13T04:29:54  <sigh> Frontier1: I found where _flags bug was in the code
+2011-03-13T04:30:12  <sigh> I haven't even seen what your bug does yet :P
+2011-03-13T04:30:18  <Frontier1> Flag, you are writing code for the engine?
+2011-03-13T04:30:30  <_flag> no
+2011-03-13T04:30:42  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-13T04:30:48  <_flag> Unless by "for" the engine you mean writing a bot, in which case, yes
+2011-03-13T04:31:27  <Frontier1> ok, i think i got it now, hehe. is it a haskell bot?
+2011-03-13T04:32:06  <sigh> Frontier1: the viewer in aichallenge repo doesn't read the new format
+2011-03-13T04:32:30  <Frontier1> Oo
+2011-03-13T04:32:45  <sigh> oh, it's under www
+2011-03-13T04:32:48  <sigh> nvm
+2011-03-13T04:32:56  <_flag> Nope. Last time I tried to learn Haskell I learned about 50 different things about the type system and still couldn't exactly figure out how to do a Hello World.
+2011-03-13T04:33:41  <Frontier1> hehe, then you must be working on the java bot
+2011-03-13T04:34:19  <_flag> Strike 2, no, I wrote the C starter and I'm working on a library for my own bot now :)
+2011-03-13T04:35:10  <Frontier1> ok, so let's see what sigh found out in the meantime :)
+2011-03-13T04:35:34  <sigh> ugh... how do I run this offline
+2011-03-13T04:36:04  <_flag> Go into the visualizer folder and run "python -m SimpleHTTPServer"
+2011-03-13T04:36:13  <_flag> or "python2 -m SimpleHTTPServer"
+2011-03-13T04:36:33  <_flag> And then the contents of 0.replay should be at http://localhost:8000/viewer.html
+2011-03-13T04:37:05  <Frontier1> use ants/www/visualizer/offline.html
+2011-03-13T04:37:54  <sigh> oh... I have to click the button -_-
+2011-03-13T04:38:19  <Frontier1> sorry, but i didn't find a cross browser 'on-paste' event
+2011-03-13T04:38:51  <_flag> Never mind, scratch my advice, the visualizer's been updated in the mean time
+2011-03-13T04:39:34  <sigh> Frontier1: onchange?
+2011-03-13T04:40:17  <Frontier1> sigh: Believe me I tried them all ^^
+2011-03-13T04:40:21  <sigh> :)
+2011-03-13T04:40:59  <Frontier1> hmm the cpu time limiter seems broken. it should only use 50% cpu
+2011-03-13T04:42:42  <Frontier1> ok, I'm away for breakfast
+2011-03-13T04:43:41  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-13T05:08:57  <antimatroid> someone want to give me a 2 minute crash course on licenses?
+2011-03-13T05:09:56  <antimatroid> can i just say something is released under one? if i put one there for the moment does it "restrict" me from changing it later? and finally is "The contents of this library are released under the Apache license." sufficient for the moment? and if you like, give me your preferred one and I'll put that there for the moment
+2011-03-13T05:10:33  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-13T05:22:05  <bss03> Haskell "Hello, World!" -> main = putStrLn "Hello, World!"
+2011-03-13T05:22:58  <bss03> antimatoid: As long as your are the (sole) copyright holder, you can release new versions under whatever license you wish, previous license choices don't restrict you.
+2011-03-13T05:23:51  <bss03> antimatoroid: Also, you can choose to not license old versions under the old license in the future, but you can't take someone's existing license away.
+2011-03-13T05:25:25  <bss03> animatroid: That wording should be fine for now.
+2011-03-13T05:26:26  <bss03> antimatroid: I prefer the WTF license for starter bots, but anything remotely BSD-ish (like either Apache license) should be fine.
+2011-03-13T05:26:43  <bss03> (Not that I'll be using your bot, at all.)
+2011-03-13T05:28:17  <antimatroid> yeah okay cool
+2011-03-13T05:33:43  <sigh> Frontier1: I can't figure out how that replay could have been generated. Can you tell me what you ran to create it. If you can, I have some changes in sigh/aichallenge which make runs deterministic, so if you can reproduce it that way it would be even better
+2011-03-13T05:51:28  <Frontier1> I used the RandomBot and 60 turns, but I'll pull your changes now and repeat the test.
+2011-03-13T06:00:35  <Frontier1> sigh: It doesn't run deterministically.
+2011-03-13T06:00:59  <sigh> Frontier1: use --seed argument to playgame.py
+2011-03-13T06:01:10  <Frontier1> ok thx
+2011-03-13T06:01:43  <sigh> it propagates the seed to the bots as part of the options, and I've made the python bots aware of it
+2011-03-13T06:03:45  <Frontier1> here you are: http://pastebin.com/tARp2KPp
+2011-03-13T06:04:23  <Frontier1> sigh: That's a good idea.
+2011-03-13T06:04:52  <Frontier1> Is it part of the stdio communication?
+2011-03-13T06:05:27  <sigh> yeah, you can see it in the replay output at the top too
+2011-03-13T06:05:34  <sigh> that's exactly how the bots see it as well
+2011-03-13T06:08:11  <Frontier1> Thats a good point about the replay format. Yesterday I found some flaws in it, too. Like for example a layman's approach would kill everything after the last turn, because the ants give no orders for the 'end game state' and so are considered dead in this turn.
+2011-03-13T06:13:10  <sigh> yeah... i think there might be some issues there, but I haven't thought too deeply about them
+2011-03-13T06:13:57  <sigh> Frontier1: would you mind pasting the exact command you used to create that run?
+2011-03-13T06:16:18  <Frontier1> ./playgame.py --seed 42 -m maps/random4.txt -t 60 -o output "python bots/python/RandomBot.py" "python bots/python/RandomBot.py" "python bots/python/RandomBot.py" "python bots/python/RandomBot.py"
+2011-03-13T06:16:42  <Frontier1> Python version is 2.6 if that is your next question ;)
+2011-03-13T06:16:50  <sigh> :)
+2011-03-13T06:18:50  <Frontier1> The random number generator implementation could be different, though.
+2011-03-13T06:20:15  <Frontier1> I remember a warning in a Delphi version about using pseudo random numbers for encryption, as the implementation could change between compiler releases.
+2011-03-13T06:23:02  <sigh> ahhh... dammit... I know why
+2011-03-13T06:23:09  <Frontier1> yes? what is it?
+2011-03-13T06:23:12  <sigh> I'm outputting the ant's FINAL position
+2011-03-13T06:23:27  <sigh> :P
+2011-03-13T06:23:39  <Frontier1> that explains why the coordinates were never too far off
+2011-03-13T06:24:37  <Frontier1> I'm glad it isn't something complicated.
+2011-03-13T06:25:07  <sigh> yeah... I was really confused because the code is so simple... and the engine was fine because the old visualiser worked
+2011-03-13T06:28:13  <bss03> jmcarthur: ping?
+2011-03-13T06:28:56  <sigh> Frontier1: do you think it would be better if the map showed the initial game position as well?
+2011-03-13T06:30:15  <Frontier1> sigh: I actually liked the map like this. It reminds me of the Youtube video previews.
+2011-03-13T06:30:27  <sigh> in what way?
+2011-03-13T06:30:51  <Frontier1> You get more information from a later state of the game than the initial state.
+2011-03-13T06:31:02  <sigh> fair enough
+2011-03-13T06:31:11  <sigh> will leave as is :)
+2011-03-13T06:31:45  <Frontier1> Maybe someone will write a local replay browser that displays the map as a preview... maybe
+2011-03-13T06:32:53  <sigh> Frontier1: ok, fixed and upload to sigh/aichallenge
+2011-03-13T06:34:50  <Frontier1> perfect, its working
+2011-03-13T06:36:36  <bss03> @later tell jmcarthur Is there a way to get the final TurnInfo without re-implementing runTurn?
+2011-03-13T06:36:36  <contestbot> bss03: Yep.
+2011-03-13T06:36:42  <sigh> Frontier1: cool
+2011-03-13T06:36:46  <sigh> antimatroid: you around?
+2011-03-13T06:37:07  <antimatroid> yeah
+2011-03-13T06:37:44  <sigh> can you look at this function and tell me if it is what you expected: https://github.com/sigh/aichallenge/blob/sym-food/ants/ants.py#L565
+2011-03-13T06:38:03  <sigh> assume that initial_ant_list and find_nearest_land work as you would expect
+2011-03-13T06:38:17  <sigh> (this is for symmetric food)
+2011-03-13T06:39:26  <antimatroid> sigh: what's with the "find closest land"?
+2011-03-13T06:40:08  <antimatroid> sigh: you also can't assume players start with just 1 ant
+2011-03-13T06:40:13  <sigh> if the current square is occupied
+2011-03-13T06:40:34  <antimatroid> i don't think you can avoid issues doing that
+2011-03-13T06:40:49  <antimatroid> how do you tie break the closest square fairly?
+2011-03-13T06:40:53  <sigh> well, suggest something better
+2011-03-13T06:40:59  <sigh> you can't
+2011-03-13T06:41:19  <sigh> map becomes asymmetric when the game starts
+2011-03-13T06:41:28  <antimatroid> my suggestion was to pick another location if one of the squares is containing an ant
+2011-03-13T06:42:42  <sigh> ok, so you want to break the map into disjoint sets with n points each (where n is the number of players), and you want to pick a random set where none of the points are occupied
+2011-03-13T06:42:44  <sigh> is that it?
+2011-03-13T06:43:33  <antimatroid> that was my very naive symmetric method yes, although i was willing to allow some of those squares to contain food already
+2011-03-13T06:43:56  <antimatroid> i don't necessarily mind what you've done, was just checking what it's doing, i've said a few times i have no idea how to actually do it fairly :P
+2011-03-13T06:44:52  <sigh> I will see if I can implement your method efficiently
+2011-03-13T06:45:15  <sigh> also, with more than 1 ant per player how does the logic for the translation go?
+2011-03-13T06:49:28  <antimatroid> i haven't done actual more than 1 ant per player, but i imagine i'd need to enforce all enemies in a separate row/col then you could just take any 2 enemies starting ant locations to find translation amounts
+2011-03-13T06:51:55  <sigh> if we are doing any of this logic based on initial ant positions, let's limit it to 1 ant per player
+2011-03-13T06:54:59  <antimatroid> i asked mcleopold the other day and he said assume there may be more
+2011-03-13T06:55:39  <antimatroid> i think it'd be ideal for testing anyway
+2011-03-13T06:57:24  <antimatroid> sigh: is it hard for you to just assume it'll work for any two enemy ants start loc differences? then i'll play around later and work out whether that's valid or not
+2011-03-13T06:59:09  <sigh> antimatroid: it should be fine
+2011-03-13T06:59:23  <sigh> so long as the logic is straight-forward
+2011-03-13T07:15:32  <antimatroid> is there an efficient way to do battle resolution option 2?
+2011-03-13T07:16:04  <antimatroid> my original method was like iteratively make graphs until no ants need to be removed
+2011-03-13T07:26:13  <sigh> antimatroid: not sure, thinking about it now
+2011-03-13T07:41:04  <antimatroid> sigh: there are some annoying example cases with option 2 imo too
+2011-03-13T07:41:16  <antimatroid> like the existence of an extra one of your ants can mean 2 die instead of none
+2011-03-13T07:42:20  <antimatroid> ab..   .b..
+2011-03-13T07:42:20  <antimatroid> ..c.a  ..c.a
+2011-03-13T07:42:30  <sigh> yeah, it's a bit odd
+2011-03-13T07:44:21  <antimatroid> option 1 <3
+2011-03-13T07:44:24  <antimatroid> :p
+2011-03-13T07:52:42  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-13T09:07:32  *** UncleVasya <UncleVasya!kvirc@46.133.99.127> has quit IRC (Ping timeout: 260 seconds)
+2011-03-13T09:36:13  <Frontier1> @later tell sigh: Right now I can't tell if an ant dies in the last turn. Expect a correction in the replay format there. Maybe it could be an additional optional parameter as in the case of food items. If it is there, the ant did not survive the game.
+2011-03-13T09:36:13  <contestbot> Frontier1: OK
+2011-03-13T09:44:06  <janzert> does the new replay format handle the case of an ant standing still for a turn?
+2011-03-13T09:46:32  <janzert> if it doesn't it needs to be extended to do that as well and if it does can all ants just stand still for the final game state?
+2011-03-13T09:47:44  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-13T09:56:45  *** delt0r___ <delt0r___!~delt0r@188-22-174-76.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-13T09:58:04  *** delt0r_ <delt0r_!~delt0r@188-22-174-76.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-13T10:05:45  <Frontier1> janzert: That is possible. In that case we need to make the actual number of turns played a required parameter, too. I think we'll go with that.
+2011-03-13T10:05:56  *** Frontier1 <Frontier1!~marco@dslb-088-071-179-227.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-13T10:08:41  <jmcarthur> bss03: hey. don't have much time, but i'm here right now
+2011-03-13T10:09:15  <jmcarthur> bss03: i'm sorry you're having trouble with the library. it doesn't have any documentation or examples yet. i assure you that once you see some example code it should just click :)
+2011-03-13T10:10:20  *** Frontier <Frontier!~marco@dslb-088-071-179-227.pools.arcor-ip.net> has joined #aichallenge
+2011-03-13T10:10:22  <jmcarthur> bss03: i was kidding about the "distro that doesn't suck" thing, but to answer your question anyway, i have tools on my arch linux box that allows me to install packages directly from hackage but manage them via arch's package manager
+2011-03-13T10:15:06  <janzert> Frontier: even if you make ants carry a number of turns played parameter there still needs to be a way to say an ant stood still on a turn (or turns) somewhere in the middle of its life
+2011-03-13T10:15:56  <Frontier> janzert: the command string is in the form 'nsew-' where - means: stood still
+2011-03-13T10:16:05  <janzert> ahh ok
+2011-03-13T10:16:38  <janzert> so is there a reason ants that are alive in the last move can't just get a - for the final move?
+2011-03-13T10:16:49  <janzert> or final state rather
+2011-03-13T11:02:55  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-13T11:41:53  *** iFire` is now known as iFire
+2011-03-13T11:50:12  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-13T12:02:08  <Frontier> janzert: The duration of the game is the the result of the longest running command string or score entry. So without a game duration in the parameter list the game would just become a turn longer.
+2011-03-13T12:03:14  <McLeopold> Frontier: how's the new format?
+2011-03-13T12:03:37  <Frontier> McLeopold: Sleeping soundly in its cradle
+2011-03-13T12:04:51  <Frontier> It is a bit of a ping-pong, because sigh and I are seldom online at the same time, but we have this new format described in the wiki which is compressing the data really well (<1:10) and the currently checked in visualizer understands it.
+2011-03-13T12:05:22  <McLeopold> nice
+2011-03-13T12:05:33  <McLeopold> did you need a game length parameter?
+2011-03-13T12:05:37  <Frontier> (The engine is in sigh's repository.) Only the end game state is currently flawed. Either all ants die or no ant dies in the last turn
+2011-03-13T12:06:07  <McLeopold> Okay, hopefully I will get it merged soon
+2011-03-13T12:06:38  <Frontier> That's the point. Basically the game length can be derieved from the data, but then we don't know why the command string of an ant ends with the game. Did it survive? Did it die?
+2011-03-13T12:08:53  <Frontier> There is also food which can 'survive' the game and I have to process that again after the game duration is known. It works, but it could be simpler :)
+2011-03-13T12:11:44  <McLeopold> the 'end' turn should be defined up front, so you know
+2011-03-13T12:13:51  <Frontier> Yep, you are right.
+2011-03-13T12:19:39  <McLeopold> antimatroid: we just switched to daylight savings time here, so you'll need up update your world clocks...
+2011-03-13T12:22:55  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-03-13T12:46:19  <Frontier> Maybe they auto-adjust. Mine says 9:44 now
+2011-03-13T12:55:51  *** kaemo <kaemo!~mad5ci@aeij192.neoplus.adsl.tpnet.pl> has quit IRC (Ping timeout: 255 seconds)
+2011-03-13T13:07:52  *** kaemo <kaemo!~mad5ci@dhf52.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-13T13:13:04  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-13T13:13:27  *** UncleVasya <UncleVasya!kvirc@46.133.2.41> has joined #aichallenge
+2011-03-13T13:34:02  <bss03> @later tell jmcarthur I know you are busy with interview, so I don't mind the long delays.
+2011-03-13T13:34:02  <contestbot> bss03: I think that worked...
+2011-03-13T13:36:35  <bss03> @later tell jmcarthur I actually think I have some example code for you to add, as a darcs patch.  It took longer than it should have, but I worked through the library and wrote some documentation and an example Ant.
+2011-03-13T13:36:35  <contestbot> bss03: Aye, aye, sir
+2011-03-13T13:42:04  <bss03> jmcarthur: I do wish you had stuck with packages that are in haskell-platform on Maverick, but that's a me issue.  I think it will be simple enough to use as a starter kit.
+2011-03-13T14:08:15  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-13T14:20:14  <Naktibalda> what's a point of squared radius?
+2011-03-13T14:21:06  *** Frontier <Frontier!~marco@dslb-088-071-179-227.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-13T14:38:43  <bss03> Naktibalda: I think they are using foo-squared values to try and avoid floating-point rounding issues or somesuch.
+2011-03-13T14:41:29  <Naktibalda> nobody calculates area of circle so it's kind of useless
+2011-03-13T14:52:52  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Ping timeout: 255 seconds)
+2011-03-13T15:31:41  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-13T15:33:06  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-13T15:42:25  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-13T15:47:01  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-13T15:47:01  *** ChanServ sets mode: +o amstan
+2011-03-13T15:52:24  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-13T16:25:43  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-13T16:34:28  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-13T16:35:51  <antimatroid> Naktibalda: the radises are given squared so that all parameters are integers
+2011-03-13T16:36:26  <antimatroid> you can actually use the distance metric squared in your program if you want and not do any sqrt calculations ever, but i think it'd more intuitive to define stuff with the wrapped euclidean metric
+2011-03-13T16:37:20  <antimatroid> i'll be switching my distance metric in my actual bot
+2011-03-13T16:37:44  <antimatroid> you'll strictly have integer distances and much quicker calculations
+2011-03-13T16:43:39  *** choas <choas!~lars@p578F67C2.dip.t-dialin.net> has joined #aichallenge
+2011-03-13T16:54:51  *** UncleVasya <UncleVasya!kvirc@46.133.2.41> has quit IRC (Ping timeout: 260 seconds)
+2011-03-13T17:05:14  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-ebpbtyxpfqmiuaeu> has joined #aichallenge
+2011-03-13T17:09:46  *** antimatroid <antimatroid!~Nick@63.199.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T17:14:02  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-13T17:15:29  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-13T17:17:28  *** antimatroid <antimatroid!~Nick@63.199.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T17:17:29  *** antimatroid <antimatroid!~Nick@63.199.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T17:20:01  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-13T17:32:11  *** antimatroid <antimatroid!~Nick@63.199.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T17:33:45  *** antimatroid1 <antimatroid1!~Nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T17:34:13  <antimatroid1> fuuu ubuntu
+2011-03-13T17:34:22  <antimatroid1> i downloaded it and it wont install
+2011-03-13T17:36:20  *** antimatroid <antimatroid!~Nick@63.199.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-03-13T17:38:33  *** antimatroid1 <antimatroid1!~Nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-03-13T17:38:49  *** closedbracket <closedbracket!~closedbra@conference/pycon/x-ebpbtyxpfqmiuaeu> has quit IRC (Remote host closed the connection)
+2011-03-13T17:39:28  *** amstan <amstan!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has joined #aichallenge
+2011-03-13T17:39:28  *** ChanServ sets mode: +o amstan
+2011-03-13T17:52:50  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-13T17:54:03  *** closedbracket <closedbracket!~closedbra@southeast-invest.oneringnetworks.net> has joined #aichallenge
+2011-03-13T17:56:49  *** delt0r_ <delt0r_!~delt0r@188-22-168-86.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-13T17:58:06  *** delt0r___ <delt0r___!~delt0r@188-22-174-76.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-03-13T17:58:20  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-13T18:06:22  <bss03> @later tell jmcarthur Your ants-bot library doesn't seem to build under GHC 6.12.1, which is what is going to be on the workers.  The Monad instance for Etiher [Char] moved around.
+2011-03-13T18:06:23  <contestbot> bss03: Yep.
+2011-03-13T18:08:36  <jmcarthur> bss03: hey
+2011-03-13T18:08:44  <jmcarthur> i don't remember even using that instance...
+2011-03-13T18:09:32  <jmcarthur> last i checked it built with ghc 6.12.3, but i changed a few things since that
+2011-03-13T18:09:40  <jmcarthur> and yeah, i need to check with 6.12.1
+2011-03-13T18:10:07  <bss03> jmcarthur: maybe I have old version or something.  I thought I cloned last night.
+2011-03-13T18:10:15  <bss03> s/cloned/getted/
+2011-03-13T18:10:28  <jmcarthur> well, i haven't really pushed anything since i linked it to you i think
+2011-03-13T18:10:47  <bss03> GHC 6.12.1 claims you use it for calling mapM on line 109 of Internal.hs
+2011-03-13T18:10:48  <jmcarthur> what module/line is it complaining about?
+2011-03-13T18:10:54  * jmcarthur checks
+2011-03-13T18:11:17  <bss03> Defintiely using do notation on a function that returns Either String Parameters.
+2011-03-13T18:11:24  <jmcarthur> ah yeah
+2011-03-13T18:11:29  <jmcarthur> i forgot i did that
+2011-03-13T18:11:41  <jmcarthur> alright, that'll be something to change when i get the chance
+2011-03-13T18:12:02  * jmcarthur makes a note to install 6.12.1 for testing
+2011-03-13T18:12:14  <bss03> I'll probably mail you a patch bundle this evening.
+2011-03-13T18:12:18  <jmcarthur> sweet
+2011-03-13T18:12:39  <bss03> I intend to get a compile working on Squeeze that includes an example of how to use the library.
+2011-03-13T18:12:55  <jmcarthur> i really should have given you my example
+2011-03-13T18:13:33  <jmcarthur> it wasn't anything amazing, but it would have gotten you up to speed more quickly
+2011-03-13T18:13:43  <jmcarthur> sorry about that
+2011-03-13T18:14:24  <jmcarthur> my basic plan is for people to compose a few run* functions depending on what features they need (and the starter could just have all of them by default so people don't need to worry about it)
+2011-03-13T18:15:43  <jmcarthur> it may seem overkill to break it up like this, but i was finding the all-in-one version much more difficult to change and maintain
+2011-03-13T18:17:00  <jmcarthur> the fact that you can pick and choose the parts you need is just a side effect of me fixing my bigger problem. i'm even considering just stacking all these transformers in the library and only exposing one monad in the first place
+2011-03-13T18:17:33  <jmcarthur> which would have an interface closer to what i had before
+2011-03-13T18:17:56  <jmcarthur> (which was a bit simpler)
+2011-03-13T18:18:54  *** closedbracket <closedbracket!~closedbra@southeast-invest.oneringnetworks.net> has quit IRC (Remote host closed the connection)
+2011-03-13T18:19:04  <bss03> Right.  My example does that first thing.  Makes a type alias for the TurnT WaterT AntsOutputT AntsInput stack.
+2011-03-13T18:19:37  <jmcarthur> yeah. that stack is awkward right now
+2011-03-13T18:19:59  <bss03> Then, I have the meat of the example, which basically just queries everything. and issues "go north" orders to every ant.
+2011-03-13T18:20:16  <bss03> (and Loops, with "advance >> exampleAnt")
+2011-03-13T18:20:19  <jmcarthur> i also don't like the noncommutativity of AntsOutputT and AntsInputT, but i don't know what to do about that
+2011-03-13T18:21:13  <jmcarthur> my example prefers north, then east, then south, then west, then no moving, for each ant, based on where water is
+2011-03-13T18:21:19  <bss03> Commutivity is a nice-to-have, as long as we have a stack order that works we can just document that.
+2011-03-13T18:21:25  <jmcarthur> basically like the starter should be
+2011-03-13T18:22:05  <jmcarthur> if i go through with collapsing it down to just one monad then commutativity isn't a big deal whatsoever
+2011-03-13T18:22:41  <bss03> I was a little surprised you didn't just have an AntsIO instead of that split.
+2011-03-13T18:23:01  <jmcarthur> i did at first
+2011-03-13T18:23:14  <jmcarthur> it was just hard to navigate the code, for me
+2011-03-13T18:23:26  <McLeopold> jmcarthur: my planetwars bot actually consisted of several bots chained together
+2011-03-13T18:23:28  <jmcarthur> i got tired of trying to hunt down various, vaguely-named functions
+2011-03-13T18:23:38  <jmcarthur> McLeopold: interesting!
+2011-03-13T18:23:52  <McLeopold> DefenseBot, AttackBot, FunnelBot and some others.
+2011-03-13T18:24:15  <McLeopold> with a little logic to choose priorities based on growth and ship difference with the enemy
+2011-03-13T18:24:16  <bss03> As long as you still export the Transformers and their associated type classes, it would probably be good for newbies if we used the Facade pattern.
+2011-03-13T18:24:48  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T18:24:50  <bss03> Where there's a "standard" Ants monad, and they just work inside that.
+2011-03-13T18:24:55  <McLeopold> I would love to rewrite it in haskell someday
+2011-03-13T18:25:08  <antimatroid> ergh, ubuntu </3
+2011-03-13T18:25:20  <McLeopold> My performance issues boiled down to me not knowing how to make my calculations lazy
+2011-03-13T18:25:25  <bss03> McLeopold: My bot was something like that, but written in Haskell.
+2011-03-13T18:25:39  <jmcarthur> McLeopold: ah yeah, haskell would have made that the default :)
+2011-03-13T18:26:04  <antimatroid> will ubuntu install on an ntfs formatted hdd?
+2011-03-13T18:26:08  <jmcarthur> bss03: yes, i think that's where i'm leaning
+2011-03-13T18:26:21  <McLeopold> antimatroid: did you ever find out how to make python lists behave as queues?
+2011-03-13T18:26:23  <bss03> Well, I didn't have MTL for PW, so I evnded up hacking to gether partial implementations of State etc.
+2011-03-13T18:26:34  <antimatroid> McLeopold: you have to use deques
+2011-03-13T18:26:39  <McLeopold> you don't
+2011-03-13T18:26:47  <jmcarthur> antimatroid: ?
+2011-03-13T18:26:48  <antimatroid> how do you use a list like a queue?
+2011-03-13T18:26:48  <McLeopold> list.pop() and list.pop(0)
+2011-03-13T18:27:00  <antimatroid> that'll do it
+2011-03-13T18:27:12  <McLeopold> it's just faster with deque
+2011-03-13T18:27:20  <antimatroid> oh, so that is horribly slow?
+2011-03-13T18:27:24  <bss03> My queues are always finger trees. :)
+2011-03-13T18:27:30  <bss03> Data.Sequence for the win.
+2011-03-13T18:27:33  <jmcarthur> finger trees are actually not very fast
+2011-03-13T18:27:37  <McLeopold> lists are single linked I think?
+2011-03-13T18:27:39  <antimatroid> queue<type> ftw
+2011-03-13T18:27:39  <jmcarthur> they just have really good complexity
+2011-03-13T18:27:43  <McLeopold> deque is double?
+2011-03-13T18:27:54  <jmcarthur> still, i <3 finger trees
+2011-03-13T18:27:56  <McLeopold> they are all just c implementations in the backend :)
+2011-03-13T18:28:00  <antimatroid> yeah dequeue is like a double ended vector in c++
+2011-03-13T18:28:12  <antimatroid> deque**
+2011-03-13T18:28:28  <jmcarthur> are python lists different from arrays?
+2011-03-13T18:28:40  <jmcarthur> i thought the default collection type was arrays
+2011-03-13T18:28:41  <antimatroid> i assume they're implemented as lists?
+2011-03-13T18:29:00  <antimatroid> i guess that wouldn't work real well for arbitrary indexing
+2011-03-13T18:29:01  <jmcarthur> with geometric expansion or somesuch
+2011-03-13T18:30:28  <bss03> jmcarthur: Is there a good way to drop the requirement that runTurnT needs a TurnT m *[Score]*?
+2011-03-13T18:31:30  <jmcarthur> bss03: the only way i can think of is to add a continuation parameter to it
+2011-03-13T18:32:03  <jmcarthur> which i didn't think was helpful anyway
+2011-03-13T18:32:03  <bss03> I'm betting either could be confusing to newbs.
+2011-03-13T18:32:17  <jmcarthur> the either function?
+2011-03-13T18:32:57  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-03-13T18:33:14  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T18:33:15  <jmcarthur> yeah the main reason i made TurnT was so that i could advance the state and handle loop abortion without the developer needing to think about it
+2011-03-13T18:33:23  <jmcarthur> or even really be aware of it
+2011-03-13T18:33:46  <jmcarthur> it would be nice if runTurnT accepted a polymorphic return type
+2011-03-13T18:33:54  <antimatroid> is that the last turn?
+2011-03-13T18:34:11  <jmcarthur> but it would have to be like...  runTurnT :: (forall a. TurnT m a) -> m [Score]
+2011-03-13T18:34:13  <antimatroid> i still think it'd be nice if end just replaced go to indicate the end of the game
+2011-03-13T18:34:17  <jmcarthur> which might be even worse for beginners
+2011-03-13T18:34:45  <jmcarthur> and i'm also not sure if i can get that to work
+2011-03-13T18:35:31  <jmcarthur> antimatroid: "end" just replaces "turn <n>"
+2011-03-13T18:35:46  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2011-03-13T18:36:20  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-13T18:36:30  <antimatroid> amstan: wake up jeff :P
+2011-03-13T18:36:34  <antimatroid> ahh, wiggles
+2011-03-13T18:36:47  <amstan> antimatroid: why?
+2011-03-13T18:37:10  <antimatroid> i want to swap to battle option 1 already
+2011-03-13T18:43:03  <bss03> Not the either function.  I think the either having the return type forced to something that "doesn't make sense" or having to pass a continuation could be confusing.
+2011-03-13T18:43:57  <bss03> I'm trying to hide the [Score] type in my example.
+2011-03-13T18:45:07  <bss03> jmcarthur: Also, not that I can think of a reason for it, but is there a way to access the final TurnInfo?  The one that comes after the [Score] in the input format?
+2011-03-13T18:55:54  *** kaemo <kaemo!~mad5ci@dhf52.neoplus.adsl.tpnet.pl> has quit IRC (Quit: *puff*)
+2011-03-13T18:58:10  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T19:02:42  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-13T19:03:38  *** choas <choas!~lars@p578F67C2.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-13T19:16:01  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T19:16:29  <antimatroid> huzzah, ubuntu is installed, now i just need to find a driver for my wireless card that'll work
+2011-03-13T19:26:47  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T19:27:24  <jmcarthur> bss03: i was planning to add that to the return type
+2011-03-13T19:27:35  <jmcarthur> bss03: for whatever reason, i just did [Score] to begin with
+2011-03-13T19:30:59  <bss03> jmcarthur: Kk.
+2011-03-13T19:49:37  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T19:51:04  *** antimatroid1 <antimatroid1!~Nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T19:51:26  *** antimatroid1 <antimatroid1!~Nick@251.197.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T19:54:22  *** antimatroid <antimatroid!~Nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-03-13T20:04:51  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T20:09:54  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-03-13T20:23:28  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T20:23:35  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T20:25:25  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T20:28:20  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T20:35:19  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T20:37:25  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Client Quit)
+2011-03-13T20:47:07  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T20:49:19  *** amstan <amstan!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has quit IRC (Ping timeout: 255 seconds)
+2011-03-13T20:49:35  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T20:52:21  <antimatroid> mission accomplished
+2011-03-13T20:52:29  * antimatroid is now on ubuntu
+2011-03-13T20:53:42  <_flag> welcome to linux :P
+2011-03-13T20:53:45  <jmcarthur> yay!
+2011-03-13T20:55:20  <McLeopold> next stop, gentoo
+2011-03-13T20:56:21  <_flag> s/gentoo/arch
+2011-03-13T20:57:46  <antimatroid> first things first
+2011-03-13T20:58:05  <antimatroid> bleh, frontier isn't here
+2011-03-13T20:58:10  <antimatroid> i need my greek alphabet now
+2011-03-13T21:13:36  *** amstan <amstan!~alex@174-138-221-195.cpe.distributel.net> has joined #aichallenge
+2011-03-13T21:13:36  *** ChanServ sets mode: +o amstan
+2011-03-13T21:17:15  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.15/20110303170601])
+2011-03-13T21:23:42  *** closedbracket <closedbracket!~closedbra@63.133.138.10> has joined #aichallenge
+2011-03-13T21:29:42  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-03-13T21:34:08  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T21:37:54  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has quit IRC (Client Quit)
+2011-03-13T21:39:20  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T21:42:22  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-13T21:43:21  <bss03> @tell jmcarthur I didn't get time to break apart my changes into reasonable patches, so I'm shelving it for the night.  Maybe tomorrow.
+2011-03-13T21:43:41  <bss03> @later tell jmcarthur I didn't get time to break apart my changes into reasonable patches, so I'm shelving it for the night.  Maybe tomorrow.
+2011-03-13T21:43:41  <contestbot> bss03: Yep.
+2011-03-13T21:46:50  *** closedbracket <closedbracket!~closedbra@63.133.138.10> has quit IRC (Read error: Connection reset by peer)
+2011-03-13T21:46:56  *** closedbracket <closedbracket!~closedbra@63.133.138.10> has joined #aichallenge
+2011-03-13T21:47:31  *** antimatroid <antimatroid!~nick@251.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-13T21:49:57  <antimatroid> would it be a really bad idea to set the resolution on an lcd tv to 1920x1080?
+2011-03-13T21:54:01  *** closedbracket <closedbracket!~closedbra@63.133.138.10> has quit IRC (Ping timeout: 276 seconds)
+2011-03-13T21:55:32  <jbroman> antimatroid: Certainly not for a 1080p TV. Why would it be?
+2011-03-13T22:03:05  <antimatroid> dw, it does what i needed anyway
+2011-03-13T23:22:18  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-220-122.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-03-13T23:27:41  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-13T23:28:59  <McLeopold> antimatroid: I've got an idea for food spawning
+2011-03-13T23:29:19  <antimatroid> shoot
+2011-03-13T23:29:41  <McLeopold> idea 1) If we know exactly how a map is symmetric, we can spawn symmetric
+2011-03-13T23:30:15  <McLeopold> idea 2) further divide the map into sections based on overlapping voronoi
+2011-03-13T23:30:45  <antimatroid> sigh has already done a basic symmetric spawning method
+2011-03-13T23:30:51  <antimatroid> but there are still issues
+2011-03-13T23:31:06  <McLeopold> what are they?
+2011-03-13T23:31:29  <antimatroid> you are picking n squares to fill with food, what do you do if some of those squares contain ( i) a food square) (ii) a food square
+2011-03-13T23:31:44  <antimatroid> ergh, (ii) an ant
+2011-03-13T23:31:59  <McLeopold> spiral outward looking for the next best spot
+2011-03-13T23:32:14  <antimatroid> how do you fairly pick which direction to spiral from?
+2011-03-13T23:32:19  <sigh> yeah, that's what antimatroid had an issue with
+2011-03-13T23:32:29  <sigh> he only wants to place the food if ALL locations are free
+2011-03-13T23:32:32  <antimatroid> it's the same issue we had with a battle resolution method is it not?
+2011-03-13T23:32:56  <McLeopold> it doesn't sound like it is
+2011-03-13T23:33:11  <antimatroid> we didn't want 1:1 because then who do you kill with a.b.a
+2011-03-13T23:33:28  <antimatroid> here you have .a.b and you want to place food where a is, where do you place it?
+2011-03-13T23:33:32  <antimatroid> isn't that similar?
+2011-03-13T23:33:58  <McLeopold> I see your point, but not that similar
+2011-03-13T23:34:09  <antimatroid> i'm not saying don't do that, just pointing that issue out
+2011-03-13T23:34:40  <antimatroid> my current opinion might be something like fill in food twice (because you should have been faster to get it) then maybe move on to other squares if an ant blocks one?
+2011-03-13T23:35:09  <antimatroid> but i'm very iffy on all of that, i just want to make sure people actually consider the (dis)advantages to each way it could be done
+2011-03-13T23:35:15  <_flag> Why not pick a random offset each turn and spawn food at the starting position of each player plus that offset?
+2011-03-13T23:35:30  <McLeopold> _flag: excellent idea
+2011-03-13T23:35:33  <McLeopold> but...
+2011-03-13T23:35:39  <antimatroid> _flag: that'd be good for asymmetric spawning
+2011-03-13T23:35:53  <McLeopold> we are discussing what happens when the offset for each player has something different
+2011-03-13T23:36:08  <McLeopold> like food, and, land
+2011-03-13T23:36:12  <McLeopold> *ant(
+2011-03-13T23:36:23  <_flag> So for asymmertic maps, or they have something different on that square?
+2011-03-13T23:36:37  <janzert> note that simply skipping a spot if an ant is in it is yet another slight incentive to spread out more
+2011-03-13T23:36:44  <McLeopold> let's keep our discussion to symmetric right now
+2011-03-13T23:36:54  <antimatroid> you don't need to do it like that either, if you have rtrans and ctrans, you can just pick a non-water square and find all n "symmetrical" locations by repeatedly translating
+2011-03-13T23:37:23  <janzert> not that it's a bad thing in itself
+2011-03-13T23:37:45  <antimatroid> the maps are constructed so that for any location L, L + nT = L
+2011-03-13T23:38:03  <McLeopold> what does "fill in food twice" mean?
+2011-03-13T23:38:29  <antimatroid> like say one of the squares to be made food was already food, leave it as food (or we could mark is as needing food the next time its free?
+2011-03-13T23:38:39  <antimatroid> i hadn't considered that last idea yet
+2011-03-13T23:38:50  <_flag> How about just try a different square?
+2011-03-13T23:39:01  <antimatroid> same could be done if an ant's there, just have a "grid" of numbers of food squares waiting to spawn
+2011-03-13T23:39:13  <McLeopold> okay, let's go with my other idea, of the dividing the map into more sections
+2011-03-13T23:39:15  <antimatroid> i quite like that
+2011-03-13T23:39:24  <sigh> more sections
+2011-03-13T23:39:25  <sigh> ?
+2011-03-13T23:39:49  <McLeopold> yeah, so back to my fair but random number generator
+2011-03-13T23:40:04  <antimatroid> sigh: you've probably thought most about this other than i, what do you think about waiting to spawn food (up to many food squares) if it's blocked?
+2011-03-13T23:40:57  <sigh> I don't know... your proposed method is expensive computationally
+2011-03-13T23:41:00  <McLeopold> I think waiting is bad
+2011-03-13T23:41:04  <sigh> if I understand it right
+2011-03-13T23:41:23  <sigh> oh waiting instead of retrying, that could starve the game
+2011-03-13T23:41:25  <antimatroid> i don't think so
+2011-03-13T23:41:44  <antimatroid> yeah, that could be an issue, but i don't think it'd starve it much?
+2011-03-13T23:42:09  <antimatroid> unless we're planning to flood the maps
+2011-03-13T23:42:15  <antimatroid> which would suck
+2011-03-13T23:42:31  <McLeopold> so, let's say each of 4 bots has about the same amount of land, all with lots of ants.  If each territory spawned 1 food, even if it wasn't symmetric, that would still be fair.
+2011-03-13T23:43:03  <sigh> that's what do_food_sections does now?
+2011-03-13T23:43:03  <antimatroid> i'm looking for something that is at least very much almost symmetric
+2011-03-13T23:43:16  <McLeopold> that's why I think dividing the map into many sections, even layers of sections will work.
+2011-03-13T23:43:18  <antimatroid> something like that i would be planning to do for asymmetric maps anyway
+2011-03-13T23:43:38  <antimatroid> by symmetric i mean each player should have exactly the same outlook
+2011-03-13T23:43:39  <McLeopold> if you get a block, then just pick another spot in the same section
+2011-03-13T23:43:48  <antimatroid> if you play n bots all doing the same actions, it should result in a draw
+2011-03-13T23:44:27  <antimatroid> that is my definition for a symmetric game
+2011-03-13T23:45:05  <McLeopold> so, with a voronoi diagram, you will find points where 3 or more territories meet.  Just add those points as starting positions, then recalc a new diagram.
+2011-03-13T23:45:32  <antimatroid> i can play around with that
+2011-03-13T23:45:54  <_flag> What's the problem with just retrying in case of a collision?
+2011-03-13T23:45:56  <sigh> McLeopold: my only worry is that is starting to get a bit complicated
+2011-03-13T23:46:00  *** readncode <readncode!~closedbra@63.133.138.10> has joined #aichallenge
+2011-03-13T23:46:12  <antimatroid> can i propose something that does give full symmetry for testing symmetry, and do this other method for testing asymmetry, then if asymmetry spawning works better and we go with symmetric maps that can easily be used anyway?
+2011-03-13T23:46:19  <McLeopold> sigh: at the beginning, yes, startup will take a little to process
+2011-03-13T23:46:24  <antimatroid> sigh: the engine code can be as complicated as necessary
+2011-03-13T23:46:58  <antimatroid> i would like to be able to at least test with full symmetry locally
+2011-03-13T23:47:00  <McLeopold> so, the goal is to uniformly, but randomly fill the whole map every so often
+2011-03-13T23:47:34  <antimatroid> i don't think you want to fill the whole map, one of the biggest complaints of my ants game was there were too many ants
+2011-03-13T23:47:47  <antimatroid> and i agreed
+2011-03-13T23:47:56  <antimatroid> i only had that many so i could see all the different things happen in a game
+2011-03-13T23:48:23  <McLeopold> so, each bot section (what we are calculating now) can be subdivided into further sections.  So pick a sub-section to spawn in, the attempt to pick any free spot in that subsection.
+2011-03-13T23:48:48  <sigh> i see
+2011-03-13T23:48:56  <McLeopold> and we can do sub-sub-sections as well
+2011-03-13T23:48:57  <antimatroid> that's asymmetric yeah?
+2011-03-13T23:49:02  <McLeopold> should be
+2011-03-13T23:49:34  <McLeopold> if you had a random section shape, can you divide it into X section of the same size easily?
+2011-03-13T23:50:39  <McLeopold> antimatroid: by uniformly and randomly, I'm only thinking something like 1% of the land
+2011-03-13T23:51:18  *** readncode <readncode!~closedbra@63.133.138.10> has quit IRC (Remote host closed the connection)
+2011-03-13T23:51:29  <McLeopold> basically, the .a.b situation is ignored and anything can happen
+2011-03-13T23:51:42  <McLeopold> so, at the micro level, it would be unfair
+2011-03-13T23:52:25  <antimatroid> sigh: with that method i proposed, you could store a queue of locations that are waiting to have food spawned, then go through and spawn there each turn, not adding the location back onto the queue if it no longer needs food, and adding locations as conflicts happen, so it'd be reasonably efficient
+2011-03-13T23:52:28  <McLeopold> The other thing we could do is create some special spawning rules that affect game play, like food doesn't spawn within X of an ant.
+2011-03-13T23:53:01  <antimatroid> you could do that, but that's just my method with x > 0
+2011-03-13T23:53:07  <antimatroid> and < 1
+2011-03-13T23:53:07  <McLeopold> antimatroid: if you did the queues, I would then say each attempt to spawn new stuff should avoid the spots that are queued up.
+2011-03-13T23:53:39  <antimatroid> McLeopold: maybe not repeat a land placement square in the last x turns?
+2011-03-13T23:53:40  <McLeopold> your right, it is your method :)
+2011-03-13T23:53:49  <antimatroid> i don't think it would be a very big problem
+2011-03-13T23:53:53  <McLeopold> yeah, we should be doing that anyway
+2011-03-13T23:54:11  <McLeopold> every land space should be attempted before a single repeat
+2011-03-13T23:54:43  <antimatroid> i think that still has issues skipping locations like that
+2011-03-13T23:54:57  <antimatroid> but i'd be very happy with something like that with symmetric maps for the moment
+2011-03-13T23:54:59  <sigh> McLeopold: why is that important?
+2011-03-13T23:55:03  <McLeopold> in fact, you could generate an entire maps food spawn schedule up front, and just rotate through it
+2011-03-13T23:55:04  <antimatroid> but i'm off to the shop to get food, bbs
+2011-03-13T23:55:43  <McLeopold> sigh: we don't really want to be random, we want to be fair
+2011-03-13T23:56:06  <sigh> but how is covering all land more fair?
+2011-03-13T23:56:10  <McLeopold> we want each land space to have a 1/total land chance of spawning food
+2011-03-13T23:56:28  <McLeopold> and we should attempt to enforce that more than just a random number
+2011-03-13T23:56:39  <McLeopold> so that spots will be "due" for food
+2011-03-13T23:56:44  <sigh> but how does that equate to fairness, fairness comes about from being symmetrical no?
+2011-03-13T23:57:22  <McLeopold> that's one part of it, but when the bots have different territories and some are eliminated, symmetric isn't fair anymore
+2011-03-13T23:57:26  *** amstan <amstan!~alex@174-138-221-195.cpe.distributel.net> has quit IRC (Read error: Operation timed out)
+2011-03-13T23:57:37  <sigh> yeah, that's true
+2011-03-13T23:57:41  <antimatroid> it's also a good test that everything is working if you can play n bots symmetrically and see a draw consistently
+2011-03-13T23:58:33  <McLeopold> what's fair is that if you can get to 40% of the map first, you should see a growth rate that is 40% of the total
+2011-03-13T23:59:07  <McLeopold> what if we didn't spawn food?
+2011-03-13T23:59:10  <antimatroid> actually, i like your picking out a random listing of squares
+2011-03-13T23:59:21  <_flag> How is symmetric not fair if bots are eliminated, if a bot takes over another bot's territory it should be to their benifit, no?
+2011-03-13T23:59:22  <antimatroid> because it really is a game of maintaining territory yeah?
+2011-03-13T23:59:25  <antimatroid> and that enforces that better
+2011-03-13T23:59:56  <McLeopold> _flag: if they get just one part of someone else

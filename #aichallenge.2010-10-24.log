@@ -1,0 +1,1066 @@
+2010-10-24T00:02:15  *** wh1teside <wh1teside!~admin@adsl-75-49-222-56.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T00:03:16  <jkl__> DB cursors aren't being closed in tournament manager
+2010-10-24T00:04:38  <jkl__> Also everything about a game should be uploaded in a single transaction
+2010-10-24T00:04:40  <janzert> doesn't MySQLdb close them when they get gc'd though?
+2010-10-24T00:05:00  *** McLeopold <McLeopold!~scott@c-76-121-152-123.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving)
+2010-10-24T00:05:20  <janzert> that would be good
+2010-10-24T00:05:28  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Read error: Connection reset by peer)
+2010-10-24T00:06:10  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-24T00:06:11  <jkl__> I can't decide whether I should stop and fix, or just go ahead with the error reporting
+2010-10-24T00:06:24  <janzert> it gets hard doesn't it
+2010-10-24T00:07:25  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2010-10-24T00:07:59  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Quit: Page closed)
+2010-10-24T00:08:34  <amstan> janzert: i never had to close them..
+2010-10-24T00:09:15  <janzert> yeah, I think it's not a real problem as long as the cursor isn't hanging around for a long time
+2010-10-24T00:09:23  <janzert> which it won't in this case
+2010-10-24T00:11:30  <contestbot> Top 10 players: bocsimacko(3962), Hazard(3941), felixcoto(3934), rsergio(3918), cfaftw(3868), davidjliu(3863), dmj111(3794), sin_sun(3779), jambachili(3763), ruilov(3727)
+2010-10-24T00:12:15  <jkl__> http://mysql-python.sourceforge.net/MySQLdb.html
+2010-10-24T00:12:30  <jkl__> If you are using server-side cursors, it is very important to close the cursor when you are done with it and before creating a new one.
+2010-10-24T00:12:55  <jkl__> You might get away with waiting for GC, and you might not.
+2010-10-24T00:13:06  <amstan> there's a lot of things that the mysqldb implementation skips over
+2010-10-24T00:13:10  <amstan> such as the commits
+2010-10-24T00:13:12  <amstan> and cursors
+2010-10-24T00:20:27  *** yasith <yasith!~yasith@112.135.76.103> has joined #aichallenge
+2010-10-24T00:37:43  *** Utkarsh <Utkarsh!~admin@117.201.88.232> has quit IRC (Ping timeout: 255 seconds)
+2010-10-24T00:38:25  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2010-10-24T00:39:52  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2010-10-24T00:40:56  *** tapwater_ <tapwater_!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has joined #aichallenge
+2010-10-24T00:41:37  <Mathnerd314> I realized: on the last turn, you should always do nothing!
+2010-10-24T00:43:38  *** tapwater <tapwater!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has quit IRC (Ping timeout: 250 seconds)
+2010-10-24T00:43:39  *** tapwater_ is now known as tapwater
+2010-10-24T00:44:05  <janzert> which means logically of course you should also do nothing on the turn previous to that... :P
+2010-10-24T00:44:11  *** Utkarsh <Utkarsh!~admin@117.201.86.127> has joined #aichallenge
+2010-10-24T00:44:22  <Mathnerd314> indeed.
+2010-10-24T00:44:25  *** hellman_ <hellman_!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-24T00:44:33  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Ping timeout: 252 seconds)
+2010-10-24T00:44:40  <Mathnerd314> so there are really only 198 turns of the game!
+2010-10-24T00:45:00  <janzert> well and since we know the last two turns should do nothing we can keep backing it up
+2010-10-24T00:46:06  <Mathnerd314> no... because you can take a planet with 0 population, losing growth ships, and gain 2*growth back
+2010-10-24T00:46:46  <Mathnerd314> so I'll have to revise: on turn 199, you can take neutral planets distance 1 away with population less than their growth
+2010-10-24T00:46:48  <antimatroid> well actually, you can check whether a move will payoff in time
+2010-10-24T00:46:51  <antimatroid> and it's not constant
+2010-10-24T00:47:09  <janzert> sorry if I wasn't obvious I was just trying to extend it 'logically' to absurdity
+2010-10-24T00:47:17  <janzert> but yes your point seems correct
+2010-10-24T00:47:46  <Mathnerd314> janzert: obviously, and whenever I notice that, I always take it literally :p
+2010-10-24T00:48:14  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-10-24T00:49:32  <Mathnerd314> so, on turn 198, what are the possible moves?
+2010-10-24T00:49:52  <Mathnerd314> distance 2 planets or farther are pointless, as before
+2010-10-24T00:49:59  <amstan> anyone here worked with the cpython api? do you know how to use PyFile_FromFile?
+2010-10-24T00:50:55  <janzert> only minimally with the api and it's been a few years and I don't recall that part no :/
+2010-10-24T00:51:31  <amstan> i can't figure out what the other parameters are used for
+2010-10-24T00:51:53  <amstan> i have the FILE* variable, but idk about others
+2010-10-24T00:52:08  <amstan> i set them to something kinda descriptive for now, but i can't figure out what the last one does
+2010-10-24T00:52:12  <amstan> docs seem limited
+2010-10-24T00:52:46  <janzert> yeah, I quickly found going to the source code itself was about the only way to actually work with the api
+2010-10-24T00:53:00  <janzert> not sure how much the docs have improved since then
+2010-10-24T00:53:01  <amstan> janzert: what source code?
+2010-10-24T00:53:07  <janzert> cpython source
+2010-10-24T00:53:22  <amstan> the only thing about that function in the docs is: Create a new PyFileObject from the already-open standard C file pointer, fp. The function close will be called when the file should be closed. Return NULL on failure.
+2010-10-24T00:53:34  <amstan> prototype: PyObject* PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE*))
+2010-10-24T00:53:46  <amstan> what does int (*close)(FILE*) do??
+2010-10-24T00:53:47  <amstan> lol
+2010-10-24T00:54:12  <janzert> :) looks like it's a function pointer to a function that is suppose to close the file
+2010-10-24T00:54:27  <amstan> hmm
+2010-10-24T00:55:13  <janzert> in other words a callback function
+2010-10-24T00:55:45  <amstan> janzert: can i make it do nothing?
+2010-10-24T00:55:55  <amstan> is it a good idea to put a NULL there?
+2010-10-24T00:56:04  <janzert> sure but you may leak your file descriptor then
+2010-10-24T00:56:16  <janzert> at least that's what I would guess
+2010-10-24T00:56:23  <amstan> that's fine, i'm just trying to tap into it, i'm not managing it
+2010-10-24T00:56:27  <janzert> not sure if it would handle NULL correctly or not
+2010-10-24T00:56:38  <janzert> go look at the source :)
+2010-10-24T00:57:00  <amstan> well.. what happens if you call a function pointed at NULL?
+2010-10-24T00:57:07  <janzert> segfault
+2010-10-24T00:57:26  <jkl__> You now have two _totally untested_ patches for 199.  I resisted the urge to rewrite the DB code, so I just added another statement to insert the errors.
+2010-10-24T00:57:38  <janzert> :P ok
+2010-10-24T00:58:08  <amstan> janzert: sigh.. if i put NULL it'll segfault, if python decides to close it for whatever reason and i try to write to it, segfault, give me a break, lol
+2010-10-24T00:58:10  <janzert> I gotta take a break here as soon as I get this fix I'm working on commited
+2010-10-24T00:58:30  <janzert> but then I'll try and take a look at it jkl__
+2010-10-24T00:58:50  <Mathnerd314> hmm... I'm skipping over stuff. turn 199 is more complicated than just neutrals.
+2010-10-24T00:59:09  <janzert> amstan: :}
+2010-10-24T00:59:19  <jkl__> All I did was port error handling from the cloud engine and port the SQL from api_record_game.php
+2010-10-24T00:59:40  <janzert> python might check for null and not try to call it of course, but the source is about the only way to check that out
+2010-10-24T01:00:27  <amstan> oh well
+2010-10-24T01:00:35  <amstan> if i get segfaults, i'll know why.. lol
+2010-10-24T01:00:37  <jkl__> I emphasize the patches are untested.  Since I cannot meaningfully test them I kept them to the absolute minimum required to fix 199.
+2010-10-24T01:01:18  <janzert> yep, I'll test them locally here
+2010-10-24T01:05:07  *** jkl__ <jkl__!43aa4da1@gateway/web/freenode/ip.67.170.77.161> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T01:08:11  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2010-10-24T01:11:26  *** delt0r___ <delt0r___!~delt0r@188-22-162-95.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-24T01:11:30  <contestbot> Top 10 players: bocsimacko(3941), Hazard(3920), felixcoto(3913), rsergio(3896), cfaftw(3847), davidjliu(3841), dmj111(3773), sin_sun(3753), jambachili(3743), ruilov(3707)
+2010-10-24T01:12:40  *** delt0r <delt0r!~delt0r@188-22-169-46.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2010-10-24T01:20:50  *** hornairs <hornairs!~hornairs@dsl-67-55-16-144.acanac.net> has quit IRC (Remote host closed the connection)
+2010-10-24T01:27:36  *** uriel <uriel!~uriel@li43-28.members.linode.com> has joined #aichallenge
+2010-10-24T01:30:06  *** uriel <uriel!~uriel@li43-28.members.linode.com> has left #aichallenge
+2010-10-24T01:38:10  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2010-10-24T01:40:30  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-24T01:40:57  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Client Quit)
+2010-10-24T01:41:54  *** hellman_ <hellman_!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T01:43:24  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has joined #aichallenge
+2010-10-24T01:47:28  *** edcba <edcba!~edcba@82.67.199.204> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T01:52:07  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-24T01:57:13  *** edcba <edcba!~edcba@82.67.199.204> has joined #aichallenge
+2010-10-24T02:07:36  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2010-10-24T02:11:31  <contestbot> Top 10 players: bocsimacko(3947), Hazard(3925), felixcoto(3920), rsergio(3903), cfaftw(3863), davidjliu(3848), dmj111(3789), sin_sun(3772), jambachili(3748), sequoh(3711)
+2010-10-24T02:19:17  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has quit IRC (Remote host closed the connection)
+2010-10-24T02:20:52  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.182.29> has joined #aichallenge
+2010-10-24T02:21:32  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.8/20100722155716])
+2010-10-24T02:23:32  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2010-10-24T02:28:10  *** iNtERrUp_ <iNtERrUp_!~interrupt@61.43.139.4> has joined #aichallenge
+2010-10-24T02:28:18  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T02:29:05  *** Tobu <Tobu!~Tobu@unaffiliated/tobu> has quit IRC (Ping timeout: 252 seconds)
+2010-10-24T02:29:18  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.182.29> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T02:32:27  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-24T02:32:53  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has quit IRC (Client Quit)
+2010-10-24T02:40:16  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T02:45:25  *** amriedle <amriedle!~amriedle@CPE0013f7f2be12-CM0013f7f2be0e.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2010-10-24T02:56:15  *** Zalma <Zalma!50dd5eb7@gateway/web/freenode/ip.80.221.94.183> has joined #aichallenge
+2010-10-24T02:58:04  <Zalma> Hi.. anyone here who could help a newbie a bit. I'm not really familiar with object-oriented programming...
+2010-10-24T02:59:33  <Zalma> for example in c++ starter package there is used p.NumShips()... is p integer what points what planet?
+2010-10-24T03:00:12  <amstan> Zalma: no, p is a planet object
+2010-10-24T03:00:31  <amstan> and numships is a function of that object
+2010-10-24T03:00:31  <Zalma> Mmm.. mkay
+2010-10-24T03:00:47  <Zalma> yea that is what I understood thou
+2010-10-24T03:01:02  <amstan> so.. if you have an integer, and you want the planet with that integer as the id..
+2010-10-24T03:01:04  <amstan> hmm
+2010-10-24T03:01:19  * amstan downloads the code
+2010-10-24T03:01:54  <Zalma> There should be starter packages for idiots :P
+2010-10-24T03:02:12  <Zalma> Thou one reason I decided to do this is to learn
+2010-10-24T03:02:34  <amstan> Zalma: well.. what are you trying to do?
+2010-10-24T03:03:02  <Zalma> Well for first I'm trying to understand how these objects work so I could make some calculations..
+2010-10-24T03:03:20  <amstan> so.. you have the Planet object
+2010-10-24T03:03:41  <Zalma> but lets say I would like to get fleet amount in planet 2 to variable b...
+2010-10-24T03:03:53  <amstan> so..
+2010-10-24T03:04:00  <amstan> what?
+2010-10-24T03:04:06  <raedwulf> meh, i need to get a piece of paper to scribble out my AI :/
+2010-10-24T03:04:06  <amstan> you want to know how many ships are on planet 2?
+2010-10-24T03:04:12  <Zalma> yes
+2010-10-24T03:05:07  <amstan> Zalma: define planet 2 though
+2010-10-24T03:05:14  <amstan> hold on
+2010-10-24T03:05:18  <amstan> let's just go to basics
+2010-10-24T03:05:22  <amstan> you have a planet object
+2010-10-24T03:05:29  <Zalma> I mean planet with ID 2
+2010-10-24T03:05:30  <amstan> let p be that object
+2010-10-24T03:05:35  <amstan> this represents just one planet
+2010-10-24T03:05:49  <amstan> you can do p.PlanetID() to get its ID
+2010-10-24T03:06:01  <amstan> p.Owner(), p.NumShips()
+2010-10-24T03:06:24  <amstan> once you have that p, you can find any piece of detail about it
+2010-10-24T03:06:28  <amstan> now.. you need p with the id 2
+2010-10-24T03:07:17  <Zalma> Mkay
+2010-10-24T03:07:45  <amstan> then you have this planetwars object
+2010-10-24T03:07:49  <amstan> you only have one of those..
+2010-10-24T03:07:59  <amstan> the instance is called pw
+2010-10-24T03:08:14  <amstan> so. pw.Planets() returns you a list of planets, a list of those planet objects
+2010-10-24T03:08:27  <amstan> you can iterate through them, check their id, check their size
+2010-10-24T03:08:28  <amstan> and all that
+2010-10-24T03:08:52  <amstan> Zalma: look at PlanetWars.h, it's the prototypes for all these objects and some extensive documentation
+2010-10-24T03:09:39  <Zalma> The thing is I'm trying to do planet maps  on my own without using much those objects at all. Getting all information I need for arrays and no need to call for functions
+2010-10-24T03:10:11  <amstan> Zalma: ideally you should use those objects
+2010-10-24T03:10:19  <amstan> Zalma: it's poor form to do your own thing..
+2010-10-24T03:10:31  <amstan> Zalma: if you really want, you could write your own IO library, in C
+2010-10-24T03:10:41  <amstan> Zalma: and have it manage the planets as you want
+2010-10-24T03:10:53  <Zalma> The thing I chose C++ is that you don't need to use objects :/
+2010-10-24T03:11:17  <amstan> c++ is object oriented..
+2010-10-24T03:11:28  <amstan> C is what you're looking for if you don't want objects
+2010-10-24T03:11:31  <contestbot> Top 10 players: bocsimacko(3949), felixcoto(3915), Hazard(3895), rsergio(3867), cfaftw(3835), davidjliu(3817), dmj111(3782), sin_sun(3761), jambachili(3742), ruilov(3730)
+2010-10-24T03:11:36  <amstan> however, i don't think we have a c starter package
+2010-10-24T03:11:37  <Zalma> well C++ is also functional language
+2010-10-24T03:11:50  <amstan> or any non object oriented starter package for that matter
+2010-10-24T03:12:04  <amstan> Zalma: yes, but the started package is very object oriented
+2010-10-24T03:12:13  <Zalma> Yea I know..
+2010-10-24T03:12:22  <Zannick> imperative, you mean, not functional
+2010-10-24T03:12:27  <Zannick> functional is a whole different class
+2010-10-24T03:13:18  <amstan> what's the worst that can happen if i have a open("/tmp/%s.ogz" % (name)), where name is an unsanitized string from the user?
+2010-10-24T03:13:53  <Zannick> um...
+2010-10-24T03:13:57  <Zalma> Problem is I have whole bunch of ideas what to program.. but no skill to implement them =(
+2010-10-24T03:14:05  *** tapwater <tapwater!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has quit IRC (Quit: tapwater)
+2010-10-24T03:14:16  <Zannick> i think it'll just fail on trying to open a ridiculous filename
+2010-10-24T03:14:37  <amstan> Zannick: you can have name=../etc/passwd
+2010-10-24T03:14:42  <amstan> but it'll still append .ogz
+2010-10-24T03:15:11  <janzert> you can include a null in your string
+2010-10-24T03:15:18  <Zannick> oh, i was thinking more if it could lead to arbitrary code
+2010-10-24T03:15:33  <janzert> since that looks like python it can depending on the origin
+2010-10-24T03:15:51  <amstan> janzert: irc, or c string
+2010-10-24T03:16:02  <Zannick> if there's a null in name i don't know
+2010-10-24T03:16:06  <Error323> Hooooooooooowdydo
+2010-10-24T03:16:09  <amstan> well.. anyway, i don't intend to leave it like that
+2010-10-24T03:16:12  <Error323> or, good morning
+2010-10-24T03:16:15  <amstan> i just want to know if i'm safe till tomorrow
+2010-10-24T03:16:15  <Zannick> i don't think it'll be arbitrary code execution
+2010-10-24T03:16:28  <janzert> the underlying os open call will stop reading the name at the null I'm pretty sure
+2010-10-24T03:16:41  <janzert> if so can open an arbitrary file then
+2010-10-24T03:17:07  <Zannick> well, would the null be inserted?
+2010-10-24T03:17:09  <raedwulf> quickly sanitise it by removing all ".."
+2010-10-24T03:17:21  <Zannick> if name is "123\0456" would it not open "123.ogz"?
+2010-10-24T03:17:35  <Zannick> iow would python stop at the null?
+2010-10-24T03:17:40  <janzert> nope
+2010-10-24T03:17:44  <amstan> Zannick: how do you insert \0 on irc though?
+2010-10-24T03:17:44  <Zannick> hm
+2010-10-24T03:17:57  <amstan> since though c string you clearly can't
+2010-10-24T03:18:07  <Zannick> on irc?
+2010-10-24T03:18:15  <amstan> yeah
+2010-10-24T03:18:18  <Zannick> i don't know what you mean
+2010-10-24T03:18:28  <amstan> Zannick: you know.. this thing we're talking on right now
+2010-10-24T03:18:31  <janzert> the string is coming from irc chat I assume
+2010-10-24T03:18:38  <amstan> janzert: yes
+2010-10-24T03:18:41  <Zannick> oh, hm.
+2010-10-24T03:18:51  <janzert> in a unicode character?
+2010-10-24T03:18:53  <Zannick> i wouldn't trust that it couldn't be done
+2010-10-24T03:18:59  <raedwulf> i think it depends on the irc client and server
+2010-10-24T03:19:10  <amstan> quakenet/freenode
+2010-10-24T03:19:12  *** whereby <whereby!7cc83534@gateway/web/freenode/ip.124.200.53.52> has joined #aichallenge
+2010-10-24T03:19:16  <amstan> client is twisted irc
+2010-10-24T03:19:20  <janzert> yeah, it would depend on a lot of specifics
+2010-10-24T03:19:49  <raedwulf> yep -- you'd probably have ot have a hacked client or direct protocol manipulation
+2010-10-24T03:19:52  <raedwulf> to make it possible
+2010-10-24T03:20:16  <raedwulf> just simply replace instances of ".." with "  "
+2010-10-24T03:20:18  <raedwulf> or something
+2010-10-24T03:20:34  <raedwulf> that would make it impossible to access parent directories
+2010-10-24T03:20:54  <janzert> http://stackoverflow.com/questions/295135/turn-a-string-into-a-valid-filename-in-python
+2010-10-24T03:20:58  <Zalma> Does this add list of player owned planets to vector: std::vector<Planet> my_planets = pw.MyPlanets();
+2010-10-24T03:21:21  <Zannick> TypeError: file() argument 1 must be encoded string without NULL bytes, not str
+2010-10-24T03:21:22  *** seisatsu <seisatsu!~seisatsu@adsl-99-30-224-80.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-24T03:21:24  <janzert> no really stand out answers there though
+2010-10-24T03:21:26  <Zalma> Where my_planets[1] = first planet id, my_planets [2] = second planet id etc?
+2010-10-24T03:21:41  <Zannick> so this is what i did:
+2010-10-24T03:21:52  <Zalma> that was taken from starter package
+2010-10-24T03:21:56  <Zannick> in a file
+2010-10-24T03:22:24  <Zannick> s = "ab\0cd"
+2010-10-24T03:22:26  <janzert> ahh, so python is filtering it before sending it off to the os anyway
+2010-10-24T03:22:37  <Zannick> "print s" gives abcd
+2010-10-24T03:22:47  <Zannick> "print repr(s)" gives "ab\x00cd"
+2010-10-24T03:23:09  <Zannick> and "with open("%s" % s, "w") as f:" raises the TypeError on the open
+2010-10-24T03:24:45  <Zannick> Zalma: my_planets = pw.MyPlanets(); doesn't add anything to my_planets, it replaces it entirely with the results from pw.MyPlanets()
+2010-10-24T03:25:07  <Zannick> Zalma: and the indices will be [0] through [n - 1], when you have n planets.
+2010-10-24T03:29:57  <Zalma> pff
+2010-10-24T03:30:11  <Titankiller> i cant understand how the java starter pack works
+2010-10-24T03:30:13  <Zalma> Yesterday I was 11 hours banging my head to wall with this
+2010-10-24T03:30:36  <Zalma> and I'm not any smarter than then..
+2010-10-24T03:30:36  <Titankiller> can somebody help me
+2010-10-24T03:30:43  <Titankiller> ?
+2010-10-24T03:31:03  <Zalma> these objects make my head hurt
+2010-10-24T03:31:53  *** iNtERrUp_ <iNtERrUp_!~interrupt@61.43.139.4> has quit IRC (Remote host closed the connection)
+2010-10-24T03:32:25  <Zalma> specially I have no idea what kind of informations these objects hold.. how to define and use them
+2010-10-24T03:35:03  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-24T03:36:01  <Titankiller> well my question is this where dies it actually read the standard input ?
+2010-10-24T03:36:09  <Titankiller> does
+2010-10-24T03:38:05  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-24T03:40:19  <Zalma> Learning about objects this way is kind of reverse engineering...
+2010-10-24T03:43:25  <Zalma> If u don't mind to answer to stupid question again in p.NumShips()  numships is class and p is instance of that class?
+2010-10-24T03:44:16  <janzert> p is the instance of a class (don't know what it's named the cpp package probable Planet) and NumShips is the class method
+2010-10-24T03:44:58  <Zalma> Okies.. I guess I'm now on to something ;)
+2010-10-24T03:45:22  <janzert> you should be able to find the class definition showing what all it contains in the PlanetWars.h file
+2010-10-24T03:45:48  <Zalma> I have next week meeting in work with few IT nerds.. maybe they can help me too if I don't figure this out :)
+2010-10-24T03:46:17  <janzert> err, s/definition/declaration
+2010-10-24T03:47:45  <Zalma> its prolly this // Initializes a planet.   Planet(int planet_id, etc
+2010-10-24T03:49:45  <janzert> line 73: class Planet {
+2010-10-24T03:49:54  <janzert> is the start of the declaration
+2010-10-24T03:50:05  <Zalma> btw another thing that been wondering.. why is it p.Numships and not Planet.NumShips? =)
+2010-10-24T03:50:17  <Zalma> like its declared..
+2010-10-24T03:50:18  <janzert> but yes, I see where your line now that is the right area
+2010-10-24T03:50:40  <janzert> Planet is the class name not the instance of that class
+2010-10-24T03:50:59  <Zalma> ah.. yes
+2010-10-24T03:51:42  <janzert> line 25 in MyBot.cc is assigning the instance in the my_planets vector to p
+2010-10-24T03:52:05  <janzert> the same thing is done on line 38
+2010-10-24T03:52:58  <janzert> btw, you might have an easier time picking up object oriented programming with java or python
+2010-10-24T03:53:14  <janzert> they're just a little easier to work with the C++ straight off
+2010-10-24T03:53:26  <janzert> than C++ that is
+2010-10-24T03:53:37  <Zalma> How about C#?
+2010-10-24T03:53:43  <janzert> it's too late I can't type straight anymore :P
+2010-10-24T03:54:13  <janzert> I've never worked with C# but it's pretty certainly easier than c++ as well
+2010-10-24T03:54:36  <janzert> since I believe it's fairly similar to java
+2010-10-24T03:55:02  <Zalma> one good thins in C++ u don't need to define for example arrays as objects too
+2010-10-24T03:55:14  <Zalma> thats the reason I chose it..
+2010-10-24T03:55:48  <Zalma> with c++ u should be able to do program without any objects if I'm correct..
+2010-10-24T03:55:52  <janzert> well yes C++ isn't OO only like java more or less is
+2010-10-24T03:56:04  <antimatroid> i use structs in c++ to simlify things a lot
+2010-10-24T03:56:11  <antimatroid> but i also have quite a few 4d vectors etc.
+2010-10-24T03:56:56  <Zalma> All I need is to get information about planets to my arrays so I could start doing my bot
+2010-10-24T03:57:23  <Zalma> and I'm not going to use any objects after that.. :P
+2010-10-24T03:58:27  <janzert> honestly if you can do a whole lot else in C++ or even just C the objects shouldn't be too hard to figure out
+2010-10-24T03:58:51  <janzert> just look at a tutorial or two on them from a web search
+2010-10-24T03:59:05  <Zalma> Yea I've been reading a lot..
+2010-10-24T03:59:27  <Zalma> but whole consept of objects isn't familiar to me so its not that easy
+2010-10-24T04:00:00  <janzert> think of them like structs that have functions :)
+2010-10-24T04:01:56  <Zalma> would u be so kind to write me a example code that would tell number of ships in planet with id 2? =)
+2010-10-24T04:02:37  <Zalma> Reading theory have been always a bit hard for me.. understanding from simple example makes it a lot easier
+2010-10-24T04:02:59  <janzert> pw.GetPlanet(2).NumShips()
+2010-10-24T04:03:28  <amstan> this should fix my security problem, right? http://github.com/amstan/hyperserv/commit/02d70871c4b7dc7d7f3812860b3e7067039a9dab
+2010-10-24T04:03:30  <janzert> untested and just from looking at PlanetWars.h but that should do it :)
+2010-10-24T04:04:29  <Zalma> oh... cool
+2010-10-24T04:04:54  <Zalma> so if there is integer x =pw.GetPlanet(2).NumShips()  it would get the fleet amount?
+2010-10-24T04:05:31  <janzert> yes int x = pw.GetPlanet(2).NumShips(); should leave x with the number of ships on planet 2
+2010-10-24T04:05:55  <Zalma> Thank you a lot
+2010-10-24T04:06:02  <Zalma> that makes a lot more sense
+2010-10-24T04:06:13  *** whereby <whereby!7cc83534@gateway/web/freenode/ip.124.200.53.52> has quit IRC (Quit: Page closed)
+2010-10-24T04:06:16  <janzert> amstan: looks ok at first glance, but I think a whitelist of approved characters is probably safer overall
+2010-10-24T04:10:34  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.182.29> has joined #aichallenge
+2010-10-24T04:11:32  <contestbot> Top 10 players: bocsimacko(3947), felixcoto(3918), Hazard(3897), rsergio(3857), cfaftw(3837), davidjliu(3803), dmj111(3782), sin_sun(3750), jambachili(3745), sequoh(3710)
+2010-10-24T04:13:32  <Zalma> I'm still abit confused when to use p and when pw
+2010-10-24T04:15:00  <Zalma> pw when they are under class PlanetWars?
+2010-10-24T04:15:52  <janzert> pw and p are just variable names of course you can call them whatever you want
+2010-10-24T04:16:06  <janzert> in the case of the starter bot in the DoTurn function
+2010-10-24T04:16:26  <janzert> pw is the name of the PlanetWars object passed in as an argument
+2010-10-24T04:16:41  <Zalma> ah.. so I can call them what ever I want :)
+2010-10-24T04:16:45  <janzert> and p is used a couple of times for a variable for Planet objects
+2010-10-24T04:17:10  <janzert> just like source is used for an int variable
+2010-10-24T04:17:31  <janzert> int source = -1; << int variable
+2010-10-24T04:17:57  <janzert> const Planet& p ... << type of Planet object variable
+2010-10-24T04:18:09  <janzert> specifically a const reference
+2010-10-24T04:18:22  <janzert> the const and & act the same as in C
+2010-10-24T04:18:33  <Zalma> ok
+2010-10-24T04:18:55  <Zalma> Nice to see you have time to go so basics with newbie
+2010-10-24T04:19:42  <janzert> really though I think you'd be better of in a higher level language, this is just the beginning of the learning curve for C++
+2010-10-24T04:19:52  *** Sarin <Sarin!~hallo@p5B0EFA1F.dip.t-dialin.net> has joined #aichallenge
+2010-10-24T04:20:22  <janzert> I'm just newb at C++
+2010-10-24T04:20:32  <Zalma> Well learning this also may help me at work
+2010-10-24T04:20:43  <Zalma> since I need to coordinate with IT coders there..
+2010-10-24T04:21:04  <Zalma> atleast to get some insight what they are doing..
+2010-10-24T04:22:04  <janzert> just the concepts will be easier to pick up elsewhere without all of the C++ complexity and then transfer them back to C++ will be much easier, but anyway I gotta go so good luck
+2010-10-24T04:22:42  <antimatroid> i found c++ easier than other languages
+2010-10-24T04:22:45  <antimatroid> it's certainly easier than c
+2010-10-24T04:23:03  <antimatroid> the only time i ever have to delete anything is when i make trees
+2010-10-24T04:23:06  <janzert> ? it's C + other stuff
+2010-10-24T04:23:08  <Zalma> janzert: cya
+2010-10-24T04:23:18  <antimatroid> Zalma: vectors are your new best friend
+2010-10-24T04:23:26  <Zalma> Yes I know
+2010-10-24T04:23:29  <Zalma> :)
+2010-10-24T04:23:38  * Zalma like vectors
+2010-10-24T04:23:51  <janzert> ahh, well it does help a little more with memory management than C
+2010-10-24T04:24:04  <antimatroid> a little? :P
+2010-10-24T04:24:17  <janzert> go to a *real* high level language :)
+2010-10-24T04:24:25  <antimatroid> i will learn haskell soon
+2010-10-24T04:24:48  <janzert> C++ is much closer to C in memory management than it is to fully GC'd language
+2010-10-24T04:24:49  <Zalma> btw.. why ppl call multidiensional arrays/matrixes still as vectors? =)
+2010-10-24T04:24:56  <Zalma> *dimensonal
+2010-10-24T04:25:06  <antimatroid> they are vectors
+2010-10-24T04:25:12  <antimatroid> vectors of vectors
+2010-10-24T04:25:16  * janzert is really out now :)
+2010-10-24T04:25:20  <Zalma> well vectors are really always 1 dimensional :P
+2010-10-24T04:25:41  <antimatroid> i have a c++ struct that does nd tensors which puts it all into a 1d vector
+2010-10-24T04:26:24  <antimatroid> i have 2 complaints about c++
+2010-10-24T04:26:24  <antimatroid> 1. i can't overload operator precedence
+2010-10-24T04:26:24  <antimatroid> 2. i can't write functions for nd vectors arbitrarily
+2010-10-24T04:26:56  <Zalma> Well I have no idea what that means :)
+2010-10-24T04:27:17  <antimatroid> operator precedence is the order the operations are performed with say 2*3^6
+2010-10-24T04:27:36  <antimatroid> or put matrices in there, i can't overload ^ precendence to avoid () in lines
+2010-10-24T04:28:14  <antimatroid> and nd vector is like say i want a "tensor" class, where the input parameter defines the number of dimensions, i can't do that without writing my own class
+2010-10-24T04:29:32  <Zalma> mkay...
+2010-10-24T04:29:58  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T04:30:27  <Zalma> u just confuse me with all the fancy words ;)
+2010-10-24T04:30:36  <Zalma> I'm no expert in programming..
+2010-10-24T04:30:38  <antimatroid> which fancy words? :P
+2010-10-24T04:30:41  <antimatroid> neither am i
+2010-10-24T04:30:45  <antimatroid> i'm just a student
+2010-10-24T04:30:50  <antimatroid> more of a maths student than anything
+2010-10-24T04:31:00  <Zalma> I hate math..
+2010-10-24T04:31:06  <antimatroid> that's nice
+2010-10-24T04:31:50  <Zalma> I just completed my compulsory courses after 7 years :P
+2010-10-24T04:32:00  <Zalma> I mean compulsory math courses..
+2010-10-24T04:32:08  <antimatroid> maths gets interesting once you get to uni
+2010-10-24T04:32:17  <Zalma> I am in university :P
+2010-10-24T04:32:32  <antimatroid> past the first two years of calculus anyway :P
+2010-10-24T04:32:35  <Zalma> doing my master thesis at the moment
+2010-10-24T04:32:43  <antimatroid> ah okay
+2010-10-24T04:32:51  <antimatroid> what's to hate about maths?
+2010-10-24T04:32:56  <antimatroid> it's wonderful
+2010-10-24T04:33:38  <Zalma> well I'm engineer.. pure theoretical math is too utopistic..
+2010-10-24T04:33:54  <Zalma> all the integrating makes my head hurt
+2010-10-24T04:34:11  <antimatroid> measure theory makes my head hurt
+2010-10-24T04:34:40  <antimatroid> and this godamn game
+2010-10-24T04:34:46  <antimatroid> it's impenetrable i swear
+2010-10-24T04:35:00  <Zalma> btw I'm not studying IT or enything like that anyway... studying energy/powerplant technology
+2010-10-24T04:36:29  <Zalma> only place where you would need high match skill would be computational science in there.. like doing cfd
+2010-10-24T04:36:41  <Zalma> match=math
+2010-10-24T04:37:18  <antimatroid> i graduate in a month with majors in cs, economics and pure maths, i very much intend to use maths my whole life :P
+2010-10-24T04:37:31  <antimatroid> i'm going onto to do post grad maths next year
+2010-10-24T04:37:37  <antimatroid> onto == on
+2010-10-24T04:38:12  <antimatroid> that's if i ever get around to studying for my exams
+2010-10-24T04:38:24  <antimatroid> i have an exam tuesday and i haven't been to a class since first week or started studying
+2010-10-24T04:38:25  <antimatroid> meh
+2010-10-24T04:38:43  <antimatroid> one day study dates have been performed before
+2010-10-24T04:38:55  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T04:39:02  <Zalma> the biggest problem is that I need to understand what all operations etc means and how they refer to real life..
+2010-10-24T04:39:14  <Zalma> because of that math is quite difficult for me
+2010-10-24T04:39:29  <Zalma> since they always don't have good reference in real life..
+2010-10-24T04:39:39  <antimatroid> they do, they just aren't given
+2010-10-24T04:40:13  <Zalma> I mean the way how human mind can understand them.. atleast engineers mind :P
+2010-10-24T04:40:49  <antimatroid> anyway, i'm rewriting a new heuristic bot
+2010-10-24T04:40:54  <antimatroid> i was way too premature at making a tree
+2010-10-24T04:41:32  <Zalma> Well if I get on the way I may try to use some evolutionary algorithm :P
+2010-10-24T04:41:57  <antimatroid> i'm considering throwing out moves from the other player entirely
+2010-10-24T04:42:04  <antimatroid> it's way too messy to coordinate that and future moves
+2010-10-24T04:42:10  <antimatroid> and one needs to consider future moves
+2010-10-24T04:43:52  <Zalma> I'm also considering to use some randome element and probability mathematics
+2010-10-24T04:44:09  <Zalma> that mathematics area isn't so hard :)
+2010-10-24T04:45:11  <Zalma> for that I would need a lot of data collected first thou
+2010-10-24T04:45:36  <antimatroid> the problem is incredibly hard
+2010-10-24T04:45:42  <antimatroid> i've been thinking about it for a good month now
+2010-10-24T04:45:57  <antimatroid> there's sooo much information that feeds into everytihng else
+2010-10-24T04:46:21  <Zalma> yea :)
+2010-10-24T04:46:43  <Zalma> thats always problem for game AI :P
+2010-10-24T04:51:32  <Zalma> btw r u using windows or unix based system?
+2010-10-24T04:51:41  <antimatroid> windows
+2010-10-24T04:52:07  <Zalma> what do u use to compile your bot?
+2010-10-24T04:55:13  <Zalma> since I haven't compiled my project yet at all just tryed to figure out all sorts of things.. I'm not really familiar to these windows based IDEs.. back in school days we used dos based borland =P
+2010-10-24T04:55:56  <Zalma> I'm using currenly visual studio 2010 since I get it free from dreamspark
+2010-10-24T04:57:07  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.182.29> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T04:58:20  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.182.29> has joined #aichallenge
+2010-10-24T04:58:29  <antimatroid> i use codeblocks
+2010-10-24T04:58:30  <antimatroid> it's nice
+2010-10-24T05:00:11  <lavalamp_> My minimax bot does 20k nodes/sec... now if only they were good nodes... :(
+2010-10-24T05:04:16  <Zalma> maybe I try that codeblocks..
+2010-10-24T05:05:02  <Zalma> only if I could download it... too many clients =E
+2010-10-24T05:09:33  <Zalma> to compile the bot I need to first make them as project right?
+2010-10-24T05:11:33  <contestbot> Top 10 players: bocsimacko(3954), felixcoto(3922), Hazard(3901), rsergio(3857), cfaftw(3847), davidjliu(3808), dmj111(3777), sin_sun(3754), jambachili(3750), sequoh(3715)
+2010-10-24T05:16:42  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.182.29> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T05:17:37  <Zalma> cool.. I was first time able to compile my bot and it works.. codeblocks made it a lot easier :)
+2010-10-24T05:20:25  *** antimatroid <antimatroid!~Nick@249.205.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 264 seconds)
+2010-10-24T05:44:17  <Zalma> btw is there constant amount of planets and if not what is max amount?
+2010-10-24T05:44:32  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T05:46:25  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.183.249> has joined #aichallenge
+2010-10-24T06:01:06  <lavalamp_> Zalma, always 23 planets it seems
+2010-10-24T06:01:33  <Zalma> thx
+2010-10-24T06:03:01  <Zalma> mm[i][3] = pw.GetPlanet[i].Owner(); <-- is that valid? =)
+2010-10-24T06:03:30  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.183.249> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T06:03:32  <Zalma> where i is planet id
+2010-10-24T06:10:09  <Zalma> well I guess it was supposed to be getplanet(i) thou
+2010-10-24T06:11:32  <contestbot> Top 10 players: bocsimacko(3968), felixcoto(3935), Hazard(3906), rsergio(3864), cfaftw(3854), davidjliu(3804), dmj111(3790), jambachili(3773), sin_sun(3752), luksian(3711)
+2010-10-24T06:12:45  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.183.249> has joined #aichallenge
+2010-10-24T06:19:49  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.183.249> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T06:20:56  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.183.249> has joined #aichallenge
+2010-10-24T06:27:52  *** Mekanik <Mekanik!~vov@ppp85-140-232-214.pppoe.mtu-net.ru> has joined #aichallenge
+2010-10-24T06:30:14  *** TomyMMX <TomyMMX!5bb9c7fd@gateway/web/freenode/ip.91.185.199.253> has joined #aichallenge
+2010-10-24T06:31:15  *** jesionaj` <jesionaj`!~dongs@174-18-2-151.tcso.qwest.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T06:32:25  <TomyMMX> can anyone tell me what the best way is to extract game data from a game played on the server.. ok I can navigate to http://ai-contest.com/game_info.php?game_id=xxxxxxx.. but the game string there is not the same as needed for bot input
+2010-10-24T06:40:52  *** iNtERrUp_ <iNtERrUp_!~interrupt@61.43.139.4> has joined #aichallenge
+2010-10-24T06:43:00  *** iNtERrUpT <iNtERrUpT!~interrupt@59.10.183.249> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T06:51:44  *** Tobu <Tobu!~Tobu@unaffiliated/tobu> has joined #aichallenge
+2010-10-24T06:58:42  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-24T06:58:49  *** p4p4 <p4p4!~chatzilla@82.113.121.50> has joined #aichallenge
+2010-10-24T07:04:17  <Zalma> is distance working like this Dist=pw.Distance(i,j) where i & j are planet IDs as integer?
+2010-10-24T07:08:52  <TomyMMX> Or is therea tool to reply server games localy?
+2010-10-24T07:11:33  <contestbot> Top 10 players: bocsimacko(3965), felixcoto(3933), Hazard(3903), rsergio(3861), cfaftw(3852), davidjliu(3801), dmj111(3792), jambachili(3768), sin_sun(3749), luksian(3706)
+2010-10-24T07:13:20  *** p4p4_ <p4p4_!~chatzilla@82.113.121.50> has joined #aichallenge
+2010-10-24T07:16:09  *** p4p4 <p4p4!~chatzilla@82.113.121.50> has quit IRC (Ping timeout: 252 seconds)
+2010-10-24T07:17:53  *** p4p4 <p4p4!~chatzilla@82.113.121.50> has joined #aichallenge
+2010-10-24T07:20:33  *** p4p4_ <p4p4_!~chatzilla@82.113.121.50> has quit IRC (Ping timeout: 252 seconds)
+2010-10-24T07:31:09  *** iNtERrUp_ <iNtERrUp_!~interrupt@61.43.139.4> has quit IRC (Remote host closed the connection)
+2010-10-24T07:32:00  <Zalma> gah.. I wonder why I get  'const class Planet' has no member named 'x'|
+2010-10-24T07:32:05  <Zalma> doesn't it have it?
+2010-10-24T07:34:21  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-10-24T07:44:46  *** Bobng <Bobng!~T@78.148.48.91> has joined #aichallenge
+2010-10-24T07:56:55  *** TomyMMX <TomyMMX!5bb9c7fd@gateway/web/freenode/ip.91.185.199.253> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T08:00:09  *** JensT1 <JensT1!~jens@91.182.169.245> has joined #aichallenge
+2010-10-24T08:06:18  *** antimatroid <antimatroid!~Nick@230.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-10-24T08:08:54  *** mceier <mceier!~mceier@chello089077208118.chello.pl> has joined #aichallenge
+2010-10-24T08:11:33  <contestbot> Top 10 players: bocsimacko(3980), felixcoto(3925), Hazard(3913), rsergio(3893), cfaftw(3855), sin_sun(3802), davidjliu(3801), jambachili(3790), sequoh(3710), luksian(3707)
+2010-10-24T08:20:07  *** jmcarthur <jmcarthur!~jake@76.73.220.85> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T08:24:43  *** jmcarthur <jmcarthur!~jake@76.73.220.85> has joined #aichallenge
+2010-10-24T08:28:11  *** yasith <yasith!~yasith@112.135.76.103> has quit IRC (Ping timeout: 252 seconds)
+2010-10-24T08:29:52  *** nibalizer <nibalizer!krum@chandra.cs.pdx.edu> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T08:30:00  *** Tobu <Tobu!~Tobu@unaffiliated/tobu> has quit IRC (Ping timeout: 255 seconds)
+2010-10-24T08:30:02  *** nibalize1 <nibalize1!krum@chandra.cs.pdx.edu> has joined #aichallenge
+2010-10-24T08:30:18  *** yasith <yasith!~yasith@112.135.89.76> has joined #aichallenge
+2010-10-24T08:33:03  *** Tobu <Tobu!~Tobu@pro75-5-88-162-203-35.fbx.proxad.net> has joined #aichallenge
+2010-10-24T08:33:18  *** Tobu <Tobu!~Tobu@unaffiliated/tobu> has joined #aichallenge
+2010-10-24T08:34:25  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T08:34:33  *** genericb1b <genericb1b!~patm@c-67-190-73-32.hsd1.co.comcast.net> has joined #aichallenge
+2010-10-24T08:35:02  *** j3camero <j3camero!~jeff@207.150.202.47> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T08:35:22  *** j3camero <j3camero!~jeff@207.150.202.47> has joined #aichallenge
+2010-10-24T09:11:33  <contestbot> Top 10 players: bocsimacko(3996), felixcoto(3910), Hazard(3904), rsergio(3876), cfaftw(3845), jambachili(3809), davidjliu(3793), sin_sun(3793), sequoh(3727), RebelXT(3706)
+2010-10-24T09:12:30  *** delt0r <delt0r!~delt0r@188-22-27-201.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-24T09:13:07  *** delt0r___ <delt0r___!~delt0r@188-22-162-95.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2010-10-24T09:22:14  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-10-24T09:22:30  *** shades <shades!~shades@cheshire.telephreak.org> has quit IRC (Read error: Operation timed out)
+2010-10-24T09:25:03  *** fawek <fawek!~faw@chello089079023212.chello.pl> has joined #aichallenge
+2010-10-24T09:31:07  *** allsystemsarego <allsystemsarego!~allsystem@unaffiliated/allsystemsarego> has joined #aichallenge
+2010-10-24T09:38:28  *** Bobng <Bobng!~T@78.148.48.91> has quit IRC (Quit: Leaving)
+2010-10-24T09:40:37  *** Bobng <Bobng!~T@78.148.48.91> has joined #aichallenge
+2010-10-24T09:41:01  *** jmcarthur <jmcarthur!~jake@76.73.220.85> has quit IRC (Quit: WeeChat 0.3.0)
+2010-10-24T09:41:19  *** jmcarthur <jmcarthur!~jake@76.73.220.85> has joined #aichallenge
+2010-10-24T09:45:25  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-24T09:46:42  *** javagamer <javagamer!~javagamer@ool-4356d788.dyn.optonline.net> has quit IRC (Read error: Connection reset by peer)
+2010-10-24T09:47:44  *** javagamer <javagamer!~javagamer@ool-4356d788.dyn.optonline.net> has joined #aichallenge
+2010-10-24T09:47:54  *** boegel <boegel!~boegel@91.182.68.130> has joined #aichallenge
+2010-10-24T09:56:22  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has joined #aichallenge
+2010-10-24T10:01:23  <Zalma> do I have to include maps, example bots and tools in my .zip I send?
+2010-10-24T10:02:23  <raedwulf> Zalma: no
+2010-10-24T10:02:25  <raedwulf> just code
+2010-10-24T10:03:05  *** choas <choas!~lars@p578F65A0.dip.t-dialin.net> has joined #aichallenge
+2010-10-24T10:05:07  <Zalma> wow my first bot I made from scratch compiled without problems..
+2010-10-24T10:05:22  <Zalma> thou bad side is that it's not doing anything :)
+2010-10-24T10:05:26  *** Bobng <Bobng!~T@78.148.48.91> has quit IRC (Quit: Leaving)
+2010-10-24T10:05:50  <Zalma> it doesn't crash either
+2010-10-24T10:06:16  <Zalma> btw if there is some problem with using objects or variables would my bot crash or wouldn't compile?
+2010-10-24T10:06:18  *** Bobng <Bobng!~T@78.148.48.91> has joined #aichallenge
+2010-10-24T10:11:34  <contestbot> Top 10 players: bocsimacko(3984), felixcoto(3896), Hazard(3895), rsergio(3852), cfaftw(3821), jambachili(3802), davidjliu(3777), sin_sun(3772), sequoh(3722), RebelXT(3702)
+2010-10-24T10:12:06  *** seisatsu <seisatsu!~seisatsu@adsl-99-30-224-80.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2010-10-24T10:12:46  *** irchs <irchs!~Jan@94-194-33-168.zone8.bethere.co.uk> has joined #aichallenge
+2010-10-24T10:13:04  <irchs> hmmm.... how does one change their organisation on the challenge site?
+2010-10-24T10:13:12  <irchs> I have tried the forum post method but it doesn't seem to work
+2010-10-24T10:14:50  <Lithosphere> the forum posts have to be manually converted by someone, but indeed, it has been a long time since I posted too, and it isn't updated
+2010-10-24T10:15:51  <irchs> ah I thought they had a script scanning it or something....
+2010-10-24T10:16:08  <irchs> because of the specific format requirements
+2010-10-24T10:20:37  <Zalma> btw does player home planets have some standard ID for example 1 &2?
+2010-10-24T10:20:49  <Zalma> or they are just random
+2010-10-24T10:22:25  <Lithosphere> when generated by the python script they are, but I should not make assumptions they will always be like that
+2010-10-24T10:23:27  <Zalma> Well I'm just trying to figure out whats wrong with my code :P
+2010-10-24T10:24:08  <irchs> Are there a lot of random nonstart games happening on the contest server recently?
+2010-10-24T10:24:22  <bhasker> morning
+2010-10-24T10:25:21  <raedwulf> morning
+2010-10-24T10:26:38  <bhasker> wassup
+2010-10-24T10:28:12  <raedwulf> reading a book, taking a break from coding my bot
+2010-10-24T10:28:20  <raedwulf> my full bot logic is scribbled on a piece of paper
+2010-10-24T10:28:27  <raedwulf> :P
+2010-10-24T10:29:15  <bhasker> heh, i should do that
+2010-10-24T10:29:24  <bhasker> my bot is becoming a mish mash of if then else blocks
+2010-10-24T10:30:22  <bhasker> whose bot is CosmpolitanCoconut on tcp?
+2010-10-24T10:31:14  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Ping timeout: 250 seconds)
+2010-10-24T10:32:12  <Error323> http://ai-contest.com/visualizer.php?game_id=6128625 It says I won, but it should be a draw, I think its a bug...
+2010-10-24T10:33:22  <bhasker> maybe you have a extra ship in flight or something?
+2010-10-24T10:34:05  <bhasker> actually i think i shold have that one
+2010-10-24T10:34:05  *** Spike_007 <Spike_007!~Spike@217-112-160-254.cust.avonet.cz> has joined #aichallenge
+2010-10-24T10:34:10  <bhasker> i got my planets before you did
+2010-10-24T10:34:11  <Spike_007> hi all
+2010-10-24T10:34:37  <bhasker> and in fact hmm you lost a planet too
+2010-10-24T10:34:50  <bhasker> weird
+2010-10-24T10:34:59  <bhasker> at Turn 7
+2010-10-24T10:35:01  <bhasker> i have 4 planets
+2010-10-24T10:35:03  <bhasker> you have 3
+2010-10-24T10:35:09  <bhasker> i should be ahead by a few ships
+2010-10-24T10:35:38  <bhasker> and at turn 19 you lose your planet too
+2010-10-24T10:35:39  <bhasker> for one turn
+2010-10-24T10:35:40  <bhasker> weird
+2010-10-24T10:36:13  <Error323> at the end we have an equal amount of ships
+2010-10-24T10:36:19  <Error323> thats all that matters
+2010-10-24T10:37:40  <bhasker> but i don't understand how that is possible
+2010-10-24T10:37:44  <bhasker> we have identical growth rates
+2010-10-24T10:37:50  <bhasker> and i got the planets before you did
+2010-10-24T10:37:55  <bhasker> so technically i should be ahead
+2010-10-24T10:38:10  <bhasker> since i never lose control of my planets
+2010-10-24T10:38:38  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2010-10-24T10:39:07  *** gerald512kk <gerald512kk!~jamenbhal@mou34-1-82-240-240-188.fbx.proxad.net> has quit IRC ()
+2010-10-24T10:39:35  <Error323> no
+2010-10-24T10:39:44  <Error323> you wasted some on trying to capture bottom right back
+2010-10-24T10:39:59  <Error323> which allowed me to get even in center again
+2010-10-24T10:40:04  <bhasker> hmm
+2010-10-24T10:40:04  <Error323> funny match
+2010-10-24T10:40:17  <Error323> but still
+2010-10-24T10:40:19  <bhasker> actually no
+2010-10-24T10:40:21  <Error323> i shouldn't have won
+2010-10-24T10:40:41  <bhasker> at turn 4 we both take central
+2010-10-24T10:40:49  <bhasker> at turn 7
+2010-10-24T10:40:51  <bhasker> i take two planets
+2010-10-24T10:40:52  <bhasker> you take 1
+2010-10-24T10:41:00  <bhasker> you take another one at turn 8
+2010-10-24T10:41:05  <bhasker> so i should be ahead in ships
+2010-10-24T10:41:31  <bhasker> ohhh wait
+2010-10-24T10:41:34  <bhasker> doh
+2010-10-24T10:41:38  <bhasker> i took a 61 ship planet
+2010-10-24T10:41:41  <bhasker> you took a 34
+2010-10-24T10:41:48  <bhasker> thats where the difference came
+2010-10-24T10:41:49  <Error323> yeah
+2010-10-24T10:41:50  <Error323> =)
+2010-10-24T10:42:05  <bhasker> ah
+2010-10-24T10:42:16  <bhasker> i was thinking we took identical planets
+2010-10-24T10:42:26  *** DanielVF <DanielVF!~DanielVF@67-197-185-240.dyn.comporium.net> has joined #aichallenge
+2010-10-24T10:42:56  <Error323> no, but you should've ;)
+2010-10-24T10:43:04  *** DanielVF <DanielVF!~DanielVF@67-197-185-240.dyn.comporium.net> has left #aichallenge
+2010-10-24T10:43:21  <boegel> just resubmitted a bot that got me to rank 112 a while ago
+2010-10-24T10:43:29  <boegel> I'm wondering where it'll get me now...
+2010-10-24T10:43:29  <bhasker> well my cost function is a bit different
+2010-10-24T10:43:45  <boegel> my current "state-of-the-art" bort only got to 704 :(
+2010-10-24T10:43:54  <Zalma> anyone wanna help me a bit?
+2010-10-24T10:44:01  <Zalma> kartta[i][1] = pw.GetPlanet(i).Owner(); <-- is this valid?
+2010-10-24T10:44:25  <Zalma> if I try to add owner of planed id i to table
+2010-10-24T10:44:35  <Zalma> where i is integer
+2010-10-24T10:44:40  <boegel> seem right
+2010-10-24T10:44:46  <boegel> but that really depends
+2010-10-24T10:44:53  <boegel> are you aving problems with it?
+2010-10-24T10:45:01  <Zalma> I'm not sure where is my problem...
+2010-10-24T10:45:08  <Zalma> my bot just doesn't do anything :P
+2010-10-24T10:45:17  <Zalma> it compiles right and doesn't time out or crash
+2010-10-24T10:48:37  <rebelxt_> Zalma, did you try debugging it? i.e print debug info to stderr or log to file when playing example bots locally
+2010-10-24T10:49:34  <Zalma> how do I do that?
+2010-10-24T10:50:02  <rebelxt_> what lang are you using?
+2010-10-24T10:50:43  <Zalma> c++
+2010-10-24T10:50:54  <Zalma> I know how to play locally but how to make a log
+2010-10-24T10:53:16  *** jklandis <jklandis!~jklandis@c-67-170-77-161.hsd1.wa.comcast.net> has joined #aichallenge
+2010-10-24T10:53:16  <rebelxt_> can you print to stderr? if you use latest version of the starter pack, this should work
+2010-10-24T10:56:38  <Zalma> how can I do that? =)
+2010-10-24T10:56:56  <rebelxt_> cerr << kartta[i][1] << endl;
+2010-10-24T10:57:25  <rebelxt_> #include <iostream>
+2010-10-24T10:58:11  <Zalma> hmhp
+2010-10-24T10:58:20  <Zalma> btw it seems I found atleast one bug
+2010-10-24T10:58:55  <Zalma> if I have int x[10][2] then it would be from 0 to 9 and 0 to 1 right?
+2010-10-24T10:59:06  <rebelxt_> if you don't see any of your logging info printed out, see this topic: http://ai-contest.com/forum/viewtopic.php?f=18&t=534
+2010-10-24T10:59:21  <rebelxt_> yeah
+2010-10-24T10:59:22  *** irchs is now known as janstaunton
+2010-10-24T11:00:25  <Zalma> I get error: 'cerr' was not declared in this scope|
+2010-10-24T11:00:28  <rebelxt_> it did not take mega1 long time to get #1!
+2010-10-24T11:00:34  <Zalma> and same for endl
+2010-10-24T11:00:37  <rebelxt_> contestbot: rankings
+2010-10-24T11:00:39  <contestbot> rebelxt_: Top 10 players: bocsimacko(3993), felixcoto(3909), Hazard(3902), rsergio(3857), cfaftw(3822), jambachili(3810), davidjliu(3784), sin_sun(3779), sequoh(3736), RebelXT(3709)
+2010-10-24T11:00:51  <Zalma> I do have iostream...
+2010-10-24T11:02:09  <rebelxt_> if you have iostream included, try "std::cerr"
+2010-10-24T11:02:26  <rebelxt_> or add "using namespace std"
+2010-10-24T11:05:05  <Zalma> Atleast that compiled now :)
+2010-10-24T11:07:37  <Zalma> well log file doesn't have anything else but initializing
+2010-10-24T11:10:45  <rebelxt_> check that forum post. check that your DoTurn is getting called
+2010-10-24T11:11:25  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2010-10-24T11:11:34  <contestbot> Top 10 players: bocsimacko(3994), felixcoto(3909), Hazard(3902), rsergio(3858), cfaftw(3820), jambachili(3810), davidjliu(3784), sin_sun(3780), sequoh(3737), RebelXT(3710)
+2010-10-24T11:14:23  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2010-10-24T11:17:01  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-24T11:17:51  <Zalma> it seems problem was ShowGame.jar & PlayGame.jar for that debugging
+2010-10-24T11:18:02  <Zalma> I downloaded newer versions and atleast now I can debug
+2010-10-24T11:19:03  <Zalma> anyway.. thx a lot this makes this a lot easier :)
+2010-10-24T11:19:49  <Error323> 73 \o/
+2010-10-24T11:20:36  <bhasker> rebel start up your bot
+2010-10-24T11:20:49  <rebelxt_> Zalma: cool, glad you got it resolved
+2010-10-24T11:21:14  <Zalma> but still there is problem with my bot.. now this just raises more questions ;)
+2010-10-24T11:21:46  <rebelxt_> bhasker: ok i'll start my last official..
+2010-10-24T11:22:07  <Zalma> for example kartta[1][1] = pw.GetPlanet(i).Owner(); that gets really weird values
+2010-10-24T11:22:10  *** Commandir <Commandir!~joakim@h85-8-40-32.static.se.alltele.net> has joined #aichallenge
+2010-10-24T11:22:41  <Zalma> 376 or 10523682
+2010-10-24T11:23:00  <Zalma> and I though player id should be only 0, 1 or 2 :P
+2010-10-24T11:24:14  <bhasker> lets see
+2010-10-24T11:24:17  <bhasker> how mine does
+2010-10-24T11:25:25  <rebelxt_> malazan0.8?
+2010-10-24T11:25:48  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-10-24T11:25:56  <rebelxt_> you beat mine last night. only had one game
+2010-10-24T11:26:12  <rebelxt_> mega1: grats on #1!
+2010-10-24T11:27:00  <mega1> rebelxt_: thanks, maybe it's time to upload b0.30
+2010-10-24T11:27:19  <mega1> I see new names on tcp
+2010-10-24T11:27:23  <Zalma> well I think problem is with my tables or my loops
+2010-10-24T11:27:39  <Zalma> since if I tried test = pw.GetPlanet(1).Owner(); it returned 1
+2010-10-24T11:27:57  <rebelxt_> mega1: 0.30 is just too strong. i never won a single game against it on tcp...
+2010-10-24T11:28:02  <janstaunton> Are there any other ways of changing one's organisation apart from the forum?
+2010-10-24T11:28:46  <rebelxt_> Zalma, yeah just keep adding more debug printouts until you figure out what's wrong
+2010-10-24T11:29:08  <bhasker> yup
+2010-10-24T11:29:11  <bhasker> malazan0.8
+2010-10-24T11:29:33  <mega1> george looks pretty strong
+2010-10-24T11:31:21  <rebelxt_> thanks for making me lose sleep trying to figure out how to beat your bot ;-)
+2010-10-24T11:32:15  <mega1> have you?
+2010-10-24T11:32:21  <mega1> ... figured something out?
+2010-10-24T11:32:44  *** perror <perror!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2010-10-24T11:32:48  <mega1> exposure at #1 is not a good thing
+2010-10-24T11:32:59  <mega1> too many guys focusing on your weaknesses
+2010-10-24T11:33:04  <mega1> of which there are plenty.
+2010-10-24T11:33:51  <rebelxt_> well, that's true. i am not having luck making any significant improvements at the moment
+2010-10-24T11:34:21  <antimatroid> revelxt_: i feel your pain
+2010-10-24T11:34:29  <antimatroid> i've bee rethinking my backend entirely
+2010-10-24T11:35:00  <antimatroid> i've given up for the moment on making future moves from both players against each other every turn
+2010-10-24T11:35:08  <antimatroid> and gone back to focusing on just my moves
+2010-10-24T11:36:21  <mega1> antimatroid: "every turn"  of the real game or of the simulated future (or the game tree)?
+2010-10-24T11:36:51  <antimatroid> in my simulated game
+2010-10-24T11:36:58  <antimatroid> it's damn near impossible to do it i swear
+2010-10-24T11:37:08  <antimatroid> i can do it for myself but not from both
+2010-10-24T11:37:40  <antimatroid> it gets too messy in planet ownerships alternating
+2010-10-24T11:38:14  *** p4p4 <p4p4!~chatzilla@82.113.121.50> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2010-10-24T11:39:22  <mega1> antimatroid: I considered it, but there is much invalidation of moves and reconsidering to do.
+2010-10-24T11:39:40  <mega1> A future move is just a plan, nothing more.
+2010-10-24T11:40:02  <mega1> You can't do meaningful search having to go back and forth in time.
+2010-10-24T11:40:14  <jklandis> A future move also involves reserving ships in the present.
+2010-10-24T11:40:31  <mega1> At least not when the dependencies are like in this game.
+2010-10-24T11:40:36  <jklandis> Additionally, in order to send ships, you have to own the planet
+2010-10-24T11:42:41  <jklandis> It's not enough just to have the ships there
+2010-10-24T11:42:55  <mega1> Any sufficiently advanced technology is indistuinguisable from magic but george's bot certainly looks like it searches the game tree.
+2010-10-24T11:43:46  <antimatroid> mega1: so you aren't even considering if you have a better move next turn?
+2010-10-24T11:43:56  <mega1> I am
+2010-10-24T11:44:23  <mega1> but opponent moves are not yet properly simulated
+2010-10-24T11:44:37  <Error323> antimatroid: i have it working, but just nog proper pruning >_>
+2010-10-24T11:44:38  <antimatroid> yeah, i was very premature at throwing stuff at a game tree
+2010-10-24T11:44:58  <Error323> s/nog/not
+2010-10-24T11:45:01  <antimatroid> Error323: working with future moves from both players without bugs? i doubt it :P
+2010-10-24T11:45:06  <mega1> is RS on tpc rsergio?
+2010-10-24T11:45:08  <Error323> yep
+2010-10-24T11:45:23  <Error323> well afaik it works fine
+2010-10-24T11:45:33  <Error323> but took me a week
+2010-10-24T11:45:40  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-24T11:45:43  <Error323> and then discarded it
+2010-10-24T11:45:46  <Error323> -.-
+2010-10-24T11:45:58  <Error323> well its in a branch in git
+2010-10-24T11:46:08  <antimatroid> are you just removing outgoing fleets whenever ownership changes? i expect that to fuck up the evaluation of the game state with moves
+2010-10-24T11:46:29  <Error323> i am
+2010-10-24T11:46:39  <Error323> but because of recursion you can jump back a state
+2010-10-24T11:46:45  <Error323> i keep a stack of the gamestate
+2010-10-24T11:46:46  *** Spike_007 <Spike_007!~Spike@217-112-160-254.cust.avonet.cz> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T11:47:00  <Zalma> yay
+2010-10-24T11:47:12  <Error323> i could show you the prototype i guess
+2010-10-24T11:47:16  <antimatroid> my tree just has a vector of extendable nodes and keeps extending for as long as it can
+2010-10-24T11:47:23  <Zalma> now I got my bot working but example bots keep timing out...
+2010-10-24T11:47:28  <Zalma> I wonder whats the reason
+2010-10-24T11:47:38  <antimatroid> you sure it's the example bots :P
+2010-10-24T11:47:52  <rebelxt_> last night i did some reading on what best Go programs have to do to be even remotely competitive with average human players: http://www.jellyfish-go.com/ai.htm
+2010-10-24T11:48:09  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-24T11:48:53  <Zalma> yea its always example bot one that times out :P
+2010-10-24T11:48:56  <rebelxt_> of course people invested thousands of hours into these Go programs, and this contest is much shorter
+2010-10-24T11:48:58  <Zalma> and that is weird
+2010-10-24T11:50:29  <Zalma> It seems my bot gives some invalid input.. what does that mean?
+2010-10-24T11:50:44  <antimatroid> this game is still very complicated
+2010-10-24T11:51:06  <jklandis> Has any one gotten subgame analysis to work?
+2010-10-24T11:51:11  <antimatroid> i was hoping to approximate perfect play to begin with, now i'm almost at a complete loss as to how to do anything reasonably
+2010-10-24T11:51:30  <antimatroid> jklandis: nope
+2010-10-24T11:51:37  <antimatroid> i considered trying to turn it into a repeated game
+2010-10-24T11:51:39  <antimatroid> but it's huge
+2010-10-24T11:51:48  <Error323> http://paste.pocoo.org/show/279697/
+2010-10-24T11:51:51  <Error323> there it is
+2010-10-24T11:51:52  <Error323> hf
+2010-10-24T11:52:19  <jklandis> It seems like some maps have regions that can be considered separately.
+2010-10-24T11:52:26  <jklandis> But not all maps
+2010-10-24T11:53:17  <antimatroid> not really
+2010-10-24T11:53:34  <antimatroid> i considered trying to create subgraphs based on moves i'm willing to make
+2010-10-24T11:53:46  <antimatroid> but i sort of already do that anyway, without going through constructing such subgraphs
+2010-10-24T11:55:55  <Zalma> Can someone tell me what invalid input actually mean?
+2010-10-24T11:56:20  <Zalma> but bot always fails in turn 30-40 with invalid input
+2010-10-24T11:56:31  *** janstaunton <janstaunton!~Jan@94-194-33-168.zone8.bethere.co.uk> has quit IRC (Quit: janstaunton)
+2010-10-24T11:57:11  <Error323> it means you are doing sth wrong ;-)
+2010-10-24T11:57:18  <Zalma> or rly
+2010-10-24T11:57:55  <Zalma> I mean does it mean I'm trying to attack to planet that doesn't excist or someting?
+2010-10-24T11:58:43  <rabidus_> or sending too many fleets or sending from planet what you don't own
+2010-10-24T11:58:46  <rebelxt_> Zalma you might be trying to send more ships that your planet has, or trying to send ships from enemy planet
+2010-10-24T11:58:59  <rabidus_> or neutral
+2010-10-24T11:59:01  <Zalma> it seems it always happens when I'm going to capture my 4th or 5th planet
+2010-10-24T11:59:24  <janzert> or even plain sending something out stdout that just can't be parsed
+2010-10-24T11:59:24  <rebelxt_> just print out every fleet your bot is trying to send (source planet, target, number of ships), and you will see invalid order
+2010-10-24T11:59:56  <antimatroid> Zalma: make sure you correctly update the number of ships you have at your planets when you make a move
+2010-10-24T12:00:42  <antimatroid> revelxt_: thanks for that, i hate reading my own code let alone other peoples :P
+2010-10-24T12:02:34  <rebelxt_> ;-D
+2010-10-24T12:04:41  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2010-10-24T12:06:28  <Zalma> yeah.. I was finally able to finish my battle :P
+2010-10-24T12:08:16  <janzert> bhasker: if you're around you can see on naktibalda's visualizer that Error323 did get an early lead and held it in the very very close game earlier
+2010-10-24T12:08:58  *** janzert <janzert!~Brian@24-247-72-212.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2010-10-24T12:09:23  *** janzert <janzert!~Brian@24-247-72-212.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2010-10-24T12:09:38  <janzert> irc client decided to crash of course
+2010-10-24T12:09:49  <janzert> link to that game is http://visualizer.naktibalda.lt/484
+2010-10-24T12:09:55  <jklandis> janzert: I'm working on 202
+2010-10-24T12:10:40  <jklandis> I'm going to try using select
+2010-10-24T12:11:06  <antimatroid> wait, is there another unofficial server or is that just pasted there?
+2010-10-24T12:11:36  <contestbot> Top 10 players: bocsimacko(4008), felixcoto(3910), Hazard(3909), rsergio(3860), cfaftw(3829), jambachili(3803), davidjliu(3785), sin_sun(3766), RebelXT(3728), sequoh(3726)
+2010-10-24T12:11:38  <janzert> http://visualizer.naktibalda.lt ?
+2010-10-24T12:11:48  <janzert> just a place you can upload game data to
+2010-10-24T12:11:52  <jklandis> My theory is that thread/process scheduling, together with polling overhead, is causing it.
+2010-10-24T12:12:30  <janzert> jklandis: you're implementing the process listed in your last comment?
+2010-10-24T12:12:36  <jklandis> no
+2010-10-24T12:12:59  <janzert> ok, just switching to a pure select based wait?
+2010-10-24T12:13:04  <jklandis> yes
+2010-10-24T12:13:11  <jklandis> no polling
+2010-10-24T12:13:17  <jklandis> select with timeout
+2010-10-24T12:13:21  <janzert> yeah, ok
+2010-10-24T12:14:21  <janzert> I really think keeping the blocking I/O and having the i/o threads set an event back to the main thread is the best way to go, but I would probably accept a select based method too
+2010-10-24T12:14:38  <janzert> just have to test it a little more thoroughly
+2010-10-24T12:14:44  *** irchs <irchs!~Jan@94-194-33-168.zone8.bethere.co.uk> has joined #aichallenge
+2010-10-24T12:14:46  <jklandis> I thought about threads, and it just makes scheduling problems worse
+2010-10-24T12:14:56  <jklandis> You can't just sleep and hope things get scheduled
+2010-10-24T12:15:08  <janzert> you don't have to sleep
+2010-10-24T12:15:28  <jklandis> So you have worker threads dumping lines into a queue
+2010-10-24T12:15:32  <janzert> the io threads stay blocked reading input and the main thread blocks waiting for threading.Event
+2010-10-24T12:15:49  <janzert> like they do now if I'm remembering correctly
+2010-10-24T12:16:10  <jklandis> Right now each bot gets a reader thread
+2010-10-24T12:16:18  <janzert> yep
+2010-10-24T12:16:20  <jklandis> and it dumps output into a separate queue
+2010-10-24T12:16:24  <janzert> stays the same
+2010-10-24T12:16:31  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T12:16:47  <janzert> actually combining to one queue is probably simpler
+2010-10-24T12:16:49  <jklandis> what should happen under the threaded design is that they use the same queue
+2010-10-24T12:16:52  <jklandis> right
+2010-10-24T12:17:23  <jklandis> otherwise threading doesn't actually solve the multiplexing problem
+2010-10-24T12:17:30  <jklandis> it just moves it
+2010-10-24T12:17:33  *** irchs <irchs!~Jan@94-194-33-168.zone8.bethere.co.uk> has quit IRC (Client Quit)
+2010-10-24T12:17:58  <janzert> and actually if you use one queue the main thread can just wait on the queue no event needed
+2010-10-24T12:18:05  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-24T12:18:26  <jklandis> I would hope Python would provide a thread-safe queue for this kind of ting
+2010-10-24T12:18:36  <janzert> yes,
+2010-10-24T12:18:40  <jklandis> where removing blocks until something is added
+2010-10-24T12:18:44  <janzert> look at the Queue module
+2010-10-24T12:18:51  <jklandis> That's what is being used now
+2010-10-24T12:19:01  <janzert> and it's thread safe?
+2010-10-24T12:19:04  <janzert> err no ?
+2010-10-24T12:19:12  <janzert> s/?/!
+2010-10-24T12:19:28  <jklandis> says synchronized in the docs
+2010-10-24T12:19:49  <jklandis> " It is especially useful in threaded programming when information must be exchanged safely between multiple threads"
+2010-10-24T12:20:12  <janzert> which is thread safe, it's not an non-locking design but is thread safe
+2010-10-24T12:20:37  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC (Ping timeout: 255 seconds)
+2010-10-24T12:20:49  <jklandis> Here is another issue to consider
+2010-10-24T12:20:51  *** Tobu <Tobu!~Tobu@unaffiliated/tobu> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T12:20:57  <jklandis> select only works on pipes on Unix
+2010-10-24T12:21:07  <jklandis> it's socket-only on Windows
+2010-10-24T12:21:13  <janzert> right
+2010-10-24T12:21:15  <jklandis> so a select-based approach wouldn't be portable
+2010-10-24T12:21:23  <janzert> that is one reason I'd like to stay away from select
+2010-10-24T12:21:30  <jklandis> Anything else?
+2010-10-24T12:21:49  <janzert> it's also been known to have a fair number of bugs on many different *nix's in the past
+2010-10-24T12:22:01  <janzert> although it should be fairly safe on linux now I believe
+2010-10-24T12:23:12  <janzert> anyway gotta run for probably 8+ hours, thanks for working on this
+2010-10-24T12:23:12  <jklandis> OK, I'm convinced
+2010-10-24T12:32:41  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has joined #aichallenge
+2010-10-24T12:33:02  *** Xrillo <Xrillo!~christian@h85-8-26-145.static.se.alltele.net> has joined #aichallenge
+2010-10-24T12:37:56  *** hornairs <hornairs!~hornairs@dsl-67-55-16-144.acanac.net> has joined #aichallenge
+2010-10-24T12:40:26  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-10-24T12:42:21  *** tapwater <tapwater!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has joined #aichallenge
+2010-10-24T12:44:00  *** p4p4 <p4p4!~chatzilla@82.113.106.31> has joined #aichallenge
+2010-10-24T12:47:35  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2010-10-24T13:00:52  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has joined #aichallenge
+2010-10-24T13:00:56  *** toodlebug <toodlebug!45aba6a1@gateway/web/freenode/ip.69.171.166.161> has joined #aichallenge
+2010-10-24T13:03:33  <toodlebug> hello...?
+2010-10-24T13:03:43  <rebelxt> hi
+2010-10-24T13:04:26  <toodlebug> ah... I wasn't sure if anyone was here.....
+2010-10-24T13:04:51  <toodlebug> alot of names but no text scrolling by.....
+2010-10-24T13:05:16  <rebelxt> we are here ;-)
+2010-10-24T13:05:33  <rebelxt> just quiet sometimes
+2010-10-24T13:06:15  <toodlebug> Im a noob programer seeking  help to add a field to the planet class,
+2010-10-24T13:07:22  <toodlebug> I tried creating a subclass "PlanetX", with the extra field "flag"
+2010-10-24T13:08:28  <toodlebug> I get incompatable type error when compiling MyBot
+2010-10-24T13:08:56  <rebelxt> you could modify planet class directly.. or just keep additional state outside of planet class in your bot's class
+2010-10-24T13:09:03  <toodlebug> can this be done...? or am I spinning my wheels...??
+2010-10-24T13:09:27  <rebelxt> can be done of course
+2010-10-24T13:10:10  <toodlebug> thanks I try to mod the planet class...
+2010-10-24T13:11:00  <rebelxt> if you just want to maintain a flag associated with each planet, you could have a map in your bot's main class (i.e. map planet id to flag value). this is probably the easiest alternative
+2010-10-24T13:11:35  <contestbot> Top 10 players: bocsimacko(3989), felixcoto(3890), Hazard(3875), rsergio(3837), cfaftw(3801), jambachili(3797), davidjliu(3768), sin_sun(3746), RebelXT(3733), sequoh(3709)
+2010-10-24T13:12:58  <rebelxt> what language are you using btw?
+2010-10-24T13:13:09  <toodlebug> Hmm... ok , so I create a array using my planet ID.... ( java)
+2010-10-24T13:13:41  <rebelxt> in Java you could use a HashMap
+2010-10-24T13:15:02  <toodlebug> I havnt read up on hash... yet Im guessing its like a "perl" style hase
+2010-10-24T13:15:06  <toodlebug> hash
+2010-10-24T13:16:18  <rebelxt> map is a key-value dictionary. very fast at looking up values by key
+2010-10-24T13:16:29  <rebelxt> google HashMap - you will see some good examples
+2010-10-24T13:17:08  <toodlebug> looking at it now.... thanks
+2010-10-24T13:17:36  <rebelxt> np
+2010-10-24T13:17:43  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-24T13:21:53  *** JensT1 <JensT1!~jens@91.182.169.245> has left #aichallenge
+2010-10-24T13:22:41  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T13:22:47  *** Mekanik <Mekanik!~vov@ppp85-140-232-214.pppoe.mtu-net.ru> has quit IRC (Ping timeout: 272 seconds)
+2010-10-24T13:25:12  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-24T13:31:18  <rebelxt> hazard needs to fix this simple bug! ;-) http://ai-contest.com/visualizer.php?game_id=6136012
+2010-10-24T13:36:28  *** Mekanik <Mekanik!~vov@ppp85-140-162-145.pppoe.mtu-net.ru> has joined #aichallenge
+2010-10-24T13:43:17  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has left #aichallenge
+2010-10-24T13:50:48  *** perror <perror!~fleury@aldebaran.labri.fr> has quit IRC (Quit: Bye all !)
+2010-10-24T13:57:38  *** bhasker <bhasker!~bhasker@adsl-76-254-13-0.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: bhasker)
+2010-10-24T13:58:23  *** Mekanik <Mekanik!~vov@ppp85-140-162-145.pppoe.mtu-net.ru> has quit IRC (Quit: WeeChat 0.3.3)
+2010-10-24T14:01:48  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has quit IRC (Quit: Leaving)
+2010-10-24T14:04:54  *** virdo <virdo!virdo@bas9-london14-2925244202.dsl.bell.ca> has joined #aichallenge
+2010-10-24T14:06:14  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has quit IRC (Remote host closed the connection)
+2010-10-24T14:11:37  <contestbot> Top 10 players: bocsimacko(3986), Hazard(3916), felixcoto(3886), sin_sun(3793), cfaftw(3791), davidjliu(3780), jambachili(3777), luksian(3730), RebelXT(3730), ruilov(3709)
+2010-10-24T14:20:04  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has joined #aichallenge
+2010-10-24T14:38:31  *** bhasker <bhasker!~bhasker@69-170-40-2.static-ip.telepacific.net> has joined #aichallenge
+2010-10-24T14:42:02  <bhasker> hah
+2010-10-24T14:43:25  <bhasker> i need to stop getting my bot to over extend itself
+2010-10-24T14:43:37  <bhasker> always does something stupid and burns up an advantage
+2010-10-24T14:47:21  *** iNtERrUpT <iNtERrUpT!~interrupt@119.192.12.119> has joined #aichallenge
+2010-10-24T14:48:20  <iNtERrUpT> T.T
+2010-10-24T14:51:07  *** iNtERrUpT <iNtERrUpT!~interrupt@119.192.12.119> has quit IRC (Remote host closed the connection)
+2010-10-24T15:00:14  *** Mjothvitnir <Mjothvitnir!432ace74@gateway/web/freenode/ip.67.42.206.116> has joined #aichallenge
+2010-10-24T15:11:42  <contestbot> Top 10 players: bocsimacko(3989), Hazard(3920), felixcoto(3882), cfaftw(3797), davidjliu(3796), sin_sun(3792), jambachili(3782), RebelXT(3736), luksian(3736), ruilov(3724)
+2010-10-24T15:12:08  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has joined #aichallenge
+2010-10-24T15:18:42  *** wvdschel <wvdschel!~wim@d54C18EBE.access.telenet.be> has joined #aichallenge
+2010-10-24T15:18:43  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has joined #aichallenge
+2010-10-24T15:18:47  *** Itkovian <Itkovian!~Itkovian@78-22-226-160.access.telenet.be> has joined #aichallenge
+2010-10-24T15:20:11  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2010-10-24T15:25:05  *** Mjothvitnir <Mjothvitnir!432ace74@gateway/web/freenode/ip.67.42.206.116> has quit IRC (Quit: Page closed)
+2010-10-24T15:25:44  <mega1> oh mine, reordering calculations for floating point accuracy really hurts playing strenght :-o
+2010-10-24T15:25:51  *** onetwo3 <onetwo3!47bebb38@gateway/web/freenode/ip.71.190.187.56> has joined #aichallenge
+2010-10-24T15:26:24  <mega1> I hate these kinds of subtle reverse-engineer-me-please ideas hiding as bugs.
+2010-10-24T15:27:31  <edcba> what do you mean ?
+2010-10-24T15:27:57  *** bhasker <bhasker!~bhasker@69-170-40-2.static-ip.telepacific.net> has quit IRC (Quit: bhasker)
+2010-10-24T15:28:08  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2010-10-24T15:28:37  <mega1> that I now have to understand why losing floating point accuracy helped my evaluation function
+2010-10-24T15:29:04  <edcba> oh ok
+2010-10-24T15:29:04  <rebelxt> mega1: wow, my bot finally got lucky against yours
+2010-10-24T15:29:05  <mega1> very unpleasant
+2010-10-24T15:29:19  <rebelxt> mega1: on the official server..
+2010-10-24T15:30:14  <mega1> nice one
+2010-10-24T15:30:32  <mega1> the stupid git held back 40 when it was attacking
+2010-10-24T15:31:18  <rebelxt> git?
+2010-10-24T15:31:45  <mega1> http://www.usingenglish.com/forum/general-language-discussions/62341-stupid-git-used-americans-british-alike.html
+2010-10-24T15:32:23  <rebelxt> hehe
+2010-10-24T15:32:26  <mega1> not the version control system
+2010-10-24T15:32:41  <mega1> although I guess this is the pun that was on Linus' mind
+2010-10-24T15:32:44  <rebelxt> that's what i was wondering since i use git ;)
+2010-10-24T15:33:48  <rebelxt> was a good game.. i got lucky grabbing that center planet when you could not snipe it
+2010-10-24T15:35:53  <mega1> in b0.22 (the version on the official server) sniping is a weakness
+2010-10-24T15:36:08  <mega1> both ways.
+2010-10-24T15:36:44  <rebelxt> ahh, got it. yeah don't think i ever beat 0.30
+2010-10-24T15:37:01  <rebelxt> mega1, how soon do you bail out on the official server? 0.8s? i recall you saying that 0.9s (?) was still causing time-outs
+2010-10-24T15:37:11  <mega1> yes
+2010-10-24T15:37:15  <mega1> 0.8s now
+2010-10-24T15:38:01  <rebelxt> ok, thanks, i don't want to see time-outs again if i ever get the next bot to work well
+2010-10-24T15:38:35  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has quit IRC (Quit: Leaving)
+2010-10-24T15:40:15  <jklandis> I think I have narrowed down 202 -- the first-turn timeout problem
+2010-10-24T15:40:26  <jklandis> It looks like it has to do with ssh
+2010-10-24T15:40:55  <jklandis> in user_sadbox.py
+2010-10-24T15:41:55  <jklandis> The bot is blocked on pipe_wait
+2010-10-24T15:42:18  <jklandis> and the ssh input end is blocked on unix_stream_data_wait
+2010-10-24T15:42:37  <jklandis> So either Python or SSH is buffering the input and it's not getting through
+2010-10-24T15:43:24  <jklandis> I don't see the problem if I run the ssh command directly on the console
+2010-10-24T15:48:24  <p4p4> user_sadbox, that's nice..
+2010-10-24T15:54:50  <jklandis> I think what happens is that if SSH thinks it's connected to a terminal, it uses line buffering.  Otherwise, it uses default buffering
+2010-10-24T15:56:09  <jklandis> But why does the problem only happen some of the time?
+2010-10-24T15:56:51  <jklandis> Yep.
+2010-10-24T15:57:03  <jklandis> If I concatenate all the maps together into one big map and send that
+2010-10-24T15:57:12  <jklandis> it's so big SSH doesn't have the choice but to flush
+2010-10-24T15:57:24  <jklandis> and it gets sent
+2010-10-24T15:57:27  <jklandis> bingo
+2010-10-24T15:57:55  <jklandis> I don't understand why this code ever works
+2010-10-24T16:00:01  <jklandis> So... how can we force SSH into line-buffering mode?
+2010-10-24T16:01:09  <a1k0n> jklandis: ssh -t?
+2010-10-24T16:01:43  <a1k0n> you're running bots via ssh instead of running the tournament on the remote server?
+2010-10-24T16:02:27  <jklandis> I'm not sure I understand your question
+2010-10-24T16:02:44  <a1k0n> oh, er, nevermind
+2010-10-24T16:02:44  <jklandis> On the tournament servers, each bot is run as a separate user
+2010-10-24T16:02:49  <jklandis> via ssh
+2010-10-24T16:02:52  <a1k0n> weird.
+2010-10-24T16:02:58  <jklandis> as a form of sandboxing
+2010-10-24T16:03:04  <a1k0n> why not... setuid adn chroot?
+2010-10-24T16:03:09  <jklandis> I don't know why "su" isn't good enough
+2010-10-24T16:03:17  <jklandis> maybe because of passwords
+2010-10-24T16:03:29  <jklandis> SSH lets you use a key file
+2010-10-24T16:03:42  <jklandis> I didn't design all this, I'm just trying to get it to wirk
+2010-10-24T16:03:50  <a1k0n> su doesn't ask for a password if you run it as root
+2010-10-24T16:03:58  <jklandis> but ssh -t looks promising
+2010-10-24T16:05:06  <jklandis> Or maybe they could configure sudo
+2010-10-24T16:06:35  *** Itkovian <Itkovian!~Itkovian@78-22-226-160.access.telenet.be> has quit IRC (Quit: Itkovian)
+2010-10-24T16:07:08  *** Itkovian <Itkovian!~Itkovian@2002:4e16:e2a0:0:21f:5bff:fec8:6e2c> has joined #aichallenge
+2010-10-24T16:07:59  *** Zalma <Zalma!50dd5eb7@gateway/web/freenode/ip.80.221.94.183> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T16:11:37  <contestbot> Top 10 players: bocsimacko(3965), Hazard(3939), felixcoto(3880), davidjliu(3790), jambachili(3789), sin_sun(3786), cfaftw(3766), RebelXT(3742), luksian(3740), ruilov(3737)
+2010-10-24T16:13:47  *** toodlebug <toodlebug!45aba6a1@gateway/web/freenode/ip.69.171.166.161> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T16:15:43  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has left #aichallenge
+2010-10-24T16:16:30  *** Itkovian <Itkovian!~Itkovian@2002:4e16:e2a0:0:21f:5bff:fec8:6e2c> has quit IRC (Quit: Itkovian)
+2010-10-24T16:22:40  *** jklandis <jklandis!~jklandis@c-67-170-77-161.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 250 seconds)
+2010-10-24T16:26:48  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has joined #aichallenge
+2010-10-24T16:30:48  <Accoun> no any time
+2010-10-24T16:37:50  *** boegel <boegel!~boegel@91.182.68.130> has quit IRC (Quit: Leaving)
+2010-10-24T16:52:04  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2010-10-24T16:52:21  <Todd200> hi people
+2010-10-24T16:54:19  <Todd200> wow its empty in here
+2010-10-24T16:55:47  <Naktibalda> oh really?
+2010-10-24T16:57:22  <Todd200> hey a person!
+2010-10-24T16:57:49  <Todd200> i just thought id drop by and check out the ai contest channel
+2010-10-24T16:58:17  * Todd200 is still waiting for his ai to win a battle
+2010-10-24T16:59:30  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-24T16:59:58  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2010-10-24T17:08:42  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has joined #aichallenge
+2010-10-24T17:08:54  * Todd200 is bored
+2010-10-24T17:11:31  *** delt0r___ <delt0r___!~delt0r@188-22-165-74.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-24T17:11:37  <contestbot> Top 10 players: bocsimacko(3964), Hazard(3963), felixcoto(3868), jambachili(3794), sin_sun(3790), davidjliu(3772), cfaftw(3768), luksian(3756), ruilov(3755), RebelXT(3737)
+2010-10-24T17:13:50  *** delt0r <delt0r!~delt0r@188-22-27-201.adsl.highway.telekom.at> has quit IRC (Ping timeout: 264 seconds)
+2010-10-24T17:23:12  *** phreeza <phreeza!~phreeza@f048198032.adsl.alicedsl.de> has joined #aichallenge
+2010-10-24T17:26:46  *** p4p4 <p4p4!~chatzilla@82.113.106.31> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2010-10-24T17:32:22  *** mceier <mceier!~mceier@chello089077208118.chello.pl> has quit IRC (Quit: leaving)
+2010-10-24T17:37:57  *** Bobng <Bobng!~T@78.148.48.91> has quit IRC (Ping timeout: 240 seconds)
+2010-10-24T17:54:37  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has left #aichallenge
+2010-10-24T18:01:14  *** allsystemsarego <allsystemsarego!~allsystem@unaffiliated/allsystemsarego> has quit IRC (Quit: Leaving)
+2010-10-24T18:02:59  *** bhasker <bhasker!~bhasker@adsl-76-254-13-0.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-24T18:05:54  *** Xrillo <Xrillo!~christian@h85-8-26-145.static.se.alltele.net> has left #aichallenge ("Ex-Chat")
+2010-10-24T18:09:15  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has quit IRC (Quit: NEVER GONNA GIVE YOU UP NEVER GONNA LET YOU DOWN)
+2010-10-24T18:09:37  *** fawek <fawek!~faw@chello089079023212.chello.pl> has quit IRC (Ping timeout: 264 seconds)
+2010-10-24T18:11:39  <contestbot> Top 10 players: bocsimacko(3953), Hazard(3942), felixcoto(3858), sin_sun(3793), jambachili(3791), davidjliu(3769), cfaftw(3750), RebelXT(3738), ruilov(3733), luksian(3723)
+2010-10-24T18:17:17  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Remote host closed the connection)
+2010-10-24T18:22:38  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2010-10-24T18:29:55  *** yasith <yasith!~yasith@112.135.89.76> has quit IRC (Ping timeout: 252 seconds)
+2010-10-24T18:39:09  *** jklandis <jklandis!~jklandis@c-67-170-77-161.hsd1.wa.comcast.net> has joined #aichallenge
+2010-10-24T18:39:22  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2010-10-24T18:41:25  *** yasith <yasith!~yasith@112.135.64.119> has joined #aichallenge
+2010-10-24T18:48:12  *** jesionaj` <jesionaj`!~dongs@174-18-2-151.tcso.qwest.net> has joined #aichallenge
+2010-10-24T18:49:48  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T18:55:46  *** choas <choas!~lars@p578F65A0.dip.t-dialin.net> has quit IRC (Ping timeout: 276 seconds)
+2010-10-24T19:01:19  *** O1athe <O1athe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-24T19:02:55  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has quit IRC (Ping timeout: 255 seconds)
+2010-10-24T19:04:16  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2010-10-24T19:05:40  *** rommel <rommel!88bac89f@gateway/web/freenode/ip.136.186.200.159> has joined #aichallenge
+2010-10-24T19:06:04  <FlagCapper> Does anyone know where I can find the source code for playGame.jar?
+2010-10-24T19:07:28  *** Sarin <Sarin!~hallo@p5B0EFA1F.dip.t-dialin.net> has quit IRC (Quit: Verlassend)
+2010-10-24T19:08:58  <jklandis> do you know where the repository is?
+2010-10-24T19:09:14  <FlagCapper> no
+2010-10-24T19:10:57  <jklandis> http://code.google.com/p/ai-contest/source/browse/
+2010-10-24T19:11:38  <contestbot> Top 10 players: Hazard(3957), bocsimacko(3931), felixcoto(3875), sin_sun(3800), jambachili(3787), davidjliu(3776), cfaftw(3764), RebelXT(3739), luksian(3725), sequoh(3724)
+2010-10-24T19:12:05  <jklandis> If you aren't familiar with SVN, start with trunk, and look under planet_wars
+2010-10-24T19:13:07  <jklandis> I believe PlayGame.jar is built from the sources under viz
+2010-10-24T19:13:13  <FlagCapper> Thanks
+2010-10-24T19:13:30  <FlagCapper> I think engine.py might also do
+2010-10-24T19:13:55  <jklandis> Well engine.py runs on the server, and you will have trouble using it without a bunch of stuff set up
+2010-10-24T19:14:29  <jklandis> But maybe you just want to see how it works.
+2010-10-24T19:14:32  <FlagCapper> I'm just looking for some code to look off of so I can resolve battles with my bot
+2010-10-24T19:14:37  <FlagCapper> I don't actually want to run it
+2010-10-24T19:15:05  <jklandis> I think backend/engine.py has a function called fight_battle
+2010-10-24T19:15:19  <FlagCapper> I'm looking at it right now
+2010-10-24T19:15:22  <FlagCapper> :)
+2010-10-24T19:15:43  *** phreeza <phreeza!~phreeza@f048198032.adsl.alicedsl.de> has quit IRC (Quit: kthxbai)
+2010-10-24T19:27:39  *** Commandir <Commandir!~joakim@h85-8-40-32.static.se.alltele.net> has left #aichallenge
+2010-10-24T19:29:11  *** davidjliu_ <davidjliu_!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-24T19:30:59  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T19:38:44  *** jesionaj` <jesionaj`!~dongs@174-18-2-151.tcso.qwest.net> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T19:39:42  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T19:41:11  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-24T19:44:02  *** rommel <rommel!88bac89f@gateway/web/freenode/ip.136.186.200.159> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T19:44:03  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has joined #aichallenge
+2010-10-24T20:04:49  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (Remote host closed the connection)
+2010-10-24T20:11:40  <contestbot> Top 10 players: Hazard(3933), bocsimacko(3926), felixcoto(3886), sin_sun(3792), jambachili(3780), davidjliu(3772), cfaftw(3767), RebelXT(3726), luksian(3718), sequoh(3718)
+2010-10-24T20:12:49  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-10-24T20:13:37  *** jesionaj` <jesionaj`!~dongs@174-18-2-151.tcso.qwest.net> has joined #aichallenge
+2010-10-24T20:16:43  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has quit IRC (Ping timeout: 255 seconds)
+2010-10-24T20:38:13  <javagamer> What's it called when you have a C++ constructor which has this: Object(int a, int b) : someVar(a), someOtherVar(b) { code };?
+2010-10-24T20:40:52  <dmj111> that is an initialization list, i think.
+2010-10-24T20:44:27  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T20:49:17  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2010-10-24T21:11:42  <contestbot> Top 10 players: Hazard(3926), bocsimacko(3919), felixcoto(3887), jambachili(3775), sin_sun(3775), davidjliu(3760), cfaftw(3758), Raschi(3724), luksian(3721), RebelXT(3719)
+2010-10-24T21:21:25  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has left #aichallenge
+2010-10-24T21:26:41  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Excess Flood)
+2010-10-24T21:27:36  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-24T21:36:46  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Excess Flood)
+2010-10-24T21:53:15  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-24T22:05:16  <Mathnerd314> urgh... the optimal next-to-last move is almost as complicated as the entire game
+2010-10-24T22:05:43  *** seisatsu <seisatsu!~seisatsu@adsl-99-31-234-153.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-24T22:06:27  <jklandis> except that you only consider targets at distance 2
+2010-10-24T22:06:35  <Mathnerd314> distance 1, actually
+2010-10-24T22:07:04  <jklandis> fleets travel during the turn on which they are launched
+2010-10-24T22:07:42  <Mathnerd314> yeah...
+2010-10-24T22:09:02  <jklandis> I guess it doesn't matter what happens at the end of the last turn however
+2010-10-24T22:09:12  <jklandis> you will have already earned your bonus ships
+2010-10-24T22:09:21  <jklandis> the outcome can't affect the score
+2010-10-24T22:09:37  <Mathnerd314> actually, it can: you can waste ships on a neutral
+2010-10-24T22:11:10  <jklandis> I do not think the map generator allows planets at distance 1
+2010-10-24T22:11:26  <jklandis> It would create strange sequencing problems in the game engine
+2010-10-24T22:11:40  <contestbot> Top 10 players: Hazard(3925), bocsimacko(3918), felixcoto(3886), jambachili(3774), sin_sun(3774), davidjliu(3759), cfaftw(3757), Raschi(3722), luksian(3720), RebelXT(3716)
+2010-10-24T22:12:07  <jklandis> It would be possible to accidentally make an illegal move
+2010-10-24T22:12:31  <jklandis> Depending on the order in which the moves get processed
+2010-10-24T22:12:44  <Mathnerd314> no...
+2010-10-24T22:13:08  <Mathnerd314> fleets sent, then growth, then fleets come back
+2010-10-24T22:13:37  <Mathnerd314> read engine.py
+2010-10-24T22:15:49  <jklandis> I think you are right
+2010-10-24T22:16:09  <jklandis> Still, I do not think planets at distance 1 are allowed
+2010-10-24T22:16:25  <Mathnerd314> check the maps :p
+2010-10-24T22:17:02  <Mathnerd314> or map_generator.py
+2010-10-24T22:17:26  <jklandis> I see a check for dist <= 1 in too_close()
+2010-10-24T22:18:34  <Mathnerd314> anyways, I don't care; it is an interesting problem
+2010-10-24T22:21:36  <Mathnerd314> for example, if you have one planet connected to lots of neutrals, then it is the 0-1 knapsack problem
+2010-10-24T22:26:56  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Ping timeout: 265 seconds)
+2010-10-24T22:27:34  <Mathnerd314> but enemies add a whole new dimension :D
+2010-10-24T22:28:54  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-24T22:34:20  <jklandis> are you aware of any simple examples where there is no dominant strategy?
+2010-10-24T22:34:27  <jklandis> say with 3 planets?
+2010-10-24T22:45:49  *** jesionaj` <jesionaj`!~dongs@174-18-2-151.tcso.qwest.net> has quit IRC (Ping timeout: 272 seconds)
+2010-10-24T22:47:59  <dmj111> i think mcleopold and jmcarthur have discussed various situations that they believe have no dominant strategy.  I did not follow it closely though.  Its been in the last week or two.
+2010-10-24T22:50:31  <jmcarthur> dmj111: we always turn up short
+2010-10-24T22:51:04  <jmcarthur> it was at least a couple weeks ago
+2010-10-24T22:51:14  <jmcarthur> i'm not even really participating now. real life beat me down
+2010-10-24T22:54:25  <dmj111> ahh.  sorry to hear that.  I keep trying to step away, but get deluded into thinking I have something else that will work.
+2010-10-24T22:56:35  <jklandis> I keep wanting subgame analysis to work
+2010-10-24T22:56:47  <jklandis> some maps have these tempting little clusters
+2010-10-24T22:59:53  <Mathnerd314> too short-sighted. you're limited to 6-7 moves
+2010-10-24T23:00:01  <dmj111> at one point, I tried treating groups of planets I owned that were all closer to each other than any enemy as a "super planet".  That way, I could attack/defend as one from them, kind of.
+2010-10-24T23:00:36  <dmj111> most of my code assumes the worst from the enemy, and this clustering idea would help mitigate it, but not really enough.
+2010-10-24T23:01:36  <Mathnerd314> if I can just get optimal strategy for the next-to-last move, and implement it, I feel as though my bot will win most games
+2010-10-24T23:04:21  <jklandis> A lot of the time when playing the game manually I end up thinking "how many ships do I need to send to that region over there to tip the balance?"
+2010-10-24T23:04:27  <amstan> how's everyone?
+2010-10-24T23:04:45  <jklandis> I don't know how to make that question precise
+2010-10-24T23:08:09  *** antimatroid1 <antimatroid1!~Nick@50.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-10-24T23:08:18  <Mathnerd314> jklandis: that is one of the things that I already need to consider
+2010-10-24T23:09:16  <Mathnerd314> anyways... back to studies of linear programming
+2010-10-24T23:10:26  *** antimatroid <antimatroid!~Nick@230.197.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 250 seconds)
+2010-10-24T23:11:46  <contestbot> Top 10 players: Hazard(3920), bocsimacko(3897), felixcoto(3893), jambachili(3769), cfaftw(3755), sin_sun(3752), davidjliu(3744), luksian(3715), RebelXT(3704), sequoh(3691)
+2010-10-24T23:17:24  *** tapwater <tapwater!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has quit IRC (Quit: tapwater)
+2010-10-24T23:21:49  *** jklandis <jklandis!~jklandis@c-67-170-77-161.hsd1.wa.comcast.net> has left #aichallenge
+2010-10-24T23:26:27  <antimatroid1> dmj111: when you assume the worst, how do you prevent it from doing nothing the second it gets behind :P
+2010-10-24T23:26:46  <antimatroid1> i was trying to work out a way to do that, but then realised the enemy would ruin me first turn just by expanding more
+2010-10-24T23:36:56  *** jesionaj <jesionaj!~dongs@ip72-208-6-35.ph.ph.cox.net> has joined #aichallenge

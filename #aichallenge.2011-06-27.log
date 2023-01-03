@@ -1,0 +1,1129 @@
+2011-06-27T00:00:05  <antimatroid> consider the case where b is reflected horizontally to a
+2011-06-27T00:01:05  <antimatroid> if there's an uneven number of columns, they can skip to every square by moving 2 cols at a time, if there are an even number of rows, they skip into columns that can't land on each other and fill the row
+2011-06-27T00:01:27  <amstan> you just put a restriction
+2011-06-27T00:01:45  <amstan> i don't see how you can have an even number of columns/rows when the maze has to be even
+2011-06-27T00:01:54  <amstan> uneven*
+2011-06-27T00:02:20  <antimatroid> .a.b.
+2011-06-27T00:02:28  <antimatroid> that is symmetric horizontally with 5 cols yes?
+2011-06-27T00:02:47  <amstan> yes, but for a maze you cannot have that
+2011-06-27T00:03:07  <antimatroid> mazes are lame :(
+2011-06-27T00:03:20  <amstan> or.. you can make a special case for the edges
+2011-06-27T00:04:46  <amstan> yes.. that would work
+2011-06-27T00:05:08  <amstan> you know how you have mostly walls on the right side of ###########
+2011-06-27T00:05:12  <amstan> http://ants.zeroviz.us/KHFUK/*
+2011-06-27T00:05:23  <amstan> without the *
+2011-06-27T00:05:40  <antimatroid> mostly walls where?
+2011-06-27T00:05:47  <amstan> on the last column
+2011-06-27T00:05:56  <Pyronaut> 26 Jun 8:47 Was my last game where I didn't time out. The next game at : 26 Jun 9:12 is timing out. Every C# bot is timing out.
+2011-06-27T00:06:00  <antimatroid> no more than any other column :P
+2011-06-27T00:06:10  <antimatroid> well, every second column :P
+2011-06-27T00:06:29  <amstan> the first column has vertical corridors as well, so it's mostly empty
+2011-06-27T00:06:39  <amstan> and the last one is mostly walls
+2011-06-27T00:06:56  <Pyronaut> I lie, the game at 26 Jun 9:54 seemed to go alright. And then from that point on, every game has timed out.
+2011-06-27T00:07:11  <amstan> when the map wraps, you don't necessarly have to keep that more walls/less walls pattern
+2011-06-27T00:07:17  <amstan> you could just double one of them
+2011-06-27T00:07:36  <amstan> the problem is that it won't work for your translational symmetry types anymore
+2011-06-27T00:07:45  <amstan> since it won't be symmetric then
+2011-06-27T00:07:50  <amstan> but it will for rotational and mirror
+2011-06-27T00:09:20  <antimatroid> amstan: i think that would happen already, except my get location function has no problems passing off one side of the map
+2011-06-27T00:09:34  <amstan> ?
+2011-06-27T00:09:46  <amstan> i'm not really familiar with the mapgen
+2011-06-27T00:09:51  <amstan> so i don't know its perks
+2011-06-27T00:10:54  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-27T00:11:04  <antimatroid> if i get the location 2 west from a location on the right wall, i'm not going to get the first location on the left without severely hacking the get location function
+2011-06-27T00:11:13  <antimatroid> 2 east :P
+2011-06-27T00:13:15  <amstan> what?
+2011-06-27T00:14:04  <antimatroid> amstan: you're saying double the fist and last column yes?
+2011-06-27T00:14:10  <antimatroid> the problem is, get location doesn't know that
+2011-06-27T00:14:40  <amstan> make the map first, then at the end do it
+2011-06-27T00:14:58  <antimatroid> i have generalised all the getting symmetric location stuff to writing general map generators for the symmetry types
+2011-06-27T00:15:06  <antimatroid> but actual mazes are sounding way too hard
+2011-06-27T00:15:17  <antimatroid> it would require like a separate function for each type of symmetry
+2011-06-27T00:15:23  <amstan> so what's wrong with just limiting mazes to even numbers only
+2011-06-27T00:15:34  <antimatroid> that doesn't fix my problem
+2011-06-27T00:15:48  <amstan> how did you get http://ants.zeroviz.us/KHFUK/ then?
+2011-06-27T00:16:08  <antimatroid> that's a tile map, the rotationals aren't reflected
+2011-06-27T00:16:23  <antimatroid> consider a..b
+2011-06-27T00:16:33  <amstan> oh, now i get it
+2011-06-27T00:16:50  <amstan> so.. i still don't understand how you get from a normal map to a symmetric map?
+2011-06-27T00:17:06  <antimatroid> one way wants to use uneven, but the other way wants even
+2011-06-27T00:17:10  <amstan> do you flip it then OR all the water?
+2011-06-27T00:17:29  <antimatroid> when i add land, i get all symmetrically equivalent locations and add land
+2011-06-27T00:17:50  <amstan> ic, so it is ORing all the land
+2011-06-27T00:18:00  <antimatroid> yep
+2011-06-27T00:18:18  <amstan> so why can't you just stop your generator when you get halfway? so you only go one pass everywhere
+2011-06-27T00:18:28  <amstan> let the symmetry fill the rest
+2011-06-27T00:18:50  <antimatroid> i am doing one pass everywhere
+2011-06-27T00:19:00  <antimatroid> but the map requires every second one of those to be empty
+2011-06-27T00:19:08  <antimatroid> when you do that for both players, that's the entire row/col
+2011-06-27T00:19:28  <amstan> #define mapsize 10x10
+2011-06-27T00:19:58  <amstan> #define symmetrytype mirror 2 player
+2011-06-27T00:20:30  <amstan> yes, but from what i understand you're generating a 10x10 unsymmetric maze first, then you're flipping it around the middle and adding it to the unflipped
+2011-06-27T00:20:41  <amstan> having land wherever either maps have land
+2011-06-27T00:20:59  <amstan> why don't you just generate a 10x5 unsymmetric maze, keep the other 10x5 water?
+2011-06-27T00:21:37  <antimatroid> http://ants.zeroviz.us/COxEJ/ :P
+2011-06-27T00:22:29  <amstan> what was the original maze though?
+2011-06-27T00:23:04  <amstan> disable the "i get all symmetrically equivalent locations and add land" part and show me the resulting map
+2011-06-27T00:23:46  <antimatroid> the problem is it's a bit of work to give you both :P
+2011-06-27T00:23:56  <antimatroid> actually, give me a minute
+2011-06-27T00:26:18  <antimatroid> http://ants.zeroviz.us/TrvNo/
+2011-06-27T00:26:18  <antimatroid> http://ants.zeroviz.us/zbZ1o/
+2011-06-27T00:26:25  <antimatroid> you'll need to move it if you want the ants in the same place
+2011-06-27T00:26:30  <antimatroid> it was too much effort to fix that
+2011-06-27T00:27:07  <amstan> do you have a text version?
+2011-06-27T00:27:16  <amstan> oh
+2011-06-27T00:27:17  <amstan> found it
+2011-06-27T00:31:17  <antimatroid> amstan: http://asciipaint.com/viewImages.php?i=672 i want to do mazes like that with dfs carves into the map
+2011-06-27T00:31:21  <amstan> antimatroid: http://pastebin.com/XBkM1HxU
+2011-06-27T00:31:34  <antimatroid> but it's really hard to do, and i want it to be done with like nxn blocks :\
+2011-06-27T00:33:35  <amstan> antimatroid: http://pastebin.com/Gu2iPTWr
+2011-06-27T00:33:37  <antimatroid> amstan: but is there an easy way for my to do that for all types of symmetry :P
+2011-06-27T00:34:01  <amstan> antimatroid: not sure, you have to crop it based on how the symmetry does it
+2011-06-27T00:34:11  <amstan> if the symmetry already took care of a block, don't fill it
+2011-06-27T00:34:36  <amstan> antimatroid: http://pastebin.com/Z8LyH3rt
+2011-06-27T00:35:52  <amstan> i didn't even realize you were doing OR for the land before
+2011-06-27T00:36:07  <amstan> i guess it doesn't really matter much for the other maps, unless you get to these pattern maps
+2011-06-27T00:37:13  <antimatroid> OR?
+2011-06-27T00:39:50  <amstan> as in.. generating the map while symmetry was in effect
+2011-06-27T00:39:57  <amstan> or generating the whole map with the symmetry on
+2011-06-27T00:40:18  <amstan> when i did this for tron i only worried about half the map
+2011-06-27T00:40:29  <antimatroid> i will try to work out how to do that
+2011-06-27T00:40:43  <antimatroid> but seems complicated with all the symmetries to me
+2011-06-27T00:40:48  <antimatroid> i might be able to just find a basis
+2011-06-27T00:40:59  <amstan> i can't believe we did the tron mapgen in c, lol
+2011-06-27T00:41:07  <amstan> pgpaskar_: remember those times?
+2011-06-27T00:41:13  <antimatroid> i wish i could do the mapgen in c++ :(
+2011-06-27T00:41:18  <antimatroid> it would be a lot neater too :P
+2011-06-27T00:42:46  <antimatroid> amstan: i think the basis idea will work :\
+2011-06-27T00:43:42  <antimatroid> i might just try it and see what happens
+2011-06-27T00:46:03  *** okayzed is now known as okay
+2011-06-27T01:01:48  *** Pyronaut <Pyronaut!83cb730e@gateway/web/freenode/ip.131.203.115.14> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T01:02:31  <antimatroid> amstan: http://ants.zeroviz.us/oUxfS/ that seems to have worked
+2011-06-27T01:02:43  <antimatroid> one problem is now some of the maze becomes not connected
+2011-06-27T01:02:50  <antimatroid> but i can potentially flood fill those parts
+2011-06-27T01:09:33  *** okay is now known as okayzed
+2011-06-27T01:11:35  <antimatroid> amstan: any idea about what to do about the now disconnected regions? :P
+2011-06-27T01:12:07  <amstan> generate the maze with restricted dimensions
+2011-06-27T01:14:41  <antimatroid> ?
+2011-06-27T01:15:14  <antimatroid> oh build the map on the basis set?
+2011-06-27T01:15:21  <antimatroid> i think i can do that with a little bit of work
+2011-06-27T01:15:47  <antimatroid> like with our reflected map, if i move east to the other players side, it needs to change direction?
+2011-06-27T01:17:20  <antimatroid> alright, i'm gonna go get some food then start another rewrite
+2011-06-27T01:17:21  <Rabidus> wow, nice
+2011-06-27T01:17:23  <antimatroid> that will take some effort
+2011-06-27T01:29:39  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-27T01:30:24  <stocha> janzert:  Wolrld war one at version http://aichallengebeta.hypertriangle.com/visualizer.php?game=40320&user=107 (1500 turns seems too short for those slow bots )
+2011-06-27T01:32:44  <stocha> @later tell zaphus: here is a game of a 256x256 map capable bot (http://aichallengebeta.hypertriangle.com/visualizer.php?game=40320&user=107)  It's very sloow. But cool looking still. Not very strong though :'(
+2011-06-27T01:32:44  <contestbot> stocha: OK
+2011-06-27T01:36:31  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-06-27T01:56:02  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T02:00:03  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T02:00:09  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 264 seconds)
+2011-06-27T02:00:27  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T02:03:25  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has joined #aichallenge
+2011-06-27T02:37:29  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-06-27T02:54:30  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T02:56:11  *** gobang <gobang!~gobang@89.204.137.226> has joined #aichallenge
+2011-06-27T02:56:41  *** gobang <gobang!~gobang@89.204.137.226> has joined #aichallenge
+2011-06-27T02:57:09  <gobang> 
+2011-06-27T03:04:14  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@122.167.106.27> has joined #aichallenge
+2011-06-27T03:04:15  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-06-27T03:32:07  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-06-27T03:39:57  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T03:45:06  <antimatroid> http://ants.zeroviz.us/49v4Z/
+2011-06-27T03:51:58  *** UncleVasya <UncleVasya!kvirc@46.133.39.87> has joined #aichallenge
+2011-06-27T04:15:45  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-06-27T04:31:15  *** dr- <dr-!~lotus@tuborg.lifl.fr> has joined #aichallenge
+2011-06-27T04:50:09  *** sir_macelon <sir_macelon!c06482e5@gateway/web/freenode/ip.192.100.130.229> has joined #aichallenge
+2011-06-27T04:50:13  <sir_macelon> hi
+2011-06-27T04:52:38  <UncleVasya> рш
+2011-06-27T04:52:40  <sir_macelon> seems i'm undenied at the top :)
+2011-06-27T04:52:41  <UncleVasya> hi
+2011-06-27T04:53:33  <Rabidus> high flyer
+2011-06-27T04:53:34  <Rabidus> :D
+2011-06-27T04:54:47  <sir_macelon> guess people are waiting for the official start of the contest
+2011-06-27T04:56:24  <Rabidus> nah
+2011-06-27T04:56:31  <Rabidus> you are just too good
+2011-06-27T04:57:11  <antimatroid> http://ants.zeroviz.us/2MGOq/
+2011-06-27T04:57:59  <antimatroid> insane map?
+2011-06-27T04:58:07  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-27T04:58:20  <antimatroid> stocha: http://ants.zeroviz.us/2MGOq/ :P
+2011-06-27T04:58:22  <antimatroid> insane?
+2011-06-27T04:58:34  <stocha> it's sad to realize that if i do not win this thing, people won't get to see my interesting coding techniques and ideas
+2011-06-27T04:58:39  <Rabidus> quite ... interesting
+2011-06-27T04:58:57  <stocha> antimatroid: no we are talking about map maping :)
+2011-06-27T04:59:04  <stocha> antimatroid: congratulation anyway :)
+2011-06-27T04:59:46  <UncleVasya> I'll try to play on it now :)
+2011-06-27T04:59:46  <stocha> antimatroid: now to tune this thing to have 3 width corridor (although blocking doesn't sound that practical in there :p )
+2011-06-27T04:59:48  <Rabidus> that would be fun to play with that
+2011-06-27T05:00:03  <stocha> what are the dimensions ?
+2011-06-27T05:00:34  <stocha> i think my new bot would do quite fine on this one. And also my old reference bot probably.
+2011-06-27T05:00:40  <antimatroid> click the raw file
+2011-06-27T05:00:41  <antimatroid> i still need to get it working for all symmetry types
+2011-06-27T05:00:48  <antimatroid> there are restrictions on the dimensions for maze maps
+2011-06-27T05:01:21  <stocha> antimatroid: let's put an assymetric maze for show. you can always update it later to symetric one.
+2011-06-27T05:01:26  <sir_macelon> where there any mazes already added to beta?
+2011-06-27T05:01:31  <stocha> i think people will be thrilled to try it as soon as possible :)
+2011-06-27T05:01:43  <antimatroid> sir_macelon: not yet
+2011-06-27T05:01:50  <stocha> besides, "maze" are probably quite fair anyway.
+2011-06-27T05:01:58  <stocha> especially bigs ones
+2011-06-27T05:02:08  <stocha> simply split the player, and it should do okay
+2011-06-27T05:02:24  <stocha> Although .... the "starting visible food" might break a bit there.
+2011-06-27T05:02:52  <stocha> What's the biggest map of the beta as for now ?
+2011-06-27T05:03:14  <antimatroid> no idea
+2011-06-27T05:03:24  <antimatroid> not above 120x120
+2011-06-27T05:03:29  <stocha> let's make a classical 128x128 for show also okay ?
+2011-06-27T05:03:50  <antimatroid> not really high on my list of things to do
+2011-06-27T05:03:55  <antimatroid> i'm trying to get this thing working
+2011-06-27T05:04:10  <stocha> antimatroid: okay you made good work. So i won't argue :)
+2011-06-27T05:08:54  <antimatroid> http://ants.zeroviz.us/BbT9O/
+2011-06-27T05:08:57  <antimatroid> just because i can :P
+2011-06-27T05:12:31  <stocha> antimatroid: does the vizualizer manage it well ?
+2011-06-27T05:12:45  <antimatroid> i haven't played any games with it
+2011-06-27T05:12:49  <stocha> let's put it on the beat, and see how many bot times out :p
+2011-06-27T05:12:54  <antimatroid> that's a legitimate map if you take the raw file though
+2011-06-27T05:13:44  <stocha> antimatroid: now to use the room pattern, and make a smiley map.
+2011-06-27T05:14:14  <stocha> (instead of the sort of cross you have on this one)
+2011-06-27T05:14:49  <antimatroid> that map is way too big for the beta server
+2011-06-27T05:15:04  <antimatroid> it's like 307x307
+2011-06-27T05:16:51  <stocha> oh. make a small 256x256 one then :p
+2011-06-27T05:19:16  <antimatroid> i did a ridiculous one for you instead :P
+2011-06-27T05:19:22  <antimatroid> this thing is reasonably fast
+2011-06-27T05:20:26  <antimatroid> http://ants.zeroviz.us/vhf1b/
+2011-06-27T05:23:07  <Rabidus> lol
+2011-06-27T05:23:51  <UncleVasya> I wanna one of this on the betaserver too. For stocha's reason :)
+2011-06-27T05:24:02  <antimatroid> that's 1000x1000 :P
+2011-06-27T05:24:08  <antimatroid> and a friggin maze :P
+2011-06-27T05:24:14  <stocha> looking at this game, i think 1500 turn is important for weak bots
+2011-06-27T05:24:15  <stocha> http://aichallengebeta.hypertriangle.com/visualizer.php?game=40735&user=107
+2011-06-27T05:24:59  <stocha> antimatroid: i wonder if my current stocha implementation could play on this one and not time out (it slows down with map growing, and number of food seen)
+2011-06-27T05:25:13  <antimatroid> my bot might time out while path finding
+2011-06-27T05:25:19  <antimatroid> it's got a timer to check usually though
+2011-06-27T05:25:29  <antimatroid> you'd have to stretch my bot pretty far for it to timeout atm
+2011-06-27T05:25:33  <stocha> we ought to have big maps though.
+2011-06-27T05:25:38  <antimatroid> why?
+2011-06-27T05:25:47  <antimatroid> they just limit the amount of cool strategies people can try?
+2011-06-27T05:25:52  <stocha> because it's interesting to see how to handle them
+2011-06-27T05:25:53  <antimatroid> they aren't needed to get cool games
+2011-06-27T05:26:13  <stocha> antimatroid: so far i'm amazed at how many "fast runable" strategy i still have to try
+2011-06-27T05:26:24  <stocha> let's make them only 5% or even 1%
+2011-06-27T05:26:32  <stocha> but some people will like to handle them.
+2011-06-27T05:26:35  *** onensora <onensora!Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-27T05:26:39  <stocha> i clearly have the means for that :)
+2011-06-27T05:26:50  <antimatroid> we will have a secondary tcp server with crazy maps
+2011-06-27T05:27:04  <stocha> because for some reasons, i puted this constraint on myself : my bot should have way to be the best on 256x256 maps
+2011-06-27T05:27:05  <antimatroid> we can go wild there with large maps, asymmetric maps, blockable maps, single corridor maze maps etc.
+2011-06-27T05:27:17  <stocha> (which happens to be the upper bound McLeopold gave me ...)
+2011-06-27T05:27:33  <antimatroid> we gave you an upper bound
+2011-06-27T05:27:37  <antimatroid> not a supremum
+2011-06-27T05:27:58  <stocha> antimatroid: the only ting that worries me, is the viewer. If the viewer break, then i agree that it start to be questionnable
+2011-06-27T05:28:19  <antimatroid> i'm amazed it handled even displaying 1000x1000
+2011-06-27T05:28:19  <stocha> if you think that small map make better games, i can understand. But don't suppress the large ones all together.
+2011-06-27T05:28:49  <stocha> antimatroid: you have the viewer not breaking, and then you have the ease of use / speed of display.
+2011-06-27T05:29:15  <stocha> On the current beta map, there is no problems i believe. But i want to find out what the upper bound is. For comfortable viewing.
+2011-06-27T05:29:20  <antimatroid> if you have 1% really large maps, then people doing cool strategies pretty much need to write an entirely separate bot just for those edge cases
+2011-06-27T05:29:22  <antimatroid> what's the point?
+2011-06-27T05:29:29  <antimatroid> why not just have them on the crazy maps server?
+2011-06-27T05:29:29  <stocha> then i'll probably advocate for that to be official upper bound.
+2011-06-27T05:29:58  <stocha> antimatroid: i want to show the performances i can achieves on those.
+2011-06-27T05:30:08  <antimatroid> why not do it on the crazy maps server?
+2011-06-27T05:30:12  <stocha> And beside, i feel my current strategy display is one of the coolest :p
+2011-06-27T05:30:30  <stocha> So currently, i would say that the only really cool strategy does work well on very big maps :p
+2011-06-27T05:30:59  <stocha> although it seems quite weak yet on small ones. I think i can get it quite high though.
+2011-06-27T05:30:59  <antimatroid> i think maze maps will be like having larger open maps anyway
+2011-06-27T05:31:06  <antimatroid> as paths will be longer between locations
+2011-06-27T05:31:23  <stocha> antimatroid: what i want to show, is that my bot can commande 7000 bots in 300 ms.
+2011-06-27T05:31:23  <antimatroid> although path finding will be quicker
+2011-06-27T05:31:28  <stocha> 7000 ants.
+2011-06-27T05:31:28  <antimatroid> because you have less places to look
+2011-06-27T05:31:32  <antimatroid> a* will be slower
+2011-06-27T05:31:33  <stocha> while doing clever stuff with them.
+2011-06-27T05:32:16  <stocha> The point is : that some people can't make good bot on those big maps, don't mean that no people can.
+2011-06-27T05:32:25  <stocha> let a chance to those to express themselve.
+2011-06-27T05:32:56  <stocha> even if it doesn't enable them to win the contest :)
+2011-06-27T05:33:02  <stocha> (because 1% really is not much)
+2011-06-27T05:33:02  <antimatroid> i personally don't like having a wide range of dimensions for maps
+2011-06-27T05:33:15  <stocha> let's only go for the biggest then.
+2011-06-27T05:33:25  <antimatroid> that's just your preference though
+2011-06-27T05:33:40  <stocha> antimatroid: the problem is, you have already implemented some algorithm. So you'll choose the maps that fits the limitations of them the best.
+2011-06-27T05:33:52  <stocha> antimatroid: the same applies to me
+2011-06-27T05:33:58  <stocha> i searched for scalable algorithm
+2011-06-27T05:34:06  <stocha> so i want big maps because if that :)
+2011-06-27T05:34:15  <antimatroid> i haven't implemented my algorithm yet
+2011-06-27T05:34:16  <stocha> So i guess diversity is the solution.
+2011-06-27T05:34:21  <antimatroid> i'd done food collection and not fully
+2011-06-27T05:34:25  <antimatroid> i've*
+2011-06-27T05:35:06  <stocha> antimatroid: what i say, is that neither you or me will be objective when choosing the upper/lower bounds. Inconsioulsy we'll try to make you natural thinking at ease.
+2011-06-27T05:35:22  <stocha> our not you
+2011-06-27T05:35:48  <antimatroid> i agree that we're both biased
+2011-06-27T05:35:56  <antimatroid> i do my best to get the opinions of others etc.
+2011-06-27T05:35:59  <stocha> Anyway the ant game has so many varation, everyone will not be happy.
+2011-06-27T05:36:16  <antimatroid> but i'm also fairly sure most people would agree that too larger dimensions will diminish the quality of the bots possible
+2011-06-27T05:36:21  <stocha> but to have someone reasonably unbiased made the choices would be cool (be it polls)
+2011-06-27T05:36:58  <stocha> antimatroid: then you need to build an unbiased poll, to proove that. (though even if they do, it does means it's right. )
+2011-06-27T05:37:16  <stocha> because the same apply for small maps.
+2011-06-27T05:37:27  <stocha> small maps will limite the quality of the bots possible.
+2011-06-27T05:37:32  <antimatroid> we also have resource limitations
+2011-06-27T05:37:36  <antimatroid> larger maps take longer on average
+2011-06-27T05:37:44  <stocha> yeah. that is a good argument.
+2011-06-27T05:37:56  <stocha> then make all map 10x10
+2011-06-27T05:38:04  <stocha> the game will run very quick then.
+2011-06-27T05:38:08  <antimatroid> trust me, i would enjoy that strategy wise :P
+2011-06-27T05:38:15  <stocha> we could have 1000 done in a few second.
+2011-06-27T05:38:24  <antimatroid> no, i'd still demand a second a turn
+2011-06-27T05:38:34  <stocha> antimatroid: i don't believe the fighting system is rich enough for very small maps
+2011-06-27T05:38:35  <antimatroid> you underestimate my ability to use time
+2011-06-27T05:38:53  <stocha> antimatroid: but we can make the game 100 turn or less
+2011-06-27T05:38:59  <stocha> and be comfortable with it.
+2011-06-27T05:39:05  <antimatroid> you want the game to reasonably play out
+2011-06-27T05:39:08  <stocha> so even with 1 sec a turn, it'll be quite quick
+2011-06-27T05:39:38  <stocha> antimatroid: let's keep this idea of building a reasonable consensual upper bound then.
+2011-06-27T05:39:46  <stocha> we'll work on that later.
+2011-06-27T05:39:56  <stocha> show us a labyrinth map on beta :)
+2011-06-27T05:40:01  <stocha> so people can see it close.
+2011-06-27T05:40:07  <antimatroid> i stil need to work on it
+2011-06-27T05:40:10  <antimatroid> which i might get back to
+2011-06-27T05:40:14  <stocha> even if it's not symetrical yet.
+2011-06-27T05:40:43  <UncleVasya> While small maps are good for tactical monster the big maps are for the strategysts. I think it is good to have 3 types of maps: pure tactical, pure strategical, where tactics and strategy are near the same in profit.
+2011-06-27T05:41:06  <antimatroid> did you just refer to the larger as more strategical?
+2011-06-27T05:41:18  * antimatroid 's head asplodes
+2011-06-27T05:41:29  <antimatroid> :)
+2011-06-27T05:41:38  <UncleVasya> The thing nedd to be managed for big maps is that ants "countries" have a long boundaries with others.
+2011-06-27T05:42:25  <UncleVasya> If I said stupid thing than neverr mind :)
+2011-06-27T05:42:28  <antimatroid> what would be really important with maze maps is the ability to track down your enemies
+2011-06-27T05:42:38  <antimatroid> which means tracking information about where enemies might be outside of view
+2011-06-27T05:43:02  <stocha> UncleVasya: yeah i think you are right
+2011-06-27T05:43:05  <antimatroid> it wasn't stupid, i was poking at my preference for small examples :P
+2011-06-27T05:43:07  <stocha> small = tactical.
+2011-06-27T05:43:12  <stocha> medium = average
+2011-06-27T05:43:19  <stocha> big = strategical
+2011-06-27T05:43:22  <stocha> small is like chess
+2011-06-27T05:43:26  <stocha> medium is like go
+2011-06-27T05:43:26  <antimatroid> tactical == strategical imo
+2011-06-27T05:43:30  <stocha> big is like life :)
+2011-06-27T05:43:42  <stocha> antimatroid: did you ever play go ?
+2011-06-27T05:43:45  <antimatroid> nope
+2011-06-27T05:43:57  <stocha> antimatroid: this game as both tactical and strategical. They are not the same things :)
+2011-06-27T05:44:16  <stocha> Chess is 95% tactical
+2011-06-27T05:44:20  <stocha> go is abut 50/50
+2011-06-27T05:44:56  <stocha> sir_macelon's bot is getting crazily efficient
+2011-06-27T05:45:02  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-06-27T05:45:02  <UncleVasya> For me strategic map is a map where decision "where to fight" is more important than "how to fight".
+2011-06-27T05:55:52  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T06:04:29  *** UncleVasya <UncleVasya!kvirc@46.133.39.87> has quit IRC ()
+2011-06-27T06:05:18  <gobang> 
+2011-06-27T06:14:26  *** _0x47 <_0x47!~slash@p57B3FD58.dip.t-dialin.net> has joined #aichallenge
+2011-06-27T06:42:29  *** mleise <mleise!~marco@dslb-088-071-191-208.pools.arcor-ip.net> has joined #aichallenge
+2011-06-27T06:49:32  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-27T06:59:35  *** sYnfo <sYnfo!5ab2768a@gateway/web/freenode/ip.90.178.118.138> has joined #aichallenge
+2011-06-27T07:04:27  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-06-27T07:09:31  *** onensora <onensora!Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 244 seconds)
+2011-06-27T07:10:28  *** onensora <onensora!Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-27T07:18:10  <antimatroid> mleise: http://ants.zeroviz.us/vhf1b/ :P
+2011-06-27T07:22:18  <mleise> antimatroid: oh my god
+2011-06-27T07:22:31  <antimatroid> i got a bit carried away :P
+2011-06-27T07:23:29  <mleise> I guess we can have very long games on this one :p
+2011-06-27T07:23:42  <antimatroid> i'm not sure the tools would handle the gmae
+2011-06-27T07:23:45  <mleise> now you can try to solve the maze
+2011-06-27T07:24:22  <antimatroid> i am working on fixing up the dimension requirements for each type of symmetry
+2011-06-27T07:24:33  <antimatroid> to make sure it doesn't wipe entire rows/cols out
+2011-06-27T07:24:36  <mleise> what's wrong with them?
+2011-06-27T07:24:38  <antimatroid> or the entire map in some instances
+2011-06-27T07:24:43  <antimatroid> i can do all symmetry types
+2011-06-27T07:24:46  <sYnfo> That's good! I can see the 300-like battles of spartian ant holding of thousands and thousands of their advesaries.
+2011-06-27T07:24:49  <antimatroid> just with conditions on the stuff
+2011-06-27T07:25:49  <antimatroid> like for tile maps, i need row_t and col_t to be divisible by 2, for any rotational symmetries i need even dimensions and for those that have a transpose component, then i need the ants starting locations to have either both odd or both even indexes
+2011-06-27T07:25:59  <antimatroid> it's rather messy working this shit out :P
+2011-06-27T07:27:00  <mleise> oh, it seems more complex than i thought
+2011-06-27T07:27:20  *** UncleVasya <UncleVasya!kvirc@46.133.74.228> has joined #aichallenge
+2011-06-27T07:27:42  <antimatroid> can i escape python code like an if statement onto multiple lines?
+2011-06-27T07:27:53  <antimatroid> like or then new line next condition?
+2011-06-27T07:28:46  <mleise> in the rediculous maze i can see some diagonal and vertical line pattern
+2011-06-27T07:30:17  <sYnfo> antimatroid: put '\' at the end of the line.
+2011-06-27T07:30:32  <antimatroid> sYnfo: cheers
+2011-06-27T07:30:48  <antimatroid> melise: that's where the symmetry has matched up
+2011-06-27T07:30:53  <antimatroid> it's not a perfect maze
+2011-06-27T07:30:55  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-06-27T07:30:59  <antimatroid> i intend to make it an even less perfect maze
+2011-06-27T07:31:26  <antimatroid> it's super fast though
+2011-06-27T07:31:29  <antimatroid> compared to my other map gen
+2011-06-27T07:32:34  <stocha> test
+2011-06-27T07:33:40  <antimatroid> stocha: polo
+2011-06-27T07:35:41  <stocha> maybe we'll nee some variation in corridor wideness. let's say it's fixed. Then 3 width 4 width and 5 width labyrynth for example
+2011-06-27T07:37:29  <Rabidus> 3 width labyrinth with corridors allowed... what a corridor game
+2011-06-27T07:40:54  <stocha> it's suprisingly frustrating to remplace experimental ugly code/bot behavior that reach 4th place, with a far more advanced thing. (especially when the result ends up 20th :p)
+2011-06-27T07:41:29  <stocha> it takes about 100 games to have an idea how the bot i doing
+2011-06-27T07:41:35  <stocha> 100 games takes hours though :'(
+2011-06-27T07:43:17  <sir_macelon> seems you don't know what your bots are doing :)
+2011-06-27T07:44:14  <antimatroid> okay, these conditions are just wtf
+2011-06-27T07:44:50  <antimatroid> if i have one type of 2 player rotational symmetry, the players starting locations must be odd/odd or even/even for row/col, whereas for another one, it needs to be odd/even or eve/odd
+2011-06-27T07:44:53  <antimatroid> grrr
+2011-06-27T07:45:15  <stocha> sir_macelon: true. you do know what your bot is doing ?
+2011-06-27T07:45:23  <stocha> for me it's all a big mess :)
+2011-06-27T07:45:35  <stocha> the ant server is quite slow to respond http wise : /
+2011-06-27T07:45:51  <stocha> UncleVasya: ICQ still exists ??
+2011-06-27T07:45:58  <Rabidus> :D
+2011-06-27T07:46:38  <stocha> UncleVasya has about 92 games about 15hour
+2011-06-27T07:46:55  <stocha> so to know a bot ranks, it take about 20 hours on the beta server.
+2011-06-27T07:47:04  <UncleVasya> Is it good amount?
+2011-06-27T07:47:27  <stocha> UncleVasya: 100 games per second would be good :p
+2011-06-27T07:47:52  <stocha> i guess a very slow thinking, very slow winning very strong bot would have longer average games :p
+2011-06-27T07:48:35  <stocha> so, we have about 100 players right now. Let's say we get 4000 for release. And that its scale linearly. So it would be about 800 hours per 100 games.
+2011-06-27T07:48:57  <UncleVasya> wow
+2011-06-27T07:49:11  <stocha> that's about a month, to have a vague idea how the bot is doing.
+2011-06-27T07:49:17  <sir_macelon> stocha: well more or less I know, but more important is whether you know what it should be doing
+2011-06-27T07:49:44  <stocha> sir_macelon: so much depends on the map, when you start doing "clever" stuff : /
+2011-06-27T07:50:19  <stocha> sir_macelon: so i know what i want him to do. I saw sometime satifying stuff. But it really depends on so much. Map and opponent strategy for one things
+2011-06-27T07:50:43  <UncleVasya> I think contest will get about 1500 contestants this time.
+2011-06-27T07:50:56  <stocha> I'm amazed at how powerfull avoiding fighting is right now (except for top two places)
+2011-06-27T07:51:02  <stocha> UncleVasya: why ?
+2011-06-27T07:51:07  <sir_macelon> if i see my bot acting oddly i just write a unit test to check it and that's it, works perfectly
+2011-06-27T07:51:16  <stocha> UncleVasya: the game can be pretty involving in a lot of ways.
+2011-06-27T07:51:38  <stocha> sir_macelon: how many "features" does your bot have then ?
+2011-06-27T07:51:47  <stocha> do you have a unit test for each of them ?
+2011-06-27T07:52:06  <stocha> sir_macelon: do you have a graphic tool for hand making unit tests ?
+2011-06-27T07:52:27  <mleise> Oh lol, a guy at Creative Assembly talked to his boss about using D for the Total War series :p
+2011-06-27T07:52:36  <stocha> even desining one test for one of stocha features would be a nightmare i think.
+2011-06-27T07:52:50  <stocha> not to mention, i rarely keep a feature for more than a day.
+2011-06-27T07:53:11  <sir_macelon> stocha: I have only one feature which my overall strategy, which applies to every situation, don't like to hardcoed stuff or any behaviour
+2011-06-27T07:53:20  <sir_macelon> *which is
+2011-06-27T07:53:59  <stocha> sir_macelon: my testing are mostly behavior oriented right now. So i have tested let's say a few dozen of them. To try to see what i can make the bot do and look like doing.
+2011-06-27T07:54:01  <sir_macelon> stocha: basically yes, currently about 20 unit tests just for battle movements
+2011-06-27T07:54:12  <stocha> I think in this game, there is a lot of room for "elegance" :)
+2011-06-27T07:54:32  <stocha> sir_macelon: wow. that need patience :)
+2011-06-27T07:54:45  <sir_macelon> I create them by hand, but only with the absolutely necessary information and limit to just a small part of the map
+2011-06-27T07:54:47  <stocha> sir_macelon: do you think battles will be interesting in the end ?
+2011-06-27T07:55:21  <sir_macelon> I am a very patient person and this is really benefitting me as you can see on the leader board
+2011-06-27T07:55:22  <stocha> i'm not 100% convinced by battle resolution being interesting yet. You have far more experienced in seems :)
+2011-06-27T07:55:42  <sir_macelon> from previous contest I've learned that testing is the key for winning
+2011-06-27T07:55:52  <stocha> sir_macelon: you do very well on current maps. But there a very precious few of them.
+2011-06-27T07:56:21  <stocha> sir_macelon: looking at your last version, i can see that you made a great job.
+2011-06-27T07:56:46  <stocha> I'm more like, i test some very simple pieces of code, and see what it does.
+2011-06-27T07:56:54  <stocha> mainly by observing right now.
+2011-06-27T07:57:04  <sir_macelon> stocha: I am waiting for more challenging opponents that should come anyway
+2011-06-27T07:57:15  <stocha> sir_macelon: i'm starting to work on fighting
+2011-06-27T07:57:23  <UncleVasya> I had a question before I started my bot: what do I want to try more: functional language or unit testing? I've heard about TTD first time about 1.5 months ago and did a little googling but decided to left it to the next time.
+2011-06-27T07:57:33  <stocha> sir_macelon: because at the moment, it start to really limits what i can observe :)
+2011-06-27T07:57:37  <sir_macelon> battle will be much more interesting then and there should be some interesting strategies :)
+2011-06-27T07:58:13  <stocha> sir_macelon: i'm inclined toward interesting strategy, then interesting tacticals :p
+2011-06-27T07:58:34  <stocha> sir_macelon: do you think tactics will have a lot of room for improvement ?
+2011-06-27T07:58:42  <UncleVasya> In the next contest I'll find a Master here to learn a wonder of unit testing from. :)
+2011-06-27T07:59:00  <stocha> UncleVasya: it seems sir_macelon is doing pretty well in this area.
+2011-06-27T07:59:13  <sir_macelon> stocha: yes I do, there are really a lot of ways for strategy
+2011-06-27T07:59:13  <stocha> whereas i seems to be on the low side of it :'(
+2011-06-27T07:59:19  <sYnfo> sir_macelon: Oh it's you, the winning polak, nice to see a neighbour leading the pack :)
+2011-06-27T07:59:26  <stocha> sir_macelon: good thing then.
+2011-06-27T07:59:35  <sir_macelon> still I believe I only have some basics of it, nothing fancy
+2011-06-27T07:59:52  <stocha> sir_macelon: you mean there is a lot of room for improvement ?
+2011-06-27T07:59:58  <sir_macelon> sYnfo: where are you from?
+2011-06-27T08:00:08  <sir_macelon> stocha: yes, of course
+2011-06-27T08:00:24  <stocha> good good. i was under the impression it was straight forward :)
+2011-06-27T08:00:44  <stocha> with a lot of random noise in it.
+2011-06-27T08:00:58  <sYnfo> sir_macelon: CZ, Opava in particular. TVP runs almost 24/7 in this household. :D
+2011-06-27T08:01:31  <stocha> sir_macelon: how well did you do in previous contests ?
+2011-06-27T08:01:42  <sir_macelon> sYnfo: thats nice :) you've uploaded any bot?
+2011-06-27T08:02:40  <sir_macelon> stocha: i've only participated in Planet Wars, joined at the beginning of October, when there was only 2 months left, but managed to finish 80th
+2011-06-27T08:02:53  <sYnfo> sir_macelon: Nah, just the starting one so far. I'm working on one, but I'm hardly a good coder, so I don't expect to do too well. :)
+2011-06-27T08:03:12  <stocha> sir_macelon: did you do a lot of unit-tests in there ?
+2011-06-27T08:03:43  <sir_macelon> sYnfo: anyway you should have great fun improving your bot's performance as we all do :)
+2011-06-27T08:03:47  <stocha> sir_macelon: which game is more stimulating ? pw or ant ?
+2011-06-27T08:04:23  <sir_macelon> stocha: not a single one, i didn't think it was worth the time, hadn't much of it anyway
+2011-06-27T08:04:31  <sYnfo> sir_macelon: No doubt :) I wanted to participate in Planet Wars last year but alas, high school got the better of me
+2011-06-27T08:04:44  <stocha> sir_macelon: so you go in a total new direction in here :)
+2011-06-27T08:05:28  <stocha> maybe you grew up. or maybe you just have to win this time :p
+2011-06-27T08:05:31  <sir_macelon> stocha: I think pw was much easier than ants
+2011-06-27T08:05:55  <sir_macelon> stocha: i've learned my lesson :)
+2011-06-27T08:06:14  <stocha> sir_macelon: which game is it easier to spend a lot of time coding bot for do you think ?
+2011-06-27T08:06:26  <stocha> (pw or ant)
+2011-06-27T08:06:26  <Rabidus> but where's bocksimacko
+2011-06-27T08:07:00  <stocha> Rabidus: maybe his wife doesn't want him to participate again. Or maybe he won, and is happy with it. Maybe he doesn't know about ant.
+2011-06-27T08:07:07  <sir_macelon> stocha: I would try to work on my pw bot when zeta comes
+2011-06-27T08:07:47  <stocha> so far, i have found the ant game pretty interesting.
+2011-06-27T08:07:57  <stocha> it's hard to settle rules for though.
+2011-06-27T08:08:06  <sYnfo> Do you guys know about robocode?
+2011-06-27T08:08:06  <sir_macelon> stocha: it is indeed, but pw is also an interesting problem
+2011-06-27T08:08:11  <stocha> especially because maps are such doers.
+2011-06-27T08:08:26  <stocha> sYnfo:  i do not.
+2011-06-27T08:08:33  <Rabidus> :O
+2011-06-27T08:08:46  <sYnfo> robocode.sourceforge.net pretty neat stuff
+2011-06-27T08:08:51  <stocha> Rabidus: you want him to come and win everything ?
+2011-06-27T08:08:57  <UncleVasya> stocha: if not ICQ, what do people use for this purpose now?
+2011-06-27T08:08:57  <Rabidus> yes
+2011-06-27T08:08:58  <Rabidus> :D
+2011-06-27T08:09:09  <stocha> UncleVasya: facebook ?
+2011-06-27T08:09:32  <stocha> UncleVasya: (among a hundred modern stuff, all more or less interoperable :p)
+2011-06-27T08:09:34  <sYnfo> UncleVaysya: You're from eastern europe right? ICQ is still pretty much alive and kicking here..
+2011-06-27T08:09:47  <sir_macelon> stocha: I think he is satisfied with the win, but it would be nice to face him
+2011-06-27T08:09:50  <stocha> UncleVasya: where are you ?
+2011-06-27T08:10:00  <UncleVasya> stocha:  nah, it's in the browser :)
+2011-06-27T08:10:15  <stocha> UncleVasya: no you have client for facebook tchat.
+2011-06-27T08:10:32  <UncleVasya> stocha: Do you mean my country? Ukraine.
+2011-06-27T08:10:45  <stocha> UncleVasya: yeah, i was asking about your country :)
+2011-06-27T08:11:30  <stocha> UncleVasya: in fact you have client, that do all of "Facebook tchat, msn tchat, yahoo tchat, a thing for making call tchat etc tchat). All in the same client.
+2011-06-27T08:11:54  <stocha> Email has started to be more used as nicknames handle, than icq numbers i think :)
+2011-06-27T08:12:04  <sir_macelon> stocha: you've taken part in pw contest?
+2011-06-27T08:12:09  <stocha> icq was not very insightful
+2011-06-27T08:12:36  <stocha> sir_macelon: no. I wanted to. Then i understood ant was already decided and 50% through dev effort :)
+2011-06-27T08:12:55  <stocha> sir_macelon: i wanted to participate in a new alive one though.
+2011-06-27T08:13:20  <stocha> the fact that pw is already finish, with a clear winner, doesn't make participating very motivating for me
+2011-06-27T08:13:24  <stocha> also ... ant is a new game.
+2011-06-27T08:13:42  <stocha> so you don't have people having forehand knowledge about it. I find it pretty exciting
+2011-06-27T08:13:46  <sir_macelon> stocha: when zeta comes it will change
+2011-06-27T08:13:53  <stocha> all this people who have no idea of how things will go :)
+2011-06-27T08:14:01  <stocha> sir_macelon: who is this zeta ?
+2011-06-27T08:14:29  <stocha> sir_macelon: i don't think i'll do bot work for all the rest of my life (well you never know).
+2011-06-27T08:14:30  <sir_macelon> stocha: check out the git repo, it's a new project
+2011-06-27T08:14:40  <stocha> it seems to be a lot of dedication to do something really.
+2011-06-27T08:14:56  <antimatroid> stocha: just wait
+2011-06-27T08:14:59  <antimatroid> it's very addictive
+2011-06-27T08:15:10  <stocha> there is a lot of thing i want to do yet. I think ant is a great thing for me. But i doubt i'll do it again once it's ended.
+2011-06-27T08:15:13  <UncleVasya> stocha: zeta is a new life for all past contests and much more.
+2011-06-27T08:15:58  <stocha> This contests enable me to have an idea, how much i understand what writting software is about. so i find it great for that :)
+2011-06-27T08:16:11  <stocha> but i also meet my own limitations at every corners.
+2011-06-27T08:16:26  <stocha> so it's a good experience. But there so much other thing i'd like to do with the time.
+2011-06-27T08:16:43  <stocha> there is not enougth time really.
+2011-06-27T08:16:51  <UncleVasya> lifer ><
+2011-06-27T08:17:07  <stocha> sir_macelon: (i'm probably not the most patient guy around :)  )
+2011-06-27T08:18:05  <stocha> I hope i'll be able to stand my ground, even with my clearly lacking testing strategy :)
+2011-06-27T08:18:49  <stocha> it would be good, if all of sudden i was able to build tested code though.
+2011-06-27T08:19:27  <sir_macelon> testing is really worth the effort, I am sure
+2011-06-27T08:20:33  *** eashoka <eashoka!70875600@gateway/web/freenode/ip.112.135.86.0> has joined #aichallenge
+2011-06-27T08:22:06  <stocha> sir_macelon: java is so good for that. Makes testing so much more easy. (yet to patience consuming for me it seems :p)
+2011-06-27T08:22:40  <stocha> sir_macelon: it also happens that whenever i test something i always miss the important bug (my unit test is broken or something similar)
+2011-06-27T08:22:57  <UncleVasya> In PW my most efficient update was when I told mysel "Stop. Do not implement new features until you make your existing code bugless."
+2011-06-27T08:23:27  <stocha> UncleVasya: did you succeed ?
+2011-06-27T08:23:50  <sir_macelon> stocha: you have to start the unit testing from the core methods, to be sure you can rely on them
+2011-06-27T08:24:15  <stocha> UncleVasya: i tend to implement only straight forward ideas. So it will be simple to test them. (as long as they remain as simple as they are now) It always feel to complex for me though :p
+2011-06-27T08:24:51  <stocha> sir_macelon: yeah, that's about the only test i wrote. (and i missed some important bugs that i discovered when i try to rewrite in c)
+2011-06-27T08:25:06  <UncleVasya> Making my code bug-free gave me more profit than few last features that time.
+2011-06-27T08:25:59  <stocha> UncleVasya: what i dread with bug, i how it make your conclusion go to waste (oh this features, is really nice. It make may bot SOOO Muuuch stronger. Wait, there is a bug. I features i doing just nothing)
+2011-06-27T08:26:15  <sir_macelon> when I have properly tested bot I can always easily check whether a new improvement has introduced any errors to previous ones
+2011-06-27T08:26:40  <stocha> (it can be worth, like   this very important feature doesn't work, i'll to find a new idea   ---- when in fact it DOES work great. Only you had silly bugs)
+2011-06-27T08:27:08  <stocha> sir_macelon: your tests are automatic passable ?
+2011-06-27T08:27:09  <UncleVasya> But now the story repeats. I can't spend  much time doing one thing. So currently in my does few things but all of them are some kind of not-cooked well food.
+2011-06-27T08:28:02  *** onensora <onensora!Its@e198153.upc-e.chello.nl> has quit IRC ()
+2011-06-27T08:28:32  <sir_macelon> stocha: what do you mean with that?
+2011-06-27T08:28:55  <eashoka> beta server down ? seems like no games has been played for an hour or so
+2011-06-27T08:28:58  <stocha> good strategy +5% strength. Good tactical +15% strength   Correct implementation of both + 185% strength
+2011-06-27T08:29:11  <sir_macelon> stocha: I run them before and after new implementation
+2011-06-27T08:29:31  <UncleVasya> that's very true, stocha :)
+2011-06-27T08:29:35  <stocha> sir_macelon: bah, i'd better go back working at my attempt to have basic fighting code.
+2011-06-27T08:30:12  <stocha> sir_macelon: i hope i'll beat your bot, and prove to world that one can go with no testing ! yeah. No i have a real motivation to win. *cough* cough*
+2011-06-27T08:30:28  <sir_macelon> stocha: can't wait to see that
+2011-06-27T08:30:37  <stocha> sir_macelon: me neither
+2011-06-27T08:31:06  <sir_macelon> stocha: if you beat me I lose my faith in test driven development...
+2011-06-27T08:32:35  <sYnfo> I have to wonder, how old are you guys?
+2011-06-27T08:33:47  <eashoka> game server no longer running ? (site works fine, just the tournament seems stopped.) any body have any info please... ?
+2011-06-27T08:35:08  *** _0x47 <_0x47!~slash@p57B3FD58.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-06-27T08:39:16  <stocha> sir_macelon: testing have been the computer revolution of the last 10 years. i'll build a whole new paradygm for software engineering.
+2011-06-27T08:39:28  <UncleVasya> stocha: I think this time will be less contestants because in PW guys with rank more than 900 was those who wrote their bots with mind "just to do something and forget".
+2011-06-27T08:39:31  <stocha> Do you think Oblivion V will be worth playing ?
+2011-06-27T08:39:40  <stocha> Elder Scroll V rather
+2011-06-27T08:40:13  <stocha> UncleVasya: why would there be less contestant, i don't understand
+2011-06-27T08:40:33  <UncleVasya> Ants seems to me a task where you can't  "just do something".
+2011-06-27T08:40:34  <stocha> (is more than 900 weaker or stronger than less than 900 ?)
+2011-06-27T08:40:50  <UncleVasya> 900+
+2011-06-27T08:40:58  <stocha> UncleVasya: i just did many thing. And most will be forgoten
+2011-06-27T08:41:10  <stocha> UncleVasya: is 900 weaker than 1100 ?
+2011-06-27T08:41:25  <UncleVasya> no
+2011-06-27T08:41:42  <stocha> so the people that had strong bot, would want to forget about it ?
+2011-06-27T08:42:03  <UncleVasya> No :)
+2011-06-27T08:42:09  <stocha> i'm confused :)
+2011-06-27T08:42:16  <stocha> i didn't get it i guess.
+2011-06-27T08:42:29  <UncleVasya> Let me get words...
+2011-06-27T08:42:58  <stocha> my bot actually won a game ! yeah !
+2011-06-27T08:43:34  <UncleVasya> I meant that people with place 900+ wasn't people who spend more than one evening for development.
+2011-06-27T08:43:45  <stocha> (ah the opponent timed out :'(  )
+2011-06-27T08:43:58  <UncleVasya> No versions, no updates.
+2011-06-27T08:44:15  <UncleVasya> No developming process.
+2011-06-27T08:44:37  <stocha> UncleVasya: so 900+ being all stronger than 900, the people who had strong bots, didn't spent more than one evening on it.
+2011-06-27T08:44:54  <UncleVasya> They wrote they bot once and then sometimes come to the site to see how it's doind.
+2011-06-27T08:45:12  <sir_macelon> stocha: how come you free bots are better than your main one? can't take what's good in them?
+2011-06-27T08:45:19  <UncleVasya> By 900+ i mean 901 902 903...
+2011-06-27T08:45:50  <stocha> sir_macelon: for example Sto03RepliCrush is an abandonned branch.
+2011-06-27T08:46:02  <stocha> sir_macelon: i just don't like the thinking of it.
+2011-06-27T08:46:16  <stocha> sir_macelon: beside .... it's very slow. So time mangement becomes very important
+2011-06-27T08:46:41  <stocha> sir_macelon: and i think it is really hard to combine with other ideas.
+2011-06-27T08:46:45  <UncleVasya> stocha:  he's angry on you for your decision :)
+2011-06-27T08:47:24  <sir_macelon> stocha: but you get a very good bot for local testing then
+2011-06-27T08:47:41  <stocha> stoha02 : it seems that what this bot do really right, i doing nothing. I simple let the part for fighting blank. So if it trys to fight, the ant stop .... not a very usefull feature really :)
+2011-06-27T08:47:42  <sir_macelon> stocha: first you should check why it beats you
+2011-06-27T08:48:04  <stocha> sir_macelon: yeah. But still it make testing slow. And it isn't particularly strong.
+2011-06-27T08:48:18  <stocha> sir_macelon: on local testing, it does poorly.
+2011-06-27T08:48:46  <sir_macelon> stocha: what do you use for local testing?
+2011-06-27T08:48:48  <stocha> sir_macelon: although arguably, i didn't made a lot of effort to reproduce beta environnement.
+2011-06-27T08:48:55  <sir_macelon> stocha: the ranking seems to be consistent
+2011-06-27T08:49:21  <stocha> sir_macelon: i mostly use 1vs1 and pure random assymetric maps. Often they are bigger, more twisted, and lower food than the beta maps.
+2011-06-27T08:49:35  <stocha> sir_macelon: yeah, but ranking depends both on maps, and opponents.
+2011-06-27T08:49:54  <UncleVasya> stocha: For you Ants is a simple enough task to make a submission on the one evening.
+2011-06-27T08:49:55  <stocha> sir_macelon: for example, on the labirynth one width corridor only, your bot has few change to be 1st :)
+2011-06-27T08:50:34  <stocha> UncleVasya: no, bot the first bot that where made, where one or three days work (let's say a busy week end)
+2011-06-27T08:51:01  <stocha> UncleVasya: so if really pw was about a busy afternoon to make a start, then you are right. Else you probably are wrong :)
+2011-06-27T08:51:42  <stocha> sto_greed02 is about the strength of those one very busy week only bots.
+2011-06-27T08:51:53  <UncleVasya> My idea is that for most of people with place 900 901 902... 4700  Ants isn't a simple enough task to give it 1-2 evenings.
+2011-06-27T08:51:56  <stocha> (although i did it more in a week or so but well. that's me)
+2011-06-27T08:52:08  <UncleVasya> While Planet Wars was a simple enough for this.
+2011-06-27T08:52:15  <sir_macelon> stocha: well I am testing on official maps and have enough input for new unit tests so far
+2011-06-27T08:52:20  <stocha> UncleVasya: ah, strong bots we'll need more investement you think ?
+2011-06-27T08:52:28  <UncleVasya> So most of this people will not participiate this time.
+2011-06-27T08:52:50  <UncleVasya> Because they want a task for 1-2 evenings and do not want spend more time.
+2011-06-27T08:52:59  <stocha> UncleVasya: maybe, but i think you can make bots quick. And then you might want to make them stronger and get more involved :p
+2011-06-27T08:53:21  <stocha> UncleVasya: okay. But i think there still is some room for those.
+2011-06-27T08:53:34  <stocha> especially when rules will be settled; And they have a lot of bot to look at.
+2011-06-27T08:53:36  <UncleVasya> stocha: no, I say that simple submission needs more investiment.
+2011-06-27T08:53:53  <stocha> UncleVasya: you did both, so you are probably right.
+2011-06-27T08:54:07  <sir_macelon> for me it would be enough so that best 100 of pw will participate and we should get a very interesting results anyway
+2011-06-27T08:54:44  <stocha> arguably 2000 bot the strength of hunter bot, doesn't make for very interesting challenge :)
+2011-06-27T08:55:08  <stocha> or even the strength of sto_greed02 :/
+2011-06-27T08:55:18  <stocha> although i think on some this one will do okay.
+2011-06-27T08:55:22  <stocha> some maps.
+2011-06-27T08:55:26  <UncleVasya> People with rank from 1 (bocsimacko)  to 600are the people who really invested time in their bots. So these people are interested in contest and most of them will participate this time.
+2011-06-27T08:56:06  <stocha> aaah. 900 was the rank !! i finally get it. hum. Okay so 901 is weaker than 900.
+2011-06-27T08:56:28  <UncleVasya> yes
+2011-06-27T08:56:32  <stocha> :)
+2011-06-27T08:56:45  <UncleVasya> It was a big misunderstanding :)
+2011-06-27T08:56:58  <stocha> so there will be at least 400 people. And your hope is that lazy mother with not much time for coding won't participate this time around :p
+2011-06-27T08:57:12  <stocha> (unless there were some in the top 600 ..)
+2011-06-27T08:57:33  <sir_macelon> there should be also some newcomers as you stocha
+2011-06-27T08:57:47  <stocha> sir_macelon: yeah. not to much of like me though :)
+2011-06-27T08:58:03  *** olexs <olexs!~Leviathan@drms-590c4717.pool.mediaWays.net> has joined #aichallenge
+2011-06-27T08:58:10  <UncleVasya> hi Levi
+2011-06-27T08:58:18  <stocha> sir_macelon: i don't know how far i'll make it. For not it amuse me. And right now, i do have spare time. But well. I can decide tomorow i had enougth.
+2011-06-27T08:58:30  <stocha> for now it amuse me.
+2011-06-27T08:59:10  <stocha> sir_macelon: i find the fact that so much depend on map, really frustrating.
+2011-06-27T08:59:17  <UncleVasya> you say it know. Later we'll get you to our religion :)
+2011-06-27T08:59:24  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-06-27T08:59:28  <stocha> Bots should provide map generators, and see how they do on those :)
+2011-06-27T08:59:36  <olexs> hi UncleVasya
+2011-06-27T08:59:49  <stocha> UncleVasya: i don't have a lot of patience. but we'll see.
+2011-06-27T08:59:57  <olexs> how's your bot testing tool coming along?
+2011-06-27T09:00:03  <UncleVasya> * now
+2011-06-27T09:00:07  <stocha> so far i spent much more time saying non sense on the chat, than coding
+2011-06-27T09:00:44  <stocha> so whole thing is an excuse to have friend to chat to really.
+2011-06-27T09:01:04  <UncleVasya> olexs: The last thing I've made was an automatic submission of a zip archive to the site.
+2011-06-27T09:01:29  <UncleVasya> But the idea was to build zip archive and then submit it.
+2011-06-27T09:01:51  <stocha> UncleVasya: what are you working on ?
+2011-06-27T09:02:11  <olexs> I'm having troubles debugging the current version of my bot... I used stderr output before, with -E option in playgame.py, but it stopped working after last git pull
+2011-06-27T09:02:23  <sir_macelon> stocha: your tactic should be independent from maps
+2011-06-27T09:02:32  <UncleVasya> olexs:  The making of zip archive is hard for me.:(
+2011-06-27T09:02:38  <stocha> sir_macelon: i think this statement is so wrong.
+2011-06-27T09:03:12  <UncleVasya> stocha: Haven't you seen a GUI on top of the tools.zip?
+2011-06-27T09:03:16  <sir_macelon> stocha: well my tactic doesn't take into account any type of map
+2011-06-27T09:03:17  <olexs> UncleVasya: I'm not sure why you would want to include that in the testing tool, to be honest :)
+2011-06-27T09:03:20  <stocha> sir_macelon: look at your bot features. Let's say the contest end up playing out on 1 width corridor labyrinth. How would that make your feature independent of maps
+2011-06-27T09:03:41  <stocha> UncleVasya: i'm yet to try to use official stuff.
+2011-06-27T09:03:45  <UncleVasya> olexs: because some people wanted it.
+2011-06-27T09:04:02  <sir_macelon> stocha: you need to get your strategy working for that, but in a general sense
+2011-06-27T09:04:05  <stocha> UncleVasya: i only upload directy to the beta server. or use my local mocked engine for quick testing.
+2011-06-27T09:04:06  *** Schadd <Schadd!89784eaa@gateway/web/freenode/ip.137.120.78.170> has joined #aichallenge
+2011-06-27T09:04:25  <stocha> sir_macelon: lots of people seems to say that. I'm certainly not one of them.
+2011-06-27T09:05:01  <sir_macelon> stocha: so you like to hardcode stuff here and there, ha?
+2011-06-27T09:06:05  <UncleVasya> olexs:  It was near 1-1.5 weeks ago.Then I had my exams. Then my friend made a bot that beats me and I needed to do something with it.
+2011-06-27T09:07:30  <UncleVasya> stocha: So you are not interested in my utility. It works only with tools.zip. It's a GUI for that and also provide some statistic after playing multiple maps.
+2011-06-27T09:08:09  <stocha> sir_macelon: there was no working official stuff when i started. so i went into the habit of using my own thing. And now i'm too lazy to change :p
+2011-06-27T09:08:39  <stocha> UncleVasya: i'll most probably one of your customer yes :)
+2011-06-27T09:09:00  <stocha> UncleVasya: although at this point, i'm kind of waiting for it to be 100% stable and mature :pp
+2011-06-27T09:09:13  <stocha> (and then i don't have very big testing needs at the moment)
+2011-06-27T09:09:29  <UncleVasya> olexs: Currently I'm working on my bot but if you have some troubles or a little-and-easy-to-implement suggestions  I'll do it.
+2011-06-27T09:09:33  <stocha> UncleVasya: the real problem with local testing, is that you need a computer.
+2011-06-27T09:10:09  <sir_macelon> stocha: you just need to get your lesson, as I did :)
+2011-06-27T09:10:15  <UncleVasya> olexs: It was the first application that is useful for me :)
+2011-06-27T09:10:55  <stocha> sir_macelon: the problem is. I already had them. And big times. I'm not just a unit-test type of guy. (although i might do one or tow, like pend a 2 hours for a 2 week project :) )
+2011-06-27T09:11:44  <stocha> I'm just not a unit-test type of guy. If i spend two hours on unit-tests for a two week project, it's already awsome testing for me :)
+2011-06-27T09:12:20  <stocha> (although i do believe in higher level testing. So i quick made a framework for this , to start working on a bot)
+2011-06-27T09:12:52  <stocha> but without a free computer, i'm stuck with not much high level testing. It's cpu hungry really.
+2011-06-27T09:13:35  <stocha> lasty, i run it for one minute against one of my local bot, on my framework for one or two minute. Then i upload on the beta. And hope i'll get interesting feed back.
+2011-06-27T09:14:04  <stocha> (wich sadly take like a day. Which i'm not patient enougth to wait for)
+2011-06-27T09:14:41  <stocha> i want a computer langage that write the tests for you :)
+2011-06-27T09:16:32  <olexs> UncleVasya: have you changed the loop that checked whether a game was finished and used 100% cpu? :)
+2011-06-27T09:17:51  <UncleVasya> olexs: I am a little lazy person so I need a someone who punishs me to make something.
+2011-06-27T09:18:03  <olexs> hehe
+2011-06-27T09:22:56  <stocha> sir_macelon: ah, i sundenly understand what you were saying.  I don't like coding ... but obviously you need features. And features are always "hard coded". In the sense that either you code and they are there, or you don't make them.
+2011-06-27T09:23:02  <UncleVasya> olexs:  my roadmap now is:  1) update one existing feature in the bot  2) add new feature - simple battle resolution  3) improve AntsTesting.
+2011-06-27T09:23:16  <Schadd> Question: I am trying to run play_one_game.sh of the tools package under linux, I have python 2.4.3 installed, and it gives me a syntax error when trying to run it. Do I need a newer python version?
+2011-06-27T09:23:26  <stocha> sir_macelon: for example, you hard coded a fighting solution. Where i didn't (yet).
+2011-06-27T09:23:34  <UncleVasya> olexs:  I think I need 3-5 days for positions 1) and 2) .
+2011-06-27T09:23:50  <olexs> UncleVasya: sounds reasonable
+2011-06-27T09:23:53  <stocha> sir_macelon: but there will be map, into which my not fighting will be as powerfull as your fighting (and maybe i'll be faster or some other stuff)
+2011-06-27T09:23:55  <UncleVasya> Schadd: yes, 2.7
+2011-06-27T09:24:09  <Schadd> thanks
+2011-06-27T09:24:24  *** Schadd <Schadd!89784eaa@gateway/web/freenode/ip.137.120.78.170> has quit IRC (Quit: Page closed)
+2011-06-27T09:24:25  <Rabidus> am i alone that aichallengebeta.hypertriangle.com is veery slow
+2011-06-27T09:24:39  <stocha> Rabidus: it's painfully hardly working. That's it.
+2011-06-27T09:24:40  <UncleVasya> Schadd: but no higher then 2.7  3.xx would not work.
+2011-06-27T09:24:44  <sir_macelon> stocha: with hard coding I mean that you are relying on some specific parameters like attack radius, or map placement
+2011-06-27T09:24:47  <Rabidus> ok
+2011-06-27T09:24:51  <UncleVasya> fast guy...
+2011-06-27T09:25:09  <stocha> sir_macelon: no, but my features do better with some food spawn speed, some map topology etc.
+2011-06-27T09:25:10  *** eashoka <eashoka!70875600@gateway/web/freenode/ip.112.135.86.0> has quit IRC (Quit: Page closed)
+2011-06-27T09:25:17  <sir_macelon> stocha: like when my ants are here and his ants are here then make this super move!
+2011-06-27T09:25:29  <stocha> sir_macelon: so you probably need different of feature in your bot, for different set of feature in the maps.
+2011-06-27T09:25:46  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-06-27T09:26:09  <stocha> sir_macelon: i could do it i supose. It may not be my way of tackling things. (i don't know either, as i never tryed to write ai yet )
+2011-06-27T09:26:47  <stocha> sir_macelon: of course, if find a simple and efficient ways, to always win whatever the condition i'll go that route :)
+2011-06-27T09:27:11  <stocha> sir_macelon: if i do need to hard code rules for winning. Then i might do it (or not).
+2011-06-27T09:27:22  <sir_macelon> stocha: I would rather go for a general strategy that would combine all those situations
+2011-06-27T09:27:41  <stocha> sir_macelon: i do not believe there exist one for the ant game.
+2011-06-27T09:27:52  <stocha> it will always depend at what map are thrown at you.
+2011-06-27T09:28:11  <stocha> My bots are hard coded on the assumptions that maps wont get bigger than 256x256
+2011-06-27T09:28:16  <stocha> if they did, my bot would break.
+2011-06-27T09:28:21  <stocha> so that's hard coded.
+2011-06-27T09:28:43  <olexs> right, fixed the main bug in my bot and re-uploaded... more serious work coming later, but this should already improve at least late-game performance dramatically
+2011-06-27T09:28:49  <sir_macelon> stocha: well, my bot is relying on single general strategy
+2011-06-27T09:28:52  <stocha> it's an implementation choice really. But it also become a feature. (or limitation)
+2011-06-27T09:29:02  <olexs> or rather, return it to what it was with old viewradius <.< >.>
+2011-06-27T09:29:13  <stocha> althouh i could remake my existing bot to overcome this limitation i guess.
+2011-06-27T09:29:24  <stocha> sir_macelon: what if map as 8000 ants ? will you handle that ?
+2011-06-27T09:29:50  <stocha> let's say a line of 4000 of your ants, clash with a line of 4000 opponents ants :p
+2011-06-27T09:30:07  <sir_macelon> stocha: if I am ever to have 8000 ants, then my strategy is surely sucking
+2011-06-27T09:30:24  <sir_macelon> stocha: let's get back to reality :)
+2011-06-27T09:30:44  <stocha> sir_macelon: yeah. People always react that way. I guess i didn't make my point :p
+2011-06-27T09:31:05  <stocha> the 1width labyrinth example was good though.
+2011-06-27T09:31:24  <stocha> it's also about not implementation hard an never used stuff
+2011-06-27T09:31:33  <UncleVasya> I think even if you have 150 ants it means that 100 of them doing nothing :)
+2011-06-27T09:31:36  <stocha> your fighting would be pointless in 1 width corridor i'm quite sure.
+2011-06-27T09:32:08  <stocha> UncleVasya: it's a multiplayer game. So it's complicated really.
+2011-06-27T09:32:29  <stocha> Then you could make the two bot start with 4000 found around, very close, and the opponent quite far away.
+2011-06-27T09:32:35  <stocha> that's a valid ant game.
+2011-06-27T09:32:43  <stocha> you have to handle the big clash then.
+2011-06-27T09:32:57  <stocha> and hopefully have a stronger bot than the opponent with those settings.
+2011-06-27T09:33:08  <sir_macelon> currently the rules are stating you start with one ant, I believe
+2011-06-27T09:33:28  <stocha> sir_macelon: yeah, but visible food make is so, you start with more really :)
+2011-06-27T09:33:42  <stocha> (although you might have to pick them, which is not always trivial)
+2011-06-27T09:34:05  <stocha> That's one thing : you can make arbitrarily maps, where picking food becomes a crucial skill
+2011-06-27T09:34:23  <stocha> most people won't go into the trouble of making a perfect food picking engine. If it's needed in most map
+2011-06-27T09:34:44  <sir_macelon> that's why food spawning has been limited
+2011-06-27T09:34:53  <stocha> for example if never than one food is visible at one time, it's a void feature to pick them in the most optimized fashion when there are 10.
+2011-06-27T09:35:29  <stocha> (same principle as 1 width corridor, it limits so well the fighting pattern, that most real fighting engine become pointless)
+2011-06-27T09:35:39  <stocha> (i suppose)
+2011-06-27T09:36:13  <antimatroid> http://ants.zeroviz.us/EhO58/
+2011-06-27T09:36:15  <antimatroid> getting better
+2011-06-27T09:36:23  <stocha> sir_macelon: much, depends on map features. That's the point :)
+2011-06-27T09:36:59  <stocha> sir_macelon: with luck, we'll soon see if the addition of a few labyrinth change the ranking (and yes it probably will)
+2011-06-27T09:37:09  <stocha> ranking is map dependent.
+2011-06-27T09:38:30  <sir_macelon> stocha: I don't have anything against new maps
+2011-06-27T09:39:07  <stocha> sir_macelon: i simply says that good bot features, depend on the type of map you'll encounter. And some feature good for one, might harm with another
+2011-06-27T09:39:08  <sir_macelon> antimatroid: great! when it will be available on beta?
+2011-06-27T09:39:17  <antimatroid> i want to widen the corridors first
+2011-06-27T09:39:18  <stocha> and because if limited sight .. you may not choose the right one.
+2011-06-27T09:39:23  <antimatroid> i think i'm almost ready to do that though
+2011-06-27T09:39:37  <antimatroid> i need to work out how to make it more connected though
+2011-06-27T09:39:48  <antimatroid> there's too many choke points where bots will come across each other
+2011-06-27T09:40:02  <stocha> antimatroid: why not put this one also. Although it probably won't make it to live. Let's try it and see what happens ?
+2011-06-27T09:40:24  <antimatroid> when i do it with blocks you will be be able to set the block size to 1x1 to get this :)
+2011-06-27T09:40:48  <stocha> why are there rooms then ?
+2011-06-27T09:41:16  <sir_macelon> I've saw a "world" map some time ago played on beta, so why not throw some mazes in the meantime?
+2011-06-27T09:41:42  <stocha> sir_macelon: can you point a game with world map ? :)
+2011-06-27T09:41:47  <antimatroid> sir_macelon: i'm still building the generator
+2011-06-27T09:41:57  <antimatroid> also, the engine can't do symmetric spawning for anything but tile maps atm
+2011-06-27T09:42:33  <stocha> just do assymetric spawning then on this map.
+2011-06-27T09:44:37  <antimatroid> the engine isn't set up to handle bot either
+2011-06-27T09:44:44  <antimatroid> we'd need to do asymmetric spawning for everything
+2011-06-27T09:44:49  <antimatroid> that* either
+2011-06-27T09:45:02  <UncleVasya> antimatroid: Haven't you thought about changing nick to the Daedalus? :D
+2011-06-27T09:45:19  <stocha> UncleVasya: why ?
+2011-06-27T09:45:23  <antimatroid> :s
+2011-06-27T09:45:41  <stocha> oh. a maze is a dedal ?
+2011-06-27T09:45:45  <stocha> or daedal
+2011-06-27T09:46:50  <stocha> in french dedal (from daedalus) means labyrinth
+2011-06-27T09:48:17  <mleise> and labyrinth means maze
+2011-06-27T09:48:34  <stocha> ah. yes :)
+2011-06-27T09:48:42  <UncleVasya> stocha: Daedalus is the creater of Minotaur's Labirynth.
+2011-06-27T09:48:53  <stocha> UncleVasya: yeah i had a look at wikipedia :)
+2011-06-27T09:49:46  <stocha> http://xkcd.com/903/
+2011-06-27T09:49:50  <UncleVasya> mleise: Can we ask people now about idea we talked eaerlier?
+2011-06-27T09:50:52  <UncleVasya> mleise: "Can you ask" is more fair  because it will be painful for me to explain. :)
+2011-06-27T09:51:19  <antimatroid> http://ants.zeroviz.us/4sSfg/ 8 player madness :)
+2011-06-27T09:51:34  <sir_macelon> stocha: http://aichallengebeta.hypertriangle.com/visualizer.php?game=5400 :)
+2011-06-27T09:51:38  <mleise> UncleVasya: But I am not the one who wants that feature :)
+2011-06-27T09:51:53  <stocha> sir_macelon: loool :)
+2011-06-27T09:52:13  <UncleVasya> but you're the one who know what I want and knows the language.
+2011-06-27T09:52:13  <stocha> there is a tunel between america and asia
+2011-06-27T09:52:46  <stocha> sir_macelon: how old is it ?
+2011-06-27T09:53:53  <stocha> not a very thrilling game. but it's good :)
+2011-06-27T09:54:19  <sir_macelon> stocha: this one is from 29-May-2011 15:12
+2011-06-27T09:55:15  <mleise> Ok, so here is UncleVasya's idea as I understand it:
+2011-06-27T09:56:28  <mleise> When we get our bot's replays as a news feed you would not see who won, to make it more interesting. The visualizer would not show the final score or ranks of the players.
+2011-06-27T09:57:06  <stocha> mleise: it should only be an option then.
+2011-06-27T09:57:17  <stocha> mleise: because some people will ant to see it.
+2011-06-27T09:57:22  <stocha> want
+2011-06-27T09:57:25  <stocha> most probably.
+2011-06-27T09:58:11  <UncleVasya> stocha: this feature must be added as a mode:
+2011-06-27T09:58:29  <UncleVasya> stocha: http://aichallengebeta.hypertriangle.com/visualizer.php?game=40970&user=26  - normal replay
+2011-06-27T09:59:00  <UncleVasya> http://aichallengebeta.hypertriangle.com/visualizer.php?game=40970&user=26&mode=no_info  - if you want to share a cool replay with friends and keep the intrigue.
+2011-06-27T09:59:03  <stocha> i do like it the way it is though.
+2011-06-27T09:59:47  <stocha> arguably i don't want to keep the intrigue :)
+2011-06-27T09:59:52  <UncleVasya> And in the news feed you get a 2 links:  normal and without info.
+2011-06-27T10:00:03  <UncleVasya> You choose the one by yourself.
+2011-06-27T10:00:12  <UncleVasya> ok
+2011-06-27T10:00:23  <stocha> UncleVasya: i don't understand where is the hiding in your no_info link
+2011-06-27T10:00:51  <mleise> stocha: obviously the feature isn't implemented :p
+2011-06-27T10:00:54  <UncleVasya> stocha: it is not implemented yet, just an idea.
+2011-06-27T10:01:02  <stocha> ah okay :)
+2011-06-27T10:01:11  <stocha> it means work though.
+2011-06-27T10:01:23  <stocha> for a feature, maybe not a lot of people will use
+2011-06-27T10:01:34  <stocha> but that people will still have to deal with. Even if they don't use it.
+2011-06-27T10:01:46  <UncleVasya> The idea is that if no_info is on  then  you will not see a bots places and graphic until replay ends.
+2011-06-27T10:01:57  <stocha> UncleVasya: so let's find more support before submiting it i think :p
+2011-06-27T10:02:21  <stocha> i do not support it by the way :p
+2011-06-27T10:03:11  <UncleVasya> mleise: I accept that it isn't so cool as I thought it is. :) Never mind.
+2011-06-27T10:03:41  <UncleVasya> stocha: why people should deal with it if they don't use it?
+2011-06-27T10:04:06  <stocha> i though everybody would have choice of choosing the link they want
+2011-06-27T10:04:24  <stocha> so they have to deal with that choice, without a way to say they just don't need it.
+2011-06-27T10:04:47  <stocha> (maybe i didn't understood though)
+2011-06-27T10:07:10  <mleise> stocha: yes, everyone would have two links. one that gives away the result and one that hides it till the end
+2011-06-27T10:07:41  <stocha> mleise: that only make sense of a lot of people use both. otherwise only having one is better.
+2011-06-27T10:09:56  <UncleVasya> stocha: it's like &debug=true   Until you need it you don't even know it is exists.
+2011-06-27T10:12:56  <stocha> UncleVasya: then it's okay :)
+2011-06-27T10:13:08  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-06-27T10:27:16  *** olexs <olexs!~Leviathan@drms-590c4717.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-27T10:30:48  *** gobang <gobang!~gobang@89.204.137.226> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T10:44:14  *** StijnD <StijnD!~Vi0@91.181.182.158> has joined #aichallenge
+2011-06-27T10:58:55  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-27T11:02:11  *** UncleVasya <UncleVasya!kvirc@46.133.74.228> has quit IRC (Ping timeout: 260 seconds)
+2011-06-27T11:06:13  *** sir_macelon <sir_macelon!c06482e5@gateway/web/freenode/ip.192.100.130.229> has quit IRC (Quit: Page closed)
+2011-06-27T11:23:50  *** mr_borod <mr_borod!5ee56344@gateway/web/freenode/ip.94.229.99.68> has joined #aichallenge
+2011-06-27T11:24:01  <mr_borod> hello. I've got a problem: I've downloaded the tools for ants for windows 86, installed active python (first google link), copied the bot executable to the submission/tests tools folder, changed the .cmd file with a full path to exec. the problem is that I receive the "SandBox error: Failed to start ./XXXX.exe" :( any ideas? (tried to check out the forum, but it seems to be 404)
+2011-06-27T11:25:21  <mleise> yes, Windows 98 does not support '/' as the directory separator yet. You need Windows 2000/XP or later
+2011-06-27T11:25:50  <mr_borod> mleise, I mean XP x86, not 98 :)
+2011-06-27T11:26:09  <mleise> ah sorry :p
+2011-06-27T11:37:20  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-06-27T11:37:26  <mr_borod> ok.. windows bot executable binary has to be placed to the tools root folder including all necessary dll etc
+2011-06-27T11:42:31  <Rabidus> mleise: how did you turn that 86 into 98
+2011-06-27T11:42:37  <Rabidus> your display is upside down?
+2011-06-27T11:44:31  <mleise> Rabidus: I have little problems readinf text upsiade-down. Maybe I turned it around in my head. Also the acctual image from the eye to the brain IS turned 180В°.
+2011-06-27T11:44:58  <Rabidus> yeah i know, very interesting that you didn't even ask that 86, just assumed it as 98 :p
+2011-06-27T11:45:02  <mleise> or the simple explanation: My eyes are bad.
+2011-06-27T11:58:59  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Quit: Leaving)
+2011-06-27T12:09:58  <antimatroid> http://ants.zeroviz.us/ZEEop/
+2011-06-27T12:09:59  <antimatroid> getting there
+2011-06-27T12:11:12  <StijnD> any idea when the official start will be?
+2011-06-27T12:12:56  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has joined #aichallenge
+2011-06-27T12:12:56  *** ChanServ sets mode: +o amstan
+2011-06-27T12:18:19  <antimatroid> amstan: http://ants.zeroviz.us/ZEEop/ :P
+2011-06-27T12:18:21  <antimatroid> i'm getting there
+2011-06-27T12:18:43  <antimatroid> once i've finished cleaning up the maze stuff i'll randomly remove water from the edge of land
+2011-06-27T12:18:45  <antimatroid> to make it more cavey
+2011-06-27T12:19:42  *** olexs <olexs!~Leviathan@drms-590c4717.pool.mediaWays.net> has joined #aichallenge
+2011-06-27T12:24:40  *** UncleVasya <UncleVasya!kvirc@46.133.249.120> has joined #aichallenge
+2011-06-27T12:40:31  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-06-27T12:41:03  <antimatroid> smiley1983: http://ants.zeroviz.us/DLBCq/ :P
+2011-06-27T12:41:28  *** bhasker <bhasker!~bhasker@nat/yahoo/x-nnddeurzgzumoumk> has joined #aichallenge
+2011-06-27T12:43:28  <smiley1983> antimatroid: nice map :)
+2011-06-27T12:43:56  <smiley1983> can it make maps with other symmetries as well?
+2011-06-27T12:44:05  <antimatroid> yep
+2011-06-27T12:44:19  <antimatroid> i can do all of my symmetries
+2011-06-27T12:44:42  <antimatroid> including the tile/tesselation symmetry
+2011-06-27T12:45:01  <smiley1983> that's great :) is it in Python?
+2011-06-27T12:45:10  <antimatroid> i'm going to try randomly removing water on the edge of land and seeing how that looks
+2011-06-27T12:45:11  <antimatroid> yep
+2011-06-27T12:45:27  <antimatroid> i have a grid.py and symmetric_mapgen.py
+2011-06-27T12:45:45  *** gobang <gobang!~gobang@89.204.137.226> has joined #aichallenge
+2011-06-27T12:45:51  *** nux67 <nux67!4f58cc94@gateway/web/freenode/ip.79.88.204.148> has joined #aichallenge
+2011-06-27T12:47:47  <smiley1983> I think a combination of random walks and removal of random "shallows" like you describe can make good maps
+2011-06-27T12:48:00  *** mr_borod <mr_borod!5ee56344@gateway/web/freenode/ip.94.229.99.68> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T12:48:18  <smiley1983> I also kind of like the idea of using macro-scale mazes as the basis for further modification
+2011-06-27T12:52:04  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-06-27T13:21:43  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 4.0.1/20110413222027])
+2011-06-27T13:35:57  <antimatroid> http://ants.zeroviz.us/QtNDj/
+2011-06-27T13:36:20  <antimatroid> bhasker: what do you think? :P
+2011-06-27T13:36:38  <bhasker> haven't been following the discussion
+2011-06-27T13:37:34  <bhasker> looks nice, though i guess its mirrorred
+2011-06-27T13:37:36  <antimatroid> i mean of the link
+2011-06-27T13:37:45  <bhasker> so top and bottom are same, and left right seem to be the same
+2011-06-27T13:38:02  <antimatroid> i have 3 types of 4 player rotational symmetry
+2011-06-27T13:38:08  <antimatroid> 5 types for 2 players and 1 for 8
+2011-06-27T13:38:20  <antimatroid> then my tile/tesselation symmetry for any number of players as well
+2011-06-27T13:38:26  <antimatroid> i can do those maze maps for all types of symmetry
+2011-06-27T13:38:45  <bhasker> ah k
+2011-06-27T13:41:42  *** filter_ <filter_!admin@adsl-70-131-87-182.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-06-27T13:44:07  *** filter <filter!admin@adsl-70-131-123-214.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 250 seconds)
+2011-06-27T13:44:45  *** StijnD <StijnD!~Vi0@91.181.182.158> has quit IRC (Ping timeout: 260 seconds)
+2011-06-27T13:48:22  *** StijnD <StijnD!~Vi0@91.181.137.181> has joined #aichallenge
+2011-06-27T13:51:24  *** okayzed is now known as okay
+2011-06-27T14:08:52  *** gobang <gobang!~gobang@89.204.137.226> has quit IRC (Read error: Connection reset by peer)
+2011-06-27T14:12:52  *** gobang <gobang!~gobang@89.204.137.226> has joined #aichallenge
+2011-06-27T14:19:32  *** okay is now known as okayzed
+2011-06-27T14:26:40  *** mleise <mleise!~marco@dslb-088-071-191-208.pools.arcor-ip.net> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T14:54:31  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-06-27T15:02:48  *** okayzed is now known as okay
+2011-06-27T15:08:31  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-vlcgdrlqpyevtets> has joined #aichallenge
+2011-06-27T15:09:22  *** bhasker <bhasker!~bhasker@nat/yahoo/x-nnddeurzgzumoumk> has quit IRC (Ping timeout: 240 seconds)
+2011-06-27T15:09:59  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-06-27T15:10:15  <stocha> _flag: congratuation. Right now you are 1st on the ranking.
+2011-06-27T15:12:29  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Client Quit)
+2011-06-27T15:14:27  <antimatroid> @later tell stocha: you have 6 accounts on the beta server? is that really necessary?
+2011-06-27T15:14:27  <contestbot> antimatroid: Job's done.
+2011-06-27T15:17:17  <_flag> stocha: Thanks, we'll see how long it lasts
+2011-06-27T15:18:55  <_flag> Trueskill isn't terribly stable so everything keeps fluctuating all the time
+2011-06-27T15:19:23  <UncleVasya> antimatroid: are the maps on the server must be free already of positions where ants can hide and no one can kill them?
+2011-06-27T15:20:09  *** gobang <gobang!~gobang@89.204.137.226> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T15:20:26  <antimatroid> UncleVasya: i don't want to remove the possibility of positions that allow it, just the possibility of players being able to block themselves into a region
+2011-06-27T15:22:16  <UncleVasya> ok, I've go it. So we can laugh now of this funny situation:
+2011-06-27T15:23:23  <UncleVasya> http://aichallengebeta.hypertriangle.com/visualizer.php?game=41381&user=26&turn=454&row=15&col=2
+2011-06-27T15:23:33  <UncleVasya> So many lives... :D
+2011-06-27T15:23:46  <UncleVasya> *lifes was taken away
+2011-06-27T15:24:15  <UncleVasya> These 2 ants must be graduated with Ordens of Bravery.
+2011-06-27T15:25:36  <UncleVasya> graduated -> rewarded
+2011-06-27T15:27:50  *** gobang <gobang!~gobang@89.204.137.226> has joined #aichallenge
+2011-06-27T15:31:26  <amstan> contestbot: later tell mcleopold http://aichallengebeta.hypertriangle.com/ranking_json.php is really really slow, is that all the users?
+2011-06-27T15:31:26  <contestbot> amstan: Ready to serve, my lord.
+2011-06-27T15:31:47  <amstan> looks like it, 124
+2011-06-27T15:32:22  <amstan> contestbot: rankings
+2011-06-27T15:32:23  <contestbot> amstan: Top 10 players: bocsimacko(3765), _iouri_(3565), Slin-.-(3524), _Astek_(3501), jimrogerz(3500), Accoun(3498), george(3494), GreenTea(3489), asavis(3480), bix0r4ever(3476)
+2011-06-27T15:33:12  <gobang>  :)
+2011-06-27T15:33:20  <Rabidus> whoo bocksimacko is in the game ;)
+2011-06-27T15:33:40  <gobang>  he won the pw contest
+2011-06-27T15:33:47  <amstan> it's the old rankings..
+2011-06-27T15:33:55  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-06-27T15:36:31  <gobang>  memories are made of this..
+2011-06-27T15:38:57  <gobang>  still, something's wrong with my profile page, the 2 lines at the top, rank & skill, and the one which should tell about when the next game will occur, never got updated for like 48 hrs
+2011-06-27T15:39:36  *** bhasker <bhasker!~bhasker@nat/yahoo/x-fimrzviyvsawzvld> has joined #aichallenge
+2011-06-27T15:40:39  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-vlcgdrlqpyevtets> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T15:41:22  <Rabidus> i love you guys
+2011-06-27T15:42:00  <UncleVasya> for what?
+2011-06-27T15:42:14  <Rabidus> well.. why not?
+2011-06-27T15:43:15  <UncleVasya> Is your name Willson?
+2011-06-27T15:43:15  <amstan> contestbot: load aichallenge
+2011-06-27T15:43:15  <contestbot> amstan: OK
+2011-06-27T15:43:18  <amstan> contestbot: rankings
+2011-06-27T15:43:19  <contestbot> amstan: An error has occurred and has been logged. Please contact this bot's administrator for more information.
+2011-06-27T15:43:24  <amstan> no you
+2011-06-27T15:44:54  <UncleVasya> Rabidus:  Gregory House to James Willson:  "You love everyone. It is a pathology."  :)
+2011-06-27T15:47:21  <amstan> contestbot: rankings
+2011-06-27T15:47:22  <contestbot> amstan: Top 10 players: FlagCapper(92.0), sir_macelon(89.5), Sto03RepliCrush(84.9), OlexandrT(82.2), davidjliu(81.0), stocha(80.3), stoha02(78.9), antimatroid(77.8), Zaphtest02(77.4), Zaphus(76.1)
+2011-06-27T15:48:57  <gobang>  it should count to 10 properly, that's only 9
+2011-06-27T15:49:20  <amstan> gobang: i count 10
+2011-06-27T15:49:51  <gobang>  oh, looked at the ranking page instead
+2011-06-27T15:50:10  <Rabidus> lol
+2011-06-27T15:51:16  <gobang>  there's a ghost in teh top ten
+2011-06-27T15:51:55  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-27T15:52:12  <amstan> i'm not really sure if i can get it out: http://aichallengebeta.hypertriangle.com/ranking_json.php?page=1
+2011-06-27T15:52:30  <amstan> if you can find a field that tells if it's a ghost or not
+2011-06-27T15:55:02  <amstan> contestbot: unload aichallenge
+2011-06-27T15:55:02  <contestbot> amstan: OK
+2011-06-27T15:55:05  <amstan> contestbot: load aichallenge
+2011-06-27T15:55:05  <contestbot> amstan: I come to serve.
+2011-06-27T15:55:09  <amstan> contestbot: rankings
+2011-06-27T15:55:20  <contestbot> amstan: Error: There was a problem accessing the interface to ai-contest.com
+2011-06-27T15:55:26  <amstan> of course..
+2011-06-27T15:55:34  <amstan> why do i thing it will ever work the first try?
+2011-06-27T15:55:47  *** george1914 <george1914!d92c956b@gateway/web/freenode/ip.217.44.149.107> has joined #aichallenge
+2011-06-27T15:55:48  <gobang>  that's almost hal speaking there
+2011-06-27T15:57:10  <amstan> contestbot: rankings
+2011-06-27T15:57:19  <contestbot> amstan: Top 10 players: FlagCapper(92.0), sir_macelon(89.5), Sto03RepliCrush(84.9), OlexandrT(82.2), davidjliu(81.8), stocha(80.3), antimatroid(78.7), stoha02(78.1), Zaphtest02(77.3), Cellular2(75.6)
+2011-06-27T15:57:25  <amstan> so the error was that it timed out
+2011-06-27T15:57:57  <amstan> why is he still there?
+2011-06-27T15:58:25  *** contestbot <contestbot!~supybot@69-196-143-145.dsl.teksavvy.com> has joined #aichallenge
+2011-06-27T15:58:43  <amstan> contestbot: rankings
+2011-06-27T15:58:48  <contestbot> amstan: Top 10 players: FlagCapper(92.0), sir_macelon(89.5), Sto03RepliCrush(84.9), OlexandrT(82.2), davidjliu(81.8), antimatroid(78.7), stoha02(78.1), Zaphtest02(77.3), Cellular2(75.6), zeLark(75.5)
+2011-06-27T15:58:55  <amstan> victory
+2011-06-27T16:00:19  <gobang>  ;) i admire yo
+2011-06-27T16:00:33  <amstan> ?
+2011-06-27T16:00:48  *** gobang <gobang!~gobang@89.204.137.226> has quit IRC (Read error: Connection reset by peer)
+2011-06-27T16:01:22  *** gobang <gobang!~gobang@89.204.137.226> has joined #aichallenge
+2011-06-27T16:04:42  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-27T16:14:41  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-xczooxnzdhuctfsu> has joined #aichallenge
+2011-06-27T16:14:47  *** bhasker <bhasker!~bhasker@nat/yahoo/x-fimrzviyvsawzvld> has quit IRC (Read error: Operation timed out)
+2011-06-27T16:22:13  <UncleVasya> Accoun: Are you going to take 1st place this time?
+2011-06-27T16:26:51  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has joined #aichallenge
+2011-06-27T16:27:21  <McLeopold> amstan: ranking.php needs to be rewritten, it's been on the todo list for awhile
+2011-06-27T16:27:43  <amstan> McLeopold: also: http://aichallengebeta.hypertriangle.com/rankings.php?page=3
+2011-06-27T16:27:55  <amstan> then goto page 2, and you'll notice there's only 2 pages
+2011-06-27T16:28:02  <McLeopold> I half wrote the memcache stuff.  It's still in half debug mode.  It's clearing and generating the entire list each request.
+2011-06-27T17:04:15  *** gobang <gobang!~gobang@89.204.137.226> has quit IRC (Read error: Connection reset by peer)
+2011-06-27T17:06:05  *** sYnfo <sYnfo!5ab2768a@gateway/web/freenode/ip.90.178.118.138> has quit IRC (Quit: Page closed)
+2011-06-27T17:08:32  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-xczooxnzdhuctfsu> has quit IRC (Ping timeout: 246 seconds)
+2011-06-27T17:18:15  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-06-27T17:26:26  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.186.68> has joined #aichallenge
+2011-06-27T17:27:23  *** StijnD <StijnD!~Vi0@91.181.137.181> has quit IRC (Ping timeout: 240 seconds)
+2011-06-27T17:29:31  *** UncleVasya <UncleVasya!kvirc@46.133.249.120> has quit IRC (Ping timeout: 260 seconds)
+2011-06-27T17:45:18  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has quit IRC (Read error: Connection reset by peer)
+2011-06-27T17:54:16  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yjucnqwcllshbqac> has joined #aichallenge
+2011-06-27T17:58:24  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-06-27T17:58:30  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 5.0/20110622232440])
+2011-06-27T17:58:56  *** nux67 <nux67!4f58cc94@gateway/web/freenode/ip.79.88.204.148> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T18:02:57  *** olexs1 <olexs1!~Leviathan@drms-590cee59.pool.mediaWays.net> has joined #aichallenge
+2011-06-27T18:03:36  *** amstan <amstan!~alex@bas1-hamilton01-2925008139.dsl.bell.ca> has joined #aichallenge
+2011-06-27T18:03:36  *** ChanServ sets mode: +o amstan
+2011-06-27T18:06:12  *** olexs <olexs!~Leviathan@drms-590c4717.pool.mediaWays.net> has quit IRC (Ping timeout: 276 seconds)
+2011-06-27T18:06:54  *** mleise <mleise!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-06-27T18:07:45  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-27T18:15:20  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-06-27T18:47:03  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-06-27T18:48:54  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.186.68> has quit IRC ()
+2011-06-27T18:56:00  *** smippy <smippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-06-27T18:56:00  *** smippy <smippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-06-27T18:58:00  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 276 seconds)
+2011-06-27T19:07:36  <pgpaskar_> amstan: !
+2011-06-27T19:07:43  <pgpaskar_> I remember everything for I am legion
+2011-06-27T19:19:55  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T19:22:30  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T19:22:30  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 252 seconds)
+2011-06-27T19:22:40  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T19:35:25  *** olexs1 <olexs1!~Leviathan@drms-590cee59.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-27T19:38:15  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T19:39:21  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T19:39:41  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 240 seconds)
+2011-06-27T19:40:10  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T19:56:55  *** antimatroid <antimatroid!~nick@225.205.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-06-27T20:09:49  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (*.net *.split)
+2011-06-27T20:09:49  *** chl <chl!~chl@mtl93-12-88-189-21-185.fbx.proxad.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:49  *** smippy <smippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (*.net *.split)
+2011-06-27T20:09:50  *** Cyndre <Cyndre!~Cyndre@65.255.181.75> has quit IRC (*.net *.split)
+2011-06-27T20:09:50  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has quit IRC (*.net *.split)
+2011-06-27T20:09:50  *** filter_ <filter_!admin@adsl-70-131-87-182.dsl.emhril.sbcglobal.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:51  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:51  *** Evious <Evious!~n_a@s64-180-62-209.bc.hsia.telus.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:51  *** jbroman <jbroman!~jbroman@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-06-27T20:09:51  *** davidd <davidd!davidd@tinkywinky.stack.nl> has quit IRC (*.net *.split)
+2011-06-27T20:09:51  *** jugde <jugde!~jugde@st-cn0001.oulu.fi> has quit IRC (*.net *.split)
+2011-06-27T20:09:53  *** slkjcna <slkjcna!~proton@li189-81.members.linode.com> has quit IRC (*.net *.split)
+2011-06-27T20:09:53  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yjucnqwcllshbqac> has quit IRC (*.net *.split)
+2011-06-27T20:09:53  *** Zannick <Zannick!~mick@unaffiliated/zannick> has quit IRC (*.net *.split)
+2011-06-27T20:09:53  *** a1k0n_ <a1k0n_!~asloane@nat/yahoo/x-gvsovjnzzkzfhlpg> has quit IRC (*.net *.split)
+2011-06-27T20:09:53  *** BtbN <BtbN!btbn@btbn.de> has quit IRC (*.net *.split)
+2011-06-27T20:09:53  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-06-27T20:09:54  *** Rabidus <Rabidus!~tan@85-23-148-168.bb.dnainternet.fi> has quit IRC (*.net *.split)
+2011-06-27T20:09:54  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (*.net *.split)
+2011-06-27T20:09:54  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (*.net *.split)
+2011-06-27T20:09:54  *** JamesMG <JamesMG!~jamesg@mail.musicreports.com> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** george1914 <george1914!d92c956b@gateway/web/freenode/ip.217.44.149.107> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** astevenson <astevenson!4000c10f@gateway/web/freenode/ip.64.0.193.15> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** antimatroid-uni <antimatroid-uni!83d90607@gateway/web/freenode/ip.131.217.6.7> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** Sunhay <Sunhay!~ssbasi@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** amstan <amstan!~alex@bas1-hamilton01-2925008139.dsl.bell.ca> has quit IRC (*.net *.split)
+2011-06-27T20:09:55  *** jmcarthur <jmcarthur!~jake@pool-98-113-42-2.nycmny.fios.verizon.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:57  *** javagamer <javagamer!~javagamer@ip-69-162-134-31.static.chi2.systeminplace.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:57  *** okay <okay!~okay@98.158.22.181> has quit IRC (*.net *.split)
+2011-06-27T20:09:57  *** sixthgear <sixthgear!~sixthgear@sixthgear.ca> has quit IRC (*.net *.split)
+2011-06-27T20:09:57  *** dr- <dr-!~lotus@tuborg.lifl.fr> has quit IRC (*.net *.split)
+2011-06-27T20:09:57  *** smly- <smly-!~smly-@sage.naist.jp> has quit IRC (*.net *.split)
+2011-06-27T20:09:57  *** CIA-48 <CIA-48!~CIA@cia.atheme.org> has quit IRC (*.net *.split)
+2011-06-27T20:09:57  *** greghaynes <greghaynes!~greghayne@pazuzu.greghaynes.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:58  *** Zepp <Zepp!~m2ellis@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-06-27T20:09:58  *** ChanServ <ChanServ!ChanServ@services.> has quit IRC (*.net *.split)
+2011-06-27T20:09:58  *** mleise <mleise!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:59  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (*.net *.split)
+2011-06-27T20:09:59  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has quit IRC (*.net *.split)
+2011-06-27T20:09:59  *** janzert <janzert!~janzert@24-247-70-35.dhcp.trcy.mi.charter.com> has quit IRC (*.net *.split)
+2011-06-27T20:13:46  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T20:13:46  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-06-27T20:13:46  *** smippy <smippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-06-27T20:13:46  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-27T20:13:46  *** mleise <mleise!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-06-27T20:13:46  *** amstan <amstan!~alex@bas1-hamilton01-2925008139.dsl.bell.ca> has joined #aichallenge
+2011-06-27T20:13:46  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yjucnqwcllshbqac> has joined #aichallenge
+2011-06-27T20:13:46  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has joined #aichallenge
+2011-06-27T20:13:46  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-27T20:13:46  *** george1914 <george1914!d92c956b@gateway/web/freenode/ip.217.44.149.107> has joined #aichallenge
+2011-06-27T20:13:46  *** filter_ <filter_!admin@adsl-70-131-87-182.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-06-27T20:13:46  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-06-27T20:13:46  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-27T20:13:46  *** dr- <dr-!~lotus@tuborg.lifl.fr> has joined #aichallenge
+2011-06-27T20:13:46  *** jmcarthur <jmcarthur!~jake@pool-98-113-42-2.nycmny.fios.verizon.net> has joined #aichallenge
+2011-06-27T20:13:46  *** Cyndre <Cyndre!~Cyndre@65.255.181.75> has joined #aichallenge
+2011-06-27T20:13:46  *** janzert <janzert!~janzert@24-247-70-35.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-06-27T20:13:46  *** davidd <davidd!davidd@tinkywinky.stack.nl> has joined #aichallenge
+2011-06-27T20:13:46  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-06-27T20:13:46  *** astevenson <astevenson!4000c10f@gateway/web/freenode/ip.64.0.193.15> has joined #aichallenge
+2011-06-27T20:13:46  *** antimatroid-uni <antimatroid-uni!83d90607@gateway/web/freenode/ip.131.217.6.7> has joined #aichallenge
+2011-06-27T20:13:46  *** chl <chl!~chl@mtl93-12-88-189-21-185.fbx.proxad.net> has joined #aichallenge
+2011-06-27T20:13:46  *** Rabidus <Rabidus!~tan@85-23-148-168.bb.dnainternet.fi> has joined #aichallenge
+2011-06-27T20:13:46  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has joined #aichallenge
+2011-06-27T20:13:46  *** smly- <smly-!~smly-@sage.naist.jp> has joined #aichallenge
+2011-06-27T20:13:46  *** slkjcna <slkjcna!~proton@li189-81.members.linode.com> has joined #aichallenge
+2011-06-27T20:13:46  *** Evious <Evious!~n_a@s64-180-62-209.bc.hsia.telus.net> has joined #aichallenge
+2011-06-27T20:13:46  *** jugde <jugde!~jugde@st-cn0001.oulu.fi> has joined #aichallenge
+2011-06-27T20:13:46  *** okay <okay!~okay@98.158.22.181> has joined #aichallenge
+2011-06-27T20:13:46  *** Zannick <Zannick!~mick@unaffiliated/zannick> has joined #aichallenge
+2011-06-27T20:13:46  *** javagamer <javagamer!~javagamer@ip-69-162-134-31.static.chi2.systeminplace.net> has joined #aichallenge
+2011-06-27T20:13:46  *** CIA-48 <CIA-48!~CIA@cia.atheme.org> has joined #aichallenge
+2011-06-27T20:13:46  *** greghaynes <greghaynes!~greghayne@pazuzu.greghaynes.net> has joined #aichallenge
+2011-06-27T20:13:46  *** jbroman <jbroman!~jbroman@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-06-27T20:13:46  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-06-27T20:13:46  *** BtbN <BtbN!btbn@btbn.de> has joined #aichallenge
+2011-06-27T20:13:47  *** a1k0n_ <a1k0n_!~asloane@nat/yahoo/x-gvsovjnzzkzfhlpg> has joined #aichallenge
+2011-06-27T20:13:47  *** ChanServ <ChanServ!ChanServ@services.> has joined #aichallenge
+2011-06-27T20:13:47  *** Sunhay <Sunhay!~ssbasi@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-06-27T20:13:47  *** sixthgear <sixthgear!~sixthgear@sixthgear.ca> has joined #aichallenge
+2011-06-27T20:13:47  *** Zepp <Zepp!~m2ellis@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-06-27T20:13:47  *** JamesMG <JamesMG!~jamesg@mail.musicreports.com> has joined #aichallenge
+2011-06-27T20:13:47  *** sendak.freenode.net sets mode: +oo amstan ChanServ
+2011-06-27T20:13:54  <McLeopold> @later tell antimatroid I don't need you to put an orientation in the map file anymore
+2011-06-27T20:13:54  <contestbot> McLeopold: Ready to serve.
+2011-06-27T20:14:26  <McLeopold> @later tell carolp I took your advice on the orientation stuff
+2011-06-27T20:14:26  <contestbot> McLeopold: As you wish.
+2011-06-27T20:14:34  <McLeopold> @roulette
+2011-06-27T20:14:34  <contestbot> McLeopold: *click*
+2011-06-27T20:14:43  <McLeopold> @roulette
+2011-06-27T20:14:43  <contestbot> McLeopold: *click*
+2011-06-27T20:14:46  <McLeopold> @roulette
+2011-06-27T20:14:46  <contestbot> McLeopold: *click*
+2011-06-27T20:14:49  <McLeopold> @roulette
+2011-06-27T20:14:49  <contestbot> McLeopold: *click*
+2011-06-27T20:14:51  <McLeopold> @roulette
+2011-06-27T20:14:51  <contestbot> McLeopold: *click*
+2011-06-27T20:14:53  <McLeopold> @roulette
+2011-06-27T20:14:53  <contestbot> *BANG* Hey, who put a blank in here?!
+2011-06-27T20:14:54  * contestbot reloads and spins the chambers.
+2011-06-27T20:15:25  <McLeopold> amstan: contestbot needs some more power
+2011-06-27T20:16:01  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-06-27T20:16:29  <_flag> contestbot: rankings
+2011-06-27T20:16:33  <contestbot> _flag: Top 10 players: FlagCapper(97.1), sir_macelon(89.8), Sto03RepliCrush(85.8), davidjliu(82.8), OlexandrT(79.8), stoha02(79.1), Zaphtest02(78.8), antimatroid(78.5), Cellular2(77.8), Zaphus(77.2)
+2011-06-27T20:31:36  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-27T20:33:48  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T20:36:58  *** okay is now known as okayzed
+2011-06-27T20:38:23  *** amstan <amstan!~alex@bas1-hamilton01-2925008139.dsl.bell.ca> has quit IRC (Ping timeout: 250 seconds)
+2011-06-27T20:38:48  *** KP13 is now known as Kingpin13
+2011-06-27T21:08:55  *** Cyndre_ <Cyndre_!~Cyndre@2002:41ff:b54b::41ff:b54b> has joined #aichallenge
+2011-06-27T21:11:15  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yjucnqwcllshbqac> has quit IRC (Ping timeout: 276 seconds)
+2011-06-27T21:13:21  *** Cyndre <Cyndre!~Cyndre@65.255.181.75> has quit IRC (Ping timeout: 264 seconds)
+2011-06-27T21:22:53  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-06-27T21:25:04  *** amstan <amstan!~amstan@69-196-143-145.dsl.teksavvy.com> has joined #aichallenge
+2011-06-27T21:25:04  *** ChanServ sets mode: +o amstan
+2011-06-27T22:01:06  *** mleise <mleise!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Ping timeout: 255 seconds)
+2011-06-27T22:38:12  *** antimatroid <antimatroid!~nick@225.109-67-202.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-27T22:52:35  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2011-06-27T22:53:03  <davidjliu> I couldn't help but notice that my bot has played 1337 games. lol...
+2011-06-27T22:55:19  <antimatroid> davidjliu: :)
+2011-06-27T22:55:32  <davidjliu> an example of why my bot should eventually learn pathfinding: http://aichallengebeta.hypertriangle.com/visualizer.php?game=39283&user=110
+2011-06-27T22:55:38  <davidjliu> about that. heh
+2011-06-27T22:57:26  <antimatroid> davidjliu: http://ants.zeroviz.us/mcihi/ or that :P
+2011-06-27T22:57:34  <antimatroid> i have a new map generator that does more mazey maps
+2011-06-27T22:57:45  <davidjliu> haha... yeah
+2011-06-27T22:57:45  <davidjliu> nice
+2011-06-27T22:58:47  <davidjliu> is that map made by map generation with 3*3 corridors and then with holes cut out of some of the walls?
+2011-06-27T22:58:50  <davidjliu> er, 3*3 cells
+2011-06-27T22:59:11  <antimatroid> yeah
+2011-06-27T22:59:39  <antimatroid> i do a maze with a 3x3 block in one players basis squraes, sometimes cutting holes in the edge of the basis
+2011-06-27T22:59:54  <antimatroid> remove a few extra walls in the maze, then randomly remove some water from the edges of land
+2011-06-27T23:00:07  <antimatroid> then make the map symmetric
+2011-06-27T23:01:07  <davidjliu> I'm impressed with the symmetry
+2011-06-27T23:01:20  <antimatroid> which part?
+2011-06-27T23:01:40  <antimatroid> i have those tesellation symmetries, then 5 types of 2 player rotational symmetry, 3 types of 4 player rotational symmetry and 1 type for 8 players
+2011-06-27T23:02:26  <davidjliu> tessellation symmetry just seems more surprising that it's symmetric when you look at it
+2011-06-27T23:02:40  <antimatroid> yeah
+2011-06-27T23:02:59  <antimatroid> i was surprised when i worked out the conditions for that that i could do like 5/7 etc. player symmetry
+2011-06-27T23:03:56  <davidjliu> yeah... it's pretty cool looking
+2011-06-27T23:04:56  <antimatroid> i'm tempted to scrap my random walk generator
+2011-06-27T23:04:58  <antimatroid> these maps are much nicer
+2011-06-27T23:05:01  <antimatroid> and they can be more open
+2011-06-27T23:06:27  <davidjliu> My personal issue is that all of the random walk maps pretty much seem to be the same
+2011-06-27T23:08:27  <antimatroid> yep
+2011-06-27T23:08:33  <antimatroid> the map gen is pretty sucky
+2011-06-27T23:10:28  <antimatroid> i'm still ironing stuff out, but this is what my map gen spits out.. http://pastebin.com/HpB6gee9
+2011-06-27T23:15:52  <davidjliu> nice. I like the one with the big divide in the middle. It's interesting
+2011-06-27T23:16:48  <davidjliu> If you're having maps that are primarily block-like, you might think of having walls of thickness two to add a little more space, maybe
+2011-06-27T23:17:47  <antimatroid> yeah i thought about that, makes it harder to do though
+2011-06-27T23:18:14  <antimatroid> also the rotation seems to screw up the walls/land in places
+2011-06-27T23:18:57  <antimatroid> i don't think that's bad, except in the cases where it makes regions that can't be reached for a 3x3 block walking around
+2011-06-27T23:18:57  <davidjliu> currently you mean?
+2011-06-27T23:19:01  <antimatroid> yeah
+2011-06-27T23:19:22  <davidjliu> as in it's asymmetrical or it looks different?
+2011-06-27T23:19:28  <davidjliu> I assume looks different
+2011-06-27T23:19:30  <davidjliu> than expected
+2011-06-27T23:25:38  *** okayzed is now known as okay
+2011-06-27T23:43:25  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Quit: Page closed)

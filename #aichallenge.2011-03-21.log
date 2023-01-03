@@ -1,0 +1,1378 @@
+2011-03-21T00:00:46  *** anaptyxis <anaptyxis!~anaptyxis@cpe-70-112-201-109.austin.res.rr.com> has joined #aichallenge
+2011-03-21T00:00:50  <sigh> "Parkinson's Law of Triviality, also known as bikeshedding or the bicycle shed example, is C. Northcote Parkinson's 1957 argument that organisations give disproportionate weight to trivial issues." - http://en.wikipedia.org/wiki/Parkinson%27s_Law_of_Triviality
+2011-03-21T00:00:53  <Frontier> we could use that, but if we do it right the replay file will become bigger. we discussed that already
+2011-03-21T00:01:11  <Frontier> sigh: don't do that. this is an important decision :p
+2011-03-21T00:02:24  <Frontier> someone will find some reason next term not to use json ^^, but we could write the metadata in that fashion
+2011-03-21T00:02:54  <Frontier> then again... is that easier then to use '#%' comments?
+2011-03-21T00:03:03  <sigh> json is more work than prepending a file with a few lines, but it is ok
+2011-03-21T00:04:21  * sigh will agree with anything that doesn't put the metadata at the end
+2011-03-21T00:07:52  *** anaptyxis <anaptyxis!~anaptyxis@cpe-70-112-201-109.austin.res.rr.com> has left #aichallenge
+2011-03-21T00:07:54  <Frontier> a json parser may not like other data in the same stream. it is an either or decision. and i doubt that all our replays can be expressed in json efficiently. so i come to the conclusion that the initial comment idea is the best so far.
+2011-03-21T00:08:40  <sigh> ok
+2011-03-21T00:08:40  <amstan> sigh: i agree, lol, this is pretty trivial, yet it's one of the most discussed topics in here, lol
+2011-03-21T00:11:54  <Frontier> we are almost done. how do we handle array-like stuff in the metadata? currently we agreed on 'playername <id> <name>'. or do we want strictly key-value pairs and not keys with variable argument counts?
+2011-03-21T00:12:06  <amstan> so.. my idea for json replay: https://gist.github.com/878995
+2011-03-21T00:12:15  <Frontier> oh let me take a look
+2011-03-21T00:13:48  <amstan> @botrepo
+2011-03-21T00:13:49  <Frontier> hehe, that is planetwars style, but ok. you'll have to escape the invalid characters in the replay data and there will be two formats. on 'elementary' replay file and one wrapped in the cool ai-contest replay wrapper
+2011-03-21T00:13:49  <contestbot> amstan: botrepo = http://github.com/amstan/contestbot
+2011-03-21T00:14:03  <Frontier> *one
+2011-03-21T00:14:04  <amstan> Frontier: isn't that what we wanted?
+2011-03-21T00:14:29  <Frontier> i wanted a single replay file that can be extended with metadata
+2011-03-21T00:14:49  <amstan> contestbot: echo [forget botrepo] [learn https://github.com/aichallenge/contestbot as botrepo]
+2011-03-21T00:14:49  <contestbot> Yep. As you wish.
+2011-03-21T00:15:21  <Frontier> so a single parser could read replays with or without metadata and need not even understand metadata
+2011-03-21T00:15:48  <Frontier> but i guess the json approach looks very appealing
+2011-03-21T00:16:47  <Frontier> actually we will have 3 formats, as there is also the live stream format from McLeopold. :p
+2011-03-21T00:16:48  <amstan> so the only place there's no reason to not have json is between bots and the engine, because json libraries in most languages are annoying to include in the starter packs
+2011-03-21T00:17:00  <amstan> everywhere else, i would recommend using them
+2011-03-21T00:17:13  <amstan> oh.. the bots and the lengthy replays, yes
+2011-03-21T00:17:35  <amstan> Frontier: live stream format is also one of those blob ones..
+2011-03-21T00:18:02  <sigh> I'm with frontier on this, just stick some lines at the top of the file
+2011-03-21T00:18:42  <amstan> i'm ok with that, but if you guys want futureproofing... i'd go with json
+2011-03-21T00:18:57  <amstan> but... nvm futureproofing, it's not like we'll be using the manager from epsilon from now on
+2011-03-21T00:19:05  <amstan> except ants
+2011-03-21T00:19:16  <Frontier> the whole point for me is a futureproof metadata system
+2011-03-21T00:19:37  <amstan> json will be more futureproof than our homebrew format
+2011-03-21T00:19:45  <Frontier> amstan: we will still need metadata in zeta, won't we?
+2011-03-21T00:20:05  <amstan> yes, but i still recommend json
+2011-03-21T00:20:27  <sigh> Frontier: everyone is now ok with your format, no need to argue anymore
+2011-03-21T00:20:57  <amstan> Frontier: you have the final call anyway.. we're just your consultants
+2011-03-21T00:21:09  <amstan> and yes, we're ok
+2011-03-21T00:21:47  <Frontier> amstan: You will be with this project for a longer time than me. If this gets phased out for json in zeta, then there is no point in using comments
+2011-03-21T00:22:41  <amstan> the only code that we'll be able to reuse in zeta from epsilon in this regard will be some manager code
+2011-03-21T00:23:08  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has quit IRC (Ping timeout: 248 seconds)
+2011-03-21T00:23:26  <amstan> so idk if there's a point in worrying so much about future compatibility
+2011-03-21T00:23:56  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has joined #aichallenge
+2011-03-21T00:25:00  <Frontier> the software may be rewritten from scratch, but the file formats are usually upwards compatible. so before someone else says metadata in comments sucks, i rather use a json wrapper :)
+2011-03-21T00:26:02  <Frontier> it is like MPEG then. You have Program Streams that contain metadata and interleaved packets from streams and elementary streams, which lack even timing data.
+2011-03-21T00:27:33  <Frontier> the json version is the .mpg file with all the metadata and the raw output from the engine is the elementary stream. that makes sense to me as i worked with mpeg files for a company a few years ago
+2011-03-21T00:28:55  <Frontier> i say we move the version information (i.e. 'v ants 1') into the json part as well.
+2011-03-21T00:29:38  <Frontier> game: "ants", format: "1" (or "stream" and "storage")
+2011-03-21T00:29:54  <amstan> Frontier: when versioning, try to keep git in mind, either make a tag and referrence that, or referrence the particular commit
+2011-03-21T00:30:06  <amstan> Frontier: sounds good
+2011-03-21T00:32:28  <Frontier> I believe McLeopold can agree on that, too. And you finally have your bike shed in the style of JSON :p
+2011-03-21T00:34:28  <amstan> lol
+2011-03-21T00:37:25  <Frontier> sigh: The lengthy argument is over, you can come back
+2011-03-21T00:37:30  *** zvitamiinz <zvitamiinz!ae718880@gateway/web/freenode/ip.174.113.136.128> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T00:38:05  <sigh> :P
+2011-03-21T00:43:34  *** chuckki <chuckki!4c68b6f9@gateway/web/freenode/ip.76.104.182.249> has joined #aichallenge
+2011-03-21T00:45:36  *** chuckki <chuckki!4c68b6f9@gateway/web/freenode/ip.76.104.182.249> has quit IRC (Client Quit)
+2011-03-21T01:01:13  *** phire <phire!~phire@12.241.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-21T01:06:07  *** phire <phire!~phire@12.241.69.111.dynamic.snap.net.nz> has quit IRC (Ping timeout: 276 seconds)
+2011-03-21T01:08:43  *** antiuni <antiuni!83d90608@gateway/web/freenode/ip.131.217.6.8> has quit IRC (Quit: Page closed)
+2011-03-21T01:27:06  *** raydenuni <raydenuni!~raydenuni@ip68-5-22-175.oc.oc.cox.net> has joined #aichallenge
+2011-03-21T01:27:08  <raydenuni> hello
+2011-03-21T01:35:08  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-21T01:35:37  <Frontier> hi
+2011-03-21T01:37:30  <Frontier> ok, so i have the JSON object with the following required keys, to be checked in order: "challenge" (: "ants") -> "replayformat" (: "storage") -> "replaydata"
+2011-03-21T01:39:01  <Frontier> https://github.com/aichallenge/aichallenge/wiki/Ants-replay-format
+2011-03-21T01:41:12  <antimatroid> how's the inflow of redditors going?
+2011-03-21T01:42:00  <sigh> Frontier: nitpick: be consistent in how you format param names... e.g submitids, user_ids
+2011-03-21T02:02:28  *** avocado <avocado!~legit@unaffiliated/avocado> has joined #aichallenge
+2011-03-21T02:08:40  *** CPeng <CPeng!~pengn@74.83.221.102> has joined #aichallenge
+2011-03-21T02:09:15  <antimatroid> ...now that the information gates are open, should we use redditors to try and gauge how well people can grasp the battle options
+2011-03-21T02:09:21  <antimatroid> sigh: what's the reception been to your rule?
+2011-03-21T02:10:16  <sigh> McLeopold and jmcarthur liked it
+2011-03-21T02:10:22  <sigh> no one else said anything
+2011-03-21T02:11:27  *** thagomizr <thagomizr!~thagomizr@173-26-197-78.client.mchsi.com> has quit IRC (Quit: thagomizr)
+2011-03-21T02:11:37  <sigh> so far it has only been brought up in irc
+2011-03-21T02:12:05  <CPeng> link?
+2011-03-21T02:12:25  <sigh> CPeng: to what?
+2011-03-21T02:12:33  <CPeng> what you guys are talking about
+2011-03-21T02:13:08  <CPeng> i dont see it in the forum
+2011-03-21T02:13:14  <sigh> there's isn't really a link as it has only been brought up in irc :P
+2011-03-21T02:13:48  <CPeng> k
+2011-03-21T02:15:18  <CPeng> so i brought up the issue about labview here: https://github.com/aichallenge/aichallenge/issues/32
+2011-03-21T02:15:29  <CPeng> is there something i can research to get the ball rolling on that?
+2011-03-21T02:16:09  <antimatroid> CPeng: are you familiar with battle resolution?
+2011-03-21T02:16:41  <sigh> re labview: basically we need an answer to what amstan asked; need a simple, free way to set up and run it on ubuntu
+2011-03-21T02:17:04  <CPeng> i am not familiar with battle resolution
+2011-03-21T02:21:30  *** CPeng <CPeng!~pengn@74.83.221.102> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T02:22:15  *** CPeng <CPeng!~pengn@74.83.221.102> has joined #aichallenge
+2011-03-21T02:22:28  <CPeng> bleh i cant stay connected to freenet for some reason
+2011-03-21T02:22:39  <CPeng> what version of ubuntu?
+2011-03-21T02:23:37  <sigh> amstan ^^
+2011-03-21T02:24:27  <antimatroid> janzert^^
+2011-03-21T02:24:58  <antimatroid> hmmm, does irc ping him without a space?
+2011-03-21T02:25:08  <sigh> depends on his client
+2011-03-21T02:25:18  <sigh> should do
+2011-03-21T02:25:40  <sigh> anyway, if neither of them are answering ask in the issue
+2011-03-21T02:25:50  <antimatroid> http://www.reddit.com/r/RedditGameJam/comments/g10hy/reddit_game_jam_06_starting_20110325_2200_utc_and/
+2011-03-21T02:25:56  <antimatroid> did people see that?
+2011-03-21T02:38:56  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 250 seconds)
+2011-03-21T02:50:03  <janzert> Ubuntu 10.10 is what things are currently being based on
+2011-03-21T02:55:34  *** amstan__ <amstan__!~alex@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-21T02:55:34  *** ChanServ sets mode: +o amstan__
+2011-03-21T03:00:30  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-21T03:02:53  <Frontier> antimatroid: http://marco-leise.homedns.org/antgui/work/visualizer.php?game_id=2#visualizer
+2011-03-21T03:04:09  <Frontier> the blue forward and backward buttons now start a slow motion to the next half-tick. so you can now stop after half a turn to see where the ants end up after moving without fighting or conversion
+2011-03-21T03:04:26  *** amstan__ <amstan__!~alex@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 276 seconds)
+2011-03-21T03:05:43  * janzert doesn't see any forward or back buttons on FF
+2011-03-21T03:08:14  <Frontier> janzert: firefox renders the vis. well. maybe i have a bug in the image loading routine. what if you load the page again?
+2011-03-21T03:08:42  <antimatroid> Frontier: :D
+2011-03-21T03:08:55  <antimatroid> that's awesome
+2011-03-21T03:08:58  <janzert> nope, where are the buttons supposed to be, below the main view?
+2011-03-21T03:09:22  <antimatroid> yeah
+2011-03-21T03:09:23  <janzert> I like the way the graphs are coming along at the top
+2011-03-21T03:10:03  <janzert> weird, on third refresh with firebug turned on they showed up
+2011-03-21T03:10:47  <janzert> and now they seem to consistently be there
+2011-03-21T03:10:53  <Frontier> hmm, someone else had issues on safari, too until he opened the dev console.
+2011-03-21T03:11:04  <Frontier> I don't know what it is though.
+2011-03-21T03:11:22  <janzert> ugh, that makes it hard to debug
+2011-03-21T03:11:27  <antimatroid> janzert, Frontier: what do you two think about sighs new battle resolutions?
+2011-03-21T03:11:45  <Stocha> im' litlle worried for computing time given to bots at the moment.
+2011-03-21T03:11:49  <Frontier> antimatroid: I am glad that this is not my front ^^
+2011-03-21T03:11:53  <antimatroid> each ant dishes out 1 damange each turn, 1/#enemiesinrange to each enemy, if an enemy has >= 1 damage, they die
+2011-03-21T03:12:05  <Stocha> i save there ware inconstistencies to what was given to bot in planet war also.
+2011-03-21T03:12:07  <antimatroid> Frontier: :P
+2011-03-21T03:12:11  <antimatroid> it's still good to get opinions
+2011-03-21T03:12:21  <antimatroid> Stocha: inconsistencies?
+2011-03-21T03:12:27  <Stocha> I think this ant things will need quite a punch even for very basic things
+2011-03-21T03:12:37  <janzert> I think I like it on first glance at least
+2011-03-21T03:12:52  <antimatroid> it means a..b..c or a..b..a just kills b
+2011-03-21T03:12:55  <Stocha> peoples complaining they had only 500 milliseconds rather than 1000
+2011-03-21T03:13:05  <antimatroid> which i think makes cooperation much more prominent
+2011-03-21T03:13:05  <Frontier> jeff /hates/ health bars
+2011-03-21T03:13:12  <antimatroid> there is no health bar
+2011-03-21T03:13:20  <antimatroid> you go back to 1 health essentially each turn
+2011-03-21T03:13:23  <Stocha> or that the 1000 millisecond could mean 1 instruction as well as 100000. Depending on randome external event.
+2011-03-21T03:13:31  <antimatroid> so you "recover after battle"
+2011-03-21T03:13:52  <antimatroid> it's a lot like option 1 (not the same), but meant to be easier to understand
+2011-03-21T03:13:53  <janzert> I think with collisions always die instead of collision orders are just canceled some of the old rules that were thrown out may make sense now too
+2011-03-21T03:14:18  <antimatroid> yeah, and points will be assigned for colliding enemies
+2011-03-21T03:14:39  <janzert> but this is seems a nice intuitive method that should have interesting play
+2011-03-21T03:14:41  <Frontier> Stocha: at least the bots will run sequentially
+2011-03-21T03:14:43  <Stocha> I do on basic things at the moment, and with many ants, it can begin to be slow. I see no way to hope for counting ennemies on different tree hypothesis.
+2011-03-21T03:15:02  <Stocha> Solving basic food gathering take quite some cpu power also.
+2011-03-21T03:15:11  <antimatroid> Stocha: assuming you have lots of ants, you're only going to be looking one state in the future
+2011-03-21T03:15:22  <antimatroid> you only really need to do the battle resolution at your terminal nodes
+2011-03-21T03:15:37  <antimatroid> i don't think food gathering will be that expensive
+2011-03-21T03:15:40  <Stocha> why do we need complex rule then ? if we can do no anticipation ?
+2011-03-21T03:15:52  <Stocha> I made a basic food gathering engine.
+2011-03-21T03:15:53  <antimatroid> just paint out from each known food square at the start of the turn, moving the ants you want
+2011-03-21T03:16:11  <Stocha> As i don't know the computing power each turn, i assume the worth
+2011-03-21T03:16:30  <Stocha> i feel uncomfortable with only food gathering and basic ant movement at the momement. :p
+2011-03-21T03:16:48  <antimatroid> so do we, hence the desire for interesting attacks
+2011-03-21T03:17:11  <Stocha> If you said : an i5 machine with one cpu fully supporting you, for 2 minutes / turns, i could be more relaxed
+2011-03-21T03:17:30  <Stocha> i have got no idea what the hard will be, and what amount of computing that will mean.
+2011-03-21T03:17:58  <Stocha> when i say i feel uncomfortable i mean : it needs cpu
+2011-03-21T03:17:59  <antimatroid> you will get like 0.5 seconds a turn
+2011-03-21T03:18:00  <Stocha> to get it right.
+2011-03-21T03:18:27  <antimatroid> we wont be going below that anyway
+2011-03-21T03:18:31  <Stocha> that hardly make it possible to explore complex possibilities with complex slow to compute rules.
+2011-03-21T03:18:34  <antimatroid> that was the previous promised minimum amount
+2011-03-21T03:18:41  <antimatroid> they aren't that slow
+2011-03-21T03:18:51  <Stocha> what computer will you provide ?
+2011-03-21T03:19:16  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-21T03:19:46  <janzert> no one else is bothered that blue wins the game Frontier posted above?
+2011-03-21T03:20:04  <antimatroid> janzert: green would have won with a longer game
+2011-03-21T03:20:07  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-21T03:20:13  <antimatroid> they just hadn't started killing people yet
+2011-03-21T03:20:24  <antimatroid> realise blue lost a lot more ants too from fights probably
+2011-03-21T03:20:43  <antimatroid> Frontier: at least for the moment could we get total number of ants had maybe?
+2011-03-21T03:20:50  <janzert> we better make sure all games are long enough then :)
+2011-03-21T03:21:14  <antimatroid> yeah, i want to start everything way out of range then bring it in
+2011-03-21T03:21:36  <antimatroid> rather than start small then find a non-subset better set of parameters/whatever
+2011-03-21T03:22:08  <janzert> what is the save button for?
+2011-03-21T03:22:21  <janzert> to download the game eventually?
+2011-03-21T03:23:07  *** espes <espes!~espes@123-243-221-248.tpgi.com.au> has joined #aichallenge
+2011-03-21T03:23:25  <antimatroid> that'd be my guess
+2011-03-21T03:24:38  <janzert> the visualizer is really shaping up nice
+2011-03-21T03:26:33  <_flag> Why aren't the scores based on the number of ants a player has?
+2011-03-21T03:28:05  <janzert> there isn't an incentive to kill off your opponent, just keep him beat down below you
+2011-03-21T03:28:21  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-21T03:28:28  <janzert> I'm not a big fan of the current system though either ;)
+2011-03-21T03:28:41  <_flag> Why not a ratio of your total ants to his?
+2011-03-21T03:28:50  <_flag> So that means if you kill him your ratio will be higher
+2011-03-21T03:29:06  <_flag> The fact that blue won that game is obviously kind of silly
+2011-03-21T03:29:59  <janzert> I'd still like it to just be inverse order of elimination, but most seem to be strongly against that
+2011-03-21T03:30:41  <_flag> That would work too, in fact it might be even better because it doesn't encourage any kind of playstyle. If you win you win.
+2011-03-21T03:30:51  <janzert> yep
+2011-03-21T03:31:11  <antimatroid> look at the game, blue was involved in a lot more fights
+2011-03-21T03:31:24  <antimatroid> i'm curious what the total number of ants was to each player
+2011-03-21T03:31:33  <antimatroid> regardless, green was about to kick its ass
+2011-03-21T03:31:44  <_flag> Is there not an ant counter at the top for you?
+2011-03-21T03:31:50  <janzert> yep, that's the point green is pretty clearly ahead
+2011-03-21T03:31:56  <antimatroid> it's a current ant counter
+2011-03-21T03:31:58  <antimatroid> not aggregate
+2011-03-21T03:32:37  <janzert> at best I think blue should have tied, since it did survive to the end of the game
+2011-03-21T03:32:59  <_flag> Well most kills are a 1:1 thing, so green would be approximately 147 + 83 and blue would be 79 + 91
+2011-03-21T03:33:17  <antimatroid> janzert: the game was 100 turns, i expect to have much longer games
+2011-03-21T03:33:34  <antimatroid> like, i'd start at max 1000 turns
+2011-03-21T03:33:36  <antimatroid> and see how that goes
+2011-03-21T03:33:56  <janzert> yes, longer games will help but I'm not sure will eliminate the problem
+2011-03-21T03:34:10  <_flag> This senerio could happen with longer games too. Not as much, but it could still happen.
+2011-03-21T03:34:19  <antimatroid> Frontier: can we get  a 1000 turn version of that game? :P
+2011-03-21T03:34:31  <antimatroid> it happened with planet wars
+2011-03-21T03:34:43  <antimatroid> i saw numerous games of mine on tcp where the result would have changed given more time
+2011-03-21T03:34:50  <janzert> right so we should learn from that :)
+2011-03-21T03:34:55  <antimatroid> what?
+2011-03-21T03:35:15  <antimatroid> i mentioned it during planet wars and was keen on a longer match time, and people were pretty unanimous in saying it doesn't really matter
+2011-03-21T03:35:34  <janzert> no matter where you cut the game off at there will be the same problems some of the time
+2011-03-21T03:35:36  <antimatroid> provided it's as rare as it was for planet wars
+2011-03-21T03:35:37  <_flag> In planetwars having more ships was directly correlated to winning. In this having more kills is not as important as having more ants.
+2011-03-21T03:35:53  <janzert> I wanted ties if both survived to the end in planetwars too
+2011-03-21T03:36:02  <antimatroid> _flag: there is also a food bonus that hasn't been implemented
+2011-03-21T03:36:04  <janzert> but felt it was too late to change by the time I realized it
+2011-03-21T03:37:05  <antimatroid> if an ant is the last remaining player for a game ending before maxTurns, that player gets a point for every food square that is on the board or would have spawned and every enemy ant that's on the board from a crashed bot
+2011-03-21T03:37:29  <antimatroid> so really, we just need to pick maxTurns so that games can reasonably play out and i don't think it'll be much of a problme
+2011-03-21T03:37:53  <antimatroid> although we do need to see some examples of the scoring, but that will always be the case until we can test stuff fully
+2011-03-21T03:39:21  <_flag> What if we have a scenario where two bots are fighting and killing each other off, and a third bot builds up ants "wins". Would that person still lose if they had less kills and the food bonus wasn't enough?
+2011-03-21T03:40:07  <_flag> It seems silly to me to rank bots on anything other than either who won, or who was most likely to win
+2011-03-21T03:40:51  <janzert> the food bonus was supposed to be large enough to ensure the third wins but I'm not sure if it really is
+2011-03-21T03:41:27  <janzert> and yeah, I really like inverse elimination better
+2011-03-21T03:41:50  <_flag> So basically we have to try to create an algorithm that immitates inverse elimination without actually being inverse elimination?
+2011-03-21T03:42:26  <janzert> that's as much as I could talk people into :P
+2011-03-21T03:42:32  <_flag> :P
+2011-03-21T03:46:36  *** a_Tick <a_Tick!~a_Tick@ip72-208-34-87.ph.ph.cox.net> has joined #aichallenge
+2011-03-21T03:57:19  *** epaga <epaga!~JohnG@fw.inetsoftware.de> has joined #aichallenge
+2011-03-21T03:59:59  *** shutch <shutch!~shutch@hc6523863.dhcp.vt.edu> has joined #aichallenge
+2011-03-21T04:00:48  *** _andy <_andy!d5730a62@gateway/web/freenode/ip.213.115.10.98> has joined #aichallenge
+2011-03-21T04:02:06  *** fishy1 <fishy1!~fishey@nat-alex-resnet-out-1.rutgers.edu> has joined #aichallenge
+2011-03-21T04:13:12  *** epaga <epaga!~JohnG@fw.inetsoftware.de> has left #aichallenge
+2011-03-21T04:17:50  *** delt0r_ <delt0r_!~delt0r@188-22-166-128.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-21T04:19:13  *** delt0r___ <delt0r___!~delt0r@188-22-170-233.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T05:02:33  *** Eruonen <Eruonen!~onensora@92.70.90.241> has joined #aichallenge
+2011-03-21T05:05:42  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-21T05:07:29  <antimatroid> sigh: i have a new most gross problem of the year :P
+2011-03-21T05:07:47  <antimatroid> well a whole assignment really, why the hell did i decide to take a physics unit :\
+2011-03-21T05:08:01  <sigh> physics is phun
+2011-03-21T05:08:20  <sigh> what is the physics?
+2011-03-21T05:08:51  <antimatroid> symmetry stuff, so maths :P
+2011-03-21T05:09:14  *** caution <caution!~caution@unaffiliated/caution> has joined #aichallenge
+2011-03-21T05:09:30  <antimatroid> this question has tensors, i've not actually been given a tensor for actual classes before
+2011-03-21T05:09:40  <sigh> but you love tensors :P
+2011-03-21T05:10:02  <antimatroid> i do
+2011-03-21T05:10:06  <antimatroid> it's still messy
+2011-03-21T05:14:01  <Stocha> Hello there.
+2011-03-21T05:14:23  <Stocha> I have been thinking about this game, and how to sort through all the ideas.
+2011-03-21T05:15:03  <Stocha> I think testing is clearly needed. With different sets of rules. The most basic ones. And some more twisted one. Comparing how bots do in the different environnement.
+2011-03-21T05:15:16  <Stocha> Obviously you need bots in order to test. That's quite a problem :)
+2011-03-21T05:15:46  <Stocha> Anyway what strikes me right now, is the need to some TCP servers, each with a different game engine
+2011-03-21T05:16:01  <Stocha> So that people could start to put bot on.
+2011-03-21T05:16:15  <Stocha> And the design team would have lot's of data te chew upon.
+2011-03-21T05:17:19  <Stocha> You would need some machine for keeping the differents servers opens.
+2011-03-21T05:18:18  <Stocha> I really see no way out of this.
+2011-03-21T05:18:29  <Stocha> As far as my testing goes, i have several thing to say.
+2011-03-21T05:19:03  <Stocha> First i really think rule "ant dies on same square" needs further testing before being discarded. I mean who really tryed to build a good bot with this rule on ?
+2011-03-21T05:19:47  <Stocha> Second, i think it is far too soon to say this game should be multiplayer.
+2011-03-21T05:20:06  <Stocha> In my testing, multiple bots fighting doesn't bring much to the table.
+2011-03-21T05:20:34  <Stocha> I really see no urgent improvement to the bots engine that would take the multiplayer parameter into account.
+2011-03-21T05:20:41  <Stocha> It's just you and some ennemy ants.
+2011-03-21T05:21:33  <Stocha> that the ennemy is in fact splitted in 3 others teams, is of no concern to the Ai of the bot at the moment. I really see nothing i can use the ennemy ant ownership information for.
+2011-03-21T05:21:42  <CIA-33> aichallenge: sigh epsilon * rfe323a7 / ants/ants.py : Make food and attack method mapping public and fix some errors in comments. - http://bit.ly/dWPSPR
+2011-03-21T05:21:57  <antimatroid> stocha: other fighting rules encourage cooperation
+2011-03-21T05:22:06  <sigh> someone logged an issue on github because one of my comments was wrong
+2011-03-21T05:22:14  <antimatroid> consider this situation : ....a..b..c......
+2011-03-21T05:22:16  <Stocha> i think you are going a bit far on this one :)
+2011-03-21T05:22:38  <antimatroid> with option 1 and sighs new rule, a and c kill b
+2011-03-21T05:22:55  <Stocha> What is certain, is that we need a tcp server, in order to put on some reasonable bots. Like my ExplorerBot, and some other's
+2011-03-21T05:23:12  <antimatroid> there will be a tcp server, we just haven't got everything ready enough yet
+2011-03-21T05:23:15  <Stocha> So if you agree on this, i can help you with this particular goal.
+2011-03-21T05:23:34  <antimatroid> although we shouldn't be that far off? sigh?
+2011-03-21T05:23:38  <Stocha> Which i feel is quite urgent :p
+2011-03-21T05:23:54  <sigh> antimatroid: no idea, all I know about is the engine
+2011-03-21T05:24:05  <antimatroid> testing parameters has always been a necessary part of getting the game ready
+2011-03-21T05:24:23  <antimatroid> it's also not really possible until most other things are ready, which is not the case, it's not a case of saying oh that's important, we'll do that first
+2011-03-21T05:24:26  <Stocha> I'm very comfortable with java, and quite uncomfortable with pretty much anything else. but if need be, i can try python or anything you like. Only it will takes ages for me to do anything useful :p
+2011-03-21T05:24:41  <antimatroid> i have only ever touched python for this
+2011-03-21T05:24:52  <antimatroid> although java is rank :P
+2011-03-21T05:25:08  <Stocha> what others things might be more important than a tcp server in order to settle the rules a bit ?
+2011-03-21T05:25:29  <antimatroid> having working components that allow a tcp server to even work?
+2011-03-21T05:25:30  <Stocha> I mean isn't the spec of the game very important for the challenge ?
+2011-03-21T05:25:41  <Stocha> What components are lacking ?
+2011-03-21T05:25:54  <Stocha> I think you have some game engine.
+2011-03-21T05:26:02  <antimatroid> you might be able to knock up a quick visualiser without worrying about all the server stuff etc. but there's a surprising amount of work, along with ranking bots, etc.
+2011-03-21T05:26:26  <Stocha> ranking bot in a true sense might be something.
+2011-03-21T05:26:36  <Stocha> but you also can do some very rough ranking to start with.
+2011-03-21T05:26:38  <antimatroid> not possible to "perfectly" rank bots
+2011-03-21T05:26:50  <Stocha> I'm all for simplicity while testing. At least at first.
+2011-03-21T05:27:05  <Stocha> it is possible to produce the raw score data for each game.
+2011-03-21T05:27:13  <Stocha> how is that far for perfection ?
+2011-03-21T05:27:32  <Stocha> anyone can dig through the data and make his mind. untile we got something to compute this data.
+2011-03-21T05:27:43  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has joined #aichallenge
+2011-03-21T05:27:48  <Stocha> into something hopefully mor intelligible
+2011-03-21T05:28:15  <Stocha> Something that i'm wondering is : who is in charge of the project ?
+2011-03-21T05:28:30  <Stocha> How are decisions made ?
+2011-03-21T05:29:06  <Stocha> about the subprojects, dans their goal. And to settle disagreement if there are any (for example what scoring rules is more important to test first)
+2011-03-21T05:29:46  <Stocha> I'm okay with no one is in charge, anyone doing what's seems right. but i would like to know for sure how things works in there :)
+2011-03-21T05:30:13  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-03-21T05:30:49  <antimatroid> j3camero is in charge
+2011-03-21T05:31:04  <Stocha> For example, let's say that i come with some engine with some tcp capabilities for submiting bots, and a tcp starting pack. Would someone be able to get a machine to run the server ?
+2011-03-21T05:31:22  <Stocha> Is he around often ?
+2011-03-21T05:31:25  <antimatroid> no
+2011-03-21T05:31:46  <Stocha> who's in charge when he is not there then ?
+2011-03-21T05:31:59  <Stocha> how do things works when he is not there ?
+2011-03-21T05:32:08  <antimatroid> nobody, we come up with something we can all bear of wait for his ruling
+2011-03-21T05:32:19  <antimatroid> amstan is the closest to a second in command
+2011-03-21T05:32:28  <antimatroid> he is around frequently
+2011-03-21T05:32:56  <Stocha> where can i find amstam plans / planning ?
+2011-03-21T05:33:02  <Stocha> for the challenge.
+2011-03-21T05:33:11  <Stocha> the tasks list
+2011-03-21T05:33:18  <antimatroid> on the wiki i'm pretty sure
+2011-03-21T05:33:35  <Stocha> i should have a look at that then.
+2011-03-21T05:38:44  <Stocha> I looked into it (i think). I see nothing about sorting out rules.
+2011-03-21T05:39:15  <Stocha> That kinda worry me :p
+2011-03-21T05:39:51  <Stocha> I see some task for starte pack. but nothing about the GameEngine(s) implementation tasks
+2011-03-21T05:40:59  <Stocha> Most tasks refers to stuff that i don't really know what they are about at this point. The only thing clear to met being that their is a set of games (with different rules features) that will be sorted down to one game (with one set of feature) that people will try to make bot for.
+2011-03-21T05:41:11  <antimatroid> it's on to the "to do" list, we're just not to the stage that we feel ready to do it
+2011-03-21T05:41:37  <Stocha> But i have heard of launching the stuff in like a week ?
+2011-03-21T05:41:49  <antimatroid> some people are kidding themselves
+2011-03-21T05:41:54  <Stocha> it seems more like a few 6 month right now.
+2011-03-21T05:42:20  <Stocha> So let's say we are still in the prototyping phase.
+2011-03-21T05:42:43  <antimatroid> it should me live within i month, i hope
+2011-03-21T05:42:46  <antimatroid> be*
+2011-03-21T05:43:06  <Stocha> Wouldn't it be usefull to have a quick dirty way of making (strong)bot play one another on different sort of rules ?
+2011-03-21T05:43:49  <antimatroid> the engine can run pretty much all rules
+2011-03-21T05:43:59  <antimatroid> once everything is set up including a tcp server, we will test them
+2011-03-21T05:44:04  <Stocha> so that we can see more clearly out what a "good" set of rules will be. And also some people would have fun making some bot, and exploring the different set-features constraints
+2011-03-21T05:44:14  <antimatroid> that's precisely why there's so many unknowns, we haven't got stuff to a testable point
+2011-03-21T05:44:36  <Stocha> but i have seen bots playing one another yet.
+2011-03-21T05:44:47  <Stocha> in thoses visualizer showcases.
+2011-03-21T05:45:05  <antimatroid> yes, but there is more to it than just that to actually test bots against each other with rankings etc.
+2011-03-21T05:47:20  *** ItzMattu <ItzMattu!~no@pool-98-118-109-35.bstnma.fios.verizon.net> has joined #aichallenge
+2011-03-21T05:48:11  *** phire <phire!~phire@12.241.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-21T05:49:50  <Stocha> what more ?
+2011-03-21T05:50:22  <Stocha> how is that more so coupled that you can't go for the objective of test bots against each other without doing "more" stuff before ?
+2011-03-21T05:50:47  <Stocha> Is it a ressource problem, or an architectural problem ?
+2011-03-21T06:11:05  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-03-21T06:11:38  *** Sunhay <Sunhay!~ssbasi@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-03-21T06:17:34  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-03-21T06:44:58  <CIA-33> aichallenge: sigh epsilon * rad40548 / ants/battle_sim.py : Added a small script to simulate a battle - http://bit.ly/f9fIlz
+2011-03-21T06:45:58  <sigh> antimatroid: you might like this, I wrote a small script to test the output of a battle
+2011-03-21T06:46:03  <sigh> *result of the battle
+2011-03-21T06:46:45  <antimatroid> :)
+2011-03-21T06:49:35  <sigh> it should be handy for deciding between battle options
+2011-03-21T06:53:28  <antimatroid> yep
+2011-03-21T06:53:44  <antimatroid> i'm still wrestling this assignment problem atm (although i've got it sorted I think)
+2011-03-21T06:53:49  <antimatroid> i will have more time tomorrow
+2011-03-21T07:00:38  <CIA-33> aichallenge: sigh epsilon * r718559b / ants/battle_sim.py : Allow | to seperate rows in battle_sim script - http://bit.ly/em6DSn
+2011-03-21T07:05:24  *** puru <puru!ca5030af@gateway/web/freenode/ip.202.80.48.175> has joined #aichallenge
+2011-03-21T07:15:10  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has joined #aichallenge
+2011-03-21T07:27:32  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-21T07:32:43  *** a_Tick <a_Tick!~a_Tick@ip72-208-34-87.ph.ph.cox.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-21T08:03:03  *** puru <puru!ca5030af@gateway/web/freenode/ip.202.80.48.175> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T08:15:14  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-21T08:29:43  *** jmpespxo1eax is now known as jmpespxoreax
+2011-03-21T08:29:48  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-03-21T08:37:23  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-03-21T08:59:02  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-21T09:18:32  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-21T09:24:39  *** UncleVasya <UncleVasya!kvirc@46.133.91.135> has joined #aichallenge
+2011-03-21T09:35:05  *** dotirc <dotirc!~dotirc@200.55.129.130> has joined #aichallenge
+2011-03-21T09:37:52  *** bss03 <bss03!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has quit IRC (Remote host closed the connection)
+2011-03-21T09:38:43  *** dotirc <dotirc!~dotirc@200.55.129.130> has quit IRC (Quit: .IRC: .NET IRC Client @ http://www.dotirc.com/)
+2011-03-21T09:53:40  *** kaemo <kaemo!~mad5ci@dbm147.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-21T09:58:56  *** olexs <olexs!~Leviathan@drms-590c44f2.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-03-21T09:59:21  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-21T10:22:08  <antimatroid> done
+2011-03-21T10:22:14  <antimatroid> that was one rank assignment
+2011-03-21T10:27:42  *** mrnitrate <mrnitrate!968342d1@gateway/web/freenode/ip.150.131.66.209> has joined #aichallenge
+2011-03-21T10:34:39  <mrnitrate> hi
+2011-03-21T10:37:32  *** kaemo <kaemo!~mad5ci@dbm147.neoplus.adsl.tpnet.pl> has quit IRC (Remote host closed the connection)
+2011-03-21T10:38:01  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-03-21T10:41:16  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has joined #aichallenge
+2011-03-21T10:41:54  *** thagomizr <thagomizr!~thagomizr@173-26-197-78.client.mchsi.com> has joined #aichallenge
+2011-03-21T10:43:38  *** tiresias <tiresias!~cypher@host86-144-113-169.range86-144.btcentralplus.com> has joined #aichallenge
+2011-03-21T10:47:44  *** tiresias <tiresias!~cypher@host86-144-113-169.range86-144.btcentralplus.com> has joined #aichallenge
+2011-03-21T10:50:50  *** tiresias <tiresias!~cypher@host86-144-113-169.range86-144.btcentralplus.com> has quit IRC (Client Quit)
+2011-03-21T10:52:01  *** thagomizr <thagomizr!~thagomizr@173-26-197-78.client.mchsi.com> has quit IRC (Ping timeout: 248 seconds)
+2011-03-21T10:53:50  *** mechanical_turd <mechanical_turd!~mechanica@host86-144-113-169.range86-144.btcentralplus.com> has joined #aichallenge
+2011-03-21T10:58:38  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-03-21T10:59:06  *** robbs <robbs!~Robby.Ron@65.170.177.243> has joined #aichallenge
+2011-03-21T10:59:26  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-03-21T11:11:06  *** superflit <superflit!~superflit@140.226.49.148> has joined #aichallenge
+2011-03-21T11:13:56  *** helo_ <helo_!46593219@gateway/web/freenode/ip.70.89.50.25> has joined #aichallenge
+2011-03-21T11:21:55  *** helo_ <helo_!46593219@gateway/web/freenode/ip.70.89.50.25> has quit IRC (Quit: Page closed)
+2011-03-21T11:40:42  *** mechanical_turd <mechanical_turd!~mechanica@host86-144-113-169.range86-144.btcentralplus.com> has left #aichallenge
+2011-03-21T11:41:55  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-21T11:42:47  *** zvitamiinz <zvitamiinz!81617872@gateway/web/freenode/ip.129.97.120.114> has joined #aichallenge
+2011-03-21T11:48:32  *** metik <metik!d8bdd072@gateway/web/freenode/ip.216.189.208.114> has joined #aichallenge
+2011-03-21T11:52:45  *** amstan__ <amstan__!~alex@142.222.102.73> has joined #aichallenge
+2011-03-21T11:52:45  *** ChanServ sets mode: +o amstan__
+2011-03-21T11:52:54  *** metik <metik!d8bdd072@gateway/web/freenode/ip.216.189.208.114> has quit IRC (Client Quit)
+2011-03-21T11:59:16  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-21T11:59:59  *** dwchandler <dwchandler!~dwc@tuppy.intrepidhosting.net> has joined #aichallenge
+2011-03-21T12:01:06  *** amstan__ is now known as amstan
+2011-03-21T12:06:32  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-21T12:07:27  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Client Quit)
+2011-03-21T12:15:17  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-03-21T12:15:44  *** zvitamiinz <zvitamiinz!81617872@gateway/web/freenode/ip.129.97.120.114> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T12:16:39  *** delt0r_ <delt0r_!~delt0r@188-22-166-128.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-03-21T12:17:56  *** delt0r_ <delt0r_!~delt0r@188-22-25-160.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-21T12:26:58  *** Gorgoroth <Gorgoroth!~cedricvar@ALille-552-1-39-174.w92-142.abo.wanadoo.fr> has joined #aichallenge
+2011-03-21T12:28:34  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 264 seconds)
+2011-03-21T12:36:11  *** Eruonen <Eruonen!~onensora@92.70.90.241> has quit IRC ()
+2011-03-21T12:40:24  <amstan> antimatroid: thanks for taking care of reddit
+2011-03-21T12:48:00  *** slkjcna <slkjcna!~proton@li189-81.members.linode.com> has joined #aichallenge
+2011-03-21T12:48:43  <amstan> contestbot: later tell Eruonen http://www.reddit.com/r/programming/comments/g7qtj/google_ai_challenge_2011_ants/c1lnp9i
+2011-03-21T12:48:43  <contestbot> amstan: I come to serve.
+2011-03-21T12:50:49  <slkjcna> Hello chaps! It seems like you're running a pretty interesting challenge... Do you think it's plausible that an okay programmer with no previous AI experience but plenty of time could take part convincingly?
+2011-03-21T12:51:23  <amstan> slkjcna: you should do fine
+2011-03-21T12:51:32  <caution> you won't win though
+2011-03-21T12:51:53  <Naktibalda> only 1 can win
+2011-03-21T12:52:07  <amstan> well.. i won rps with no previous AI experience before, but there were 120 contestants at the time
+2011-03-21T12:52:49  <slkjcna> caution: I didn't expect to.
+2011-03-21T12:52:59  <caution> I was joking
+2011-03-21T12:53:29  <slkjcna> Don't worry about it
+2011-03-21T12:55:11  <slkjcna> amstan: Thanks! Are there any useful resources beyond the wiki/github/forum/IRC?
+2011-03-21T12:55:30  <amstan> slkjcna: nope.. that's pretty much it, lol
+2011-03-21T12:56:29  <slkjcna> No "beginner's guide to AI"?
+2011-03-21T12:57:58  <Gorgoroth> hi guys, i've been thinking a minor tweak to the core gameplay, how about bringing food back to the nest before gaining another ant ?
+2011-03-21T12:58:44  *** Fibrewire|Work <Fibrewire|Work!~Fibrewire@host81-132-23-12.range81-132.btcentralplus.com> has joined #aichallenge
+2011-03-21T13:00:17  <dwchandler> slkjcna: there are a LOT of beginner's guides to AI on the net
+2011-03-21T13:00:40  <dwchandler> and a lot of intermediate material, and ...
+2011-03-21T13:00:47  <slkjcna> dwchandler: So I gathered, but are all of them relevant?
+2011-03-21T13:00:55  <Naktibalda> no
+2011-03-21T13:01:06  <slkjcna> Oh, dear.
+2011-03-21T13:01:14  <dwchandler> the tricky part is figuring out *which* bits are relevant ;-)
+2011-03-21T13:01:37  <dwchandler> keep reading the forums as things get going and people will talk about approaches
+2011-03-21T13:01:45  <slkjcna> I'd better get to it, then. Thanks all.
+2011-03-21T13:01:46  <dwchandler> then you can go search
+2011-03-21T13:01:54  <UncleVasya> slkjcna: my entry for previous contest was my first  real program. Before this were only the simple tasks in my technical school (like find average of 1-metric array of integers or find sum of elements on main diagonal of an array). I downloaded starter package for contest and there were sources of few sample bots with different tactics.
+2011-03-21T13:02:41  <slkjcna> UncleVasya: That's encouraging. Great!
+2011-03-21T13:02:47  <UncleVasya> I have no computer science or even good mathematician background. But string by string I implemented my ideas to the bot.
+2011-03-21T13:03:15  <slkjcna> Looks like there's hope yet...
+2011-03-21T13:03:47  <UncleVasya> And it became smarter. So I didn't use even any of game theory elements, just scripting.
+2011-03-21T13:03:48  <caution> did you rank in the top 50%?
+2011-03-21T13:03:58  <UncleVasya> My place is 313.
+2011-03-21T13:04:48  <amstan> Gorgoroth: if you wanna play with the specs you have to nag antimatroid
+2011-03-21T13:04:53  <UncleVasya> But it needed really many time and to the end of contest I was wery tired :)
+2011-03-21T13:04:57  <amstan> Gorgoroth: and mcleopold
+2011-03-21T13:05:19  <UncleVasya> *a lot of time
+2011-03-21T13:05:27  <slkjcna> UncleVasya: Good thing I've got plenty of time on my hands.
+2011-03-21T13:06:22  *** Fibrewire|Work <Fibrewire|Work!~Fibrewire@host81-132-23-12.range81-132.btcentralplus.com> has left #aichallenge
+2011-03-21T13:06:41  <janzert> Gorgoroth: bringing food back was in the original spec but j3camero eliminated it
+2011-03-21T13:06:46  <UncleVasya> But I think this time contest auditory will be much stronger and we'll need to implement game theory to stand even in top500.
+2011-03-21T13:09:09  *** alphac <alphac!~Adium@SHADYACRES-MACPRO.CNBC.CMU.EDU> has joined #aichallenge
+2011-03-21T13:09:29  <CPeng> in reference to https://github.com/aichallenge/aichallenge/issues/32: i wrote a labview app that reads in labview source files, is there somewhere i can upload it to be tested on the server?
+2011-03-21T13:10:42  <amstan> CPeng: does it work on windows?
+2011-03-21T13:11:04  <CPeng> yes
+2011-03-21T13:11:15  <amstan> CPeng: so... it won't work on linux?
+2011-03-21T13:11:51  <CPeng> i am not sure. i dont have access to linux. but there is a runtime engine for linux so it could work yes?
+2011-03-21T13:12:00  <amstan> we also need a compiler for linux then
+2011-03-21T13:12:04  <amstan> anyway.. g2g
+2011-03-21T13:12:08  <amstan> put it on that issue
+2011-03-21T13:12:13  <CPeng> k
+2011-03-21T13:13:36  <CPeng> is there somewhere i can upload files on github?
+2011-03-21T13:14:42  <Naktibalda> fork, commit and pull
+2011-03-21T13:15:13  *** twinshadow <twinshadow!~twinshado@rosencrantz.defaultroute.net> has joined #aichallenge
+2011-03-21T13:15:21  <CPeng> k ty
+2011-03-21T13:16:14  *** amstan <amstan!~alex@142.222.102.73> has quit IRC (Ping timeout: 246 seconds)
+2011-03-21T13:19:49  *** alphac <alphac!~Adium@SHADYACRES-MACPRO.CNBC.CMU.EDU> has left #aichallenge
+2011-03-21T13:23:32  *** bhasker <bhasker!~bhasker@nat/yahoo/x-pqmsvpqtgkcwpfwg> has joined #aichallenge
+2011-03-21T13:28:07  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-21T13:30:49  *** Gorgoroth <Gorgoroth!~cedricvar@ALille-552-1-39-174.w92-142.abo.wanadoo.fr> has quit IRC ()
+2011-03-21T13:33:15  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.251.53> has joined #aichallenge
+2011-03-21T13:33:42  *** UncleVasya <UncleVasya!kvirc@46.133.91.135> has quit IRC (Ping timeout: 260 seconds)
+2011-03-21T13:34:44  *** amstan <amstan!~alex@142.222.4.66> has joined #aichallenge
+2011-03-21T13:34:44  *** ChanServ sets mode: +o amstan
+2011-03-21T13:37:00  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-mnffefehprzkmfkt> has joined #aichallenge
+2011-03-21T13:37:46  *** bhasker <bhasker!~bhasker@nat/yahoo/x-pqmsvpqtgkcwpfwg> has quit IRC (Ping timeout: 250 seconds)
+2011-03-21T13:40:32  <computerwiz_222> what is this labview that you speak of?
+2011-03-21T13:44:12  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-21T13:46:15  *** thagomizr <thagomizr!~thagomizr@2610:130:104:300:9227:e4ff:fee9:359d> has joined #aichallenge
+2011-03-21T13:53:06  <CPeng> labview is mostly used for testing/manufacturing
+2011-03-21T13:53:14  <CPeng> i love it as a general purpose language though
+2011-03-21T13:54:42  <CPeng> its a closed source language....so it will never take off in a community like this
+2011-03-21T13:54:43  <computerwiz_222> I think python is used for this quite a bit actually
+2011-03-21T13:54:57  <computerwiz_222> there is a large community behind it
+2011-03-21T13:55:12  <amstan> woot, python
+2011-03-21T13:56:18  <CPeng> what are you going to write your bot in computerwiz_222?
+2011-03-21T13:57:45  *** n9thbit <n9thbit!~n9thbit@86-41-84-214-dynamic.b-ras2.chf.cork.eircom.net> has joined #aichallenge
+2011-03-21T14:00:23  *** amstan <amstan!~alex@142.222.4.66> has quit IRC (Ping timeout: 276 seconds)
+2011-03-21T14:06:32  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-21T14:10:51  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-mnffefehprzkmfkt> has quit IRC (Ping timeout: 246 seconds)
+2011-03-21T14:17:03  <Frontier> i have some problem with the automatic line ending conversion. there are always some scala files showing up as modified even after a git reset --hard
+2011-03-21T14:19:28  *** n9thbit <n9thbit!~n9thbit@86-41-84-214-dynamic.b-ras2.chf.cork.eircom.net> has quit IRC (Quit: n9thbit)
+2011-03-21T14:20:28  *** Eruonen <Eruonen!~onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-03-21T14:21:01  *** bhasker <bhasker!~bhasker@nat/yahoo/x-uyguctnddsimzfwc> has joined #aichallenge
+2011-03-21T14:22:28  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.15/20110303024726])
+2011-03-21T14:36:16  *** boegel <boegel!~boegel@91.182.210.208> has joined #aichallenge
+2011-03-21T14:38:22  *** melipone <melipone!~user@132.250.88.53> has joined #aichallenge
+2011-03-21T14:53:36  *** thagomizr <thagomizr!~thagomizr@2610:130:104:300:9227:e4ff:fee9:359d> has quit IRC (Quit: thagomizr)
+2011-03-21T14:54:09  *** mrnitrate <mrnitrate!968342d1@gateway/web/freenode/ip.150.131.66.209> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T14:54:18  <Frontier> github proposes to always check-in files with LF line endings. i'll just convert the line endings and commit
+2011-03-21T15:00:33  <CIA-33> aichallenge: Marco Leise epsilon * r723e04e / (6 files in 4 dirs): set line-endings to LF - http://bit.ly/dOjv6f
+2011-03-21T15:00:38  <CIA-33> aichallenge: Marco Leise epsilon * r93f66b3 / (4 files):
+2011-03-21T15:00:38  <CIA-33> aichallenge: (1) escaped <, > and & in javascript error messages / (2) fixed error on showing
+2011-03-21T15:00:38  <CIA-33> aichallenge: error message for error while downloading replay / (3) playback of half turns
+2011-03-21T15:04:51  *** n9thbit <n9thbit!~n9thbit@86-41-84-214-dynamic.b-ras2.chf.cork.eircom.net> has joined #aichallenge
+2011-03-21T15:09:11  *** thagomizr <thagomizr!~thagomizr@a27-1.nat.iastate.edu> has joined #aichallenge
+2011-03-21T15:10:34  *** thagomizr <thagomizr!~thagomizr@a27-1.nat.iastate.edu> has quit IRC (Client Quit)
+2011-03-21T15:11:13  *** fireworker76 <fireworker76!82410b48@gateway/web/freenode/ip.130.65.11.72> has joined #aichallenge
+2011-03-21T15:15:59  *** jstritar <jstritar!~jstritar@nat/google/x-lsksvmpgsvpxgmhz> has joined #aichallenge
+2011-03-21T15:16:07  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-21T15:17:09  <melipone> Are starter packages available for ants?
+2011-03-21T15:17:15  *** jstritar <jstritar!~jstritar@nat/google/x-lsksvmpgsvpxgmhz> has left #aichallenge ("Leaving")
+2011-03-21T15:18:55  *** fireworker76 <fireworker76!82410b48@gateway/web/freenode/ip.130.65.11.72> has quit IRC (Quit: Page closed)
+2011-03-21T15:20:22  <antimatroid> melipone: there are some on the github source, but the rules are still changing quite a bit
+2011-03-21T15:20:34  <antimatroid> i would recommend people wait a while before seriously trying to start on a bot
+2011-03-21T15:22:01  *** nivardus <nivardus!~nivardus@unaffiliated/nivardus> has joined #aichallenge
+2011-03-21T15:25:27  *** _aj <_aj!~aj@66.133.136.43> has joined #aichallenge
+2011-03-21T15:25:30  <dwchandler> antimatroid: as opposed to playing around with a bot :)
+2011-03-21T15:25:56  <dwchandler> is "Winter 2011" still the timeframe?
+2011-03-21T15:27:18  <janzert> Spring seems more accurate, probably a month or so away still
+2011-03-21T15:27:43  <janzert> but I've seen some saying only a week away, I don't see how though
+2011-03-21T15:28:02  <antimatroid> well, depends where you are in the world :P
+2011-03-21T15:28:09  <antimatroid> it's the backend of summer in australia
+2011-03-21T15:28:21  <antimatroid> a week is not going to happen
+2011-03-21T15:28:29  <janzert> norther hemi, spring then :)
+2011-03-21T15:28:37  <janzert> northern even
+2011-03-21T15:28:54  <antimatroid> meh, pesky northerners :P
+2011-03-21T15:29:28  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-21T15:29:28  *** ChanServ sets mode: +o amstan
+2011-03-21T15:30:19  *** n9thbit <n9thbit!~n9thbit@86-41-84-214-dynamic.b-ras2.chf.cork.eircom.net> has quit IRC (Quit: n9thbit)
+2011-03-21T15:34:10  <dwchandler> bah. 2nd Quarter 2011 works globally
+2011-03-21T15:44:39  *** fireworker76 <fireworker76!8241f94e@gateway/web/freenode/ip.130.65.249.78> has joined #aichallenge
+2011-03-21T15:47:59  *** Bitbrit <Bitbrit!~BItbrit@027b5b13.bb.sky.com> has joined #aichallenge
+2011-03-21T15:53:32  *** stride <stride!~double@helix.ghb.hs-furtwangen.de> has joined #aichallenge
+2011-03-21T15:58:25  *** McLeopold1 <McLeopold1!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-03-21T15:59:32  <McLeopold1> Hi all
+2011-03-21T16:00:07  <amstan> McLeopold1: hey
+2011-03-21T16:00:29  <fireworker76> how do i run my first game?
+2011-03-21T16:01:08  *** num1 <num1!~num1@unaffiliated/num1> has joined #aichallenge
+2011-03-21T16:04:16  <fireworker76> can anyone help me start my first game?
+2011-03-21T16:06:01  <McLeopold1> fireworker: what language are you writing your bot in? or do you just want to run a test game?
+2011-03-21T16:06:06  *** antrn11 <antrn11!~juho@ip-81-175-143-55.oppilastalo.phnet.fi> has joined #aichallenge
+2011-03-21T16:07:32  *** robbs <robbs!~Robby.Ron@65.170.177.243> has quit IRC (Read error: Connection reset by peer)
+2011-03-21T16:08:08  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has left #aichallenge ("Konversation terminated!")
+2011-03-21T16:08:10  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-21T16:08:10  *** ChanServ sets mode: +o amstan
+2011-03-21T16:08:28  <McLeopold1> fireworker76?
+2011-03-21T16:08:53  *** robbs <robbs!~Robby.Ron@65.170.177.243> has joined #aichallenge
+2011-03-21T16:09:21  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-hjcsrdjqejtxuzrc> has joined #aichallenge
+2011-03-21T16:09:31  *** fireworker76 <fireworker76!8241f94e@gateway/web/freenode/ip.130.65.249.78> has quit IRC (Quit: Page closed)
+2011-03-21T16:11:31  *** bhasker <bhasker!~bhasker@nat/yahoo/x-uyguctnddsimzfwc> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T16:17:05  *** Bitbrit <Bitbrit!~BItbrit@027b5b13.bb.sky.com> has quit IRC (Quit: Bitbrit)
+2011-03-21T16:19:46  <dwchandler> jmcarthur: making haskell headway?
+2011-03-21T16:22:37  *** niemela <niemela!~niemela@129.62.151.126> has joined #aichallenge
+2011-03-21T16:23:11  *** phire <phire!~phire@12.241.69.111.dynamic.snap.net.nz> has quit IRC (Read error: Connection reset by peer)
+2011-03-21T16:29:25  *** dr`away is now known as dr-
+2011-03-21T16:33:16  *** phiren <phiren!~phire@67.242.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-21T16:33:30  *** Nova <Nova!52d72dd0@gateway/web/freenode/ip.82.215.45.208> has joined #aichallenge
+2011-03-21T16:35:39  *** Nova <Nova!52d72dd0@gateway/web/freenode/ip.82.215.45.208> has quit IRC (Client Quit)
+2011-03-21T16:38:38  *** dr- <dr-!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has quit IRC (Remote host closed the connection)
+2011-03-21T16:38:56  *** dr- <dr-!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-03-21T16:42:44  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-03-21T16:43:56  <melipone> quit
+2011-03-21T16:45:07  *** melipone <melipone!~user@132.250.88.53> has quit IRC (Quit: go home)
+2011-03-21T16:46:08  *** olexs <olexs!~Leviathan@drms-590ed0c8.pool.mediaWays.net> has joined #aichallenge
+2011-03-21T16:48:17  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-21T16:54:45  *** jhuynh85 <jhuynh85!44b70102@gateway/web/freenode/ip.68.183.1.2> has joined #aichallenge
+2011-03-21T16:55:17  *** phirenz <phirenz!~phire@142.248.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-21T16:57:43  *** phiren <phiren!~phire@67.242.69.111.dynamic.snap.net.nz> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T17:00:45  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-21T17:03:36  *** thagomizr <thagomizr!~thagomizr@2610:130:101:501:9227:e4ff:fee9:359d> has joined #aichallenge
+2011-03-21T17:11:54  *** thagomizr <thagomizr!~thagomizr@2610:130:101:501:9227:e4ff:fee9:359d> has quit IRC (Ping timeout: 260 seconds)
+2011-03-21T17:12:28  *** boegel <boegel!~boegel@91.182.210.208> has quit IRC (Quit: Leaving)
+2011-03-21T17:14:51  *** rstrong <rstrong!~hardcore@sporkworks.org> has joined #aichallenge
+2011-03-21T17:15:27  *** odinsbane <odinsbane!~melkor@Dyn016153.sfc.Lehigh.EDU> has joined #aichallenge
+2011-03-21T17:17:43  *** odinsbane <odinsbane!~melkor@Dyn016153.sfc.Lehigh.EDU> has quit IRC (Quit: leaving)
+2011-03-21T17:21:06  *** robbs <robbs!~Robby.Ron@65.170.177.243> has quit IRC (Read error: Connection reset by peer)
+2011-03-21T17:24:30  *** bhasker <bhasker!~bhasker@nat/yahoo/x-ffqcnjwsporqkciz> has joined #aichallenge
+2011-03-21T17:27:24  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-hjcsrdjqejtxuzrc> has quit IRC (Ping timeout: 250 seconds)
+2011-03-21T17:28:36  *** fireworker76 <fireworker76!82410b48@gateway/web/freenode/ip.130.65.11.72> has joined #aichallenge
+2011-03-21T17:33:36  *** thagomizr <thagomizr!~thagomizr@b11wi-1.nat.iastate.edu> has joined #aichallenge
+2011-03-21T17:34:17  *** UncleVasya <UncleVasya!kvirc@178-133-227-96.dialup.umc.net.ua> has joined #aichallenge
+2011-03-21T17:34:47  *** UncleVasya <UncleVasya!kvirc@178-133-227-96.dialup.umc.net.ua> has quit IRC (Client Quit)
+2011-03-21T17:36:59  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.251.53> has quit IRC (Ping timeout: 260 seconds)
+2011-03-21T17:42:33  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-21T17:43:26  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-21T17:46:08  *** fireworker76 <fireworker76!82410b48@gateway/web/freenode/ip.130.65.11.72> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T17:59:44  *** jeff____ <jeff____!~jeff@207.219.39.71> has joined #aichallenge
+2011-03-21T18:01:30  *** anders__ <anders__!55e1b87a@gateway/web/freenode/ip.85.225.184.122> has joined #aichallenge
+2011-03-21T18:03:08  <anders__> Hello, I wonder if I would like to set up a new contest amongst friends for the Planet Wars game, is it possible to do so using the stuff at github (server, sandbox, starter kits and so on) ?
+2011-03-21T18:03:37  *** thagomizr <thagomizr!~thagomizr@b11wi-1.nat.iastate.edu> has quit IRC (Read error: Connection reset by peer)
+2011-03-21T18:03:38  <anders__> it seems the github project is meant for the ant game
+2011-03-21T18:03:43  *** thagomizr <thagomizr!~thagomizr@2610:130:101:501:9227:e4ff:fee9:359d> has joined #aichallenge
+2011-03-21T18:04:52  *** bhasker <bhasker!~bhasker@nat/yahoo/x-ffqcnjwsporqkciz> has quit IRC (Ping timeout: 255 seconds)
+2011-03-21T18:05:48  <jeff____> anders__: yes. The github project is mostly for the upcoming contest. What is it that you are looking for, perhaps I can point you the right way?
+2011-03-21T18:06:05  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Get MacIrssi - http://www.sysctl.co.uk/projects/macirssi/)
+2011-03-21T18:06:13  <anders__> We'd like to play the Planet Wars game
+2011-03-21T18:07:00  <anders__> and have people with different programming skills (read Java vs .NET guys) try to beat eachother in their favourite programming language
+2011-03-21T18:07:30  <anders__> Planet wars with the relation to Galcon reference seems more fun than the ant thing
+2011-03-21T18:08:03  <anders__> it seems the official ai-contest is closed so I thought we need to set up our own contest server somehow
+2011-03-21T18:09:37  <anders__> perhaps there is some other public contest server we could join ?
+2011-03-21T18:10:20  <jeff____> I think some people have set up their own instances, but I don't think any are active right now.
+2011-03-21T18:10:25  *** jeff____ is now known as j3camero
+2011-03-21T18:10:41  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-21T18:10:53  <j3camero> It's pretty difficult to set up a Planet Wars instance, unfortunately. We are trying to make it much easier to do this time around.
+2011-03-21T18:11:07  *** bhasker <bhasker!~bhasker@nat/yahoo/x-efsbegfhxdseclse> has joined #aichallenge
+2011-03-21T18:11:10  <anders__> ok
+2011-03-21T18:11:12  <j3camero> If you have some experience setting up web servers and such, you will probably be able to figure it out.
+2011-03-21T18:11:26  <j3camero> But perhaps all you want is the game engine itself.
+2011-03-21T18:11:49  <dwchandler> anders__: see http://www.benzedrine.cx/planetwars.html
+2011-03-21T18:11:52  <j3camero> For example, if you and a group of trusted friends want to run your programs against each other, you could use the game engine to do that.
+2011-03-21T18:11:57  <anders__> I know Java stuff and SQL, but very litlle Python which seems to be all over the project
+2011-03-21T18:12:09  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-21T18:12:24  <j3camero> dwchandler: is the TCP server for planet wars still running?
+2011-03-21T18:12:49  <dwchandler> no, but the server code tar.gz is linked on that page
+2011-03-21T18:13:01  <dwchandler> I had it running on my server for a bit
+2011-03-21T18:17:22  <dwchandler> planet wars was hella fun. it might be worth reviving a tcp server if anyone cares
+2011-03-21T18:17:28  <sigh> amstan/McLeopold1: which one of you should I talk to about the directory structure of the ants/ directory?
+2011-03-21T18:17:34  <McLeopold1> me
+2011-03-21T18:18:14  <sigh> McLeopold1: I made a script to check battle resolution (ants/battle_sim.py), where should it live?
+2011-03-21T18:18:27  <McLeopold1> like a unit test?
+2011-03-21T18:18:43  <sigh> no, it's more for helping people decide between the battle options :P
+2011-03-21T18:19:30  <McLeopold1> does it run test games?
+2011-03-21T18:19:30  <sigh> it's just a tool, it takes an initial positon on STDIN and simulates a battle on it under each attack option
+2011-03-21T18:19:59  <sigh> no, not really
+2011-03-21T18:20:28  <McLeopold1> the main directory for now
+2011-03-21T18:20:44  <sigh> ok, no worries
+2011-03-21T18:21:01  <McLeopold1> if we get unit tests, maybe a test directory would be good
+2011-03-21T18:21:35  <sigh> yeah, this can act as a unit test for the attack options
+2011-03-21T18:22:07  <McLeopold1> looking at the dir, that "map.py" file ought to go
+2011-03-21T18:22:11  <anders__> dwchandler: so AIs that we develop out of starter kits could connect directly to the server engine found in the source code?
+2011-03-21T18:22:55  <McLeopold1> anders__: do you care if the server compiles, or do you just want a quick and dirty way to get a leaderboard?
+2011-03-21T18:24:30  <anders__> well I guess we would like to both have an "arena" where the battles happen and a leaderboard yes
+2011-03-21T18:25:22  <McLeopold1> a tcp server would allow bots to connect and play, but it wouldn't schedule the games, and the bots would have to run on their own machines
+2011-03-21T18:25:38  <McLeopold1> If you're okay with that, then that would be easier to setup.
+2011-03-21T18:25:39  <dwchandler> anders__: the starter kits don't do TCP, so on that same page I linked there's a tcp.c app that passes the I/O to the server
+2011-03-21T18:26:14  <dwchandler> the tcp server had very basic Elo matching if there were choices available, iirc
+2011-03-21T18:26:36  <McLeopold1> dwchandler: actually it had first 2 in get matched logic
+2011-03-21T18:26:39  <dwchandler> but any two free connections would get matched up
+2011-03-21T18:26:42  <anders__> ah ok, so that's what the "tournament" thing on github is taking care of ... the game schedule
+2011-03-21T18:27:04  <McLeopold1> right, otherwise you just get some random matchups
+2011-03-21T18:27:05  <dwchandler> McLeopold1: I thought daniel added a bit of wait and Elo match
+2011-03-21T18:27:26  <McLeopold1> there was elo match, but it only every allowed 1 in the queue :)
+2011-03-21T18:28:03  <dwchandler> it was fine for testing bots
+2011-03-21T18:29:29  <j3camero> So McLeopold1, how are things? Did you see that the github project was on the Reddit front page yesterday?
+2011-03-21T18:30:47  <McLeopold1> j3camero: yes I did.  we have a to do list going on an etherpad, which was easier for me to do that github issues
+2011-03-21T18:31:14  <McLeopold1> http://ietherpad.com/sMmBH9htlr
+2011-03-21T18:31:24  <j3camero> Love the etherpad.
+2011-03-21T18:31:30  <twinshadow> I just noticed the LOLcode bot.
+2011-03-21T18:31:35  <anders__> well, thanks for guidance, I will think a bit on what to do next... perhaps it fun enough to play random games againts eachother, I guess you will soon see who's master of universe (our universe that is... ) :)
+2011-03-21T18:31:53  <McLeopold1> anders__: tcp.zeroviz.us, I'll get it running shortly for you, so you can play.
+2011-03-21T18:31:59  <j3camero> McLeopold1: oh snap are we using chroot to jail the users?
+2011-03-21T18:32:15  <McLeopold1> j3camero: janzert might do it...
+2011-03-21T18:32:28  <j3camero> Oh nice nice.
+2011-03-21T18:32:33  <McLeopold1> that's one of the big todo's left
+2011-03-21T18:32:38  <j3camero> We overworked poor janzert last time.
+2011-03-21T18:33:00  <anders__> McL : oh how nice!
+2011-03-21T18:33:03  <j3camero> Yes security has always been the toughest nut to crack. Once we get past that, things will start to fall into place very rapidly.
+2011-03-21T18:33:04  <McLeopold1> The other one is the true skill rankings.  I honestly think I'll have that working this week.
+2011-03-21T18:33:22  <McLeopold1> sigh has taken over engine issues
+2011-03-21T18:33:30  <j3camero> McLeopold1: wow great. That would be epic.
+2011-03-21T18:33:49  *** thagomizr <thagomizr!~thagomizr@2610:130:101:501:9227:e4ff:fee9:359d> has quit IRC (Remote host closed the connection)
+2011-03-21T18:34:16  *** thagomizr <thagomizr!~thagomizr@2610:130:101:501:9227:e4ff:fee9:359d> has joined #aichallenge
+2011-03-21T18:34:18  *** raydenuni <raydenuni!~raydenuni@ip68-5-22-175.oc.oc.cox.net> has left #aichallenge ("Leaving")
+2011-03-21T18:34:25  <j3camero> McLeopold1: my only meta-advice at this point is to find and train as many deputies as you can. Things gets real really fast as launch approaches, and the workload can turn into 36 hours per day. But it sounds like you're really stepping up into a leadership role, which is great to see!
+2011-03-21T18:35:17  <j3camero> brb in 5. Gotta go across the street and buy bananas.
+2011-03-21T18:35:51  <McLeopold1> twinshadow: so, if you can find an implementation of lolcode, that can actually parse strings, then it could be a real bot!
+2011-03-21T18:36:19  <sigh> there's like 170 people watching the repo now
+2011-03-21T18:36:20  <twinshadow> ha ha ha
+2011-03-21T18:36:37  * McLeopold1 need to comment code more
+2011-03-21T18:37:01  <sigh> McLeopold1: someone opened an issue because one of my comments was wrong...
+2011-03-21T18:40:13  <McLeopold1> I saw.  Looks like you're a bad coder. :D
+2011-03-21T18:40:40  <McLeopold1> anders__: the tcp server is running and you can play the contest winner when you connect
+2011-03-21T18:40:43  <sigh> well, I already knew that :P
+2011-03-21T18:41:06  <anders__> McLeopold1: we'll start looking at setting up starter kits and then we'll  try to connect to your server
+2011-03-21T18:47:15  *** McLeopold1 <McLeopold1!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-03-21T18:48:20  <j3camero> McLeopold1: how easy do you think it's going to be to launch an end-to-end contest instance this time? Is there any script such that I can fire up a VM and run "wget some_script.sh; ./some_script.sh" and have a working contest instance?
+2011-03-21T18:49:13  <j3camero> Not the first priority obviously, but it would be great if any one of those 170 people watching the repo could light up their own instance. I bet we would get lots more contributors.
+2011-03-21T18:52:09  <janzert> I don't think you can set up a working instance even doing it manually yet ;)
+2011-03-21T18:52:12  <Zannick> i keep seeing new issues get opened that are comments on old issues...
+2011-03-21T18:52:29  <janzert> but there is a server_setup.py script that will configure as much of a main server as I think is possible so far
+2011-03-21T18:53:04  <janzert> and a worker_setup.py script that does the same for a worker, but is still basically trying to setup a planetwars worker
+2011-03-21T18:58:55  *** caution <caution!~caution@unaffiliated/caution> has quit IRC (Quit: caution)
+2011-03-21T19:00:23  *** thagomizr <thagomizr!~thagomizr@2610:130:101:501:9227:e4ff:fee9:359d> has quit IRC (Quit: thagomizr)
+2011-03-21T19:01:52  <antimatroid> woah, j3camero is back
+2011-03-21T19:08:17  *** Eruonen <Eruonen!~onensora@e198153.upc-e.chello.nl> has quit IRC ()
+2011-03-21T19:15:31  <amstan> sigh: what issue?
+2011-03-21T19:16:35  <sigh> amstan: https://github.com/aichallenge/aichallenge/issues/closed#issue/33
+2011-03-21T19:16:55  <antimatroid> lol
+2011-03-21T19:16:55  <amstan> sigh: lol
+2011-03-21T19:17:07  <sigh> yeah...
+2011-03-21T19:17:14  <antimatroid> from comments on reddit, it would appear option 1 is out
+2011-03-21T19:17:21  <amstan> antimatroid: why? lol
+2011-03-21T19:17:26  <antimatroid> people just don't get it
+2011-03-21T19:17:40  <amstan> well.. i don't get it either actually..
+2011-03-21T19:17:44  <antimatroid> but we have a more intuitive close relative, so i'm on board for it
+2011-03-21T19:17:52  <antimatroid> amstan: it's quite simple once you understand it
+2011-03-21T19:17:57  <sigh> haha
+2011-03-21T19:18:06  <amstan> antimatroid: tip: stop calling it option 1
+2011-03-21T19:18:09  <amstan> it's not semantic at all
+2011-03-21T19:18:24  <antimatroid> power option then
+2011-03-21T19:18:36  <antimatroid> amstan: your power = 1/#enemiesinrange
+2011-03-21T19:18:48  <amstan> seems rather weird
+2011-03-21T19:18:54  <antimatroid> you live if you have power > power for all enemies in range
+2011-03-21T19:19:20  <amstan> i find this hilarious "j3camero: My mom submitted an entry in the last contest. I kid you not. You will be fine, trust me. :-)"
+2011-03-21T19:19:26  <amstan> antimatroid: what's the range?
+2011-03-21T19:19:33  <sigh> attackradius
+2011-03-21T19:19:33  <antimatroid> atm sqrt(5)
+2011-03-21T19:19:38  <sigh> 6
+2011-03-21T19:19:45  <antimatroid> 6?
+2011-03-21T19:19:48  <amstan> antimatroid: so.. what about the other options?
+2011-03-21T19:19:52  <antimatroid> oh, sqrt(6)
+2011-03-21T19:20:31  <antimatroid> sighs new method i like most now: each ant hast 1 damage to pass out each turn, distrbuted evenly amongst its enemies (so 1/#enemiesinrange to each enemy), then an ant with >=1 damage dies
+2011-03-21T19:21:18  <antimatroid> the other main option is the "iteratively remove the enemy ants that are closest" which doesn't really offer much in the way of cooperation and has weird situations like a..b..a where both a's die with the b
+2011-03-21T19:21:34  <antimatroid> with sigh's option, a..b..a and a..b..c (cooperation!) kill just b
+2011-03-21T19:22:05  <antimatroid> i believe the cooperation i speak of is a result of the battle option reflecting the number of enemy ants your enemies in range have
+2011-03-21T19:22:10  <sigh> this should be written up somewhere, with examples
+2011-03-21T19:22:23  <antimatroid> sigh: i'll do that today
+2011-03-21T19:23:04  <sigh> antimatroid: I suggest creating a new wiki page, and link the specs page to that... no point listing options on the specs page until it is finalised
+2011-03-21T19:23:13  <antimatroid> yeah, that's the plan
+2011-03-21T19:23:29  <antimatroid> i suspect we'll need to break the specs page up like that anyway
+2011-03-21T19:23:34  <antimatroid> it's going to be huge otherwise
+2011-03-21T19:23:37  <sigh> antimatroid: also, see the comments in the code for reasonable descriptions of the current options
+2011-03-21T19:23:43  <antimatroid> :P
+2011-03-21T19:23:57  <sigh> don't raise any issues if they are wrong :)
+2011-03-21T19:24:06  <antimatroid> but...
+2011-03-21T19:24:25  <antimatroid> :p
+2011-03-21T19:24:27  *** thagomizr <thagomizr!~thagomizr@173-26-197-78.client.mchsi.com> has joined #aichallenge
+2011-03-21T19:24:36  <antimatroid> the number of lurkers doubled in a day
+2011-03-21T19:24:41  <sigh> antimatroid: nah, the final specs should be on the one page
+2011-03-21T19:25:04  <antimatroid> sigh: i was thinking maybe briefer explanations then a link to more detailed?
+2011-03-21T19:25:08  <sigh> if anything, you could link elsewhere for more detail (e.g. examples of gaem replays, battle resolutions or whatever)
+2011-03-21T19:25:10  <sigh> yeah
+2011-03-21T19:25:19  <antimatroid> so then the battle resolution can have example images, same with map files etc.
+2011-03-21T19:25:41  <sigh> sure, but I think you should be able to go to one page for a complete specs
+2011-03-21T19:25:55  <sigh> other pages are just for examples and so on
+2011-03-21T19:26:41  <antimatroid> what options am i considering?
+2011-03-21T19:26:44  <antimatroid> there's like 4 now?
+2011-03-21T19:26:54  <antimatroid> should i throw out power and friends/enemies?
+2011-03-21T19:26:54  <sigh> there's four in the code, yeah
+2011-03-21T19:27:09  <antimatroid> i think it's really out of option 2 and 4
+2011-03-21T19:27:10  <sigh> you decide
+2011-03-21T19:27:34  <sigh> it's easy enough to generate examples for all four with the battle_sim.py script
+2011-03-21T19:30:03  *** nicklovescode <nicklovescode!~nicklikes@c-98-216-122-137.hsd1.ma.comcast.net> has joined #aichallenge
+2011-03-21T19:30:16  <nicklovescode> hey guys, new here
+2011-03-21T19:30:37  <nicklovescode> interested in the ants challenge, is it ready for me to start developing and testing a bot or should I wait some more
+2011-03-21T19:30:39  <nicklovescode> (python)
+2011-03-21T19:31:05  <antimatroid> nicklovescode: i would suggest you wait a few weeks
+2011-03-21T19:31:12  <antimatroid> you will have plenty of time for programming i promise
+2011-03-21T19:31:36  <antimatroid> (the contest will go for ~ 2 months i think)
+2011-03-21T19:31:42  <nicklovescode> ah, ok cool
+2011-03-21T19:31:59  <amstan> nicklovescode: you could start.. but there's no guarantee that things might not change
+2011-03-21T19:32:14  <amstan> nicklovescode: so if you do start, and things do change, don't get mad
+2011-03-21T19:32:27  <amstan> nicklovescode: also.. you won't be able to submit anything since the server won't be up
+2011-03-21T19:32:35  <antimatroid> aka start thinking about strategies, but coding could be frustrating
+2011-03-21T19:32:49  <amstan> antimatroid: well.. no, we already have starter packages
+2011-03-21T19:32:52  <nicklovescode> but is there anyway to see how my bot compares to others?
+2011-03-21T19:33:05  <amstan> nicklovescode: at this point there is no other bots, afaik
+2011-03-21T19:33:14  <antimatroid> amstan: sure, but dependent on the rules chosen, how you structure it beyond that might become annoying/not the best way
+2011-03-21T19:33:14  <amstan> nicklovescode: just the sample ones
+2011-03-21T19:33:20  <amstan> antimatroid: yeah
+2011-03-21T19:33:25  <antimatroid> amstna: there is hunterbot
+2011-03-21T19:33:31  <amstan> antimatroid: those has to be finalized soon
+2011-03-21T19:33:37  <antimatroid> nicklovescode: try playing agains the python hunterbot
+2011-03-21T19:33:40  <amstan> antimatroid: we can't leave them hanging till just before launching
+2011-03-21T19:33:54  <nicklovescode> I have it git cloned and I'm in that directory, how do I get it running?
+2011-03-21T19:34:07  <amstan> antimatroid: how's the wiki btw? How finalized are things in there?
+2011-03-21T19:34:09  <antimatroid> nicklovescode: what os?
+2011-03-21T19:34:13  <nicklovescode> OSX
+2011-03-21T19:34:18  <antimatroid> sigh: ^^?
+2011-03-21T19:34:26  <nicklovescode> 10.6
+2011-03-21T19:34:27  <antimatroid> amstan: i'll give stuff a clean today, i haven't touched it in a while
+2011-03-21T19:34:43  <antimatroid> been busy the last little bit, but handed the last of my current assignments in this morning
+2011-03-21T19:34:48  <amstan> antimatroid: i would like to start going over that stuff, and integrate it with the website
+2011-03-21T19:35:04  <antimatroid> get back to me in a day?
+2011-03-21T19:35:10  <amstan> antimatroid: ok
+2011-03-21T19:35:21  <antimatroid> not 24 hours, i'll be at uni then :P
+2011-03-21T19:35:30  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-21T19:36:54  <Stocha> hi dimkadimon you will find some link and data to the experiment you requested (in the exotic rule thread). As i now have a server (at least for a month) i got more flexibility.  All the stuff is still very rough to say the least.
+2011-03-21T19:37:53  <antimatroid> Stocha: dimkadimon doesn't come on irc
+2011-03-21T19:37:56  <sigh> nicklovescode: if you look at ants/play_one_game.sh you can see how to run a game
+2011-03-21T19:37:59  <antimatroid> at least not with his normal username
+2011-03-21T19:38:22  <antimatroid> nicklovescode: bear in mind getting stuff running should be a lot simpler in a couple of weeks
+2011-03-21T19:38:36  <antimatroid> so if you can't get it running now, don't give up and assume you wont be able to when we launch officially
+2011-03-21T19:39:55  <sigh> either way, running stuff on osx should be the same as linux for this stuff, so anyone should be able to help you
+2011-03-21T19:40:19  *** Heulsay <Heulsay!~heulsay@24-230-200-75.tr.cgocable.ca> has joined #aichallenge
+2011-03-21T19:40:28  <nicklovescode> got it working, awesome!
+2011-03-21T19:40:33  <antimatroid> :)
+2011-03-21T19:40:37  <Stocha> I still have issue on safari with your visualizer sigh. I simply keep freshing until things settles right.
+2011-03-21T19:40:58  <sigh> Stocha: Frontier is the visualiser guy
+2011-03-21T19:40:59  <Stocha> So you might write some message to help people do that on top of the page :p
+2011-03-21T19:41:04  <Stocha> ah Frontier then :p
+2011-03-21T19:41:12  <Stocha> i got name shuffled a bit :p
+2011-03-21T19:41:31  <Stocha> i'm quite tired also :p
+2011-03-21T19:43:12  <amstan> contestbot: seen mcleopold
+2011-03-21T19:43:12  <contestbot> amstan: mcleopold was last seen in #aichallenge 20 hours, 38 minutes, and 31 seconds ago: <McLeopold> okay, cya
+2011-03-21T19:43:19  <amstan> contestbot: seen mcleopold1
+2011-03-21T19:43:19  <contestbot> amstan: mcleopold1 was last seen in #aichallenge 1 hour, 2 minutes, and 39 seconds ago: <McLeopold1> anders__: the tcp server is running and you can play the contest winner when you connect
+2011-03-21T19:44:23  *** McLeopold1 <McLeopold1!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-03-21T19:44:29  <amstan> McLeopold1: ping
+2011-03-21T19:44:38  <McLeopold1> what's  up?
+2011-03-21T19:44:51  <amstan> McLeopold1: i would like to separate the sample bots from the starter packages..
+2011-03-21T19:45:13  <amstan> McLeopold1: you ok with that?
+2011-03-21T19:46:41  <McLeopold1> I'd prefer a smart makefile, but yes, I'm okay with that.
+2011-03-21T19:46:52  <amstan> McLeopold1: i'll be doing that too
+2011-03-21T19:47:13  <amstan> the one thing i want to solve is people that forked to make starter packages..
+2011-03-21T19:47:23  <amstan> idk if this will work
+2011-03-21T19:47:27  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-21T19:49:22  <janzert> having each starter bot in its own separate repo seems like it would be better
+2011-03-21T19:49:30  <janzert> although maybe too late already?
+2011-03-21T19:51:22  <antimatroid> For each ant \(a\) with \(n > 0 \) enemies within the attack radius, define their power to be \(power(a) = \frac{1}{n}\). An ant lives if it has no enemies or a greater power than all its enemies within the attack radius.
+2011-03-21T19:51:40  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-21T19:51:40  <antimatroid> is that style alright, or do people hate variables?
+2011-03-21T19:52:33  <amstan> janzert: that's too late
+2011-03-21T19:52:44  <amstan> janzert: but that's not an issue, it's just that the path is not semantic at all
+2011-03-21T19:52:53  <amstan> oh well.. i can deal with this actually
+2011-03-21T19:53:00  *** bhasker <bhasker!~bhasker@nat/yahoo/x-efsbegfhxdseclse> has quit IRC (Quit: bhasker)
+2011-03-21T19:53:15  <amstan> if i mess it up, i'll clean it
+2011-03-21T19:53:32  <McLeopold1> amstan: it's not too late
+2011-03-21T19:53:46  <amstan> McLeopold1: it is, we have a ton of people with forks
+2011-03-21T19:53:47  <McLeopold1> consider all the stuff in ants/bots to be example bots
+2011-03-21T19:54:03  <amstan> McLeopold1: most of those forks are for starter packages
+2011-03-21T19:54:32  <McLeopold1> we control the starter packages, so we just contact who we need to
+2011-03-21T19:54:41  <antimatroid> with conflicts option 2 doesn't really need to be an iterative thing
+2011-03-21T19:54:49  <antimatroid> closest option**
+2011-03-21T19:55:25  <janzert> antimatroid: the general style is fine with me, I'd get rid of the redundant "no enemies or" in the second sentence though
+2011-03-21T19:55:44  <antimatroid> janzert: it's not redundent :P
+2011-03-21T19:55:56  <Stocha> I have set up two applets with my bots running on. On for dieOnSameSquare. and why for rule1fighting
+2011-03-21T19:56:00  <janzert> the first sentence already says you only do the test if enemies are in range
+2011-03-21T19:56:13  <Stocha> So you can view them at home. Alos it's far from comfotable at the moment :p
+2011-03-21T19:56:23  <antimatroid> no, it says i only define power for those ants with ants in range
+2011-03-21T19:56:24  <janzert> and it make the second one harder to mentally parse with it there
+2011-03-21T19:56:24  <amstan> oh man.. sbcl is 53MB
+2011-03-21T19:56:30  <Stocha> rough prototype stuff
+2011-03-21T19:57:16  <McLeopold1> amstan: let's move bots to example_bots and create a new dir starter_bots
+2011-03-21T19:57:18  <antimatroid> it does make the second one harder to pass, but otherwise it's not perfectly clear :\
+2011-03-21T19:57:28  <Stocha> here is the first url http://ns368394.ovh.net/stocha/Rule1Fight/
+2011-03-21T19:57:45  <amstan> McLeopold1: they're not example bots though, they're starter bots
+2011-03-21T19:57:54  <antimatroid> i couldn't work out how better to phrase it without leaving something potentially unclear (even though it's pretty obvious that an ant with no enemies in range wouldn't die)
+2011-03-21T19:57:59  <McLeopold1> amstan: I can move out my python and java starters to new repos that can then be submodules
+2011-03-21T19:58:14  <Stocha> here is the other one : http://ns368394.ovh.net/stocha/DieOnSameSquare/
+2011-03-21T19:58:16  <antimatroid> i want to touch my c++ bot again before that's sent off
+2011-03-21T19:58:16  <McLeopold1> amstan: they are what every we call them :)
+2011-03-21T19:58:19  <antimatroid> when do i need to do that by?
+2011-03-21T19:58:30  <amstan> McLeopold1: i don't want to disturb the workflow of about 6 outside commiters
+2011-03-21T19:58:37  <Stocha> The bots ranking is kinda reverse between the two rules :p
+2011-03-21T19:59:26  <antimatroid> Stocha: that actually doesn't surprise me that much when i think about it
+2011-03-21T19:59:33  <Stocha> here the result for fighting1 : http://ns368394.ovh.net/stocha/Rule1Fight/result.txt
+2011-03-21T19:59:35  <antimatroid> consider the a..b..a sitation yet again
+2011-03-21T19:59:39  <McLeopold1> amstan: It's a simple request.  Please create a brand new repo if you are in charge of a starter bot, we will link it in.
+2011-03-21T19:59:49  <Stocha> the other result is P0 winning most of the games.
+2011-03-21T20:00:05  <Stocha> and P4 loosing most of them. Although the file is not accessible at the moment
+2011-03-21T20:00:17  <antimatroid> i imagine it's a matter of the difference between wanting to send more/less ants into a fight for the two options and reversing who gets points there, not necessarily meaning the game is going to cause the worse bot to lose under a certain rule
+2011-03-21T20:00:36  <janzert> so I would make it "For each ant \(a\) with \(n > 0\) enemies within the attack radius: define their power to be \(power(a) = \frac{1}{n}\). The ant lives if it has a greater power than all its enemies within the attack radius."
+2011-03-21T20:00:49  <amstan> McLeopold1: how do you envision this then? a bunch of smaller repos, one per language?
+2011-03-21T20:01:12  <antimatroid> janzert: you haven't specified what power is for an ant with no enemies
+2011-03-21T20:01:16  <antimatroid> i can define that to be 1?
+2011-03-21T20:01:17  <McLeopold1> yes, that's what I was thinking?  you were concerned about forks of the whole thing just to make a starter?
+2011-03-21T20:01:18  <antimatroid> then it works
+2011-03-21T20:01:19  <Stocha> I only count the number of ants also. But the fighting rule is enougth to make quite a few difference : if you stick together you have a great advantage with Fighting1 (at least in my implementation wich may be wrong)
+2011-03-21T20:01:33  <amstan> McLeopold1: oh, no.. forking is not the problem
+2011-03-21T20:01:43  <amstan> McLeopold1: it's me moving stuff right now, when there's forks in progress
+2011-03-21T20:01:52  <antimatroid> oh wait, nevermind
+2011-03-21T20:01:55  <antimatroid> okay i'll do that
+2011-03-21T20:01:57  <McLeopold1> but don't they just pull and it all works?
+2011-03-21T20:02:09  * antimatroid had a logic fail
+2011-03-21T20:02:24  <janzert> antimatroid: this is still english, people should be able to know that the power is the same as just defined ;)
+2011-03-21T20:02:25  <amstan> no, because git doesn't track folders, see this: http://pastebin.com/kdt2zQ5P
+2011-03-21T20:02:36  <Stocha> I should probably put on your new rules in the same settings. Would be consistent with Rule1 in this particular case i guess.
+2011-03-21T20:02:39  <janzert> even if a compiler couldn't
+2011-03-21T20:02:57  <antimatroid> janzert: give me an explanation for the closest option :P
+2011-03-21T20:03:17  <McLeopold1> amstan: ok, so then we create an example_bots folder and move stuff over there, but keep bots as the starters?
+2011-03-21T20:03:19  <antimatroid> all i have is "iteratively remove the ants that are currently closest together until no enemy ants remain within the attack radius of each other"
+2011-03-21T20:03:48  <janzert> I've never thought of or seen one yet :P
+2011-03-21T20:03:51  <antimatroid> probably also need to state closest is using the euclidrean metric
+2011-03-21T20:04:25  <amstan> McLeopold1: no, i'll just git mv bots starter_bots, then extract the sample bots in python and java and put them somewhere else
+2011-03-21T20:04:35  <janzert> yeah, I'd do that outside of the battle resolution are actually (i.e. "All distances are calculated using the eucilidean distance")
+2011-03-21T20:04:51  <amstan> McLeopold1: it should be fine.. i was just worrying about merging later, but it's all good
+2011-03-21T20:05:04  <janzert> antimatroid: actually there is already a section for that
+2011-03-21T20:05:13  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-21T20:05:17  <antimatroid> janzert: on the specs page?
+2011-03-21T20:05:21  <janzert> yep
+2011-03-21T20:05:31  <antimatroid> i am writing a new one outlining the 4 current options, what strategies they encourage and giving examples
+2011-03-21T20:05:37  <janzert> between Bot Output and Fog of War
+2011-03-21T20:05:41  <antimatroid> so hopefully we can try to knock it down to 1
+2011-03-21T20:05:49  <antimatroid> janzert: i know, i wrote that page :P
+2011-03-21T20:06:15  <janzert> right, thought maybe you forgot about that detail
+2011-03-21T20:06:49  <janzert> anyway it's already specified as all distances being eucilidian so I suppose you could repeat it if you want but isn't completely necessary
+2011-03-21T20:07:19  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 250 seconds)
+2011-03-21T20:07:46  <amstan> McLeopold1: what bout the java sample-bots, do we need those? you have them coded in python too
+2011-03-21T20:07:50  <amstan> McLeopold1: should we keep both?
+2011-03-21T20:08:21  *** maa2011 <maa2011!~MAA@178.253.87.35> has joined #aichallenge
+2011-03-21T20:08:30  <McLeopold1> Yes, let's keep them.
+2011-03-21T20:08:52  <amstan> McLeopold1: i'm just thinking from the perspective of the user, is there anything they can do with them?
+2011-03-21T20:08:58  <amstan> just javac *.java?
+2011-03-21T20:09:25  *** olexs <olexs!~Leviathan@drms-590ed0c8.pool.mediaWays.net> has left #aichallenge
+2011-03-21T20:09:46  <amstan> McLeopold1: what's the structure of the java stuff? what's common, what's starter pack only and what's sample only?
+2011-03-21T20:10:08  <McLeopold1> umm...
+2011-03-21T20:10:31  <amstan> McLeopold1: ls => Aim.java  Ants.java  Bot.java  HunterBot.java  Ilk.java  LeftyBot.java  MyBot.java  RandomBot.java  Tile.java
+2011-03-21T20:11:09  <McLeopold1> aim, ilk, ants, bot, and tile are shared
+2011-03-21T20:11:13  <McLeopold1> mybot is the starter
+2011-03-21T20:11:18  <amstan> k, cool
+2011-03-21T20:11:26  <McLeopold1> randombot, leftybot and hunterbot are the examples
+2011-03-21T20:14:55  <McLeopold1> antimatroid: whoa, we have 4 options now?
+2011-03-21T20:15:28  <antimatroid> McLeopold1: yeah i know
+2011-03-21T20:15:29  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Battle-Resolution-Options
+2011-03-21T20:15:44  <antimatroid> please rip those explanations to pieces for me and give me more intuitive ones
+2011-03-21T20:15:51  <antimatroid> janzert^^
+2011-03-21T20:16:14  <antimatroid> ergh, assuming i managed to finish the line for closest option :P
+2011-03-21T20:16:31  <McLeopold1> don't use math
+2011-03-21T20:16:48  <janzert> heh, also you're missing the definition of power in the power option
+2011-03-21T20:17:31  <antimatroid> so i am, ergh sorry, i tried to add definitions to the top and must have removed it :P
+2011-03-21T20:17:39  <CIA-33> aichallenge: Alexandru Stan starter-packaging * rc28cdad / (194 files in 49 dirs): Moved starter_bots in a folder, separated sample_bots to another folder. If you have a fork where you're making a starter package, please pull this - http://bit.ly/hphBE7
+2011-03-21T20:17:41  <McLeopold1> is the power option the one where an ant spreads it's attack?
+2011-03-21T20:17:58  <antimatroid> McLeopold: there is no maths in there?
+2011-03-21T20:18:02  <antimatroid> other than basic arithmetic
+2011-03-21T20:18:16  <janzert> power option is what you were calling occupied I believe
+2011-03-21T20:18:18  <McLeopold1> yeah, remove the basic math too
+2011-03-21T20:18:28  *** delt0r___ <delt0r___!~delt0r@188-22-164-117.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-21T20:19:53  *** delt0r_ <delt0r_!~delt0r@188-22-25-160.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-21T20:20:07  <antimatroid> McLeopold: i'm stripping out all the variables
+2011-03-21T20:20:46  <McLeopold1> Support Option: An ant dies if there are more enemies in its attack radius then friendlies.  An ant counts as it's own friendly, so it always has at least 1.  If the ant collides with an enemy ant, it dies.
+2011-03-21T20:21:03  <janzert> for damage option I'd probably just say something like "An ant distributes 1 point of damage evenly among all the enemies within its attack radius. An ant then lives if it receives less than 1 full point of damage in that turn."
+2011-03-21T20:21:21  * McLeopold1 nods
+2011-03-21T20:22:09  <McLeopold1> antimatroid: with the support option, we will need to detect ants crossing paths, and kill them
+2011-03-21T20:23:00  <janzert> maybe at the top say that ants always die if they collide with another ant and leave it out of any of the specific options
+2011-03-21T20:23:02  <McLeopold1> but, where do the die?  how do you represent the 'd' lines?
+2011-03-21T20:23:32  <antimatroid> try again now..
+2011-03-21T20:23:52  <amstan> McLeopold1: https://gist.github.com/880519
+2011-03-21T20:23:54  <McLeopold1> with n > 0 is not needed.
+2011-03-21T20:23:54  <amstan> McLeopold1: how's that?
+2011-03-21T20:23:58  <janzert> McLeopold1: that's a reason I don't like any option that has the potential for ants to "cross paths"
+2011-03-21T20:23:59  <antimatroid> it is
+2011-03-21T20:24:11  <antimatroid> otherwise people might try to calculate the power of ants without enemies
+2011-03-21T20:24:16  <antimatroid> which is /0 error
+2011-03-21T20:24:51  <antimatroid> McLeopold1: you can send more than 1 d line for a square, you already are for colliding friends right?
+2011-03-21T20:24:57  <janzert> I'd prefer it just said "distributes damage evenly" in the damage option
+2011-03-21T20:24:58  <McLeopold1> amstan: the tools will be a separate download, so no
+2011-03-21T20:25:06  <antimatroid> it's a pain to process if you don't care about that but do about dead ants from battle
+2011-03-21T20:25:10  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has quit IRC (Ping timeout: 250 seconds)
+2011-03-21T20:25:18  <amstan> McLeopold1: well then sample bots should also be included in that tools download
+2011-03-21T20:25:24  <antimatroid> hence why i asked you like 2 weeks ago to make the line input parameter different for dead ants from collision and battle :P
+2011-03-21T20:25:25  <McLeopold1> antimatroid: yeah, but say "if there are enemies in range", take out the math
+2011-03-21T20:25:46  <McLeopold1> amstan: yes, they should
+2011-03-21T20:26:03  <McLeopold1> and don't we call the example? not sample?
+2011-03-21T20:26:13  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has joined #aichallenge
+2011-03-21T20:26:43  *** Heulsay <Heulsay!~heulsay@24-230-200-75.tr.cgocable.ca> has left #aichallenge
+2011-03-21T20:27:40  <antimatroid> i need n to define power?
+2011-03-21T20:27:48  <antimatroid> how would i do that option without any maths?
+2011-03-21T20:27:58  *** bhasker <bhasker!~bhasker@nat/yahoo/x-psbqmkuhfbdgojeu> has joined #aichallenge
+2011-03-21T20:28:15  <McLeopold1> use english?
+2011-03-21T20:28:30  <antimatroid> power is one divided by the number of enemies in range?
+2011-03-21T20:28:34  <antimatroid> :p
+2011-03-21T20:28:51  <antimatroid> or.. i could just throw option 1 out now?
+2011-03-21T20:28:58  *** maa2011 <maa2011!~MAA@178.253.87.35> has left #aichallenge ("Ex-Chat")
+2011-03-21T20:29:10  <antimatroid> i think damage is close enough to option 1 while being simpler
+2011-03-21T20:29:46  <janzert> here's another little expansion/clean up for damage "An ant with enemies in range distributes 1 point of damage split evenly among those enemies. An ant then lives it it receives less than 1 full point of damage in a turn."
+2011-03-21T20:30:13  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-21T20:30:49  <antimatroid> janzert: okay
+2011-03-21T20:31:00  <antimatroid> is anyone opposed to me leaving out the power option?
+2011-03-21T20:31:11  <McLeopold1> do power and damage diverge in any situations?
+2011-03-21T20:31:21  <antimatroid> yes
+2011-03-21T20:31:30  <janzert> I think it probably needs to stay since it's talked about in the forum threads so much
+2011-03-21T20:31:41  <McLeopold1> pastebin me the setup, and I'll figure it out
+2011-03-21T20:31:49  <janzert> you could add a note that it's not really being considered anymore though?
+2011-03-21T20:32:04  <antimatroid> what setup?
+2011-03-21T20:32:10  <antimatroid> i haven't actually done an example
+2011-03-21T20:32:15  <antimatroid> but they aren't equivalent
+2011-03-21T20:32:16  <McLeopold1> the setup where power and damage have different outcomes
+2011-03-21T20:33:17  <antimatroid> hmmm, i'm trying to think of one
+2011-03-21T20:34:19  <antimatroid> they;re VERY similar
+2011-03-21T20:35:17  <McLeopold1> jmcarthur and I did derive the power method from thinking about how ants would do damage...
+2011-03-21T20:35:45  <antimatroid> open problem people :P
+2011-03-21T20:36:08  <antimatroid> sigh: ^^ we want an example where damage and power options differ
+2011-03-21T20:37:08  <McLeopold1> amstan: the scala files always mess me up in windows.  when I pull, git says they are changed.  now I can pull!?
+2011-03-21T20:37:28  <amstan> McLeopold1: pull from epsilon, they should be ok
+2011-03-21T20:37:49  <McLeopold1> I'm in epsilon
+2011-03-21T20:38:01  <janzert> .aaa.
+2011-03-21T20:38:01  <janzert> bbbbb
+2011-03-21T20:38:02  <antimatroid> McLeopold: https://github.com/aichallenge/aichallenge/wiki/Ants-Battle-Resolution-Options
+2011-03-21T20:38:13  <janzert> I think that differs between power and damage
+2011-03-21T20:38:27  <antimatroid> i think you're right
+2011-03-21T20:38:46  <antimatroid> oh wait, no?
+2011-03-21T20:38:55  <janzert> all a's die in both, but power kills the middle b?
+2011-03-21T20:39:08  <antimatroid> oh yeah
+2011-03-21T20:39:16  <antimatroid> but each ant distributes 1/3 yeah?
+2011-03-21T20:39:17  <antimatroid> damage
+2011-03-21T20:39:22  <antimatroid> so one of the b's gets 1 damage
+2011-03-21T20:39:24  <antimatroid> killing it
+2011-03-21T20:39:51  <janzert> hmm only 3 b's are in range? then I guess not
+2011-03-21T20:40:04  <antimatroid> oh, wait yeah
+2011-03-21T20:40:17  <antimatroid> but then no b's die with power either?
+2011-03-21T20:40:39  <antimatroid> oh yeah, for sqrt(6)  you may be right
+2011-03-21T20:40:58  <janzert> I just was going by your first diagram in the forums, but it may be using a smaller radius?
+2011-03-21T20:41:12  <McLeopold1> amstan: i do "git checkout Bot.scala", then "git status" and it still says it's modified?
+2011-03-21T20:41:22  <amstan> McLeopold1: git reset --hard
+2011-03-21T20:41:25  <amstan> try that
+2011-03-21T20:41:36  <McLeopold1> no! you totally screwed me last time
+2011-03-21T20:41:58  <amstan> well.. yeah.. assuming you don't have any uncommited files
+2011-03-21T20:41:59  <antimatroid> janzert: i'm using sqrt(4) there i think
+2011-03-21T20:42:00  <janzert> didn't Frontier have problem with that earlier?
+2011-03-21T20:42:01  <antimatroid> it's smaller anyway
+2011-03-21T20:42:10  <janzert> hmm
+2011-03-21T20:43:41  <McLeopold1> it's a newline at the end that's killing me
+2011-03-21T20:44:08  <janzert> pretty sure that's exactly the problem Frontier had
+2011-03-21T20:44:31  <janzert> I think he just gave up and checked it in with modified line endings
+2011-03-21T20:44:57  <janzert> https://github.com/aichallenge/aichallenge/commit/723e04ea2769d266b7f261e4ec05ba70140ec38e
+2011-03-21T20:46:54  *** bhasker <bhasker!~bhasker@nat/yahoo/x-psbqmkuhfbdgojeu> has quit IRC (Quit: bhasker)
+2011-03-21T20:47:11  <amstan> janzert: do you know why he tried merging that pull request?
+2011-03-21T20:47:52  <antimatroid> janzert: i'll keep doing the page and try to get an example when i start making examples with sigh's analyzer
+2011-03-21T20:47:55  <janzert> not sure what pull request you even mean, but no
+2011-03-21T20:48:57  <McLeopold1> http://pastebin.com/M0HVMyDT
+2011-03-21T20:49:17  <McLeopold1> so, according to that, it's not the newline, but it still thinks I modified 2 lines?
+2011-03-21T20:49:19  <janzert> you can see the archives around 2:00-3:00 this afternoon to see where Frontier had the problem
+2011-03-21T20:50:03  <janzert> i.e. about 6 hours ago
+2011-03-21T20:51:04  <McLeopold1> okay, but I still have an issue and I can pull
+2011-03-21T20:51:08  <McLeopold1> can't
+2011-03-21T20:51:58  <amstan> McLeopold1: do you have anything uncommited?
+2011-03-21T20:55:31  <McLeopold1> amstan: as always, yes
+2011-03-21T20:55:59  <amstan> McLeopold1: try git reset --hard path/to/scala/folder/that/you/don't/care/about
+2011-03-21T20:56:27  <amstan> thing about git pull is that it won't let you pull if there's stuff that's uncommited that has to be edited
+2011-03-21T20:57:06  <CIA-33> aichallenge: Alexandru Stan starter-packaging * r12134cb / (195 files in 49 dirs): Moved starter_bots in a folder, separated sample_bots to another folder. Updated c submodule. If you have a fork where you're making a starter package, please pull this. - http://bit.ly/fJEMEF
+2011-03-21T20:57:08  <CIA-33> aichallenge: Alexandru Stan starter-packaging * r7cb4b12 / ants/dist/starter_bots/Makefile : Added starter_bot makefile to package the bots - http://bit.ly/gCFbxb
+2011-03-21T21:01:12  <McLeopold1> amstan: reset --hard does not have a paths option
+2011-03-21T21:01:18  <amstan> McLeopold1: darn
+2011-03-21T21:01:33  <amstan> McLeopold1: what's the actual message you're getting when trying to pull?
+2011-03-21T21:01:51  <McLeopold1> local changes would be overwritten
+2011-03-21T21:02:00  <amstan> isn't there a -f for pull
+2011-03-21T21:02:03  <amstan> so they are overwritten
+2011-03-21T21:02:05  <amstan> try it
+2011-03-21T21:02:43  *** thagomizr <thagomizr!~thagomizr@173-26-197-78.client.mchsi.com> has quit IRC (Quit: thagomizr)
+2011-03-21T21:03:37  <Sunhay> cant you just use fetch?
+2011-03-21T21:08:50  *** kosiini <kosiini!~janne@pdpc/supporter/student/kosiini> has joined #aichallenge
+2011-03-21T21:08:53  <McLeopold1> amstan: no luck
+2011-03-21T21:09:09  <amstan> McLeopold1: can you give me a git status pls?
+2011-03-21T21:09:13  <McLeopold1> I can fetch, but then I'm still left with a merge to do
+2011-03-21T21:10:52  <McLeopold1> http://pastebin.com/W9M6meC3
+2011-03-21T21:11:25  <amstan> (use "git checkout -- <file>..." to discard changes in working directory)
+2011-03-21T21:11:32  <amstan> try git checkout -- scala/
+2011-03-21T21:12:20  <amstan> antimatroid: ping
+2011-03-21T21:12:32  <antimatroid> amstan: ?
+2011-03-21T21:12:47  <amstan> antimatroid: your readme from the cpp starter bot is not up to date, it talks about non existing files
+2011-03-21T21:12:58  <antimatroid> yeah sorry, i need to update the whole thing
+2011-03-21T21:13:04  <antimatroid> when do you want me to do that by?
+2011-03-21T21:13:04  <McLeopold1> amstan: nope
+2011-03-21T21:13:15  <amstan> antimatroid: can i delete it for now?
+2011-03-21T21:13:20  <antimatroid> yeah
+2011-03-21T21:15:28  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Battle-Resolution-Options
+2011-03-21T21:15:40  <antimatroid> anyone welcome to provide me more properties to include there :P
+2011-03-21T21:17:47  <McLeopold1> amstan: deleting the files locally seemed to work ?
+2011-03-21T21:17:56  <amstan> McLeopold1: ok, lol
+2011-03-21T21:18:48  *** McLeopold1 <McLeopold1!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-03-21T21:19:35  <CIA-33> aichallenge: Alexandru Stan starter-packaging * r4d39c74 / ants/dist/sample_bots/java/Makefile : added makefile for java sample bots - http://bit.ly/fLhxJO
+2011-03-21T21:19:37  <CIA-33> aichallenge: Alexandru Stan starter-packaging * r12f5282 / (2 files): added cpp makefile, deleted old readme - http://bit.ly/hSpmAw
+2011-03-21T21:19:52  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-03-21T21:20:31  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has left #aichallenge
+2011-03-21T21:20:57  *** deblap <deblap!~deblap@c-67-167-0-121.hsd1.il.comcast.net> has joined #aichallenge
+2011-03-21T21:24:01  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-21T21:29:20  <CIA-33> aichallenge: Alexandru Stan starter-packaging * r580ca74 / (2 files): added makefile for java starter package, apparently it requires RandomBot.java as well - http://bit.ly/glXFL4
+2011-03-21T21:30:53  <antimatroid> amstan: want to make me a makefile? :P
+2011-03-21T21:31:03  <antimatroid> i can edit whatever you make, i just have no idea how
+2011-03-21T21:31:14  <antimatroid> ideally it would be able to set DEBUG in bug.h
+2011-03-21T21:31:16  <amstan> antimatroid: i already have it for cpp, see the second last commit
+2011-03-21T21:31:21  <antimatroid> ah, cheers :)
+2011-03-21T21:31:22  <amstan> antimatroid: oh! good idea
+2011-03-21T21:37:16  *** nicklovescode <nicklovescode!~nicklikes@c-98-216-122-137.hsd1.ma.comcast.net> has quit IRC (Quit: nicklovescode)
+2011-03-21T21:39:13  <amstan> antimatroid: let's see about that debug thing
+2011-03-21T21:40:06  <amstan> antimatroid: the command line flag won't work if you have this in the source: #define DEBUG false
+2011-03-21T21:40:21  *** nicklikescode_ <nicklikescode_!~nicklikes@c-98-216-122-137.hsd1.ma.comcast.net> has joined #aichallenge
+2011-03-21T21:40:22  <amstan> the #define overrides the switch, i think
+2011-03-21T21:40:28  <antimatroid> what if it's const bool DEBUG false?
+2011-03-21T21:40:37  <amstan> shouldn't be a const..
+2011-03-21T21:40:37  <antimatroid> ;*
+2011-03-21T21:40:48  <amstan> then you really can't set it
+2011-03-21T21:40:54  <amstan> or let the preprocessor handle it
+2011-03-21T21:41:20  *** nicklikescode_ <nicklikescode_!~nicklikes@c-98-216-122-137.hsd1.ma.comcast.net> has left #aichallenge
+2011-03-21T21:41:26  <antimatroid> hmm, i dunno then :P
+2011-03-21T21:41:49  <amstan> antimatroid: how do i test if it works?
+2011-03-21T21:44:41  <antimatroid> just run the program
+2011-03-21T21:44:51  <antimatroid> and paste in the sample bot input from the specs page
+2011-03-21T21:44:52  <janzert> just leave DEBUG undefined in the source files
+2011-03-21T21:45:08  <janzert> protect the DEBUG sections with #ifdef DEBUG
+2011-03-21T21:45:19  <antimatroid> janzert: i have it set to false?
+2011-03-21T21:45:19  <janzert> and define DEBUG on the command line for debug builds
+2011-03-21T21:45:26  <antimatroid> and they're all inline
+2011-03-21T21:46:06  <antimatroid> they have a variable in state that they can treat like cin and it all gets stripped when debug is false when compiling
+2011-03-21T21:46:28  <janzert> defining it in the source will only allow it to work by physically changing the source
+2011-03-21T21:46:51  *** nim0o <nim0o!~tato@201.223.43.235> has joined #aichallenge
+2011-03-21T21:47:06  <CIA-33> aichallenge: Alexandru Stan epsilon * rbd27c56 / (2 files): moved the debugging flag in the makefile (+5 more commits...) - http://bit.ly/fYw1lY
+2011-03-21T21:47:12  <CIA-33> aichallenge: Alexandru Stan starter-packaging * rbd27c56 / (2 files): moved the debugging flag in the makefile - http://bit.ly/fYw1lY
+2011-03-21T21:47:23  <amstan> antimatroid: there you go ^
+2011-03-21T21:47:30  <antimatroid> :) cheers
+2011-03-21T21:48:06  <amstan> antimatroid: that's a thing you might want to include in the README.md
+2011-03-21T21:48:12  <amstan> how to use the debug features
+2011-03-21T21:48:25  <antimatroid> yeah i shall
+2011-03-21T21:48:43  <antimatroid> i'll fix up my starter bot when i get the examples done for resolutions
+2011-03-21T21:48:52  <antimatroid> then look at the wiki
+2011-03-21T21:49:14  *** tvorryn <tvorryn!45a98410@gateway/web/freenode/ip.69.169.132.16> has joined #aichallenge
+2011-03-21T21:50:38  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-21T21:50:47  *** kosiini <kosiini!~janne@pdpc/supporter/student/kosiini> has quit IRC (Remote host closed the connection)
+2011-03-21T21:52:01  <antimatroid> i really like my current symmetric maps
+2011-03-21T21:52:11  *** nim0o <nim0o!~tato@201.223.43.235> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T21:52:33  <antimatroid> they map need to be made with a 2x2 block if 1 width openings present issues
+2011-03-21T21:52:34  *** stalled <stalled!~stalled@unaffiliated/stalled> has joined #aichallenge
+2011-03-21T21:54:00  <janzert> antimatroid: I'm starting to think power and damage may be equivalent
+2011-03-21T21:54:18  <antimatroid> so am i :P
+2011-03-21T21:54:30  <sigh> they are not
+2011-03-21T21:54:31  <antimatroid> they don't seem like it at first
+2011-03-21T21:54:33  *** stalled <stalled!~stalled@unaffiliated/stalled> has left #aichallenge
+2011-03-21T21:54:34  <antimatroid> but they're damn close
+2011-03-21T21:54:38  <sigh> they are similar
+2011-03-21T21:54:39  <antimatroid> sigh: give us a counterexample
+2011-03-21T21:54:49  <sigh> hang on
+2011-03-21T21:55:05  <janzert> seems like they should be different, but every time I try and construct an example to show it they come out the same :/
+2011-03-21T21:55:26  <antimatroid> i think we should straight up say no openings of width one of maps
+2011-03-21T21:55:53  <sigh> I had counter-examples, when I was testing my battle_sim script
+2011-03-21T21:56:03  <antimatroid> consider the following
+2011-03-21T21:56:03  <antimatroid> %%%%%%%
+2011-03-21T21:56:03  <antimatroid> ........a..a..........
+2011-03-21T21:56:03  <antimatroid> %%a.....a%%%
+2011-03-21T21:56:03  <antimatroid> %%%%%%%
+2011-03-21T21:56:15  <antimatroid> a essentially can't be killed
+2011-03-21T21:56:33  <janzert> with power or damage resolution
+2011-03-21T21:56:52  <antimatroid> anything that allows blocking 1 width corridors has that problem
+2011-03-21T21:56:57  <janzert> right
+2011-03-21T21:57:43  <sigh> python battle_sim.py <<<"a.a.b|.c.c"
+2011-03-21T21:57:54  <sigh> took a few tries :)
+2011-03-21T21:58:58  <antimatroid> so it's quite rare?
+2011-03-21T21:59:15  <sigh> it's hard to find if you are hunting around randomly, yes
+2011-03-21T21:59:18  <sigh> like I was doing
+2011-03-21T21:59:38  <sigh> but I know I hit a few last night
+2011-03-21T21:59:43  <antimatroid> yeah okay
+2011-03-21T21:59:44  <janzert> also I'm not sure that exact example is possible to get to happen in a game
+2011-03-21T21:59:52  <antimatroid> we'll i'm going to make some lunch then make those examples
+2011-03-21T22:00:05  <antimatroid> sigh: feel free to tell me anything i miss on this page
+2011-03-21T22:00:09  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Battle-Resolution-Options
+2011-03-21T22:00:10  <sigh> janzert, just showing that they can give different results :P
+2011-03-21T22:00:16  <janzert> yeah
+2011-03-21T22:02:08  <CIA-33> aichallenge: Alexandru Stan epsilon * rbd6829d / ants/visualizer/java/Makefile : added makefile for the java visualizer - http://bit.ly/gm4DGA
+2011-03-21T22:02:52  <sigh> janzert: that position is certainly possible, I think
+2011-03-21T22:03:21  <sigh> hmm... maybe :)
+2011-03-21T22:03:35  <janzert> how do the c's get so close?
+2011-03-21T22:03:50  <sigh> moving up form below?
+2011-03-21T22:03:55  <sigh> *from
+2011-03-21T22:03:57  <amstan> contestbot: later tell Frontier Please check my makefile for the visualizer, i couldn't figure out the -classpath: https://github.com/aichallenge/aichallenge/commit/bd6829d78e01f09bb10fc4902f03d47d1f7d5503#L0R3
+2011-03-21T22:03:57  <contestbot> amstan: Aye, aye, sir
+2011-03-21T22:04:26  <janzert> ok, yeah if the a's had taken a step down the b a step left and the c's a step up?
+2011-03-21T22:04:34  <sigh> yes, I think so
+2011-03-21T22:06:11  <sigh> janzert, don't forget that they could have spawned in the last round
+2011-03-21T22:06:21  <sigh> so it opens up more possiblibies
+2011-03-21T22:06:38  <janzert> yes, but only if just one other side was in range of the food
+2011-03-21T22:06:56  <sigh> yeah, but food radius is only sqrt(2)
+2011-03-21T22:07:02  <sigh> much smaller than attack radius
+2011-03-21T22:07:24  <janzert> which only makes it harder to have had an effect
+2011-03-21T22:07:40  <janzert> since you're more likely to be in the attack radius range?
+2011-03-21T22:08:00  <janzert> anyway they certainly differ
+2011-03-21T22:08:13  <sigh> no, it means that you can effectively "move" diagonally
+2011-03-21T22:08:14  <janzert> and the example given is even possible
+2011-03-21T22:08:20  <sigh> because you can spawn on the diagonal
+2011-03-21T22:08:55  <sigh> but yeah, this is all tangential :)
+2011-03-21T22:09:33  <janzert> I just meant if food radius was sqrt(6) you'd have more likelihood to get positions that couldn't be moved into
+2011-03-21T22:09:54  *** superflit <superflit!~superflit@140.226.49.148> has quit IRC (Quit: superflit)
+2011-03-21T22:09:56  * janzert is afk for a while
+2011-03-21T22:10:02  <sigh> yes, but there is more chance that the food is lost because of conflicts
+2011-03-21T22:10:16  <sigh> ah, too late :(
+2011-03-21T22:11:35  *** nim0o <nim0o!~tato@201.223.43.235> has joined #aichallenge
+2011-03-21T22:12:18  <antimatroid> i like a small spawn radius
+2011-03-21T22:12:24  <sigh> antimatroid: another one, but here the bots are further away than before: python battle_sim.py <<<"a.b.c||..c.a"
+2011-03-21T22:12:27  <antimatroid> i think we could take away food deaths?
+2011-03-21T22:12:34  <antimatroid> and make food squares block movement
+2011-03-21T22:12:53  <antimatroid> or at least allow the bot with the most ants to get the food square first, otherwise kill it
+2011-03-21T22:16:12  *** nim0o <nim0o!~tato@201.223.43.235> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T22:17:39  <tvorryn> if i wanted to start working on a bot, how should I get started? since the contest hasn't actually started yet, the website isn't super clear
+2011-03-21T22:18:03  *** kylem__ <kylem__!188d405a@gateway/web/freenode/ip.24.141.64.90> has joined #aichallenge
+2011-03-21T22:18:15  <tvorryn> https://github.com/aichallenge/aichallenge/issues#issue/3 says that neither the python nor java starter packs are finished
+2011-03-21T22:19:28  <kylem__> i see you guys hit it big on HN and reddit yesterday, however it still seems to be in the early stages. when are you anticipating that you'll start accepting submissions?
+2011-03-21T22:20:07  *** jhuynh85 <jhuynh85!44b70102@gateway/web/freenode/ip.68.183.1.2> has quit IRC (Quit: Page closed)
+2011-03-21T22:20:09  *** nim0o <nim0o!~tato@201.223.43.235> has joined #aichallenge
+2011-03-21T22:20:44  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-03-21T22:21:51  <sigh> tvorryn: starter bots are in ants/dist/starter_bots - see ants/play_one_game.sh for how to run the engine, please note that everything is still in dev and is subject to change
+2011-03-21T22:22:12  <tvorryn> ok thanks
+2011-03-21T22:23:01  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-21T22:23:07  <amstan> sigh: that was fast... lol
+2011-03-21T22:23:18  <amstan> sigh: your path update time
+2011-03-21T22:23:29  <sigh> kylem__: not sure, it is still a few weeks away... reddit submission wasn't an official announcement or anything
+2011-03-21T22:23:33  <sigh> amstan: path update time
+2011-03-21T22:23:35  <sigh> ?
+2011-03-21T22:24:18  <amstan> sigh: yeah, the time between my commit and you realizing there's a new path for those things
+2011-03-21T22:24:52  <sigh> I just went to the page and looked at where things were :P
+2011-03-21T22:26:16  <kylem__> sigh: sounds good. couple of follow ups...the initial forum submission says that each ant would run its own code with no centralized controller, but python start bot has a central controller it looks like. does that mean you guys are leaning towards a centrally controlled colony AI?
+2011-03-21T22:26:43  <antimatroid> kylen__: your program controls all ants at once
+2011-03-21T22:26:54  <antimatroid> we decided it wasn't feasible to do the former while it would have been nice
+2011-03-21T22:27:09  <sigh> kylem__: see https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification for latest specs
+2011-03-21T22:27:14  <antimatroid> mostly due to the overhead of starting all those processes, particilarly for tcp connections
+2011-03-21T22:27:25  <sigh> if you look at the forum you'll see all the ideas that have been thrown around
+2011-03-21T22:27:31  <antimatroid> kylem__: can I use you?
+2011-03-21T22:27:36  <sigh> lol
+2011-03-21T22:28:07  <kylem__> antimatroid: use me how?
+2011-03-21T22:28:11  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Battle-Resolution-Options
+2011-03-21T22:28:32  <antimatroid> we have yet to decide what battle option to use, i need to know what you can understand on that page easily without any background knowledge
+2011-03-21T22:28:42  <antimatroid> then consider it all and give me your thoughts :P
+2011-03-21T22:28:58  <antimatroid> sorry that there aren't examples, i'm working on those now
+2011-03-21T22:32:16  <Frontier> lol, wtf
+2011-03-21T22:32:55  <sigh> Frontier: someone was complaining about visualizer on safari
+2011-03-21T22:33:45  <kylem__> antimatroid: just from the cursory read, i'm partial to the damage option, it is the most intuitive imho
+2011-03-21T22:33:49  <Frontier> sigh: o'rly? let me guess: the images didn't load. i hate that bug. nasty, nasty bug. i should drink less
+2011-03-21T22:34:10  <sigh> Frontier: not sure what it was, grep logs for safari
+2011-03-21T22:34:18  <antimatroid> kylem__: correct answer :)
+2011-03-21T22:34:53  <kylem__> antimatroid: iterative seems not very good, especially since it depends on how the game orders the pairs versus the players, so you'd be forced to disclose very detailed specs on how the battle unfolds in order to reproduced in client simulations
+2011-03-21T22:35:09  <antimatroid> it doesn't depend on ordering pairs
+2011-03-21T22:35:18  <antimatroid> if 3 players are at an equal distance, they all die in the same iteration
+2011-03-21T22:35:29  <antimatroid> but that's my least favourite of the rules, always has been
+2011-03-21T22:35:30  <kylem__> so ..a..b..c.., who dies?
+2011-03-21T22:35:31  <sigh> kylem__: none of the implementations depend on order
+2011-03-21T22:35:56  <antimatroid> kylem__: b dies for power and damage, otherwise they all die
+2011-03-21T22:35:58  <Frontier> It is Stocha, who has trouble with safari. I was thinking about possible sources for that problem, but i didn't find anything convincing.
+2011-03-21T22:36:34  <antimatroid> kylem__: the same can be said for a..b..a :\
+2011-03-21T22:36:57  <antimatroid> Frontier: was that with buttons?
+2011-03-21T22:36:58  <sigh> antimatroid: with sqrt(6) radius they are too far away to kill each other
+2011-03-21T22:37:00  <antimatroid> janzert had that problem
+2011-03-21T22:37:11  <antimatroid> sigh: ergh, you know what i mean :P
+2011-03-21T22:37:43  <Frontier> a guy from texas told me in an irish pub in hannover, that i was into the girl behind the bar. i said no, but he didn't listen.
+2011-03-21T22:38:05  <sigh> o_O
+2011-03-21T22:38:21  <CPeng> hey
+2011-03-21T22:38:27  <CPeng> i saw a gif somewhere
+2011-03-21T22:38:31  <CPeng> of an ant fight
+2011-03-21T22:38:32  <Frontier> where do all these people come from that hang around bars at midnight and want to tell people how much their life sucks
+2011-03-21T22:38:39  <CPeng> anybody know where it was?
+2011-03-21T22:38:51  <amstan> CPeng: forums
+2011-03-21T22:38:57  <antimatroid> CPeng: would have been Stocha's posts
+2011-03-21T22:39:10  <Frontier> antimatroid: janzert had trouble seeing the buttons below the visualizer
+2011-03-21T22:39:27  <kylem__> i see. well, if you end up going with iterative, the way it reads now sounds like 1. pick closest pair of ants 2. kill both 3. if some ants still close goto 1
+2011-03-21T22:40:10  <antimatroid> it's that, but pick closest ants, kill all of them, start over
+2011-03-21T22:40:27  <antimatroid> i like to think we're not going with that option
+2011-03-21T22:41:01  <kylem__> antimatroid: are you concerned about rounding errors in the damage option?
+2011-03-21T22:41:11  <antimatroid> no, we'd use rationals
+2011-03-21T22:41:30  <Frontier> antimatroid: they dont exist in computers
+2011-03-21T22:41:35  <sigh> kylem__: you can see the implementation of all the options in ants/ants.py
+2011-03-21T22:41:37  <antimatroid> Frontier: they do if you make them
+2011-03-21T22:41:46  <kylem__> sigh: thanks :)
+2011-03-21T22:41:52  <antimatroid> integers exist do they not? (at least close enough)
+2011-03-21T22:42:05  <sigh> they are the do_attack_* functions
+2011-03-21T22:42:41  <sigh> Frontier: what exactly exists in computers, then?
+2011-03-21T22:42:55  <Frontier> ok, i get it now. the guinnes (<- good beer) is still makin' my thoughts fuzzy
+2011-03-21T22:43:11  <sigh> :P
+2011-03-21T22:43:15  <Frontier> sigh: these ieee floating point nnumbers
+2011-03-21T22:43:29  <antimatroid> what does it mean to exist?
+2011-03-21T22:43:31  <antimatroid> :P
+2011-03-21T22:43:39  <Frontier> to be or not to be
+2011-03-21T22:43:41  <sigh> what does mean?
+2011-03-21T22:43:45  <sigh> what does "it" mean?
+2011-03-21T22:43:47  <Frontier> who is mean?
+2011-03-21T22:43:49  <antimatroid> who was it?
+2011-03-21T22:43:54  <sigh> what?
+2011-03-21T22:44:08  <Frontier> lol -.-  we crashed the conversation
+2011-03-21T22:44:09  <antimatroid> you accidentially missed
+2011-03-21T22:44:22  <sigh> http://www.fohguild.org/forums/attachments/screenshots/95895d1229374265-funny-strange-random-pics-24mcj1g.jpg
+2011-03-21T22:44:55  <antimatroid> what? aha
+2011-03-21T22:47:29  <kylem__> import fraction, nice
+2011-03-21T22:48:13  <antimatroid> fraction? rational would make more sense :\
+2011-03-21T22:48:59  <kylem__> antimatroid: are you trolling me?
+2011-03-21T22:49:13  <antimatroid> well a fraction could be of many things
+2011-03-21T22:49:16  <antimatroid> a rational only ints
+2011-03-21T22:49:34  <sigh> rational can be anything too
+2011-03-21T22:49:43  <antimatroid> hmmm so it can :P
+2011-03-21T22:50:00  <sigh> you can have rational functions
+2011-03-21T22:50:14  <antimatroid> yeah, anything with a gcd defined
+2011-03-21T22:57:07  <Frontier> i really have to find out what is going wrong with the images on the visualizer. it is difficult to test when everything is local
+2011-03-21T22:58:30  *** fireowrker76 <fireowrker76!8241f944@gateway/web/freenode/ip.130.65.249.68> has joined #aichallenge
+2011-03-21T22:58:47  <fireowrker76> when i try to run the test_bot.sh script  i get this error
+2011-03-21T22:58:48  <fireowrker76> #aichallenge
+2011-03-21T22:58:53  <fireowrker76> oops hold on
+2011-03-21T22:58:59  <antimatroid> amstan: should that make file be removing object files already for me?
+2011-03-21T22:59:04  <fireowrker76> Traceback (most recent call last):   File "../worker/engine.py", line 30, in run_game     bots = [Sandbox(*bot) for bot in botcmds]   File "../worker/sandbox.py", line 61, in __init__     cwd=working_directory)   File "/usr/lib/python2.6/subprocess.py", line 623, in __init__     errread, errwrite)   File "/usr/lib/python2.6/subprocess.py", line 1141, in _execute_child     raise child_exception OSError: [Errno 2] No such fil
+2011-03-21T22:59:09  <fireowrker76> what am i doing wrong...
+2011-03-21T23:00:03  *** kylem__ <kylem__!188d405a@gateway/web/freenode/ip.24.141.64.90> has quit IRC (Ping timeout: 252 seconds)
+2011-03-21T23:00:12  <antimatroid> firewrker76: you want to run playgame.py
+2011-03-21T23:00:37  <fireowrker76> ok
+2011-03-21T23:00:40  <fireowrker76> whats the test script for?
+2011-03-21T23:05:07  <Frontier> amstan: I read your comment on the Makefile, but all I know is that the plugin.jar needs to be on the classpath. That file is in the Sun JRE. My Gentoo linux uses java-config-2 to create a common path to the jre. I don't know what Ubuntu uses. There might be something similar.
+2011-03-21T23:06:52  *** fireowrker76 <fireowrker76!8241f944@gateway/web/freenode/ip.130.65.249.68> has quit IRC (Quit: Page closed)
+2011-03-21T23:08:24  <Frontier> amstan: if Makefiles understand environment variables, try: $JAVA_HOME
+2011-03-21T23:11:04  *** chris___0076 <chris___0076!~Chris_007@adsl-190-51-245.asm.bellsouth.net> has joined #aichallenge
+2011-03-21T23:12:52  <antimatroid> lol, there's definitely something f'd with my github
+2011-03-21T23:13:07  <antimatroid> i have to manually add my email address to the end of my passkey on the website to authenticate each time
+2011-03-21T23:13:25  <janzert> if it's more than a line, pastebin it please
+2011-03-21T23:13:50  <janzert> oops sorry, was scrolled up
+2011-03-21T23:14:31  *** chris__0076 <chris__0076!~Chris_007@adsl-66-249-161.asm.bellsouth.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-21T23:17:20  <janzert> btw, a.b.c|.c.. is a slightly simpler example showing difference between power and damage resolutions
+2011-03-21T23:22:41  <janzert> actually I guess not really simpler than the example sigh gave, just simpler the example I misremembered as being from him in my playing around :P
+2011-03-21T23:23:41  <sigh> janzert: I had an example where the bots where further away from each other: "a.b.c||..c.a"
+2011-03-21T23:24:10  <sigh> dunno if you saw that one
+2011-03-21T23:24:13  <janzert> nice
+2011-03-21T23:24:19  <janzert> no I didn't
+2011-03-21T23:24:33  <janzert> was just looking for an example that came out different for all 4 methods
+2011-03-21T23:26:00  <janzert> "a.b.c|..c.a|..a"
+2011-03-21T23:26:20  <sigh> cool :)
+2011-03-21T23:26:22  <janzert> although that one probably really can't occur in a game
+2011-03-21T23:26:27  <sigh> yeah :P
+2011-03-21T23:28:03  <antimatroid> sigh: what format does my file need to be for battle_sim?
+2011-03-21T23:28:18  <janzert> ^^
+2011-03-21T23:28:19  <sigh> are you running on linux?
+2011-03-21T23:28:22  <antimatroid> yeah
+2011-03-21T23:28:39  <sigh> ./battle_sim.py <<<"a.b.c||..c.a"
+2011-03-21T23:28:40  <janzert> "a.b.c|..c.a|..a" is valid input (without quotes)
+2011-03-21T23:29:04  <janzert> or replace | with newlines
+2011-03-21T23:29:10  <sigh> yup
+2011-03-21T23:31:06  <antimatroid> erm.. maybe i'm not passing the file correctly
+2011-03-21T23:31:24  <antimatroid> i was doing this "python battle_sim.py << egin.txt"
+2011-03-21T23:31:35  <sigh> just <
+2011-03-21T23:31:36  <antimatroid> i guess that's probably passing the actual input aye
+2011-03-21T23:32:07  <sigh> paste egin.txt?
+2011-03-21T23:32:18  <sigh> or just do this if you want it to be inline: python battle_sim.py <<<"a.b.c||..c.a"
+2011-03-21T23:32:38  <antimatroid> http://pastebin.com/Vgn46KQ1
+2011-03-21T23:32:44  <antimatroid> doesn't seem to like < syntax
+2011-03-21T23:32:49  <antimatroid> just shouts at me
+2011-03-21T23:32:56  <sigh> paste error?
+2011-03-21T23:33:13  <janzert> or you using one < for the redirect?
+2011-03-21T23:33:16  <antimatroid> http://pastebin.com/1Ae0iPew
+2011-03-21T23:33:26  <antimatroid> err, i didn't put it in :P
+2011-03-21T23:33:31  <sigh> python battle_sim.py < egin.txt
+2011-03-21T23:33:36  <sigh> is what you want
+2011-03-21T23:33:45  <antimatroid> oh, nah, same error
+2011-03-21T23:33:49  <antimatroid> i just copied the wrong one
+2011-03-21T23:34:11  <sigh> invalid syntax... hmm
+2011-03-21T23:34:25  <janzert> git status shows no changes to battle_sim.py?
+2011-03-21T23:34:46  <antimatroid> dw, it works now
+2011-03-21T23:34:49  <antimatroid> it was something i did
+2011-03-21T23:34:55  <antimatroid> sorry :P
+2011-03-21T23:35:12  <sigh> lol
+2011-03-21T23:35:21  <antimatroid> i changed the main function trying to work out what was going on, breaking it in the process :P
+2011-03-21T23:35:25  <sigh> was gonna say, there is no 115
+2011-03-21T23:35:30  <janzert> :)
+2011-03-21T23:35:40  <sigh> btw, you don't need to pad the map
+2011-03-21T23:35:49  <sigh> the script makes sure there is no wrarpping
+2011-03-21T23:35:53  <sigh> *wrapping
+2011-03-21T23:36:22  <amstan> Frontier: ok, i'm back..
+2011-03-21T23:36:33  <janzert> "a.b.c||..c.a||.a" (more vertical space added) still works to show a difference with all the methods of resolution, still probably not possible in a game though
+2011-03-21T23:36:39  <amstan> Frontier: my $JAVA_HOME is blank
+2011-03-21T23:36:53  <amstan> Frontier: is it another package i have to install?
+2011-03-21T23:38:58  <antimatroid> sigh: it might be better so people don't get confused
+2011-03-21T23:39:15  <sigh> what might be better?
+2011-03-21T23:39:23  <antimatroid> to make sure it wouldn't change with wrapping
+2011-03-21T23:39:30  <antimatroid> i'll make the examples smaller, that was just a first
+2011-03-21T23:39:44  <janzert> for testing battle resolutions I think keeping wrapping off is best
+2011-03-21T23:39:47  <antimatroid> actually, i'll just say ignore wrapping for tests
+2011-03-21T23:40:05  <antimatroid> yes keeping it off, i was referring to people looking at the examples and going but but...
+2011-03-21T23:40:58  <sigh> well, then put some padding in the examples... this script is for people to experiment with the specs :)
+2011-03-21T23:42:02  <sigh> hmm... I suppose it is useful even after a method has been settled
+2011-03-21T23:42:16  <sigh> for working out tactics
+2011-03-21T23:42:55  <amstan> antimatroid: you available?
+2011-03-21T23:52:40  <antimatroid> amstan: what for?
+2011-03-21T23:52:58  <amstan> antimatroid: well, i finished the starter packages packaging..
+2011-03-21T23:53:05  <amstan> i need to look at the tools section
+2011-03-21T23:53:17  <antimatroid> don't package the c++ one yet :P
+2011-03-21T23:53:46  <amstan> umm
+2011-03-21T23:53:49  <amstan> it's a makefile
+2011-03-21T23:53:52  <antimatroid> ah, okay
+2011-03-21T23:53:53  <amstan> i type make to make it
+2011-03-21T23:53:56  <amstan> make clean to delete it
+2011-03-21T23:54:04  <amstan> so.. tools
+2011-03-21T23:54:06  <amstan> what do we need?
+2011-03-21T23:54:23  <amstan> i have sample bots, so that's good
+2011-03-21T23:54:28  <antimatroid> visualiser, engine, bot, sample bots
+2011-03-21T23:54:29  <amstan> i need an offline engine
+2011-03-21T23:55:03  <janzert> playgame.py
+2011-03-21T23:55:12  <antimatroid> it would be awesome if there was a program like jbotmanager that we released officially
+2011-03-21T23:55:18  <antimatroid> but i don't know who could write it
+2011-03-21T23:55:21  <antimatroid> delt0r is quite busy
+2011-03-21T23:55:27  <amstan> antimatroid: we'll use what we have for now
+2011-03-21T23:55:32  <amstan> janzert: how user friendly is that?
+2011-03-21T23:55:51  <janzert> about as userfriendly as our past engines were I believe :P
+2011-03-21T23:55:55  <janzert> that is not at all
+2011-03-21T23:56:10  <antimatroid> yep, i agree with that
+2011-03-21T23:56:23  <antimatroid> we could give bat/shell scripts etc. that do it all
+2011-03-21T23:56:29  <antimatroid> or just give example commands like previously
+2011-03-21T23:56:37  <amstan> a readme.md should suffice
+2011-03-21T23:56:52  <amstan> should be the same as the one online..
+2011-03-21T23:57:50  <amstan> is playgame.py all i need in terms of tools?
+2011-03-21T23:58:17  <janzert> a visualizer for the resulting output?
+2011-03-21T23:59:20  <janzert> which I believe Frontier was working on a way to easily run the current one locally
+2011-03-21T23:59:34  *** nivardus <nivardus!~nivardus@unaffiliated/nivardus> has quit IRC (Quit: Lost terminal)

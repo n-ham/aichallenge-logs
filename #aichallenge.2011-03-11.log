@@ -1,0 +1,621 @@
+2011-03-11T00:00:28  <McLeopold> https://github.com/sigh/aichallenge/blob/epsilon/ants/game.py
+2011-03-11T00:00:32  <McLeopold> look at that stub class
+2011-03-11T00:00:42  <McLeopold> That's the "interface"
+2011-03-11T00:01:02  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-11T00:01:05  <McLeopold> The engine excepts all of those function to exist, regardless of the game being played
+2011-03-11T00:01:17  <sigh> ah, Ants is supposed to inherit from this?
+2011-03-11T00:01:30  <McLeopold> Well, it could, but in python there is no point.
+2011-03-11T00:01:45  <sigh> I would do it for documentation purposes, if nothing else
+2011-03-11T00:01:45  <McLeopold> I could put a raise error in the base class.
+2011-03-11T00:01:56  <McLeopold> so you have to override them all
+2011-03-11T00:02:01  <amstan_> why is this in the ants folder then? should be outside somewhere..
+2011-03-11T00:02:12  <McLeopold> amstan_: geeze, give me time
+2011-03-11T00:02:17  <sigh> haha
+2011-03-11T00:02:34  <sigh> when I see something like that Game, I generally search the repo for places where it is used
+2011-03-11T00:03:00  <sigh> so if I didn't find it, I would be confused... or afraid of some scary meta-programming
+2011-03-11T00:03:11  <sigh> :P
+2011-03-11T00:03:20  <McLeopold> So I'm liking the work you did now, so let's go with it.
+2011-03-11T00:03:56  <sigh> cool :)
+2011-03-11T00:04:00  <McLeopold> But, I think it would be appropriate to nit-pick the do_attack and do_spawn functions, because everyone will be referring to them
+2011-03-11T00:04:38  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-11T00:04:43  <sigh> oh... before that... one nit-pick about code
+2011-03-11T00:04:58  <McLeopold> If we could get the data structure to it's own class, so the attack, spawn, food and score are the only thing in the Ants class, that would be great for helping people understand it
+2011-03-11T00:05:01  <sigh> why do you prefer to keep row, col separate rather than in a tuple?
+2011-03-11T00:05:19  <McLeopold> I don't know.
+2011-03-11T00:05:34  <McLeopold> Fear that unpacking would be a performance hit?
+2011-03-11T00:05:45  <sigh> hehe
+2011-03-11T00:06:11  <sigh> it's better to pack it into a tuple, because then most places in the code don't need to know about the internals
+2011-03-11T00:06:14  <McLeopold> I would make sense to just use a tuple, so people that use languages with vectors and point classes can read it better
+2011-03-11T00:06:37  <sigh> for example, switching form (col,row) to (row,col) would have been easier :P
+2011-03-11T00:06:58  <McLeopold> I think I went back and forth, and my distaste for [0] at the end of variables all the time won. :)
+2011-03-11T00:07:29  <sigh> oh, that's easy to fix... just do row,col = location if you need it explicitly
+2011-03-11T00:07:41  <sigh> better yet reduce the number of places where it is needed explicitly
+2011-03-11T00:07:50  <McLeopold> yeah, and I do that anyway in the code all over the place, so I really have no excuse
+2011-03-11T00:07:56  <sigh> :)
+2011-03-11T00:08:29  <sigh> and it makes thing that much easier if we decide to go 3d or something :D
+2011-03-11T00:08:42  <McLeopold> So, the new food spawning makes my test runs a lot slower.
+2011-03-11T00:09:01  <McLeopold> I can't tell if it is just extra ants, or the engine.  And I haven't really looked at it yet.
+2011-03-11T00:09:03  <sigh> yeah... it's hard to get much faster than random
+2011-03-11T00:09:20  <McLeopold> I shouldn't be
+2011-03-11T00:10:13  <sigh> in general we are keeping more data now, but I don't think I did anything terribly inefficient
+2011-03-11T00:10:36  <McLeopold> in the food code, what is bfs?
+2011-03-11T00:10:49  <sigh> breadth-first search
+2011-03-11T00:10:59  <sigh> really, the offset-code should not be using it
+2011-03-11T00:11:17  <sigh> but it's required for the section-code
+2011-03-11T00:11:37  <McLeopold> so in sections, you just create lists for each player that are cached, then food spawning should be just as fast as random
+2011-03-11T00:11:49  <sigh> hmm...yeah
+2011-03-11T00:12:16  <McLeopold> We need a mechanism to control the food spawned per turn
+2011-03-11T00:12:16  <sigh> meh, need to profile the thing
+2011-03-11T00:12:29  <sigh> control in what way?
+2011-03-11T00:12:56  <McLeopold> so, if it is 3 per turn, and there are 5 bots, then spawn 5 every so often
+2011-03-11T00:13:03  <sigh> oh... I just realised
+2011-03-11T00:13:17  <antimatroid> McLeopold: i get this when I try to get the visualiser thing going
+2011-03-11T00:13:18  <antimatroid> http://pastebin.com/7NgZnmww
+2011-03-11T00:13:19  <McLeopold> which means, we don't need to spawn every turn
+2011-03-11T00:13:25  <sigh> my food spawning will spawn a lot more food by default than before I messed with it
+2011-03-11T00:13:31  <sigh> like num_players times more
+2011-03-11T00:13:34  <antimatroid> the browser shows the map with start positions, but i get nothing after that
+2011-03-11T00:13:40  <sigh> which means a lot more ants => more run times
+2011-03-11T00:14:20  <McLeopold> antimatroid: the replay file is being loaded by javascript, which is why you need the python http server in the first place
+2011-03-11T00:14:35  <McLeopold> look at the script in firebug to see what the file is that it is requesting
+2011-03-11T00:14:45  <sigh> antimatroid: press arrow keys in browser
+2011-03-11T00:14:48  <McLeopold> you should be able to hit it in your browser
+2011-03-11T00:14:52  <McLeopold> oh, that :P
+2011-03-11T00:14:58  <antimatroid> that'll do it :)
+2011-03-11T00:15:08  <antimatroid> cheers :)
+2011-03-11T00:15:39  <McLeopold> I should try to see if Frontier's works
+2011-03-11T00:16:04  <sigh> has Frontier got something that conforms to the new format?
+2011-03-11T00:16:10  <McLeopold> maybe
+2011-03-11T00:16:29  <sigh> I purposely kept the current output as is, and just wrote to *.replay.new
+2011-03-11T00:16:42  <McLeopold> That's fine for now
+2011-03-11T00:16:50  <McLeopold> I'll add parser options later
+2011-03-11T00:17:04  <sigh> yeah
+2011-03-11T00:17:24  <McLeopold> also, I made some changes to my version of ants, so I'm going to need to merge
+2011-03-11T00:17:33  <McLeopold> and I'm scared.
+2011-03-11T00:17:36  <sigh> haha
+2011-03-11T00:18:30  <McLeopold> actually, I pushed it
+2011-03-11T00:19:53  <sigh> btw, is it easy to make the bots take a --seed argument or something? I added one to playgame in a hope to make reproducible tests, but failed because the bot are still random
+2011-03-11T00:19:59  <sigh> ?
+2011-03-11T00:20:40  <McLeopold> well, that's up to the bot owner
+2011-03-11T00:20:48  <McLeopold> but our example ones can
+2011-03-11T00:20:58  <McLeopold> I was going to change Hunter to not be random
+2011-03-11T00:20:59  <amstan_> that should have been set before we started making the tournament engine and the starter packages
+2011-03-11T00:21:24  <sigh> oh... can we pass seed as a parameter?
+2011-03-11T00:21:34  <sigh> at the start of the game?
+2011-03-11T00:21:35  <McLeopold> yes
+2011-03-11T00:21:41  <sigh> it can be ignored by the bots if they like
+2011-03-11T00:21:52  <sigh> but it is great for testing for those who want it
+2011-03-11T00:22:00  <McLeopold> let's add it
+2011-03-11T00:22:05  <sigh> ok, I'll do it
+2011-03-11T00:22:24  <McLeopold> playerSeed n seed, for the replay
+2011-03-11T00:22:39  <sigh> meh, give them all the same seed
+2011-03-11T00:22:43  <McLeopold> or, 1 seed to rule them all?
+2011-03-11T00:22:53  <sigh> yeah, no reason not to
+2011-03-11T00:24:14  <McLeopold> okay, I'm heads down in worker.py right now.
+2011-03-11T00:31:43  <McLeopold> janzert: you here?
+2011-03-11T00:32:29  <McLeopold> I'm curious about the compiling sandbox/jail
+2011-03-11T00:42:54  <antimatroid> can there be a specified seed that means no food is to be spawned at all?
+2011-03-11T00:43:27  <antimatroid> that way people can test on a map they set up without worrying about food spawning
+2011-03-11T00:50:13  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-03-11T00:51:26  *** chemuduguntar <chemuduguntar!~ravic@smtp.touchcut.com> has quit IRC (Ping timeout: 276 seconds)
+2011-03-11T00:54:13  *** delt0r_ <delt0r_!~delt0r@188-22-165-165.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-11T00:55:12  *** delt0r___ <delt0r___!~delt0r@188-22-167-16.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-11T00:55:25  <sigh> antimatroid: that doesn't make sense, that functionality seems orthogonal to what the seed does
+2011-03-11T00:55:29  <McLeopold> antimatroid: why?
+2011-03-11T00:55:55  <McLeopold> like, a map with food already there?
+2011-03-11T00:56:16  <McLeopold> I'd rather have a food_spawn option of none
+2011-03-11T00:58:39  <sigh> anyway, I've implemented the seed in the engine and the python bots if someone wants to pull: https://github.com/sigh/aichallenge
+2011-03-11T00:58:49  <sigh> you can now run deterministic games :)
+2011-03-11T00:59:07  <sigh> I'll update the spec, I suppose
+2011-03-11T01:01:31  <McLeopold> sigh: I'll pull sometime tomorrow
+2011-03-11T01:03:13  <antimatroid> McLeopold: a food_spawn option of none would do
+2011-03-11T01:03:33  <antimatroid> the map may/may not have food, but it'd be useful for testing to see if your bot is behaving as you want
+2011-03-11T01:03:40  <antimatroid> without food spawning mucking it up
+2011-03-11T01:11:20  <sigh> hmmm... I have a bug
+2011-03-11T01:19:24  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-11T01:24:11  <Frontier> sigh: good job, i'll see if i can catch up
+2011-03-11T01:26:01  <sigh> haha
+2011-03-11T01:26:30  <sigh> Frontier: I know you are responding to my @later tell, but the last thing I said in the channel was "hmmm... I have a bug"
+2011-03-11T01:27:30  <Frontier> lol
+2011-03-11T01:27:49  <Frontier> let me read the logs :p
+2011-03-11T01:32:54  *** boegel <boegel!~boegel@91.182.127.98> has quit IRC (Quit: Leaving)
+2011-03-11T01:33:13  <Frontier> sigh: What kind of bug is it?
+2011-03-11T01:33:40  <sigh> oh I fixed it, it was in my conflict resolution
+2011-03-11T01:34:05  <sigh> I suppose mostly because the bots I was testing with never issued conflicts :P
+2011-03-11T01:35:35  <antimatroid> my bot on there will give you conflicts :P
+2011-03-11T01:37:03  <Frontier> i whish we had let the starter bot be the random bot, not the top-right bot always gets crushed by the others :p
+2011-03-11T01:37:21  <Frontier> *now
+2011-03-11T01:40:44  <Frontier> RαηdσmBστ ιs αςτμαllγ α ρrεττγ dεςεητ bστ fσr τhιs gαmε. Iτ σςςμριεs ιτs τεrrιτσrγ αηd dσεsη'τ sτrαγ τσσ mμςh.
+2011-03-11T01:42:16  <Frontier> Bτω. JαναSςrιρτ sμρρσrτs Uηιςσdε ιdεητιfιεrs, bμτ σηlγ Chrσmε sεεms τσ ςαrε. Fιrεfσχ ιs fιηε ωιτh Grεεκ lεττεrs, αηd θρεrα sριτs σμτ αηγτhιηg τhατ ιs ηστ ASCII.
+2011-03-11T01:43:51  <antimatroid> meh, let people do random bot themselves
+2011-03-11T02:23:49  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has joined #aichallenge
+2011-03-11T02:58:14  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Quit: Take your stinking clause off me you damn dirty predicate!)
+2011-03-11T03:04:19  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-11T03:09:21  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-11T03:14:58  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-03-11T03:39:57  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-03-11T03:46:30  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-11T03:53:20  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-11T04:17:57  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-11T04:20:30  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-11T04:35:03  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-03-11T04:38:33  *** amstan_ <amstan_!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-03-11T05:03:49  *** delt0r___ <delt0r___!~delt0r@188-22-165-165.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-11T05:04:47  *** delt0r_ <delt0r_!~delt0r@188-22-165-165.adsl.highway.telekom.at> has quit IRC (Ping timeout: 264 seconds)
+2011-03-11T05:18:24  <sigh>  *tumbleweeds*
+2011-03-11T07:13:39  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-11T07:44:06  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-03-11T07:45:21  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-11T08:12:05  *** iFire` <iFire`!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-11T08:19:56  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Ping timeout: 246 seconds)
+2011-03-11T08:28:04  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-11T08:47:02  *** UncleVasya <UncleVasya!kvirc@88-214-127-213.dialup.umc.net.ua> has joined #aichallenge
+2011-03-11T08:50:38  *** |UncleVasya| <|UncleVasya|!kvirc@88-214-119-72.dialup.umc.net.ua> has joined #aichallenge
+2011-03-11T08:52:43  *** UncleVasya <UncleVasya!kvirc@88-214-127-213.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-11T08:54:36  *** delt0r_ <delt0r_!~delt0r@188-22-167-212.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-11T08:56:03  *** delt0r___ <delt0r___!~delt0r@188-22-165-165.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-03-11T09:07:27  <antimatroid> are we still having a maximum of 26 players?
+2011-03-11T09:07:33  <antimatroid> otherwise we need to get rid of the char maps
+2011-03-11T09:25:25  <aerique> i've written my bot to account for 99 players currently :)
+2011-03-11T09:26:06  <antimatroid> yeah, i'm trying to work out how to change mine
+2011-03-11T09:26:11  <antimatroid> it gets a bit messier
+2011-03-11T09:31:34  <aerique> internally i'm using an array of integers for representing the map, chars didn't seem ideal
+2011-03-11T09:32:27  <Naktibalda> why?
+2011-03-11T09:33:16  <aerique> Naktibalda: for one, the problem antimatroid just mentioned
+2011-03-11T09:33:59  <Naktibalda> ah, a player code
+2011-03-11T09:52:44  <antimatroid> aerique: what is your code for dead ants?
+2011-03-11T09:53:00  <antimatroid> and how are you planning to handle colliding ants?
+2011-03-11T09:53:20  <antimatroid> i can't think of a way that isn't messy as hell
+2011-03-11T09:53:21  <Naktibalda> when is the official start of a challenge?
+2011-03-11T09:53:32  <antimatroid> when everything is ready :P
+2011-03-11T09:53:44  <aerique> I just followed the wiki and am using lowercase for a live ant and uppercase for a dead one when printing the map to terminal.
+2011-03-11T09:53:54  <Naktibalda> you have unfair advantage :)
+2011-03-11T09:54:18  <aerique> I haven't even thought about colliding ants.  Just finished the most basic sample bot :)
+2011-03-11T09:54:54  <aerique> I'm hoping to work on some other (non-challenge) projects before the challenge starts.
+2011-03-11T09:57:08  <|UncleVasya|> Naktibalda: I asked about this yesterday and answers were from 3 to 4 weeks.
+2011-03-11T09:57:27  <Naktibalda> thanks
+2011-03-11T09:57:47  <antimatroid> aerique: i'm thinking about how i will represent stuff myself
+2011-03-11T10:12:38  *** |UncleVasya| <|UncleVasya|!kvirc@88-214-119-72.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-11T10:16:18  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-11T10:16:57  *** UncleVasya <UncleVasya!kvirc@178-133-251-164.dialup.umc.net.ua> has joined #aichallenge
+2011-03-11T10:47:56  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-03-11T10:55:44  *** amstan <amstan!~alex@142.222.95.41> has joined #aichallenge
+2011-03-11T10:55:44  *** ChanServ sets mode: +o amstan
+2011-03-11T10:56:20  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-11T11:01:55  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-11T11:17:11  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-11T11:27:44  *** dr`away <dr`away!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-03-11T11:30:02  <antimatroid> McLeopold: if we're to be passed info for ants that have collided, can the line identifier be different to those who died from battle?
+2011-03-11T11:33:07  <McLeopold> hi
+2011-03-11T11:33:24  <antimatroid> hi :)
+2011-03-11T11:33:26  <McLeopold> antimatroid: it doesn't matter
+2011-03-11T11:33:28  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 248 seconds)
+2011-03-11T11:33:36  <antimatroid> it does for the programmer
+2011-03-11T11:33:37  <McLeopold> the dead ants will be at the same location, if you need to know
+2011-03-11T11:34:02  <antimatroid> yes, the point is having to deal with knowing if more than one dead ant line was given for the same square
+2011-03-11T11:34:05  <McLeopold> and they will have the same owner
+2011-03-11T11:34:09  <antimatroid> and tehn accounting for a potential 3rd etc.
+2011-03-11T11:34:31  <McLeopold> there will be multiple dead ant lines for the same square
+2011-03-11T11:34:36  <antimatroid> and assuming one can play around with the attack radius, it could not be from the same owner
+2011-03-11T11:34:54  <McLeopold> so were good then with what we have
+2011-03-11T11:34:54  <antimatroid> yes, and it's extra code to work out whether you got those extra lines
+2011-03-11T11:35:10  <antimatroid> it'd be easy to just ignore that information if it was given as a conflict death
+2011-03-11T11:35:17  <Naktibalda> is it possible that attack range > visibility range?
+2011-03-11T11:35:19  <antimatroid> as conflict deaths are useless information imo
+2011-03-11T11:35:30  <McLeopold> Naktibalda: no, we won't do that
+2011-03-11T11:35:49  <antimatroid> McLeopold: my issue isn't that it isn't possible to work the information out, i just don't like having so much implicit information
+2011-03-11T11:36:16  <antimatroid> i'd rather everything was told explicitly, i can compromise on food information being semi implicit in order to reduce input size, but this doesn't change input size?
+2011-03-11T11:36:27  <McLeopold> It is explicit info, dead ants that died on the same square died from conflict
+2011-03-11T11:36:48  <antimatroid> yes, but it's implicit in that to differentiate it from an ant that died from a battle, you have to work it out yourself
+2011-03-11T11:36:50  <McLeopold> Food is given every turn, btw
+2011-03-11T11:36:56  <antimatroid> you don't know that information when you receive the line
+2011-03-11T11:37:22  <antimatroid> food is given every turn, but if you go out of range of a food square and it's land when you come back in view, you only know implicitly that it's not there
+2011-03-11T11:37:28  <antimatroid> hence there is implicit information there as well
+2011-03-11T11:38:21  <antimatroid> couldn't one just receive 'c' instead of 'd' for a collided ant death line?
+2011-03-11T11:39:52  <McLeopold> antimatroid: I'd rather not change it.  Maybe wait for jeff to come around again, then spend your effort convincing him of battle option 1?
+2011-03-11T11:40:46  <antimatroid> i will, i was just thinking about how to represent stuff, and it's already quite messy
+2011-03-11T11:40:55  <antimatroid> dealing with all the implicit information makes it even messier
+2011-03-11T11:41:21  <antimatroid> i want to move away from using char maps even in the starter packs
+2011-03-11T11:41:33  <antimatroid> because that limits anything to not breaking the starter bots to 26 players
+2011-03-11T11:41:41  <McLeopold> Yeah, for input parsing, just make a little temp hash table of death locations, then flip your "attack/conflict" bit when you get a collision.  It's not too messy.
+2011-03-11T11:42:23  <McLeopold> Hey, it's an ant collision *and* a hash table collision!
+2011-03-11T11:42:24  <antimatroid> hmm, i might have to create a separate structure just for passing input :
+2011-03-11T11:42:54  <McLeopold> I don't think we will get above 26 bots.
+2011-03-11T11:43:07  <antimatroid> not even on crazy tcp? :(
+2011-03-11T11:43:29  <McLeopold> Not if I want to surf the net in the next 2 months. :)
+2011-03-11T11:43:50  <antimatroid> nah, have an official crazy maps tcp on the official servers
+2011-03-11T11:44:26  <antimatroid> it'd be an effort to get that many people in a game on the other tcp servers
+2011-03-11T11:44:53  <McLeopold> so, lower and upper case, 52 players?
+2011-03-11T11:45:02  <antimatroid> upper case is dead ant
+2011-03-11T11:45:50  <antimatroid> if you move away from char maps, people can pretty much use any number of players
+2011-03-11T11:46:02  <antimatroid> i guess we're restriced by map files
+2011-03-11T11:46:11  <antimatroid> so it's safe to assume we'll stay <=26 players
+2011-03-11T11:46:26  <Naktibalda> where is it described?
+2011-03-11T11:46:33  <antimatroid> the game?
+2011-03-11T11:46:38  <Naktibalda> I thought that owner is integer, not character
+2011-03-11T11:46:56  <antimatroid> it is for input
+2011-03-11T11:47:02  <antimatroid> but the map files are char maps
+2011-03-11T11:47:14  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification
+2011-03-11T11:47:19  <antimatroid> the specs page is there
+2011-03-11T11:48:00  <janzert> McLeopold: did you figure out whatever you were wondering last night?
+2011-03-11T11:48:44  <antimatroid> McLeopold: how hard would it be to change it so that dead ant info was explicitly different when reading?
+2011-03-11T11:48:57  <antimatroid> surely you agree that explicit information is better than implicit where possible?
+2011-03-11T11:49:32  <McLeopold> no
+2011-03-11T11:51:43  <McLeopold> janzert: how easy is the zeta sandboxing to use?
+2011-03-11T11:51:57  <janzert> no idea, haven't even looked at it
+2011-03-11T11:56:25  *** superflit_ <superflit_!~superflit@140.226.49.148> has joined #aichallenge
+2011-03-11T12:02:09  *** delt0r_ <delt0r_!~delt0r@188-22-167-212.adsl.highway.telekom.at> has quit IRC (Read error: Connection reset by peer)
+2011-03-11T12:02:31  *** delt0r_ <delt0r_!~delt0r@188-22-167-212.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-11T12:19:06  *** amstan <amstan!~alex@142.222.95.41> has quit IRC (Ping timeout: 250 seconds)
+2011-03-11T12:23:19  *** UncleVasya <UncleVasya!kvirc@178-133-251-164.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-11T12:29:29  *** UncleVasya <UncleVasya!kvirc@178-133-146-184.dialup.umc.net.ua> has joined #aichallenge
+2011-03-11T12:36:45  *** UncleVasya <UncleVasya!kvirc@178-133-146-184.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-11T12:37:00  *** UncleVasya <UncleVasya!kvirc@178-133-169-235.dialup.umc.net.ua> has joined #aichallenge
+2011-03-11T12:51:52  *** boegel <boegel!~boegel@91.182.127.98> has joined #aichallenge
+2011-03-11T13:16:09  <McLeopold> janzert: you wanted to redo the submission statuses, right?
+2011-03-11T13:17:32  <janzert> Anywhere a check for an error status is done would be trivial if all error statuses were strictly larger than non-error statuses :}
+2011-03-11T13:17:46  <janzert> with the current codes that is *almost* already the case
+2011-03-11T13:18:42  <McLeopold> and before ready to run?
+2011-03-11T13:19:07  <janzert> looks at status list, basically if 30 and 40 were transposed it would be fine I think
+2011-03-11T13:20:13  <McLeopold> I don't think we need 10, 15, 27, 30 or 60
+2011-03-11T13:20:44  <janzert> probably don't need all of them anyway
+2011-03-11T13:20:44  <McLeopold> there is no need to create a database entry if we don't get a successful upload
+2011-03-11T13:21:26  <janzert> you do need a unique submission id before you can attempt to move the upload into its final place though right?
+2011-03-11T13:21:47  <McLeopold> yes, but at that point, we've got a file, so it will be status 20
+2011-03-11T13:22:23  <janzert> ok
+2011-03-11T13:22:30  <janzert> well, no
+2011-03-11T13:22:59  <janzert> 20 is after it has been moved to the final destination on the main server and is ready for a worker to grab and compile
+2011-03-11T13:23:27  <McLeopold> yeah, but I'm removing 10 and 15
+2011-03-11T13:23:29  <janzert> or I suppose the very initial status could be null, but that seems rather ugly
+2011-03-11T13:24:08  <janzert> I'd think you want 10 initially, then 20 once you moved it into the correct location
+2011-03-11T13:24:37  <McLeopold> yeah, but I don't see stuff getting stuck in 10 unless we have serious issues with the main server.
+2011-03-11T13:25:31  <McLeopold> so, we had 2 tournament managers on the workers to keep the cpu's busy?
+2011-03-11T13:25:57  <janzert> it shouldn't, but you have a race if the initial database entry says the submission is in place before it really is
+2011-03-11T13:26:00  <janzert> yes
+2011-03-11T13:26:24  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.15/20110303024726])
+2011-03-11T13:26:24  <McLeopold> okay, I'm trying to get the worker to just use 1 script right now.  It's looking nice so far.
+2011-03-11T13:27:02  <McLeopold> Then we could use threads and calc a load value
+2011-03-11T13:27:13  <McLeopold> because games will have different number of bots
+2011-03-11T13:27:16  <janzert> hmm, ok
+2011-03-11T13:27:26  <janzert> except the bots are run in sequence right?
+2011-03-11T13:27:43  <janzert> so you should always just assign one core per game
+2011-03-11T13:27:44  <McLeopold> not yet, :)  but yes
+2011-03-11T13:28:22  <McLeopold> I forget how the jail users were used.  One per worker script?
+2011-03-11T13:28:35  <janzert> one per bot running
+2011-03-11T13:29:24  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-50-70.asm.bellsouth.net> has joined #aichallenge
+2011-03-11T13:29:37  <janzert> i.e. each bot runs under its own temporarily dedicated jail user
+2011-03-11T13:30:07  <McLeopold> oh yeah
+2011-03-11T13:30:17  <McLeopold> plus compiles, if we can sandbox them
+2011-03-11T13:30:23  <janzert> right
+2011-03-11T13:30:38  <McLeopold> so, each worker can create/verify it's own jail users, then there is no database?
+2011-03-11T13:31:16  <janzert> well there is a permanent pool of jail users
+2011-03-11T13:31:29  <McLeopold> that's why I said verify
+2011-03-11T13:31:41  <McLeopold> but each can have it's own pool
+2011-03-11T13:31:46  <janzert> there just needs to be a way of assigning them without going through a database
+2011-03-11T13:31:50  <janzert> yes, you could
+2011-03-11T13:32:07  <McLeopold> so we start a worker like this "worker.py -t -n0 -id 1"
+2011-03-11T13:32:13  <janzert> but it means each worker needs a pool as larger as the largest number of players in a game
+2011-03-11T13:32:20  <McLeopold> and it looks for jail_users assigned to id 1
+2011-03-11T13:32:38  <McLeopold> so, is a few hundred jail users a big deal?
+2011-03-11T13:32:44  <janzert> s/as larger as/as large as/
+2011-03-11T13:33:44  <janzert> it seems uglier than running a database to me but
+2011-03-11T13:33:46  * janzert shrugs
+2011-03-11T13:34:08  <McLeopold> if all the workers are going at full capacity, then you need that many anyway
+2011-03-11T13:34:27  <janzert> actually we'll run into memory issues before that
+2011-03-11T13:34:42  <janzert> I was thinking about that a bit last night
+2011-03-11T13:35:05  <McLeopold> hmm... how much can each bot allocate?  do we quota them?
+2011-03-11T13:35:35  <janzert> Ec2 high cpu like we used last time except the larger instance, with 8 cores has 7GB
+2011-03-11T13:35:55  <janzert> we had a problem last time trying to limit java to use 1GB(?)
+2011-03-11T13:36:10  <McLeopold> with an average of 4 users, that's 32 bot processes at a time
+2011-03-11T13:36:24  <McLeopold> wait, sequential,
+2011-03-11T13:36:32  <McLeopold> but we still need the memory
+2011-03-11T13:37:06  <janzert> right, even if we get sequential execution we'll quickly run into memory problems :(
+2011-03-11T13:38:05  <McLeopold> well, for now, I'll make each worker instance manage it's own jail users
+2011-03-11T13:38:20  <janzert> we could go to a high memory instance and get 34GB with 4 cores
+2011-03-11T13:38:31  <McLeopold> that might be better
+2011-03-11T13:38:40  <janzert> faster cores than the high cpu instance too
+2011-03-11T13:38:59  <janzert> but the price per core is double
+2011-03-11T13:39:16  <McLeopold> we can get one of each and see what does better
+2011-03-11T13:44:19  <jmcarthur> if we get faster cores we might be able to get away with cutting down the turn time limit a bit
+2011-03-11T13:48:55  <janzert> especially if the slower core machine started swapping bots out to disk :P
+2011-03-11T13:50:39  *** amstan <amstan!~alex@142.222.92.4> has joined #aichallenge
+2011-03-11T13:50:39  *** ChanServ sets mode: +o amstan
+2011-03-11T13:50:43  <jmcarthur> heh yes
+2011-03-11T13:57:29  *** boegel <boegel!~boegel@91.182.127.98> has quit IRC (Ping timeout: 250 seconds)
+2011-03-11T14:19:17  *** boegel <boegel!~boegel@91.182.127.98> has joined #aichallenge
+2011-03-11T14:26:54  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r56f606b / (4 files): Removed make file and replaced with example scripts using playgame.py. - http://bit.ly/fSiVNE
+2011-03-11T14:26:57  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r0796834 / (22 files in 4 dirs): Worker can now request compiles and report status. - http://bit.ly/eTLfno
+2011-03-11T14:26:59  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r64d311d / worker/engine.py : Removed ants import from engine. - http://bit.ly/ft0hWi
+2011-03-11T14:30:06  <McLeopold> janzert: for the functional test, 10 turns on a small map with a starter bot?
+2011-03-11T14:30:52  <janzert> sure, that should be sufficient.
+2011-03-11T14:31:04  <janzert> well, multiple opponents at least
+2011-03-11T14:31:14  <McLeopold> why?
+2011-03-11T14:31:58  <janzert> to be sure it can handle it, although I guess with fog of war its less likely to actually get to a spot it matters
+2011-03-11T14:32:01  <jmcarthur> i'd say it doesn't even need *any* opponents, really
+2011-03-11T14:32:15  <jmcarthur> well, okay, i guess it'd be good to have one
+2011-03-11T14:32:16  <janzert> I was actually planning on not running it in a real game
+2011-03-11T14:32:33  <janzert> just sending it the initial state and make sure it responded with a valid move
+2011-03-11T14:32:52  <janzert> I think that would catch a good majority of the crashers
+2011-03-11T14:32:54  <McLeopold> right, but it needs to respond 10 times :)
+2011-03-11T14:33:06  <janzert> but playing out 10 turns is even better of course
+2011-03-11T14:33:16  <Zannick> that was my idea, too, janzert
+2011-03-11T14:33:32  <McLeopold> And if I set the map up correctly, I can get the starter bot to attack it.
+2011-03-11T14:33:33  <Zannick> but with multiple test cases, rather than one test case with multiple turns
+2011-03-11T14:34:28  <McLeopold> Zannick, it would be unfair to give them vastly different states each turn.
+2011-03-11T14:34:46  <Zannick> it would be new games each time
+2011-03-11T14:34:55  <Zannick> which is not the most efficient, of course
+2011-03-11T14:35:10  <McLeopold> I think a small map with 1 opponent with a senario including spawn and attack is just fine.
+2011-03-11T14:35:16  <janzert> also if it does send an invalid move or crash in the tests the output should be sent in the failure email
+2011-03-11T14:35:54  <McLeopold> I'm attempting to capture stderr, and logging bad moves.
+2011-03-11T14:36:18  * janzert nods
+2011-03-11T14:36:43  <McLeopold> janzert: if you have time, look at worker.py, which I just pushed up
+2011-03-11T14:36:54  <McLeopold> The compile stuff is really messy, as I tried not to touch it.
+2011-03-11T14:37:03  <McLeopold> and nothing is using jail users yet
+2011-03-11T14:37:10  <Zannick> the workers should do the emailing, in that case, rather than pass stderr and stdout logs around
+2011-03-11T14:37:27  <janzert> Zannick: yes
+2011-03-11T14:37:45  <McLeopold> For real games, it will pass stderr back to the database.
+2011-03-11T14:37:58  <janzert> does one worker.py run per core then?
+2011-03-11T14:37:59  <Zannick> you have to be careful in that case
+2011-03-11T14:38:07  <janzert> or per server
+2011-03-11T14:38:09  <Zannick> repr is probably sufficient, though
+2011-03-11T14:38:30  <McLeopold> janzert: when I get the jail users going, we should be able to spin up multiples per server
+2011-03-11T14:39:09  <McLeopold> Zannick: 1024 byes only and only on a timeout/crash.
+2011-03-11T14:39:24  <janzert> btw for security reasons I think Jeff was opposed to giving bot output directly back to the developers before
+2011-03-11T14:39:28  <Zannick> McLeopold: i meant in terms of injection attacks
+2011-03-11T14:39:36  <janzert> personally I'm not quite as worried about it
+2011-03-11T14:39:39  <Zannick> like i said, repr ought to take care of that
+2011-03-11T14:39:49  <McLeopold> Zannick, yes, we'll stripe everything but alpha and numbers :)
+2011-03-11T14:40:14  <Zannick> ...that works too, i guess :)
+2011-03-11T14:40:18  <McLeopold> janzert: like if they tried to get system info?
+2011-03-11T14:40:23  <janzert> right
+2011-03-11T14:40:29  <McLeopold> I hadn't thought of that
+2011-03-11T14:40:46  <Zannick> huh
+2011-03-11T14:41:01  <McLeopold> we could at least capture it, then give it out if asked for?
+2011-03-11T14:41:17  <janzert> if they get sensitive information with their bot currently it's a bit harder for them to make use of it
+2011-03-11T14:41:38  <janzert> have to encoded it in the way their bot plays :)
+2011-03-11T14:42:11  <janzert> so if you see ants spelling out ascii characters, quickly suspend that submission
+2011-03-11T14:42:15  <Zannick> yeah, if someone were able to grab the jail user's private key and communicate it to them...
+2011-03-11T14:42:33  <janzert> jail user's don't have a key anymore
+2011-03-11T14:42:49  <Zannick> oh
+2011-03-11T14:42:53  <janzert> but yeah that's the general idea
+2011-03-11T14:43:32  <McLeopold> http://en.wikipedia.org/wiki/Aztec_Code
+2011-03-11T14:43:56  <janzert> what is the get_languages api supposed to be used for?
+2011-03-11T14:45:22  <McLeopold> to get the language info from the database
+2011-03-11T14:45:27  <McLeopold> compile_anything needs the info
+2011-03-11T14:45:29  <janzert> ahh, I see it's a request of the languages table basically
+2011-03-11T14:45:43  <McLeopold> http://en.wikipedia.org/wiki/Data_matrix_(computer)
+2011-03-11T14:45:50  <McLeopold> okay, that barcode is better
+2011-03-11T14:46:25  <McLeopold> I'm sure I could come up with a bar code over time system for getting info.
+2011-03-11T14:46:50  <janzert> hmm, what does compile_anything need of it?
+2011-03-11T14:46:56  <janzert> I was thinking the worker might need it for the command line to actually run currently
+2011-03-11T14:47:11  <janzert> and I was hoping to move that out of the database actually
+2011-03-11T14:47:23  <Zannick> the language data should be moved out of the database
+2011-03-11T14:47:37  <Zannick> this is the plan (and i believe is implemented) for zeta
+2011-03-11T14:48:24  <McLeopold> janzert: just the list of langauge main files, right now
+2011-03-11T14:49:02  <janzert> ok, should be good for now I suppose. hopefully we have time to get rid of it later
+2011-03-11T14:49:12  <McLeopold> languages are in the database so we can tag a submission, and do the per language rankings
+2011-03-11T14:49:38  <McLeopold> so, it needs a list so it can report back to the server the correct id
+2011-03-11T14:49:56  <McLeopold> which means you can't take it out, even in zeta
+2011-03-11T14:49:57  <janzert> just report the language name back
+2011-03-11T14:50:04  <janzert> let the server map that to an id
+2011-03-11T14:50:19  <McLeopold> why bother?  just put the data in the database
+2011-03-11T14:50:42  <McLeopold> what's the goal of removing it?
+2011-03-11T14:50:44  <janzert> because it doesn't belong in the database :)
+2011-03-11T14:50:51  <janzert> it's not something that should change
+2011-03-11T14:50:57  <McLeopold> but it is
+2011-03-11T14:51:02  <McLeopold> we add languages
+2011-03-11T14:51:04  <janzert> it's constant data
+2011-03-11T14:51:14  <janzert> yes but each language is fixed
+2011-03-11T14:51:32  <McLeopold> you don't take constant data out of databases
+2011-03-11T14:51:36  <McLeopold> that doesn't make sense
+2011-03-11T14:51:40  <Zannick> we can keep the language, id stuff in the database
+2011-03-11T14:51:52  <McLeopold> every table doesn't need to be volitile
+2011-03-11T14:51:53  <Zannick> the point is that the compile scripts don't need to access the database
+2011-03-11T14:52:15  <McLeopold> zannick: correct, thus the api_get_languages.php
+2011-03-11T14:52:27  *** boegel <boegel!~boegel@91.182.127.98> has quit IRC (Quit: Leaving)
+2011-03-11T14:52:32  <janzert> the commands to compile and execute each language should be out of the database
+2011-03-11T14:52:39  <McLeopold> they are
+2011-03-11T14:52:58  <McLeopold> but they could be added in
+2011-03-11T14:53:12  <janzert> please don't
+2011-03-11T14:53:23  *** amstan <amstan!~alex@142.222.92.4> has quit IRC (Ping timeout: 250 seconds)
+2011-03-11T14:53:28  <janzert> it just hides it from people as to what commands are actually being used
+2011-03-11T14:53:51  <janzert> your schema still shows the execution command as stored in the database though
+2011-03-11T14:54:05  <janzert> and the main code file
+2011-03-11T14:55:13  <janzert> the language table should just be a name and id
+2011-03-11T14:55:30  <janzert> ideally, eventually that is :/
+2011-03-11T14:55:56  <McLeopold> ok, so pass around language names then
+2011-03-11T15:00:49  <janzert> the main server always just hands out the original submission archive (zip/tar.gz/tgz) right?
+2011-03-11T15:01:14  <janzert> if that is the case clean_old_submission can just be dropped entirely
+2011-03-11T15:01:40  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-11T15:01:43  <janzert> I don't think it saves enough space to worry about
+2011-03-11T15:02:15  <Zannick> the problem wasn't space, it was too many items in one directory
+2011-03-11T15:02:17  <Zannick> iirc
+2011-03-11T15:02:20  <janzert> and I worry a little about "false positives" where it accidentally deletes stuff that is important to the submission
+2011-03-11T15:02:26  <janzert> that's not what this is doing
+2011-03-11T15:02:36  <janzert> I thought it was at first too
+2011-03-11T15:02:43  <janzert> https://github.com/aichallenge/aichallenge/blob/epsilon-new-schema/worker/worker.py
+2011-03-11T15:02:52  <janzert> the clean_old_submission method
+2011-03-11T15:03:15  <Zannick> oh
+2011-03-11T15:03:43  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-11T15:04:02  <Zannick> i agree with the comment that starter pack structure should be changed
+2011-03-11T15:04:12  <Zannick> i think we decided that we'd have the bot separate from the tools
+2011-03-11T15:06:41  <janzert> when running a game task, before starting the game the manager needs to make sure all the players are already downloaded and compiled
+2011-03-11T15:09:38  <janzert> i.e. the equivalent of ensure_submission_is_local in the old manager
+2011-03-11T15:10:34  <janzert> go ahead and drop the use of the platform_specific_compilation flag though, it just adds complexity for little benefit
+2011-03-11T15:13:45  <McLeopold> janzert: I haven't really touched the game_task yet, it's just a stub.
+2011-03-11T15:13:49  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-11T15:13:57  <McLeopold> but the compile task is looking kinda nice
+2011-03-11T15:14:07  <McLeopold> I do want to add proper logging
+2011-03-11T15:14:39  <McLeopold> and cleanup_old is used because my test system has planet_wars zip files right now. :)
+2011-03-11T15:15:36  <McLeopold> janzert: Also, I don't want to touch the compile code at all.  I'm just refactoring it a little to work with the new worker.
+2011-03-11T15:16:03  <McLeopold> I think maybe the old manager used popen for sandboxing the compile?
+2011-03-11T15:26:27  <janzert> it didn't sandbox the compile at all
+2011-03-11T15:26:38  <janzert> so far as I recall anyway
+2011-03-11T15:29:08  <jmcarthur> i oppose stuff like compilation commands being in the database because it makes it impossible for anybody to see them or contribute new ones via git
+2011-03-11T15:29:26  <jmcarthur> it's code, so should be included with the rest of the code
+2011-03-11T15:30:21  <janzert> I think McLeopold came around to that already ;)
+2011-03-11T15:31:23  <jmcarthur> that wasn't clear to me
+2011-03-11T15:39:40  *** bhasker <bhasker!~bhasker@nat/yahoo/x-laryzlzlwtbowypm> has joined #aichallenge
+2011-03-11T15:42:16  *** UncleVasya <UncleVasya!kvirc@178-133-169-235.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-11T15:43:53  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-03-11T15:45:12  <McLeopold> jmcarthur: I did, I just didn't want language_id's and name to be removed.  And I disagreed philosophically with constant data not being appropriate for databases.
+2011-03-11T15:50:14  <jmcarthur> McLeopold: i agree with you on constant data. i just don't consider *code* to be appropriate for databases
+2011-03-11T15:51:11  <janzert> this isn't code though, it's values the code uses
+2011-03-11T15:52:10  <jmcarthur> there is a blurry line, but i consider things intended to be executed to be code
+2011-03-11T15:52:49  * janzert agrees :P
+2011-03-11T16:07:53  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-11T16:07:53  *** ChanServ sets mode: +o amstan
+2011-03-11T16:12:58  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-11T16:38:59  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-11T16:42:22  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has quit IRC (Ping timeout: 260 seconds)
+2011-03-11T16:43:46  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-11T16:54:55  *** delt0r___ <delt0r___!~delt0r@188-22-173-65.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-11T16:56:28  *** delt0r_ <delt0r_!~delt0r@188-22-167-212.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-11T17:17:51  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 252 seconds)
+2011-03-11T17:34:41  <McLeopold> janzert: I like your CD class and the use of with :)
+2011-03-11T18:07:19  <janzert> :) it might be a little bit of a stretch but it seemed easy to work with
+2011-03-11T18:07:19  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-11T18:13:56  <McLeopold> I think it's a perfect example
+2011-03-11T18:14:17  <McLeopold> janzert: does a jail user need a password?
+2011-03-11T18:14:23  <janzert> no
+2011-03-11T18:14:24  <McLeopold> it looks like no
+2011-03-11T18:14:45  *** hallamasch <hallamasch!~hallamasc@dslb-084-059-116-235.pools.arcor-ip.net> has joined #aichallenge
+2011-03-11T18:14:58  <McLeopold> I'm going to change it to look like jail1user1, so the first number is the worker id
+2011-03-11T18:15:18  <McLeopold> I'm also going to change it to create 1 jail user at a time
+2011-03-11T18:15:36  <McLeopold> Did you find a need for deleting jail users often?
+2011-03-11T18:15:53  <janzert> don't think so
+2011-03-11T18:16:17  *** bhasker <bhasker!~bhasker@nat/yahoo/x-laryzlzlwtbowypm> has quit IRC (Ping timeout: 260 seconds)
+2011-03-11T18:16:26  <janzert> btw if there was a server wide way to regulate jail user usage
+2011-03-11T18:16:41  <janzert> we could tie it to the amount of ram available as well
+2011-03-11T18:17:26  <janzert> i.e. a central database to lock jail users being used ;)
+2011-03-11T18:17:55  <janzert> s/i.e./e.g.
+2011-03-11T18:19:41  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-11T18:20:04  *** bhasker <bhasker!~bhasker@nat/yahoo/x-tgusenrfaauvxijp> has joined #aichallenge
+2011-03-11T18:20:33  <McLeopold> how would we tie it to ram?
+2011-03-11T18:20:59  <McLeopold> it's funny that we always argue the opposite for databases :)
+2011-03-11T18:21:49  <janzert> basically I mean figure an X amount of ram per user and don't allow more users than ram is available at a time
+2011-03-11T18:23:33  <McLeopold> so we just have a server wide max active users
+2011-03-11T18:23:48  <janzert> yes, but no easy way to check that
+2011-03-11T18:24:16  <McLeopold> we could try and keep memory full?
+2011-03-11T18:24:57  <janzert> but don't we really want to know before starting the game if the resources are available?
+2011-03-11T18:25:14  <janzert> and also when they become available
+2011-03-11T18:25:33  <McLeopold> we aren't going to know how much each bot will take before the game
+2011-03-11T18:25:40  <McLeopold> and the map will have a big impact on that
+2011-03-11T18:25:42  <janzert> but we can set a limit
+2011-03-11T18:26:29  <janzert> and then over commit the available ram beyond that limit by a certain amount if we feel like
+2011-03-11T18:26:59  *** chris__0076 <chris__0076!~Chris_007@adsl-190-128-92.asm.bellsouth.net> has joined #aichallenge
+2011-03-11T18:28:07  <janzert> this is all pointing me back to the biggest need for the next contest
+2011-03-11T18:28:28  <janzert> someone who is willing to step forward and admin the servers
+2011-03-11T18:29:15  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-50-70.asm.bellsouth.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-11T18:29:31  <McLeopold> yeah
+2011-03-11T18:30:45  <Zannick> we can have more than one, though, right?
+2011-03-11T18:31:48  <janzert> somewhat, but I think someone needs to be in charge and really actively doing most of it so they intimately know how everything is fitting together
+2011-03-11T18:32:12  <jmcarthur> we need a hero
+2011-03-11T18:32:50  <Zannick> well, i'm willing to be *an* admin, but the rest of that description is scary
+2011-03-11T18:33:58  <janzert> unfortunately so far as I know the three people that handled that position before aren't willing to do it for this one (j3camero, DanielVF, and myself)
+2011-03-11T18:39:03  <CIA-33> aichallenge: janzert epsilon * rdc10af0 / setup/server_setup.py : Slightly saner default action for server_setup.py - http://bit.ly/i6JqFt
+2011-03-11T18:55:35  *** bhasker <bhasker!~bhasker@nat/yahoo/x-tgusenrfaauvxijp> has quit IRC (Quit: bhasker)
+2011-03-11T18:56:06  *** bhasker <bhasker!~bhasker@nat/yahoo/x-xclrpfslyijljawb> has joined #aichallenge
+2011-03-11T18:58:13  *** superflit_ <superflit_!~superflit@140.226.49.148> has quit IRC (Quit: superflit_)
+2011-03-11T19:09:08  <McLeopold> janzert: http://pypi.python.org/pypi/jailtools have you seen this before?
+2011-03-11T19:12:01  <janzert> hmm, no
+2011-03-11T19:12:14  <janzert> sounds like it'd provide a nice start for chroot sandbox
+2011-03-11T19:13:36  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has joined #aichallenge
+2011-03-11T19:13:36  *** ChanServ sets mode: +o amstan
+2011-03-11T19:15:44  <McLeopold> yeah, it has the ability to manage multiples as well
+2011-03-11T19:15:49  <McLeopold> last updated 2007 though
+2011-03-11T19:16:39  <McLeopold> janzert: it has memory limits too
+2011-03-11T19:32:40  <antimatroid> McLeopold: are the bots still picking their moves simultaneously, or did we move it to sequential?
+2011-03-11T19:36:34  <jmcarthur> antimatroid: i think that is waiting for whatever jail ends up being used
+2011-03-11T19:50:40  <McLeopold> antimatroid: we will attempt sequential
+2011-03-11T19:50:58  <McLeopold> which should be independent of jailing
+2011-03-11T19:58:14  <antimatroid> cool
+2011-03-11T19:58:29  <antimatroid> i worked out a semi easy way to handle colliding ants
+2011-03-11T19:58:43  <antimatroid> which i needed to do anyway regardless of input format :P
+2011-03-11T19:59:24  <sigh> the rules for collisions are pretty simple already, no?
+2011-03-11T20:00:06  <antimatroid> the rules are simple, i was looking for a simple way to pick up that information was for ants that died from collision rather than battle
+2011-03-11T20:00:15  <antimatroid> it's only really told implicitly, so one has to work it out
+2011-03-11T20:01:11  <sigh> just have a map (squares => #dead ants)
+2011-03-11T20:01:18  <sigh> it's very simple?
+2011-03-11T20:02:04  <antimatroid> nah, i'm now storing a vector of chars for new values when i move ants/read input
+2011-03-11T20:02:15  <antimatroid> then i can process all collisions while updating the normal value in each square
+2011-03-11T20:02:59  <sigh> ok
+2011-03-11T20:03:20  <antimatroid> that might sound a bit messy, but it lets me do everything needed, move ants into a square before another moves out in a game tree, to check for collisions later, and handle collisions bot in the game tree and after reading input
+2011-03-11T20:04:18  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (Quit: WeeChat 0.3.4)
+2011-03-11T20:06:12  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has joined #aichallenge
+2011-03-11T20:14:01  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-11T20:15:15  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has quit IRC (Quit: Konversation terminated!)
+2011-03-11T20:15:30  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has joined #aichallenge
+2011-03-11T20:15:30  *** ChanServ sets mode: +o amstan
+2011-03-11T20:21:16  <antimatroid> is it safe to assume a food square wont spawn on a square ants just collided on?
+2011-03-11T20:21:26  <antimatroid> sigh: ^?
+2011-03-11T20:22:37  <sigh> hmm... I don't think it does that right now... what should be the case?
+2011-03-11T20:23:46  <antimatroid> well presumably one could do it
+2011-03-11T20:23:53  <antimatroid> it makes input even messier though
+2011-03-11T20:24:22  <antimatroid> same goes for spawning food on a square that an ant just died in from battle
+2011-03-11T20:24:31  <sigh> I think it used to prevent food from spawning on squares where ant ant just died, but my refactoring removed that
+2011-03-11T20:24:55  <sigh> If someone tells me what it should do, I can fix it either way, it's not too hard
+2011-03-11T20:25:03  <antimatroid> i might just assume it may happen
+2011-03-11T20:25:19  <sigh> from a bot's point of view that's probably best
+2011-03-11T20:25:22  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has quit IRC (Ping timeout: 255 seconds)
+2011-03-11T20:25:37  <antimatroid> my starter bot is ignoring all dead ant info
+2011-03-11T20:25:43  <antimatroid> so that's no problems
+2011-03-11T20:25:53  <antimatroid> i'm trying to work out how to process all the information for myself
+2011-03-11T20:25:58  <sigh> it really only matters for the visualiser, I think
+2011-03-11T20:26:17  <antimatroid> you can bet that people are going to at least try and make use of any information they receive
+2011-03-11T20:26:28  <antimatroid> i plan to make use of dead ant information for evaluating states in my tree
+2011-03-11T20:26:50  <antimatroid> i will probably throw out collided ant info, although i may count deaths as well as partial scores
+2011-03-11T20:26:56  <sigh> sure, but I can't see how they would use it in a manner which cares about whether food appeared there or not
+2011-03-11T20:27:10  <antimatroid> it's a matter of making sure you got all the information
+2011-03-11T20:27:30  <antimatroid> if you just read information straight into the square, you're only going to get the last piece of information sent and throw the rest out
+2011-03-11T20:28:11  <sigh> who's the best person to ask about whether food should grown on ant corpses?
+2011-03-11T20:28:17  <antimatroid> mcleopold
+2011-03-11T20:28:36  <antimatroid> it should be alright
+2011-03-11T20:28:40  <antimatroid> it's feasible anyway
+2011-03-11T20:29:42  <sigh> it's an easy change in the code either way, and bots should be able to handle either case... but it does make the visualiser easier if food doesn't spawn immediatly
+2011-03-11T20:32:36  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-11T20:32:36  *** ChanServ sets mode: +o amstan
+2011-03-11T20:34:39  <antimatroid> i don't really like having so much implicit information, but meh
+2011-03-11T20:44:42  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.14/20110221053559])
+2011-03-11T20:45:42  <antimatroid> sigh: i do think food shouldn't spawn next to a player
+2011-03-11T20:46:24  <antimatroid> actually, i think the engine blocks walking onto a food square like water
+2011-03-11T20:46:31  <antimatroid> so probably doesn't matter so much
+2011-03-11T20:48:57  <sigh> @later tell McLeopold should food be able to spawn on squares where an ant just died? I think my refactoring changed it a bit there because squares are no longer marked as CONFLICT. Easy enough change if required, but I'm not sure what the desired outcome is
+2011-03-11T20:48:57  <contestbot> sigh: Yes master!
+2011-03-11T20:57:00  <antimatroid> hmmmm here's a situation for you, two ants walk onto a food square that spawned next to them, but another ant walks in range of the food square?
+2011-03-11T20:57:15  <antimatroid> oh wait, nevermind
+2011-03-11T20:57:22  <antimatroid> slow day :P
+2011-03-11T20:58:30  <sigh> @later tell McLeopold This might also interfere with the attack methods, but there are some other issues with them where I can't see how they map to the specifications exactly... but I think I'll have to wait until you are here to discuss them properly
+2011-03-11T20:58:30  <contestbot> sigh: As you wish.
+2011-03-11T21:00:42  <sigh> antimatroid: the spec for battle resolution lists two options, do you know what is the deal with that?
+2011-03-11T21:01:19  <sigh> (or anyone else)
+2011-03-11T21:02:16  <antimatroid> sigh: we are very much undecided on which one to use
+2011-03-11T21:02:27  <sigh> ok
+2011-03-11T21:02:28  <antimatroid> pretty much everyone favours option 1 except jeff
+2011-03-11T21:02:35  <antimatroid> so we're currently using option 2
+2011-03-11T21:02:35  <sigh> :)
+2011-03-11T21:03:33  <antimatroid> battle option 1 is mega
+2011-03-11T21:03:37  <antimatroid> battle option 2 is meh
+2011-03-11T21:03:48  <sigh> mega?
+2011-03-11T21:03:59  <antimatroid> it makes the game play much more interesting
+2011-03-11T21:04:07  <antimatroid> for so many reasons
+2011-03-11T21:06:31  <antimatroid> option 2: don't get two of your ants at an equal distance to an enemy, so always send a single ant for fights and spread everyone out, which you already want to do for vision and getting food
+2011-03-11T21:06:32  <antimatroid> option 1: get as many ants as possible close to an enemy, so roam around in packs, providing balance to spreading out for visibility and getting food, and it'll make heaps cooler fights
+2011-03-11T21:17:24  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-11T21:18:16  *** bhasker <bhasker!~bhasker@nat/yahoo/x-xclrpfslyijljawb> has quit IRC (Ping timeout: 250 seconds)
+2011-03-11T21:47:54  <_flag> Does the game engine currently give an attack radius?
+2011-03-11T21:51:40  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-11T21:58:58  *** chris__0076 <chris__0076!~Chris_007@adsl-190-128-92.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-03-11T22:00:03  <_flag> I've been playing around with bots and I'd like to say that the unsymmetrical maps and unsymmetrical food spawns we've been trying out are ridiculously unfair. Since each new ant has the ability to look for more food, even having just one or two more ants in the early stages of the game can make a big difference because the effect is exponential.
+2011-03-11T22:00:45  <_flag> So... hopefully someone who's working on the engine reads that.
+2011-03-11T22:02:16  <amstan> _flag: they're unsymmetrical?
+2011-03-11T22:02:29  <amstan> antimatroid: didn't you make the maps to be tiled?
+2011-03-11T22:03:14  <_flag> amstan: well he tried some unsymmetrical maps like a week ago, I think he's reverted since, but the food spawns have the same effect
+2011-03-11T22:04:56  <_flag> I haven't really stayed up to date on what's going on
+2011-03-11T22:05:08  <_flag> But I assume the food spawns are still random
+2011-03-11T23:26:34  <janzert> I think the food spawns just got changed yesterday to be symmetric
+2011-03-11T23:43:59  <_flag> janzert: okay, I'll download the most recent engine and check it out
+2011-03-11T23:45:50  <janzert> I'm not completely positive about it, I just know sigh has been working on it the last few days
+2011-03-11T23:51:20  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-03-11T23:56:29  *** Frontier <Frontier!~marco@dslb-088-070-155-247.pools.arcor-ip.net> has joined #aichallenge
+2011-03-11T23:56:34  <_flag> janzert: still seems to spawn randomly for me, but there are some new functions which would appear to be for spawning food symmetrically, so maybe I have to edit something

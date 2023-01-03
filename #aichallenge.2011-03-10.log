@@ -1,0 +1,1124 @@
+2011-03-10T00:00:00  <McLeopold> at some point
+2011-03-10T00:00:02  <jmcarthur> huh?
+2011-03-10T00:00:03  <jmcarthur> yeah...
+2011-03-10T00:00:17  <jmcarthur> why not just make gameLoop, update, and finishTurn all the same thing?
+2011-03-10T00:00:39  <McLeopold> because it is good practice to make function do a single thing
+2011-03-10T00:00:54  <McLeopold> it would be easier for a beginner to understand the different parts
+2011-03-10T00:00:57  <jmcarthur> well, mine has all that stuff separate, but it's still just one function call
+2011-03-10T00:01:55  <McLeopold> I'm thinking that if we can make all the starters more consistent, it will be easier to help people with questions about them
+2011-03-10T00:01:59  <jmcarthur> like... you have a few monad transformers that have different parts of the functionality and they all implement the same interface. if you compose them then you get the complete functionality, but you can also stick your own components in to do additional or different things
+2011-03-10T00:02:21  <McLeopold> haskell is going to differ the most, I think
+2011-03-10T00:02:41  <jmcarthur> i don't even think this naming scheme quite works for the library i'm making
+2011-03-10T00:02:49  <McLeopold> which is why if we can agree on a good spec for the starter bots, then we've covered most of the languages
+2011-03-10T00:02:50  <jmcarthur> i could just try to match as close as i can
+2011-03-10T00:02:56  <jmcarthur> hmm
+2011-03-10T00:03:42  <McLeopold> I didn't even mention separating a library from the bot logic, I should have
+2011-03-10T00:07:26  <jmcarthur> well, the library i'm doing has different components for getting and parsing input, for updating seen water, for handling output, for handling static information about the game, and for managing turn-by-turn information and aborting the game loop cleanly while providing meaningful debugging information
+2011-03-10T00:07:46  <jmcarthur> they are intended to be composed with each other, and they all contribute to a few common interfaces
+2011-03-10T00:08:21  <jmcarthur> and i don't think it's really the kind of thing most starter writers will want to do for most languages
+2011-03-10T00:09:50  <McLeopold> ok
+2011-03-10T00:10:18  <antimatroid> jmcarthur: " are we wanting the starters to track water at all?" well yeah, you only get told about water once :P
+2011-03-10T00:10:58  <McLeopold> let me put in some info on the wiki about what should be tracked in the game state
+2011-03-10T00:11:09  <antimatroid> i am just tracking water
+2011-03-10T00:11:09  <jmcarthur> antimatroid: i mean as opposed to making the developers handle that themselves
+2011-03-10T00:11:34  <antimatroid> i think we should at least track water in the starter bots
+2011-03-10T00:11:54  <jmcarthur> my water tracking is optional/extensible
+2011-03-10T00:12:22  <jmcarthur> so if somebody comes along and "knows better" they don't even suffer any performance penalty or boilerplate
+2011-03-10T00:13:43  <antimatroid> i expect anyone who cares about performance to write their own bot from scratch
+2011-03-10T00:14:09  <jmcarthur> McLeopold: "Depending on the order of the ants, you may get different results with the same configuration of ants."  <-- does that imply that we should be avoiding sending ants to collide with each other in the starters too?
+2011-03-10T00:14:19  <antimatroid> i think the objective of the starter bots should be to be as helpful as possible for beginners who may not be able to do their own rewrite
+2011-03-10T00:14:20  <jmcarthur> antimatroid: i consider that a waste
+2011-03-10T00:14:21  <bss03> antimatroid: jmcarthur wants to be able to swap out pieces.
+2011-03-10T00:14:38  <antimatroid> jmcarthur: you simply can't release something that will work the way everyone wants
+2011-03-10T00:14:41  <bss03> antimatroid: That way it's not al or nothing = huge skill gap.
+2011-03-10T00:14:48  <jmcarthur> antimatroid: you aren't used to good languages. shut up :)
+2011-03-10T00:14:52  <antimatroid> :P
+2011-03-10T00:16:06  <jmcarthur> antimatroid: "i think the objective of the starter bots should be to be as helpful as possible for beginners who may not be able to do their own rewrite"  <-- that is also one of my objectives
+2011-03-10T00:16:38  <McLeopold> jmcarthur: yes, avoid sending ants to the same square, but do it naively.
+2011-03-10T00:16:51  <jmcarthur> but i'd like to do it without alienating the majority of developers who know what they are doing
+2011-03-10T00:17:00  <antimatroid> that is my objective, with a side note of being reasonably efficient
+2011-03-10T00:17:31  <antimatroid> i think people could re use most of my code if they wanted, but i imagine a lot of people will just write their own for c++
+2011-03-10T00:17:48  <jmcarthur> McLeopold: how naively?
+2011-03-10T00:17:56  <McLeopold> it should also showcase good design and best practices for the language
+2011-03-10T00:18:09  <antimatroid> McLeopold: we are avoiding collisions now?
+2011-03-10T00:18:45  <McLeopold> jmcarthur: 1 at a time, don't move on an ant, whether it has been given an order or not.
+2011-03-10T00:18:55  <jmcarthur> i was considering making a component to somewhat intelligently avoid collisions, but that could be overstepping what a starter should be
+2011-03-10T00:18:58  <McLeopold> so, that means updating the state in the issue_order function
+2011-03-10T00:19:30  <jmcarthur> McLeopold: so... the starter should be tracking the new positions of ants as it issues orders? doesn't sound very naive to me
+2011-03-10T00:19:50  <jmcarthur> well, not starter-level naive
+2011-03-10T00:20:23  <McLeopold> Then I'll make it optional
+2011-03-10T00:20:24  *** chemuduguntar <chemuduguntar!~ravic@smtp.touchcut.com> has quit IRC (Ping timeout: 276 seconds)
+2011-03-10T00:20:35  <jmcarthur> i was thinking "naive" might mean "don't move an ant to a position where another ant is already, regardless of whether it will be moving
+2011-03-10T00:20:51  <jmcarthur> so if you have AA. and try to move both of them to the right, only the right one will move
+2011-03-10T00:21:08  <McLeopold> unless the right one moves first
+2011-03-10T00:21:13  <jmcarthur> and that would be regardless of ordering
+2011-03-10T00:21:32  <McLeopold> maybe your language is too powerful :)
+2011-03-10T00:21:42  <jmcarthur> no this is simpler
+2011-03-10T00:21:46  <jmcarthur> *more naive
+2011-03-10T00:21:58  <jmcarthur> you just don't update some internal game state just because an order was given
+2011-03-10T00:22:03  <McLeopold> but then, 2 ants could go to the same spot
+2011-03-10T00:22:11  <jmcarthur> yeah. naive
+2011-03-10T00:22:16  <jmcarthur> it's avoiding some collisions, not all
+2011-03-10T00:22:35  <McLeopold> okay, let's say the first item in the stategy guide will be avoiding collision
+2011-03-10T00:22:51  <jmcarthur> that's what i thought the original plan was :)
+2011-03-10T00:22:54  <McLeopold> and we can specify that the starter should not include the logic
+2011-03-10T00:23:15  <antimatroid> my collision avoidance is as follows: don't move into a square containing an ant, once i've moved an ant, implement that move
+2011-03-10T00:23:15  <McLeopold> I've been losing track, which is why I started the wiki page
+2011-03-10T00:24:03  <jmcarthur> what kind of collision avoidance should the strategy guide have?
+2011-03-10T00:24:07  <sigh> what does no logic?
+2011-03-10T00:24:08  <jmcarthur> decent?
+2011-03-10T00:24:09  <sigh> mean?
+2011-03-10T00:24:26  <jmcarthur> sigh: it means just don't look for ant-ant collisions
+2011-03-10T00:24:30  <jmcarthur> only look for ant-water collisions
+2011-03-10T00:24:40  <sigh> oh ok
+2011-03-10T00:24:53  <sigh> it's a flexible definition of "no"
+2011-03-10T00:25:19  <jmcarthur> i'm looking for an occurrence of "no logic"
+2011-03-10T00:25:23  <jmcarthur> not seeing it
+2011-03-10T00:25:32  <antimatroid> "not include the logic"
+2011-03-10T00:25:50  <jmcarthur> "not include the logic [for avoiding ant-ant collisions]"
+2011-03-10T00:25:58  <sigh> ah, my sucky reading comprehension
+2011-03-10T00:27:24  <jmcarthur> "Optionally attempt to remember ants and food that was last seen."  <-- sounds way beyond starter-level to me, too
+2011-03-10T00:27:55  <jmcarthur> and sounds like something that could be a critical part of a bot... like, most people wouldn't want to stick to a default one anyway
+2011-03-10T00:28:11  <jmcarthur> IMO, it's stuff like that that leads people to rewrite unnecessarily
+2011-03-10T00:29:00  <sigh> yeah, I remember planet wars had dody data structures which forced anyone serious to rewrite
+2011-03-10T00:29:00  <McLeopold> so, I should take it out?
+2011-03-10T00:29:08  <sigh> *dodgy
+2011-03-10T00:29:33  <sigh> just put stuff like that in a strategy guide?
+2011-03-10T00:29:37  <McLeopold> yeah, I lot of beginners felt obligated to keep the fleet class
+2011-03-10T00:29:43  <jmcarthur> McLeopold: i would take it out unless you can put a very specific algorithm in instead of a vague description
+2011-03-10T00:29:56  <jmcarthur> even then... maybe that is strategy guide material
+2011-03-10T00:31:06  <jmcarthur> yeah i'd say it's strategy guide worthy
+2011-03-10T00:31:16  <sigh> also, there is no obviously optimal way to reason about unseen food and ants, right?
+2011-03-10T00:31:19  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-10T00:31:41  <McLeopold> no, I don't think so
+2011-03-10T00:31:47  <jmcarthur> "determine difference between unseen area and land"  <-- does that mean "distinguish between land and unseen squares which could actually be water"?
+2011-03-10T00:32:14  <McLeopold> yes, but it's gone now :)
+2011-03-10T00:32:14  <jmcarthur> i was debating whether to add that
+2011-03-10T00:32:16  <jmcarthur> ah
+2011-03-10T00:32:32  <sigh> remembering that might be a candidate for starter I think
+2011-03-10T00:32:35  <sigh> becuase that never changes
+2011-03-10T00:32:46  <jmcarthur> yeah
+2011-03-10T00:32:54  <jmcarthur> well
+2011-03-10T00:32:56  <jmcarthur> not necessarily
+2011-03-10T00:33:06  <jmcarthur> if maps are known to be symmetrical then a bot could try to guess
+2011-03-10T00:33:20  <McLeopold> how about a visible helper function that returns true/false for a square?
+2011-03-10T00:33:23  <jmcarthur> heck, even if it's only known that *some* maps are symmetrical, a bot might try to guess
+2011-03-10T00:33:24  <sigh> symetreical maps are not part of the spec, right?
+2011-03-10T00:33:30  <McLeopold> no
+2011-03-10T00:33:30  <jmcarthur> they don't need to be
+2011-03-10T00:33:31  <sigh> I can't spell
+2011-03-10T00:33:40  <jmcarthur> it could just be some fraction of maps are symmetrical
+2011-03-10T00:33:49  <jmcarthur> *happen to be
+2011-03-10T00:33:51  <sigh> then they shouldn't be assumed in the starter pack, or strategy guide
+2011-03-10T00:34:01  <jmcarthur> i wasn't suggesting that assumption
+2011-03-10T00:34:03  <antimatroid> when were they assumed?
+2011-03-10T00:34:11  <jmcarthur> i was just saying that it's not something that necessarily stays static
+2011-03-10T00:34:14  <antimatroid> i think we should play around with both and see what works both
+2011-03-10T00:34:19  <antimatroid> if both work well, we can do a combination
+2011-03-10T00:34:29  <antimatroid> works best*
+2011-03-10T00:34:35  <sigh> I was just inferring things I shouldn't again when jmcarthur said "if maps are known to be symmetrical then a bot could try to guess"
+2011-03-10T00:34:42  <jmcarthur> sigh: it was in response to "because that never changes"
+2011-03-10T00:35:11  <sigh> i see
+2011-03-10T00:35:35  <jmcarthur> like, it's true that whether or not a square has been seen never changes
+2011-03-10T00:36:05  <jmcarthur> but that doesn't mean that you will always want this ternary state for each square of the bot's internal map
+2011-03-10T00:36:13  <sigh> sure
+2011-03-10T00:36:20  <antimatroid> what?
+2011-03-10T00:36:21  <jmcarthur> you may want to eventually put some probabilities in there or something instead
+2011-03-10T00:36:27  <antimatroid> when you see a square, doesn't that value cahnge?
+2011-03-10T00:36:30  <antimatroid> the first time
+2011-03-10T00:37:18  <jmcarthur> like if the bot hasn't seen enough of the map to determine whether or not it's symmetrical, it's very unsure of things, but once it has seen enough to be 90% sure that it's symmetrical, it can go ahead and guess most of the rest of the water positions with decent accuracy
+2011-03-10T00:37:36  <jmcarthur> antimatroid: this is about whether or not the *code* for that will change throughout the contest
+2011-03-10T00:37:49  <antimatroid> jmcarthur: it's a bit of work to find out if it's symmetrical
+2011-03-10T00:38:01  <antimatroid> you need to find rtranslate and ctranslate from pattern matching?
+2011-03-10T00:38:02  <jmcarthur> antimatroid: not that much. just see if anything appears to be repeating
+2011-03-10T00:38:15  <jmcarthur> sure why not?
+2011-03-10T00:38:24  <jmcarthur> it may be a little involved, but probably worth it
+2011-03-10T00:38:31  <sigh> jmcarthur: oh, I was talking about the knowledge about the squares during a game... didn't even realize you were talking about the *code* during the contest
+2011-03-10T00:38:37  <antimatroid> yes, i'm just pointing out it isn't entirely trivial :)
+2011-03-10T00:38:45  <jmcarthur> sigh: ah, that's why we were talking over each other's heads then
+2011-03-10T00:38:58  <jmcarthur> antimatroid: doesn't mean it won't happen ;)
+2011-03-10T00:39:15  <antimatroid> i suspect one could maybe just hash nxn square blocks and find number of appearances?
+2011-03-10T00:39:20  <antimatroid> you could probably do it well like that
+2011-03-10T00:39:29  <antimatroid> i know it will happen, i intend on doing it myself
+2011-03-10T00:39:36  <sigh> my point was essentially, once you see a water square then you know for sure that it will be there for the rest of the game, and it is obvious how to handle that
+2011-03-10T00:39:37  <jmcarthur> hashing would be problematic if there is just one square in there you've missed
+2011-03-10T00:39:42  <sigh> unlike ants and food
+2011-03-10T00:39:46  <McLeopold> Okay, more changes, refresh and read
+2011-03-10T00:39:53  <jmcarthur> sigh: true
+2011-03-10T00:40:31  <antimatroid> jmcarthur: true, i don't think it'll be very easy at all :P
+2011-03-10T00:40:59  <sigh> are you talking about detecting symettries?
+2011-03-10T00:41:03  <antimatroid> that's one of the things i like about this game, there are LOTS of obvious things to do that will make the bot smarter
+2011-03-10T00:41:04  <McLeopold> antimatroid: it's another thing to put in the strategy guide
+2011-03-10T00:41:11  <antimatroid> and require playing around with different things
+2011-03-10T00:41:20  <jmcarthur> McLeopold: ah, you meant for "game loop" to actually mean a real loop and not a function call of some sort
+2011-03-10T00:41:27  <jmcarthur> i misinterpreted
+2011-03-10T00:41:52  <McLeopold> yes
+2011-03-10T00:42:12  <McLeopold> should I clarify?
+2011-03-10T00:42:23  <jmcarthur> well, it's listed under "Core Functions"
+2011-03-10T00:42:47  <McLeopold> yeah, function in the broader sense of the word
+2011-03-10T00:42:53  <McLeopold> "Sub Routine"?
+2011-03-10T00:43:17  <jmcarthur> "Core Functionality"?
+2011-03-10T00:43:47  <McLeopold> I watched a bit of Stargate Universe on Monday when they used that term in the show.  I laughed and told my friend they were programming in BASIC.
+2011-03-10T00:44:50  <jmcarthur> i'm avoiding writing a game loop as part of the library. the starter will have one, but with the intent to be redesigned as needed
+2011-03-10T00:45:34  <McLeopold> I put a game loop in the java and python bots.
+2011-03-10T00:45:56  <McLeopold> They don't have to use it, but it is good enough that even serious programmers could just stick with it for the contest.
+2011-03-10T00:46:03  <jmcarthur> well, there will be one in the starter. it's just not "core functionality" in the sense that it's basically just a one-liner in the main fail
+2011-03-10T00:46:07  <jmcarthur> s/fail/file/
+2011-03-10T00:46:34  <McLeopold> oh yeah, I was going to talk about a library
+2011-03-10T00:46:36  <jmcarthur> forever $ <game logic goes here>
+2011-03-10T00:48:07  <McLeopold> is haskell OOP?
+2011-03-10T00:48:35  <jmcarthur> haskell... can be used to make OOP code. however, it's rarely the best design
+2011-03-10T00:48:57  <jmcarthur> in any case, most OOP programmers wouldn't recognize it as the kind of OOP they know and love
+2011-03-10T00:49:30  <jmcarthur> at least, not the opinionated ones
+2011-03-10T00:49:58  <McLeopold> okay, more changes, refresh and read.
+2011-03-10T00:50:10  <McLeopold> antimatroid: I'm going to hack apart your game spec
+2011-03-10T00:50:22  <antimatroid> go for it
+2011-03-10T00:50:37  <jmcarthur> you can implement message passing or F-coalgebras in haskell, which are two common definitions for OOP, but most people don't even know what an F-coalgebra is
+2011-03-10T00:50:41  <McLeopold> I'm just going to separate it into sub pages
+2011-03-10T00:50:59  <McLeopold> I'm one of them. :)
+2011-03-10T00:51:46  <jmcarthur> heck, i only know enough about it to make a simple object and know what it is, but i don't know any deep theory about it or anything
+2011-03-10T00:52:17  <jmcarthur> i like it more than message passing though. more amenable to static type checking and purity :)
+2011-03-10T00:52:30  *** delt0r_ <delt0r_!~delt0r@188-22-174-52.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-03-10T00:53:05  <jmcarthur> okay, i approve of the gist of the starter guide
+2011-03-10T00:53:06  *** delt0r_ <delt0r_!~delt0r@188-22-169-158.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T00:53:37  <jmcarthur> i think it's phrased sufficiently that the haskell starter needn't be considered an exceptional case
+2011-03-10T00:53:41  <McLeopold> okay
+2011-03-10T00:53:43  <McLeopold> good
+2011-03-10T00:54:18  <McLeopold> ooh, forgot the timing mechanism
+2011-03-10T00:54:36  <jmcarthur> ah yeah. i still need to add a component for that to my new lib
+2011-03-10T00:54:53  <jmcarthur> i'm basically just providing a way to get the amount of time remaining for the current turn
+2011-03-10T00:55:16  <McLeopold> amstan: if you look at the github wiki, my Ants Starter Pack Guide is red, I can't figure out how to make it blue?
+2011-03-10T00:55:17  <jmcarthur> i debated adding some sort of interruptive timer, but i think that's unnecessary
+2011-03-10T00:55:42  <McLeopold> I think just a true/false function to determine if you should still loop through ants is good enough
+2011-03-10T00:55:59  <McLeopold> It give an example for the language
+2011-03-10T00:56:06  <jmcarthur> err... how does the function know whether to go through the loop though?
+2011-03-10T00:56:24  <jmcarthur> oh, you mean to demonstrate the timer in the bot?
+2011-03-10T00:56:27  <jmcarthur> *in the starter?
+2011-03-10T00:56:40  <McLeopold> yeah, all language have very different "get_time" functions
+2011-03-10T00:56:55  <jmcarthur> it could be a part of the starter interface though
+2011-03-10T00:57:12  <McLeopold> I'll add it to the optional list of functions
+2011-03-10T00:57:14  <jmcarthur> like just have a timeRemaining function
+2011-03-10T00:57:17  <jmcarthur> yeah, optional is good
+2011-03-10T00:57:36  <sigh> what kind of time are we measuing?
+2011-03-10T00:57:41  <sigh> measuring?
+2011-03-10T00:57:42  <jmcarthur> wall clock
+2011-03-10T00:57:51  <McLeopold> milliseconds
+2011-03-10T00:57:57  <McLeopold> so it matches the bot input
+2011-03-10T00:58:00  <sigh> hehe
+2011-03-10T00:58:12  <jmcarthur> wall clock should be more reliable this time around if we make the bots execute sequentially and pause them between turns
+2011-03-10T00:58:20  <McLeopold> hopefully
+2011-03-10T00:58:22  <jmcarthur> s/reliable/reliable and fair/
+2011-03-10T00:58:31  <sigh> why are they executed sequentially?
+2011-03-10T00:58:38  <jmcarthur> more bots than cores
+2011-03-10T00:58:42  <jmcarthur> in a game
+2011-03-10T00:58:48  <sigh> i see
+2011-03-10T00:59:17  <janzert> just read some of the recent conversation; why doesn't the engine treat all ant moves as simultaneous?
+2011-03-10T00:59:29  <jmcarthur> janzert: the *engine* should
+2011-03-10T00:59:43  <jmcarthur> janzert: this is about the bots view of issuing orders
+2011-03-10T00:59:48  <janzert> ahh, must have misread something then
+2011-03-10T01:00:02  <jmcarthur> s/this is/that was/
+2011-03-10T01:00:07  <janzert> well, any order or err, orders should be fine
+2011-03-10T01:00:29  <janzert> i.e. lead to the same result
+2011-03-10T01:00:51  <jmcarthur> janzert: the proposal was to have some internal representation of the map in the bot such that ants are moved immediately when orders are issued, which is a naive way to look for collisions
+2011-03-10T01:01:20  <jmcarthur> that way the bot can avoid actually issuing orders resulting in collisions
+2011-03-10T01:01:20  <janzert> ahh, ok so something easy but not quite completely correct
+2011-03-10T01:01:25  <jmcarthur> yeah
+2011-03-10T01:01:54  <jmcarthur> but when you phrase it that way it makes me think we should definitely not be encouraging beginners to run with it like that
+2011-03-10T01:02:22  <McLeopold> we should encourage them to notice the mistake and fix it
+2011-03-10T01:02:36  <jmcarthur> McLeopold: yes, if we were to include that in the first place
+2011-03-10T01:02:47  <jmcarthur> janzert: anyway, the final decision i think was that collision avoidance should be part of the strategy guide and not the starter itself
+2011-03-10T01:03:05  <janzert> ok
+2011-03-10T01:03:29  <janzert> I was mostly just afraid that was the way the engine was actually handling it
+2011-03-10T01:03:46  <jmcarthur> that would be pretty bad
+2011-03-10T01:03:53  * jmcarthur hopes that's not the way it works :)
+2011-03-10T01:05:12  <jmcarthur> McLeopold: so ant-water collisions actually result in the engine ignoring the move altogether, right? what about ant-ant collisions? do they still kill the ants, or do they prevent one or both from moving?
+2011-03-10T01:05:32  <McLeopold> ant-ant collisions kill the ants
+2011-03-10T01:05:48  <McLeopold> ant-water is an invalid order and is ignored
+2011-03-10T01:06:15  <jmcarthur> McLeopold: i was thinking... given the former property of the engine, i could just send four orders for each square on the map, regardless of the actual game state, and satisfy the game logic requirements of the starter guide :P
+2011-03-10T01:06:32  <janzert> hehe
+2011-03-10T01:06:36  <jmcarthur> s/former property/ant-water behavior/
+2011-03-10T01:07:07  <janzert> you also need the 'ignore all invalid orders' property
+2011-03-10T01:07:20  <jmcarthur> janzert: that's in there already. i had checked the source when i first thought of it
+2011-03-10T01:07:27  <jmcarthur> hmm
+2011-03-10T01:07:32  <jmcarthur> i don't know about all invalid orders
+2011-03-10T01:07:38  <jmcarthur> but redundant orders are ignored, i know
+2011-03-10T01:07:47  <jmcarthur> i think simply invalid ones are too though
+2011-03-10T01:07:59  <McLeopold> jmcarthur: yep, your right
+2011-03-10T01:08:53  <McLeopold> since this is multiplayer, we need to try and keep all bots participating, so there will be no bots removed from play do to bad output
+2011-03-10T01:09:12  <McLeopold> unless the bad output is infinite...
+2011-03-10T01:09:22  <McLeopold> in which case they will time out
+2011-03-10T01:09:30  <jmcarthur> so just count the moves and it it's infinity they lose ;)
+2011-03-10T01:09:46  <jmcarthur> *if
+2011-03-10T01:09:53  <McLeopold> yes, but what magnitude of infinity?
+2011-03-10T01:10:08  <sigh> what if they issue an uncountably infinite number of moves?
+2011-03-10T01:10:17  <jmcarthur> we're just operating on the extended reals here. nothing fancy!
+2011-03-10T01:10:26  <jmcarthur> *extended naturals
+2011-03-10T01:10:29  <McLeopold> sigh: I'll just map them to the set of integers
+2011-03-10T01:10:41  <sigh> McLeopold: good idea
+2011-03-10T01:11:17  <McLeopold> negative integers, to rub it in
+2011-03-10T01:11:28  <jmcarthur> that's their score :P
+2011-03-10T01:11:44  <McLeopold> hmm... - 1 point for each bad order?
+2011-03-10T01:12:16  <sigh> they should get imaginary points for bad orders
+2011-03-10T01:12:19  <jmcarthur> bad orders are obviously bugs. i wouldn't mind if it nullified *all* their points, personally
+2011-03-10T01:12:32  <jmcarthur> it would still mean they play to the end
+2011-03-10T01:12:38  <jmcarthur> so that other bots get decent scores
+2011-03-10T01:12:44  <McLeopold> yes, and keep the individual game balance
+2011-03-10T01:12:51  <sigh> ahhh... the dead but they don't even know it way of dealing with things
+2011-03-10T01:13:28  <jmcarthur> -1 point per bad move sounds reasonable to me, really
+2011-03-10T01:13:44  <McLeopold> we could split their bot's input into a parallel universe game than never ended.
+2011-03-10T01:13:44  <jmcarthur> but maybe restrict all final scores to non-negative numbers
+2011-03-10T01:13:52  <sigh> I would rather just give them 0 points
+2011-03-10T01:14:07  <jmcarthur> makes no difference to me at all
+2011-03-10T01:14:22  <jmcarthur> buggy bots are buggy and they deserve whatever crap scores they get
+2011-03-10T01:14:22  <sigh> why should a buggy bot get points?
+2011-03-10T01:14:28  <McLeopold> maybe a too many bad orders threshold
+2011-03-10T01:14:56  <sigh> nah, threshold just complicats things
+2011-03-10T01:15:03  <jmcarthur> if we do this, i don't think ant-water collisions should be considered invalid such that they make you lose points
+2011-03-10T01:15:13  <jmcarthur> it should just kill the ant
+2011-03-10T01:15:19  <sigh> I agree
+2011-03-10T01:15:26  <sigh> i mean logically ants should just drown
+2011-03-10T01:15:43  <sigh> it makes sense
+2011-03-10T01:16:01  <McLeopold> what if we go back to walls?
+2011-03-10T01:16:30  <jmcarthur> but orders for ants that don't exist or for ants that have already been given orders should be "invalid" including whatever penalty that implies
+2011-03-10T01:16:36  <McLeopold> then we have the suicide to prevent enemy points issue
+2011-03-10T01:16:41  <jmcarthur> yes
+2011-03-10T01:16:56  <jmcarthur> not sure that's so terrible, myself
+2011-03-10T01:17:03  <sigh> I think it's good
+2011-03-10T01:17:19  <jmcarthur> it's not very ant-like i guess...
+2011-03-10T01:17:23  <jmcarthur> but neither is anything else about the game
+2011-03-10T01:17:37  <sigh> that is the nature of points, not ants
+2011-03-10T01:17:42  <sigh> or walls/water
+2011-03-10T01:18:06  <jmcarthur> well, it's not ant-like to commit suicide in the name of points because ants don't care about points, especially not enough to commit suicide over them :P
+2011-03-10T01:18:36  <sigh> if you say that, then it's not ant-like to care about points at all
+2011-03-10T01:18:42  <jmcarthur> i agree
+2011-03-10T01:18:50  <sigh> it might be ant-like to prefer a death by water than to be tortured by the enemy
+2011-03-10T01:18:53  <jmcarthur> but suicides are even less ant-like
+2011-03-10T01:18:56  <sigh> if you want a justification :P
+2011-03-10T01:18:57  <jmcarthur> heh
+2011-03-10T01:19:50  <janzert> having invalid orders reflect score changes that are not reflected in play behavior has a strong potential for weird ratings effects
+2011-03-10T01:20:07  <sigh> i agree
+2011-03-10T01:20:17  <sigh> i think it should be all or nothing
+2011-03-10T01:20:37  <sigh> they either get 0 score, or their score is not affected
+2011-03-10T01:20:59  <janzert> e.g. a bot that play fairly strongly but also issues lots invalid orders is going to continually play bots that it easily wipes out
+2011-03-10T01:22:05  <McLeopold> janzert: whoever comes in "second" will get the benefit
+2011-03-10T01:22:26  <McLeopold> meaning the strong bot could choose the ordering it wants
+2011-03-10T01:22:42  <McLeopold> well, a strong bot could do that anyway
+2011-03-10T01:24:30  <sigh> that's always going to be the case, yeah
+2011-03-10T01:24:50  <jmcarthur> it's not a strong bot if its scores are miserable
+2011-03-10T01:24:51  <janzert> there just really is no ideal way to deal with badly behaving bots, TANSTAAFL is in full effect here
+2011-03-10T01:25:32  <sigh> is cooperation between bots explicitly discouraged?
+2011-03-10T01:25:35  <jmcarthur> the ability to wipe out opposing teams of ants is insufficient to be considered a strong bot, is all i mean
+2011-03-10T01:25:38  <McLeopold> sigh: no
+2011-03-10T01:25:45  <sigh> interesting
+2011-03-10T01:25:49  <jmcarthur> sigh: no, but i doubt it will happen much or at all
+2011-03-10T01:25:57  <McLeopold> I'm planning it?
+2011-03-10T01:26:04  <jmcarthur> really?
+2011-03-10T01:26:10  <McLeopold> s/?/>:)/g
+2011-03-10T01:26:12  <jmcarthur> how does that even work?
+2011-03-10T01:26:24  <sigh> it would be fairly easy to develop a protocol to detect *friendly* bots
+2011-03-10T01:26:30  <jmcarthur> does your plan require working it out with other developers in advance?
+2011-03-10T01:26:33  <McLeopold> It will be an opt-in public feature.
+2011-03-10T01:26:36  <jmcarthur> ah yeah with a protocol
+2011-03-10T01:26:44  <jmcarthur> well in that case it's interesting
+2011-03-10T01:27:00  <McLeopold> For *python* programmers only >:)
+2011-03-10T01:27:04  <sigh> haha
+2011-03-10T01:27:05  <jmcarthur> sigh: you mean to detect bots that are privy to your handshake at least
+2011-03-10T01:27:14  <sigh> jmcarthur: yes
+2011-03-10T01:27:27  <jmcarthur> communication is also exploitable >:)
+2011-03-10T01:27:40  <McLeopold> yes, but fog of war give some cover
+2011-03-10T01:27:59  <McLeopold> I already have a protocol worked out.
+2011-03-10T01:28:02  <sigh> time to authentication schemes :P
+2011-03-10T01:28:03  <sigh> haha
+2011-03-10T01:29:10  <McLeopold> The real problem is what to communicate and how to get as much information per turn without wasting too many ants.
+2011-03-10T01:29:22  *** BtbN <BtbN!btbn@btbn.de> has quit IRC (Remote host closed the connection)
+2011-03-10T01:29:37  <McLeopold> but if you have a friendly you are not fighting, then you probably have some left over anyway
+2011-03-10T01:29:42  <sigh> true, but you can afford to waste quite a few ants if you are working together
+2011-03-10T01:29:46  <sigh> yeah
+2011-03-10T01:30:04  <sigh> you could dedicate a bunch to communication
+2011-03-10T01:30:15  <McLeopold> maybe I'll write the protocol in malbloge...
+2011-03-10T01:30:16  <sigh> but hmm... only 2 bits/ant/turn?
+2011-03-10T01:30:26  <sigh> is that right?
+2011-03-10T01:30:59  <McLeopold> maybe less? you can't have them wondering too far
+2011-03-10T01:31:08  <sigh> yeah, I meant as a maximum
+2011-03-10T01:32:07  <janzert> move in one of 4 directions or stand still, 2bits + 1 maximum I believe
+2011-03-10T01:32:18  <jmcarthur> we're talking pretty low bandwidth
+2011-03-10T01:32:56  <jmcarthur> it's tougher than that due to other aspects of the game, like sight range, combat range, food, number of ants in area, etc.
+2011-03-10T01:33:09  <McLeopold> just knowing they will hold a truce is powerful enough
+2011-03-10T01:33:21  <jmcarthur> i think we'd be lucky to get an average of 1 bit per visible ant
+2011-03-10T01:34:22  <McLeopold> janzert: I'm going to totally merge the branch sometime tomorrow.
+2011-03-10T01:34:30  <McLeopold> ish
+2011-03-10T01:34:35  <janzert> great :)
+2011-03-10T01:34:37  <janzert> ish
+2011-03-10T01:34:41  <janzert> :P
+2011-03-10T01:35:04  <McLeopold> and I'm totally ignoring all sandbox/jail stuff, so if you aren't going to do it, we need another recruite
+2011-03-10T01:35:24  <McLeopold> amstan: can you organize another all hands meeting?
+2011-03-10T01:36:16  <janzert> just keep what we had last time for now and we'll see if someone comes along
+2011-03-10T01:36:37  <McLeopold> okay, it will work, but it won't be sequential
+2011-03-10T01:36:49  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has left #aichallenge ("Leaving")
+2011-03-10T01:36:58  <janzert> oh, yeah that part will be a problem
+2011-03-10T01:37:20  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-10T01:37:52  <jmcarthur> what exactly needs doing sandbox-wise? are there open tickets about it?
+2011-03-10T01:38:14  <janzert> the whole thing needs a good going over
+2011-03-10T01:38:37  <janzert> the part McLeopold was mentioning is that it needs an interface to suspend and restart bots
+2011-03-10T01:39:04  <janzert> which is completely nonexistent at the moment
+2011-03-10T01:39:42  <jmcarthur> are we still on the old sadbox.py thing?
+2011-03-10T01:40:50  <janzert> yes
+2011-03-10T01:41:17  <janzert> actually I don't think even that is being used at the moment
+2011-03-10T01:42:37  <janzert> as I was about to say before McLeopold got disconnected, first thing I suppose is just get something end to end up and running
+2011-03-10T02:20:16  <CIA-33> aichallenge: janzert epsilon * r1d19525 / (3 files): More server setup script work - http://bit.ly/ewW8HH
+2011-03-10T02:22:23  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-03-10T02:42:51  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-03-10T02:46:37  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T02:48:09  *** delt0r___ <delt0r___!~delt0r@188-22-169-158.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T02:49:22  *** delt0r_ <delt0r_!~delt0r@188-22-169-158.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-03-10T03:10:36  *** delt0r_ <delt0r_!~delt0r@188-22-169-158.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T03:12:13  *** delt0r___ <delt0r___!~delt0r@188-22-169-158.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T03:36:09  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-03-10T04:02:09  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-247-168.dsl.hstntx.swbell.net> has quit IRC (Read error: No route to host)
+2011-03-10T04:13:08  <aerique> antimatroid: have you done anything else besides feeding your bot data on standard input to make sure it works?
+2011-03-10T04:16:09  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-10T04:18:18  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-247-168.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-03-10T04:28:05  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-03-10T04:33:41  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-10T04:38:42  <Frontier> sigh: I got your notice, I don't know if there was a reason behind it. We can change that, it is probably more straight forward to parse if one doesn't have to extract the number and subtract one. Although with the right RegExp it is a one-liner.
+2011-03-10T04:41:38  <sigh> Frontier: having to parse the key instead of the value just seem like a kludge to me
+2011-03-10T04:42:33  <sigh> also, having a static set of keys is neater
+2011-03-10T04:43:50  <Frontier> Is McLeopold around? Ok.... I think it was his idea :p
+2011-03-10T04:44:14  <sigh> McLeopold agreed with me :)
+2011-03-10T04:44:25  <sigh> if you look at the chat logs around the time I sent the message
+2011-03-10T04:45:16  <Frontier> Could you change the Wiki accordingly?
+2011-03-10T04:45:55  <sigh> I haven't edited the wiki before, but I'll give it a shot
+2011-03-10T04:48:42  <Frontier> the ai-contest is the one big education event :-). you learn how to use git, the wiki, a dozen programming languages and international project management
+2011-03-10T04:49:42  <sigh> yeah :)
+2011-03-10T04:50:02  <sigh> this is the first time I've used git to collaborate with anyone
+2011-03-10T04:50:22  <sigh> ok, changed
+2011-03-10T05:08:06  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has joined #aichallenge
+2011-03-10T05:15:41  <aerique> once a bot has received the end turn data it can just die, aight?  the game engine doesn't expect a 'go' or anything
+2011-03-10T05:24:58  <Frontier> I wonder if the engine even lets the bot read the end game state or just say, "so, match is over you can read the results at home"
+2011-03-10T05:26:30  <aerique> Frontier: right, good point
+2011-03-10T05:48:14  *** phreeza <phreeza!~phreeza@134.130.63.132> has joined #aichallenge
+2011-03-10T05:48:39  <aerique> @later tell amstan I've issued a pull request for the first version of the Common Lisp example bot.
+2011-03-10T05:48:40  <contestbot> aerique: OK
+2011-03-10T05:49:17  <phreeza> hi
+2011-03-10T05:59:17  *** UncleVasya <UncleVasya!~UncleVasy@178-133-247-206.dialup.umc.net.ua> has joined #aichallenge
+2011-03-10T06:03:25  *** phreeza <phreeza!~phreeza@134.130.63.132> has quit IRC (Quit: Computer has gone to sleep)
+2011-03-10T06:49:08  <antimatroid> aerique: i have not, why?
+2011-03-10T06:49:17  *** phreeza <phreeza!~phreeza@134.130.63.132> has joined #aichallenge
+2011-03-10T06:51:19  <aerique> antimatroid: just wondering whether i had missed any options
+2011-03-10T06:51:22  *** antimatroid1 <antimatroid1!~Nick@125.068.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T06:54:14  *** antimatroid <antimatroid!~Nick@95.126-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 276 seconds)
+2011-03-10T07:12:07  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T07:22:41  <sigh> anyone here familiar with conflict resolution in the game?
+2011-03-10T07:22:46  <sigh> antimatroid?
+2011-03-10T07:29:10  <antimatroid1> yeah shoot
+2011-03-10T07:29:23  <antimatroid1> i'm pretty sure it's using option 2 atm
+2011-03-10T07:29:33  <antimatroid1> slightly annoying, but it was the second option to come up
+2011-03-10T07:30:14  <antimatroid1> sigh: ^^
+2011-03-10T07:30:42  <sigh> it's this one: "If more than one ant is in a square once all moves have been made, each of these ants automatically dies."
+2011-03-10T07:30:43  <sigh> ?
+2011-03-10T07:30:51  <sigh> that's what's on the spec sheet
+2011-03-10T07:31:32  <antimatroid1> yeah, that's for ant collisions
+2011-03-10T07:31:59  <sigh> and it is supposed to be order independent, right?
+2011-03-10T07:32:04  <antimatroid1> yes
+2011-03-10T07:32:09  <antimatroid1> is it not?
+2011-03-10T07:32:29  <sigh> I don't think ants.py is
+2011-03-10T07:32:43  <antimatroid1> hmm, it should move all ants, then kill any ants in a square with more than one
+2011-03-10T07:32:48  <sigh> relevant function: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/ants.py#L299
+2011-03-10T07:33:20  <sigh> do_orders is called for each player in turn, then resolve_orders is called after all players have been processed
+2011-03-10T07:34:01  <sigh> problem is that checking for conflicts (L338) occurs before all players have made their moves
+2011-03-10T07:34:12  <antimatroid1> hmmm, can you raise issues on git for mcleopold?
+2011-03-10T07:34:17  <antimatroid1> that is a big bug
+2011-03-10T07:34:40  <sigh> if it's an issue, I'm fixing it as part of the changes I'm currently making
+2011-03-10T07:34:48  <antimatroid1> okay cool
+2011-03-10T07:34:52  <antimatroid1> that's definitely an issue
+2011-03-10T07:35:29  <sigh> but can you see the issue I am talking about? or you don't want to decipher the code?
+2011-03-10T07:35:31  <sigh> :P
+2011-03-10T07:36:14  <sigh> how do I raise an issue?
+2011-03-10T07:36:18  <antimatroid1> i haven't deciphered it all, but if it's calling do_orders sequentially and looking for conflicts when it checks, i know how it can break :P
+2011-03-10T07:36:26  <antimatroid1> i have no idea how to raise an issue, that's why i was asking if you can :P
+2011-03-10T07:36:31  <sigh> haha
+2011-03-10T07:36:47  <antimatroid1> you can do the later tell thing
+2011-03-10T07:36:50  <sigh> I should probably raise an issue rather than @later tell in the channel
+2011-03-10T07:37:13  <Frontier> At least it is row,col now :)
+2011-03-10T07:37:30  <Frontier> I'm ok with row,col and x,y, but not with col,row or y,x
+2011-03-10T07:37:46  <antimatroid1> sigh: there's a create issue link on git in the issues section
+2011-03-10T07:38:20  <antimatroid1> Frontier: if you read maps from file, or output a char map to the screen and use x,y, you HAVE to use y,x too, that's why i think it's inferior and don't understand programmers using it
+2011-03-10T07:38:28  <antimatroid1> i'd be fine with it simply being a difference in standard
+2011-03-10T07:38:28  <sigh> meh
+2011-03-10T07:40:11  <sigh> @later tell McLeopold possible bug in ants.py, read channel logs from 2011-03-10T07:22:41 for details, please confirm... I will fix
+2011-03-10T07:40:11  <contestbot> sigh: As you wish.
+2011-03-10T07:40:31  <Frontier> maybe it is a bike shed, too :(
+2011-03-10T07:41:20  <antimatroid1> sigh: you don't need confirmation, the current method is clearly wrong :P
+2011-03-10T07:43:51  *** BtbN <BtbN!btbn@btbn.de> has joined #aichallenge
+2011-03-10T08:05:20  <sigh> antimatroid1: what causes conflicts to show up on the map?
+2011-03-10T08:08:56  <antimatroid1> conflicts? when more than one ant ends up in the same square after movement?
+2011-03-10T08:09:05  <antimatroid1> erm...?
+2011-03-10T08:10:17  <Frontier> in other words a bot's stupidness
+2011-03-10T08:12:40  <sigh> antimatroid1: in ants.py conflicts are show in the outptu the bot?
+2011-03-10T08:13:04  <sigh> with prefix "d"
+2011-03-10T08:13:20  <sigh> oh, that's just deaths?
+2011-03-10T08:13:31  <antimatroid1> wait, we're told about ants that died from collisions?
+2011-03-10T08:14:00  <antimatroid1> hmm, i'd prefer to distinguish those from ants that died from battle
+2011-03-10T08:14:13  <antimatroid1> explicitly that is
+2011-03-10T08:14:22  <sigh> I don't know... I'm trying to figure out wtf a 600 python script is doing
+2011-03-10T08:14:27  <antimatroid1> :P
+2011-03-10T08:14:28  <sigh> *600 line
+2011-03-10T08:17:42  <sigh> ok, I understand what he's doing now
+2011-03-10T08:18:57  <antimatroid1> we had a sweet game going saturday night, tree darts
+2011-03-10T08:19:01  <antimatroid1> the previous person to throw the dart is the "climber", if the current thrower gets the dart in the tree, the climber has to go and get it
+2011-03-10T08:20:17  <phreeza> was alcohol involved?
+2011-03-10T08:20:34  <antimatroid1> well yeah :P
+2011-03-10T08:20:36  <phreeza> :D
+2011-03-10T08:20:50  <antimatroid1> it's stil a sweet game
+2011-03-10T08:20:58  <antimatroid1> i've done a surprising amount of tree climbing this year
+2011-03-10T08:20:59  <phreeza> yea sounds fun
+2011-03-10T08:21:22  <antimatroid1> considering i can't remember the last time i climbed one prior to this year
+2011-03-10T08:23:56  <phreeza> i think i'm to heavy now
+2011-03-10T08:24:03  <phreeza> too*
+2011-03-10T08:24:24  <phreeza> branches would break
+2011-03-10T08:25:57  *** antimatroid <antimatroid!~Nick@51.236-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T08:26:34  *** antimatroid1 <antimatroid1!~Nick@125.068.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 248 seconds)
+2011-03-10T08:47:55  <sigh> @later tell McLeopold my current progress is here: https://github.com/sigh/aichallenge/blob/replay/ants/ants.py  In particular, I think I fixed the bug I found, please review... overall the work I've done is in preparation for outputting the new replay format, I will continue work on the tomorrow
+2011-03-10T08:47:55  <contestbot> sigh: I come to serve.
+2011-03-10T08:48:50  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-10T08:53:07  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T08:55:09  *** delt0r_ <delt0r_!~delt0r@188-22-169-158.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-03-10T09:30:49  *** |UncleVasya| <|UncleVasya|!kvirc@178-133-51-169.dialup.umc.net.ua> has joined #aichallenge
+2011-03-10T09:34:16  *** UncleVasya <UncleVasya!~UncleVasy@178-133-247-206.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-10T10:07:49  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-10T10:07:49  *** ChanServ sets mode: +o amstan
+2011-03-10T10:17:35  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-10T10:34:56  *** |UncleVasya| <|UncleVasya|!kvirc@178-133-51-169.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-10T10:36:14  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-10T10:39:03  *** UncleVasya <UncleVasya!kvirc@88-214-107-210.dialup.umc.net.ua> has joined #aichallenge
+2011-03-10T10:42:06  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-03-10T11:14:16  *** phreeza <phreeza!~phreeza@134.130.63.132> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T11:16:11  *** superflit_ <superflit_!~superflit@140.226.49.148> has joined #aichallenge
+2011-03-10T11:24:47  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-03-10T11:25:35  <McLeopold> antimatroid: you around?
+2011-03-10T11:31:09  <McLeopold> @later tell sigh I don't see any changes, did you commit *and* push?  Also, I'm certain there was not a bug with ant collisions.
+2011-03-10T11:31:09  <contestbot> McLeopold: Yep.
+2011-03-10T11:31:36  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Read error: Operation timed out)
+2011-03-10T11:31:59  <Frontier> I was wondering, but didn't say a thing. They both seemed to be pretty sure
+2011-03-10T11:34:13  <McLeopold> I don't even see what they were concerned with in the logs.
+2011-03-10T11:34:58  <McLeopold> I think I would have noticed the wrong ants dying or not dying in my tests.
+2011-03-10T11:42:43  <janzert> McLeopold: looking at the logs this seems to be the change sigh did https://github.com/sigh/aichallenge/blob/replay/ants/ants.py
+2011-03-10T11:43:25  <janzert> certainly refactors a bit, not sure what the actual changes in behavior are if any
+2011-03-10T11:46:18  *** amstan <amstan!~alex@142.222.92.4> has joined #aichallenge
+2011-03-10T11:46:18  *** ChanServ sets mode: +o amstan
+2011-03-10T11:46:27  <McLeopold> janzert: but I don't see a commit message?
+2011-03-10T11:46:54  <janzert> "Created AntStore class to hold all info about ants"
+2011-03-10T11:47:17  <janzert> the link to the commit itself is https://github.com/sigh/aichallenge/commit/b25429418e47e0bf4359a534454f9dc357254e2d
+2011-03-10T11:47:19  <McLeopold> okay, I swear 10 minutes ago the last commit was not his.  I think github is trolling me
+2011-03-10T11:47:28  <janzert> hehe
+2011-03-10T11:48:07  <McLeopold> I can't find the handy-dandy "change" button
+2011-03-10T11:48:53  <McLeopold> I mean "diff"
+2011-03-10T11:49:49  <janzert> you mean the link to the second one I posted?
+2011-03-10T11:50:04  <amstan> mega1: what do you think? https://github.com/aerique/aichallenge/tree/epsilon/ants/bots/common_lisp
+2011-03-10T11:50:45  <janzert> it's the "commit" link in the right of the light blue area at the top of the page
+2011-03-10T11:50:58  <McLeopold> janzert: is there a way in github to view the changes made in the last commit?
+2011-03-10T11:51:25  <janzert> isn't that the "commit" link I posted above?
+2011-03-10T11:51:48  <mega1> amstan: directory structure looks good :-)
+2011-03-10T11:51:53  <McLeopold> yep, sometimes github confuses me
+2011-03-10T11:51:58  <janzert> other than that I'm not aware of anything, but I've not used github much
+2011-03-10T11:51:59  <janzert> ok
+2011-03-10T11:52:21  <amstan> McLeopold: can i please merge branches?
+2011-03-10T11:55:02  <McLeopold> amstan: is there a rush or issue?
+2011-03-10T11:55:12  <amstan> McLeopold: well.. i just want to show you why
+2011-03-10T11:55:19  <amstan> hold on, i'll fork and how you there
+2011-03-10T11:58:08  <McLeopold> janzert: Okay, I was not on the replay branch in sigh's fork, that's why I got confused.
+2011-03-10T11:58:38  <amstan> McLeopold: https://github.com/aichallenge/aichallenge/network , https://github.com/amstan/aichallenge/commit/75f536eace5fd6c7ddbdaf2a8638eeecac407a02
+2011-03-10T11:58:56  <amstan> McLeopold: so now epsilon-new-schema is up to date with the changes from epsilon
+2011-03-10T11:59:15  <amstan> McLeopold: i think that's what you wanted, but you're not supposed to do this with cherry picking
+2011-03-10T12:00:05  <McLeopold> amstan: I thought you wanted me to merge the other way
+2011-03-10T12:00:12  <amstan> McLeopold: nope
+2011-03-10T12:00:18  <McLeopold> so only epsilon was left
+2011-03-10T12:00:23  <amstan> McLeopold: anyway, you ok with that then?
+2011-03-10T12:00:42  <McLeopold> yeah, but it is a broken system...
+2011-03-10T12:00:49  <McLeopold> Also, I'd like to do it, so I can learn
+2011-03-10T12:01:00  <amstan> why? no.. it shouldn't be broken
+2011-03-10T12:01:13  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T12:01:13  <amstan> the only changes in epsilon are new starter packages and some scripts from janzert
+2011-03-10T12:01:18  <McLeopold> I mean my code isn't completely finished and functional
+2011-03-10T12:01:45  <McLeopold> The code in -new-schema that is
+2011-03-10T12:02:01  *** boegel <boegel!~boegel@46.178.58.92> has joined #aichallenge
+2011-03-10T12:02:09  <janzert> and epsilon itself is so much more finished and functional? ;)
+2011-03-10T12:02:10  <amstan> ok.. from what i understood.. what you wanted is to update the -new-schema branch with some of the things from epsilon
+2011-03-10T12:02:23  <McLeopold> yes
+2011-03-10T12:02:28  <amstan> and i did that with the merge
+2011-03-10T12:02:35  <McLeopold> in your fork?
+2011-03-10T12:02:36  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 248 seconds)
+2011-03-10T12:02:38  <amstan> yes
+2011-03-10T12:02:52  <amstan> all you have to do is git checkout epsilon-new-schema; git merge epsilon
+2011-03-10T12:03:03  <McLeopold> don't we want -new-schema to go away and just be left with epsilon?
+2011-03-10T12:03:08  *** boegel <boegel!~boegel@46.178.58.92> has quit IRC (Client Quit)
+2011-03-10T12:03:25  <jmcarthur> wow, somebody worked hard on that common lisp starter
+2011-03-10T12:03:36  <amstan> McLeopold: yes, this merge doesn't do anything else but update -new-schema
+2011-03-10T12:03:47  <jmcarthur> i don't know much common lisp, but i can tell that the starter looks polished
+2011-03-10T12:03:59  <amstan> McLeopold: we continue deving as if the merge didn't happen, the only thing that it does is makes sure -new-schema devs have better code to work with
+2011-03-10T12:04:08  <McLeopold> ok
+2011-03-10T12:04:13  <McLeopold> let me try it
+2011-03-10T12:04:33  <amstan> McLeopold: there will be a merge conflict with 0.replay, just delete it then commit
+2011-03-10T12:04:39  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T12:05:08  <amstan> oh yay, a pull request
+2011-03-10T12:05:15  <amstan> McLeopold: hold on, don't merge yet
+2011-03-10T12:05:22  <amstan> McLeopold: let me get aireque's stuff too
+2011-03-10T12:06:56  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T12:06:57  <CIA-33> aichallenge: McLeopold epsilon-new-schema * rf3b91e5 / (ants/ants.py ants/bots/python/ants.py ants/viewer/0.replay): This bike shed brought to you by antimatroid. :P - http://bit.ly/dVZ2nw
+2011-03-10T12:06:58  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r86eeba9 / (55 files in 16 dirs): Merge branch 'epsilon' into epsilon-new-schema - http://bit.ly/dNGaa0
+2011-03-10T12:07:00  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r93b0bfe / (37 files in 9 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/fzQjST
+2011-03-10T12:07:02  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r22ba5b0 / (worker/worker.py ants/viewer/0.replay): More work on worker.py. - http://bit.ly/eNTEOD
+2011-03-10T12:07:33  <McLeopold> dang, I looked away
+2011-03-10T12:07:43  <amstan> McLeopold: you also merged from a previous commit
+2011-03-10T12:07:44  <McLeopold> amstan: sry, didn't see the wait request
+2011-03-10T12:07:54  <McLeopold> hmm...
+2011-03-10T12:07:56  <amstan> that's fine..
+2011-03-10T12:08:27  <McLeopold> so, I should have git checkout epsilon, git pull, git checkout epsilon-new-schema, get merge epsilon?
+2011-03-10T12:08:55  <janzert> would just git pull do it?
+2011-03-10T12:09:05  <McLeopold> apparently not
+2011-03-10T12:09:06  <amstan> yeah
+2011-03-10T12:09:14  <McLeopold> ?
+2011-03-10T12:09:48  <McLeopold> amstan: did you get the lisp starter in yet?
+2011-03-10T12:09:58  <amstan> yeah.. trying to figure where the pull button is
+2011-03-10T12:10:02  <amstan> if there is one
+2011-03-10T12:10:04  <janzert> so pull only gets the latest info for your current branch not the full repo?
+2011-03-10T12:10:10  <McLeopold> not on the website
+2011-03-10T12:10:10  <jmcarthur> pull button?
+2011-03-10T12:10:19  <jmcarthur> oh, non-locally
+2011-03-10T12:10:24  <McLeopold> you have to use git tools locally
+2011-03-10T12:10:30  <amstan> McLeopold: ok
+2011-03-10T12:10:31  <UncleVasya> Hi. Sorry for my terrible English. Can you already tell me when i have to free my time for the upcoming contest: in two weeks, in one month or in few monthes?
+2011-03-10T12:10:57  <McLeopold> UncleVasya: closer to 2 weeks than 1 month, but it's still hard to say.
+2011-03-10T12:11:20  <amstan> 3.5 weeks? lol
+2011-03-10T12:11:27  <janzert> I was going to say most likely a month but maybe sooner :)
+2011-03-10T12:11:44  <janzert> certainly hard to say at this point
+2011-03-10T12:12:12  <UncleVasya> Thank you.
+2011-03-10T12:13:02  <McLeopold> I'm really making the history graph look bad...
+2011-03-10T12:13:12  <CIA-33> aichallenge: Alexandru Stan epsilon * r806e541 / ants/bots/common_lisp/README.md : fixed typo (+11 more commits...) - http://bit.ly/fkr13E
+2011-03-10T12:13:40  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T12:13:45  <CIA-33> aichallenge: Alexandru Stan epsilon-new-schema * r4a8727b / (64 files in 12 dirs): Merge branch 'epsilon' of https://github.com/aerique/aichallenge into epsilon - http://bit.ly/hPeiu3
+2011-03-10T12:13:46  <CIA-33> aichallenge: Alexandru Stan epsilon-new-schema * r806e541 / ants/bots/common_lisp/README.md : fixed typo - http://bit.ly/fkr13E
+2011-03-10T12:13:47  <CIA-33> aichallenge: Alexandru Stan epsilon-new-schema * rac89b9d / (67 files in 13 dirs): Merge branch 'epsilon' into epsilon-new-schema - http://bit.ly/ha4EGV
+2011-03-10T12:14:31  <jmcarthur> merge commits are inherently ugly. i wouldn't feel too bad about the history looking bad
+2011-03-10T12:14:49  <McLeopold> amstan: didn't trust me with that last merge, did you? :P
+2011-03-10T12:15:02  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-10T12:15:08  <amstan> McLeopold: nah, you did it right
+2011-03-10T12:15:23  <amstan> McLeopold: it's just that i updated it again with cl, so it should have been merged again
+2011-03-10T12:17:24  <jmcarthur> nothing like changing your text editor's color theme to make every project feel new again
+2011-03-10T12:17:32  <amstan> jmcarthur: lol
+2011-03-10T12:19:43  <McLeopold> jmcarthur: editor and theme?
+2011-03-10T12:20:08  <jmcarthur> huh?
+2011-03-10T12:20:18  <jmcarthur> i changed emacs' color theme
+2011-03-10T12:21:35  <McLeopold> I suppose I was asking for the name of your editor of choice, and the name of your new color theme?
+2011-03-10T12:23:16  <jmcarthur> emacs + zenburn, but i'm thinking about trying to up the contrast a little bit
+2011-03-10T12:23:36  <jmcarthur> it's designed for low light conditions, so is a low contrast theme, but *usually* i'm not in low light conditions
+2011-03-10T12:23:45  *** closedbracket <closedbracket!~closedbra@southeast-invest.oneringnetworks.net> has joined #aichallenge
+2011-03-10T12:23:58  <jmcarthur> i think i mainly just want the background darker. simple enough to change
+2011-03-10T12:24:19  <amstan> what do you guys think of the Versions section: https://github.com/aichallenge/aichallenge/issues#issue/3
+2011-03-10T12:24:25  <amstan> janzert: ^
+2011-03-10T12:24:29  <McLeopold> I prefer mustang, in vi
+2011-03-10T12:25:23  <McLeopold> amstan: I'd go with 32bit
+2011-03-10T12:25:48  <janzert> sure, although I don't think it's a strict priority order if the contributor is willing to set one of the lower priorities up so they get a more recent version
+2011-03-10T12:25:50  <McLeopold> amstan: also, do I have the ability to update issues?
+2011-03-10T12:26:07  <amstan> McLeopold: you cannot edit comments that are not your own
+2011-03-10T12:26:15  <amstan> McLeopold: but anyone can do whatever
+2011-03-10T12:26:45  <amstan> janzert: i'll add something about that, good idea
+2011-03-10T12:27:05  <jmcarthur> the new haskell platform should be coming out today i think
+2011-03-10T12:27:14  <jmcarthur> oh well
+2011-03-10T12:28:26  <amstan> janzert: + This is not a strict list, but it would make it much easier for the sysadmin to install the language/starter pack.
+2011-03-10T12:28:40  <jmcarthur> shouldn't there be a setup script anyway though?
+2011-03-10T12:28:58  <amstan> jmcarthur: where?
+2011-03-10T12:29:08  <amstan> jmcarthur: for the languages?
+2011-03-10T12:29:15  <janzert> sounds good, might want to mention that to ensure use installation of the language needs to be added to the worker_setup.py script
+2011-03-10T12:29:19  <jmcarthur> for everything needed on the server/workers
+2011-03-10T12:29:22  <jmcarthur> including languages
+2011-03-10T12:29:35  <amstan> ok.. i was not aware of that
+2011-03-10T12:29:37  <jmcarthur> amstan: what janzert said ;)
+2011-03-10T12:29:41  <amstan> janzert: 32 or 64bit?
+2011-03-10T12:29:43  <jmcarthur> makes it really easy
+2011-03-10T12:29:57  <jmcarthur> lowers the barrier for harder-to-install languages and stuff
+2011-03-10T12:30:04  <janzert> I'd prefer that we let people use 64bit this time
+2011-03-10T12:30:15  <jmcarthur> i mean, of course we want to use versions that are easy for people to set up at home
+2011-03-10T12:30:17  <janzert> but I'm not positive about that
+2011-03-10T12:30:28  <delt0r__> 64bit has been out for over 5 years
+2011-03-10T12:30:37  <amstan> janzert: let's just make sure there exists a 64 bit version, even if we don't use it
+2011-03-10T12:30:37  <delt0r__> surly thats what we all use right?
+2011-03-10T12:30:40  <janzert> primarily it means we need to use a different ec2 instance type
+2011-03-10T12:30:44  <amstan> we shouldn't accept runtimes that only work on 32bits
+2011-03-10T12:30:50  <jmcarthur> 64 bit machines can run 32 bit VMs. the reverse is not necessarily true
+2011-03-10T12:31:06  <janzert> nah, for sure I'd accept 32bit if that is all there is
+2011-03-10T12:31:20  <janzert> just if there is a choice, prefer the 64bit one
+2011-03-10T12:31:25  <jmcarthur> i personally prefer 64 bit as well, but i don't know what our demographics are like
+2011-03-10T12:32:07  <janzert> the 32bit runtime should run fine whether we end up using 64bit or 32bit OS
+2011-03-10T12:32:11  <jmcarthur> sucks to code C and only be able to test on 32 bit if the server uses 64 bit
+2011-03-10T12:32:38  <jmcarthur> i mean, if you don't suck at C you can do it, but... most people suck at C :)
+2011-03-10T12:33:06  <janzert> actually that reminds me we did have 64bit for tron
+2011-03-10T12:33:35  <janzert> cause it was a pain debugging my assembly 64bit population count without access to a 64bit gcc locally
+2011-03-10T12:33:38  <jmcarthur> i think it best to try to be consistent, whatever we choose. if we say 64 bit, try to support 64 bit across the board
+2011-03-10T12:33:59  <jmcarthur> 32 bit is obviously a bit easier in this regard
+2011-03-10T12:34:37  <jmcarthur> for certain kinds of cpu/memory patterns 64 bit is faster, but aside from that the only other advantage really is the ability to address more memory, which should be far beyond the limits of our sandbox anyway
+2011-03-10T12:36:26  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-03-10T12:40:58  *** closedbracket <closedbracket!~closedbra@southeast-invest.oneringnetworks.net> has quit IRC (Remote host closed the connection)
+2011-03-10T12:41:02  <amstan> oh man.. a friend of mine wants to do a contest for his university, and he died when i showed him the code and all our documentation
+2011-03-10T12:41:13  <amstan> about game ideas and so on..
+2011-03-10T12:42:13  <jmcarthur> is that... good?
+2011-03-10T12:42:35  <amstan> jmcarthur: yeah, died because he liked it
+2011-03-10T12:42:47  <amstan> This is not a strict list, but it would make it much easier to install the language/starter pack.
+2011-03-10T12:42:49  <amstan> If you do want a language to be supported, please modify worker_setup.py accordingly.
+2011-03-10T12:42:51  <amstan> how's that ^?
+2011-03-10T12:43:22  <jmcarthur> yeah i think that's good, as long as we have a decent way of testing it
+2011-03-10T12:43:54  <jmcarthur> well, if it's just an ubuntu package no big deal, but if it's downloading and building from source and stuff then we need to be careful
+2011-03-10T12:44:23  <amstan> jmcarthur: i kept the list for that
+2011-03-10T12:45:03  <janzert> sounds good
+2011-03-10T12:46:11  <amstan> i can't wait to see ants killing eachother
+2011-03-10T12:46:37  <amstan> nobody tell peta pls
+2011-03-10T12:46:58  <amstan> lol, nvm, it's ok, they're only virtual ants
+2011-03-10T12:48:36  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Read error: Connection reset by peer)
+2011-03-10T12:50:27  <jmcarthur> peta did roll out Super Tofu Boy...
+2011-03-10T12:50:59  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-10T13:01:17  <amstan> where is compiling done again?
+2011-03-10T13:01:57  <janzert> what script or what machine?
+2011-03-10T13:02:14  <janzert> at the moment from compile_anything.py on the main server
+2011-03-10T13:02:30  <janzert> that will almost certainly move to the worker before the contest though
+2011-03-10T13:10:35  <amstan> janzert: ok
+2011-03-10T13:11:07  <amstan> janzert: so.. if we move the compilation to the workers too, what will be left in managers besides the rankings?
+2011-03-10T13:11:27  <janzert> basically rankings and pairing :)
+2011-03-10T13:11:38  <janzert> handing out tasks to the workers
+2011-03-10T13:12:45  <jmcarthur> i suppose the manager server could also run a lightweight worker itself if it has the resources to spare though
+2011-03-10T13:13:19  <janzert> in the current case where the manager and website are one machine, I'd rather not run games on it
+2011-03-10T13:13:21  <jmcarthur> but iirc the main was always slow and overloaded anyway, right?
+2011-03-10T13:13:26  <janzert> yes
+2011-03-10T13:13:46  <janzert> it also means we don't have to install all the different languages on the main server
+2011-03-10T13:14:17  <jmcarthur> yeah that's nice too
+2011-03-10T13:15:12  <amstan> in tron we had the backend(manager+worker) on corn-syrup and the website and db on caffeine
+2011-03-10T13:26:29  *** boegel <boegel!~boegel@91.182.131.126> has joined #aichallenge
+2011-03-10T13:27:54  *** amstan <amstan!~alex@142.222.92.4> has quit IRC (Ping timeout: 246 seconds)
+2011-03-10T13:28:36  *** amstan <amstan!~alex@142.222.92.4> has joined #aichallenge
+2011-03-10T13:28:36  *** ChanServ sets mode: +o amstan
+2011-03-10T13:32:20  <antimatroid> McLeopold: I'm here, but i can only really say what sigh was seeing, i didn't actually look through the code very hard..
+2011-03-10T13:34:43  <McLeopold> antimatroid: okay, I think he just didn't understand what the code did
+2011-03-10T13:35:07  <McLeopold> I was marking any square as conflict if an ant died there, collision or attack
+2011-03-10T13:35:25  <McLeopold> if any other ant moved to that spot, then they died of a collision
+2011-03-10T13:35:48  <McLeopold> of course, that would have happened before attacks...
+2011-03-10T13:36:19  <McLeopold> The resolve_orders method was named badly, it should have been called "cleanup_state"
+2011-03-10T13:36:55  <antimatroid> McLeopold: what happens if you move into a square containing an ant that hasn't moved out of it yet, but will by the end of the turn?
+2011-03-10T13:37:55  <McLeopold> I was maintaining a separate list of destinations
+2011-03-10T13:38:32  <antimatroid> ahh, okay
+2011-03-10T13:39:41  <McLeopold> I was processing 1 bot at a time, but the list of conflicts and marking the map square as conflict allowed me to detect enemy ants colliding
+2011-03-10T13:39:57  <McLeopold> If we ever lower the attack radius or use another attack resolution
+2011-03-10T13:41:42  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T13:42:59  <McLeopold> antimatroid: I might need to track the difference between a collision and attack, for scoring
+2011-03-10T13:43:01  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-10T13:43:46  <McLeopold> jmcarthur: did you think much more about suiciding your own ants to prevent giving the enemy points?
+2011-03-10T13:44:37  <antimatroid> McLeopold: colliding ants don't count for killing ants either yeah?
+2011-03-10T13:44:39  <jmcarthur> no
+2011-03-10T13:45:33  <jmcarthur> i really wish there was a specific goal aside from getting points
+2011-03-10T13:45:57  <jmcarthur> your king of the hill ish idea sounded good to me :\
+2011-03-10T13:46:19  <jmcarthur> i guess that's points too, but it made more sense as a strategy-encouraging game
+2011-03-10T13:47:32  <UncleVasya> Capture the Flag? :)
+2011-03-10T13:48:35  <jmcarthur> it may be too late for anything like that
+2011-03-10T13:48:48  <jmcarthur> s/may/is almost definitely/
+2011-03-10T13:49:13  <jmcarthur> s!/may/!/may be/!
+2011-03-10T13:51:35  <McLeopold> jmcarthur: it's not too late
+2011-03-10T13:52:40  <McLeopold> I would like it better if the goal was independent of the ant spawning
+2011-03-10T13:53:03  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-10T13:53:26  <McLeopold> antimatroid: we talked about if friendly ants collide, then any nearby enemy gets the points
+2011-03-10T13:54:10  <McLeopold> Any bot that wants to strategically suicide will be able to do so before the enemy is close, so it would actually not be worth the effort to code that.
+2011-03-10T13:55:01  <McLeopold> so, at this point, only if the ants are from different bots do points get handed out, so kinda like range 0
+2011-03-10T13:56:00  <antimatroid> i didn't realise any score was assigned for colliding enemies?
+2011-03-10T13:56:14  <jmcarthur> with capture the flag we would also need to change all the starters in addition to the engine
+2011-03-10T13:56:20  <jmcarthur> not that we can't but it's more to do
+2011-03-10T13:56:25  <antimatroid> do they scores just go to the enemies also colliding with it? or any ants in range of the colliding square at the end of moves?
+2011-03-10T13:56:47  <jmcarthur> that said, i love capture the flag
+2011-03-10T13:57:15  <jmcarthur> could be that you get a point every time you capture a flag and lose a point every time your flag is captured
+2011-03-10T13:58:00  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Ping timeout: 246 seconds)
+2011-03-10T13:58:03  <antimatroid> could have gone with home bases and taking harvest back for spawning
+2011-03-10T13:58:08  <antimatroid> but that was "too complicated"
+2011-03-10T13:58:15  <jmcarthur> well
+2011-03-10T13:59:03  <jmcarthur> i don't have an argument about whether it's too complicated generally, but i think we shouldn't put too much effort into something not relating directly to the goal of the game
+2011-03-10T13:59:20  <jmcarthur> if the point is to spawn lots of ants, then yeah i think that would be a decent design choice
+2011-03-10T13:59:51  <jmcarthur> but if the point is to kill lots of ants or capture flags or whatever then it's at least more questionable (but i still wouldn't argue against it myself)
+2011-03-10T13:59:54  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-10T14:00:29  <McLeopold> we still have no incentive not to spread
+2011-03-10T14:00:33  <jmcarthur> yes
+2011-03-10T14:00:42  *** antiuni <antiuni!83d90606@gateway/web/freenode/ip.131.217.6.6> has quit IRC (Ping timeout: 245 seconds)
+2011-03-10T14:00:59  <jmcarthur> i think capture the flag with combat option 1 would be awesome
+2011-03-10T14:01:15  <McLeopold> The 2 easiest ways I can think of are: split ants into spawners/fighters, or use hills for points
+2011-03-10T14:01:32  <jmcarthur> or just drop option 2
+2011-03-10T14:01:36  <jmcarthur> :\
+2011-03-10T14:01:44  <McLeopold> yeah, that is easier still
+2011-03-10T14:02:02  <McLeopold> I really like the idea of 2 types of ants
+2011-03-10T14:02:24  <McLeopold> You have to balance your fighter/spawner ratio
+2011-03-10T14:02:30  <jmcarthur> you get to choose?
+2011-03-10T14:02:31  *** antimatroid <antimatroid!~Nick@51.236-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-03-10T14:02:36  <McLeopold> Yes
+2011-03-10T14:02:53  <McLeopold> only spawners can turn food into ants, their choice of which kind
+2011-03-10T14:03:01  <McLeopold> only fighters can kill ants
+2011-03-10T14:03:30  <UncleVasya> And don't forget Ms. Qeen. :)
+2011-03-10T14:03:48  <McLeopold> it gives me that "to attack a neutral planet or not to attack a neutral planet" feeling.
+2011-03-10T14:04:20  <jmcarthur> so spawning becomes an explicit action. does that also imply that for consistency fighting should too?
+2011-03-10T14:04:31  <McLeopold> plus it is still "easier" than using a more complex battle option
+2011-03-10T14:04:52  <McLeopold> no, spawning become a "bot" action, not an "ant" action
+2011-03-10T14:04:59  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T14:05:00  <jmcarthur> explicit fight commands would alleviate this controversial battle stuff altogther
+2011-03-10T14:05:04  <jmcarthur> *altogether
+2011-03-10T14:05:23  <jmcarthur> i don't understand what you mean by it being a "bot" action
+2011-03-10T14:05:30  <jmcarthur> the bot still has to say which spawn should be which ant
+2011-03-10T14:05:32  <McLeopold> you get a new ant at a position, and it can't move until you declare it's type
+2011-03-10T14:05:45  <jmcarthur> ah
+2011-03-10T14:05:52  <McLeopold> but your not giving an ant an order to spawn something
+2011-03-10T14:06:27  <antimatroid> why even have a type of ant?
+2011-03-10T14:06:39  <McLeopold> read the logs ^^
+2011-03-10T14:06:47  <jmcarthur> antimatroid: to provide incentive to not spread out completely
+2011-03-10T14:07:02  <jmcarthur> antimatroid: (to work out the limitations of option 2)
+2011-03-10T14:07:07  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-10T14:07:11  <jmcarthur> s/out/around/
+2011-03-10T14:07:13  <McLeopold> well, you still want to spread
+2011-03-10T14:07:22  <McLeopold> just with a correct ratio
+2011-03-10T14:07:24  <jmcarthur> yes, but it's tougher to do it well
+2011-03-10T14:07:30  <McLeopold> right
+2011-03-10T14:07:47  <jmcarthur> it at least requires some intelligent allocation instead of just an explosion of ants all over the map
+2011-03-10T14:08:02  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-03-10T14:08:59  <antimatroid> i can't imagine this counting as simple enough
+2011-03-10T14:09:19  <McLeopold> simple as in you can watch a game and understand
+2011-03-10T14:09:21  <antimatroid> i don't really see how it provides an incentive not to spread out either
+2011-03-10T14:09:27  <McLeopold> not simple as in easy to code
+2011-03-10T14:09:53  <McLeopold> battle option 1 is easy to code, but hard to watch a game and understand what is happening
+2011-03-10T14:10:09  <jmcarthur> antimatroid: it's not really that. it's just incentive to do *something* less brainless than just spreading out
+2011-03-10T14:10:10  <antimatroid> battle option 1 is so awesome i don't understand the hate D:
+2011-03-10T14:10:17  <antimatroid> it makes the game in itself
+2011-03-10T14:10:27  <jmcarthur> you still need objective
+2011-03-10T14:10:36  <jmcarthur> i think battle option 1 would work well with capture the flag
+2011-03-10T14:10:40  <antimatroid> jmcarthur: it would be good if there was an actual balance to spreading out
+2011-03-10T14:10:51  <jmcarthur> antimatroid: yeah, option 1 is one such balance
+2011-03-10T14:11:28  <antimatroid> how far away are we from actually watching games again?
+2011-03-10T14:11:40  <antimatroid> we can't be that far off being able to try out some different game parameters?
+2011-03-10T14:12:06  <McLeopold> the engine has always worked
+2011-03-10T14:12:13  <McLeopold> you can watch games now
+2011-03-10T14:12:39  <antimatroid> does the visualiser pass the input?
+2011-03-10T14:12:45  <antimatroid> i should try and get the engine running
+2011-03-10T14:13:03  <McLeopold> you can use my viewer, I'm not sure how hooked up Frontier's is
+2011-03-10T14:13:39  <antimatroid> alright, how do i run it? :P
+2011-03-10T14:14:07  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r40eac27 / (ants/ants.py ants/engine.py ants/playgame.py): Polished the playgame, engine and ants files for use with the worker. - http://bit.ly/ftKgun
+2011-03-10T14:14:23  <McLeopold> look at the make_movie.cmd file
+2011-03-10T14:14:30  <McLeopold> and get that latest push
+2011-03-10T14:14:53  <antimatroid> hehe, i just pulled as you did that
+2011-03-10T14:14:56  <McLeopold> oops
+2011-03-10T14:14:59  <antimatroid> so i'll pull again to see if i missed it
+2011-03-10T14:15:00  <McLeopold> there's a bug :(
+2011-03-10T14:15:08  <antimatroid> ah k, i will wait a minute
+2011-03-10T14:21:21  <CIA-33> aichallenge: McLeopold epsilon-new-schema * r2c5dcab / (ants/ants.py ants/engine.py ants/playgame.py): Fixed embarrasing bugs. - http://bit.ly/ecDRbQ
+2011-03-10T14:21:30  <McLeopold> antimatroid: ok, now pull
+2011-03-10T14:21:52  <McLeopold> make_movie.cmd maps/random4.txt 1000
+2011-03-10T14:22:01  <McLeopold> cd viewer
+2011-03-10T14:22:06  <McLeopold> python -m SimpleHTTPServer
+2011-03-10T14:22:13  <McLeopold> http://localhost:8080/viewer.html
+2011-03-10T14:23:16  <antimatroid> hmm, claimed i was already up to date :\
+2011-03-10T14:23:17  <McLeopold> you can also run playgame.py to see the list of options
+2011-03-10T14:24:47  <antimatroid> what are the %2 and %1 parameters?
+2011-03-10T14:25:02  <antimatroid> i got an error "invalid integer value: '%2'"
+2011-03-10T14:25:44  <McLeopold> map and turns
+2011-03-10T14:25:56  <McLeopold> omg, the new spawning code is *insane*
+2011-03-10T14:26:08  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T14:27:22  <antimatroid> oh, got it to run, err :)
+2011-03-10T14:27:25  <antimatroid> cheers
+2011-03-10T14:27:28  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-03-10T14:28:03  <jmcarthur> insane?
+2011-03-10T14:28:34  <McLeopold> half the land area was ants
+2011-03-10T14:29:29  <jmcarthur> heh
+2011-03-10T14:30:04  <antimatroid> bleh, i need to format so badly
+2011-03-10T14:30:14  <antimatroid> my cmd line can't find python
+2011-03-10T14:30:28  <jmcarthur> what about python2?
+2011-03-10T14:30:49  <jmcarthur> you know... you could just try to fix that problem. a reformat isn't always necessary
+2011-03-10T14:31:12  <antimatroid> the folder is in the environment variables?
+2011-03-10T14:31:22  <antimatroid> everything is a mess, it really is needed :)
+2011-03-10T14:31:39  <jmcarthur> umm... you probably need to make sure that /usr/bin or /usr/local/bin are in your PATH
+2011-03-10T14:31:58  <jmcarthur> and that python is there
+2011-03-10T14:32:00  *** choas <choas!~lars@p5792C203.dip.t-dialin.net> has joined #aichallenge
+2011-03-10T14:33:51  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-10T14:35:11  <antimatroid> hmm, i can't find any bin folder :\
+2011-03-10T14:35:20  <McLeopold> antimatroid: I thought you were windows?
+2011-03-10T14:35:49  <janzert> if you're on windows you have to add python to the path yourself
+2011-03-10T14:35:49  <antimatroid> i am windows
+2011-03-10T14:35:52  <jmcarthur> oh
+2011-03-10T14:35:57  <janzert> the installer doesn't do it
+2011-03-10T14:36:04  <antimatroid> what is the path?
+2011-03-10T14:36:06  <McLeopold> get redmondpath
+2011-03-10T14:36:11  <jmcarthur> antimatroid: yeah this isn't a problem your system developed. this is because windows sucks :P
+2011-03-10T14:36:24  <janzert> along with the python installer
+2011-03-10T14:36:31  <antimatroid> jmcarthur: i am seriously considering jumping ship to ubuntu
+2011-03-10T14:36:37  <jmcarthur> you were complaining about not having grep as well
+2011-03-10T14:36:40  <amstan> antimatroid: why don't you?
+2011-03-10T14:36:41  <McLeopold> http://download.cnet.com/Redmond-Path/3000-2094_4-10811594.html
+2011-03-10T14:36:44  <jmcarthur> windows doesn't even come with grep
+2011-03-10T14:36:47  <antimatroid> amstan: laziness
+2011-03-10T14:37:13  <McLeopold> antimatroid: if you installed the git stuff, you have grep now
+2011-03-10T14:37:45  <jmcarthur> i'm increasingly surprised each time i hear of somebody on irc that's still running windows, honestly
+2011-03-10T14:37:58  <jmcarthur> not trying to go on a windows bashing rant or anything. it
+2011-03-10T14:38:01  <jmcarthur> oops
+2011-03-10T14:38:09  <McLeopold> system error? :P
+2011-03-10T14:38:10  <jmcarthur> it's just uncommon on irc
+2011-03-10T14:38:17  <antimatroid> up until recently it was able to do everything i wanted
+2011-03-10T14:38:18  <jmcarthur> haha
+2011-03-10T14:38:22  <antimatroid> now it just annoys the hell out of me
+2011-03-10T14:38:45  <amstan> jmcarthur: nah.. please do, lol
+2011-03-10T14:38:46  <antimatroid> so what folders in python27 am i meant to be adding to my path variables?
+2011-03-10T14:38:54  <jmcarthur> how do you know somebody runs arch linux?
+2011-03-10T14:38:55  <McLeopold> I'm quite happy with Win7.  You just need to know your tools.
+2011-03-10T14:38:55  <jmcarthur> they tell you
+2011-03-10T14:39:03  <amstan> antimatroid: the one that has the exe in it
+2011-03-10T14:39:09  <McLeopold> antimatroid: just the main path C:\Python27
+2011-03-10T14:39:15  <McLeopold> or D:?
+2011-03-10T14:39:50  <jmcarthur> D: is a smiley. it accuractely depicts me in front of a windows machine
+2011-03-10T14:40:15  <antimatroid> McLeopold: that's already there
+2011-03-10T14:40:19  <antimatroid> :P
+2011-03-10T14:40:24  <McLeopold> if you type "assoc .py" it should come back with ".py=Python.File"
+2011-03-10T14:40:49  <antimatroid> it does
+2011-03-10T14:42:24  <McLeopold> so, after you add a folder to your path, you need to open up a command window again, assuming that's where you are
+2011-03-10T14:42:38  <antimatroid> it was always there
+2011-03-10T14:42:53  <McLeopold> but you type python and get nothing?
+2011-03-10T14:43:23  <antimatroid> "C:\ai\aichallenge\ants\viewer>assoc .py
+2011-03-10T14:43:23  <antimatroid> .py=Python.File
+2011-03-10T14:43:23  <antimatroid> C:\ai\aichallenge\ants\viewer>python -m SimpleHTTPServer
+2011-03-10T14:43:23  <antimatroid> 'python' is not recognized as an internal or external command,
+2011-03-10T14:43:23  <antimatroid> operable program or batch file.
+2011-03-10T14:43:52  <McLeopold> type path
+2011-03-10T14:43:52  <antimatroid> like i said, my windows installation is f'd
+2011-03-10T14:44:02  <McLeopold> and do a pastebin
+2011-03-10T14:44:36  <antimatroid> http://pastebin.com/iz9Wmikb
+2011-03-10T14:44:47  <antimatroid> end of the 3rd line
+2011-03-10T14:45:12  <janzert> cd C:\Python27
+2011-03-10T14:45:18  <janzert> and run python
+2011-03-10T14:45:21  <janzert> see if that works
+2011-03-10T14:46:11  <antimatroid> that worked
+2011-03-10T14:46:48  <jmcarthur> yeah its hosed install ubuntu be happy
+2011-03-10T14:46:51  <jmcarthur> :)
+2011-03-10T14:47:12  <janzert> ok I'll agree with you now, your system is a mess :P
+2011-03-10T14:47:17  <antimatroid> :P
+2011-03-10T14:48:04  <antimatroid> i might get some sleep then do a format
+2011-03-10T14:48:43  <jmcarthur> *and they never saw antimatroid again*
+2011-03-10T14:48:52  <antimatroid> haha
+2011-03-10T14:50:23  <janzert> heh
+2011-03-10T14:51:07  <UncleVasya> famous joke: the best format M$ ever made - format c:
+2011-03-10T14:51:09  *** amstan <amstan!~alex@142.222.92.4> has quit IRC (Ping timeout: 248 seconds)
+2011-03-10T15:02:47  *** lavalamp <lavalamp!4507d76a@gateway/web/freenode/ip.69.7.215.106> has joined #aichallenge
+2011-03-10T15:10:59  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T15:12:56  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-10T15:13:11  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-10T15:17:54  *** UncleVasya <UncleVasya!kvirc@88-214-107-210.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-03-10T15:48:45  *** chemuduguntar <chemuduguntar!~ravic@smtp.touchcut.com> has joined #aichallenge
+2011-03-10T15:50:03  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has quit IRC (Read error: Connection reset by peer)
+2011-03-10T15:50:25  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has joined #aichallenge
+2011-03-10T15:58:44  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-03-10T16:04:37  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T16:06:07  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-03-10T16:07:31  <jmcarthur> so what they hell you have to pay to get dev tools on os x now
+2011-03-10T16:07:34  <jmcarthur> *the hell
+2011-03-10T16:08:19  <jmcarthur> or go to third party sources just to get gcc, yay!
+2011-03-10T16:08:37  <jmcarthur> in other news, the new haskell platform was just released a second ago!
+2011-03-10T16:08:49  <McLeopold> you on osx?
+2011-03-10T16:09:43  <jmcarthur> nah
+2011-03-10T16:09:50  <jmcarthur> but i used to use it more
+2011-03-10T16:09:54  <jmcarthur> and i still have a mac around
+2011-03-10T16:10:03  <McLeopold> ah
+2011-03-10T16:10:05  <jmcarthur> mainly for testing games i'm making and stuff
+2011-03-10T16:10:36  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T16:10:52  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T16:12:14  *** delt0r___ <delt0r___!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 248 seconds)
+2011-03-10T16:22:13  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-10T16:22:13  *** ChanServ sets mode: +o amstan
+2011-03-10T16:27:19  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-03-10T16:27:39  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-10T16:28:17  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-10T16:51:07  <Naktibalda> how to start playing with ants?
+2011-03-10T16:51:26  <jmcarthur> buy a magnifying glass, go outside....
+2011-03-10T16:52:26  <Naktibalda> playgame.py: error: no such option: --timeout_ms
+2011-03-10T16:52:48  <jmcarthur> that's because it's a windows user doing most of the testing ;)
+2011-03-10T16:53:03  <jmcarthur> i think there is a cmd file you should be looking at for what to do
+2011-03-10T16:53:38  *** delt0r___ <delt0r___!~delt0r@188-22-167-16.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T16:54:59  *** delt0r_ <delt0r_!~delt0r@188-22-168-175.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T16:55:56  <Naktibalda> thanks
+2011-03-10T17:03:40  *** mega1 <mega1!~user@catv4E5C915D.pool.t-online.hu> has quit IRC (Ping timeout: 250 seconds)
+2011-03-10T17:13:34  *** delt0r_ <delt0r_!~delt0r@188-22-167-16.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T17:15:13  *** delt0r___ <delt0r___!~delt0r@188-22-167-16.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-03-10T17:16:04  *** delt0r_ <delt0r_!~delt0r@188-22-167-16.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-03-10T17:16:07  *** delt0r___ <delt0r___!~delt0r@188-22-167-16.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T17:27:27  *** choas <choas!~lars@p5792C203.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-10T17:36:41  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T17:44:38  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-10T17:50:02  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-10T17:51:07  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T17:52:16  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-10T18:13:30  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-10T18:16:23  *** lavalamp <lavalamp!4507d76a@gateway/web/freenode/ip.69.7.215.106> has quit IRC (Quit: Page closed)
+2011-03-10T18:35:59  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-10T18:45:13  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-10T18:48:41  *** chemuduguntar <chemuduguntar!~ravic@smtp.touchcut.com> has quit IRC (Ping timeout: 276 seconds)
+2011-03-10T18:55:46  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-10T19:04:37  *** superflit_ <superflit_!~superflit@140.226.49.148> has quit IRC (Quit: superflit_)
+2011-03-10T19:05:17  *** superflit_ <superflit_!~superflit@140.226.49.148> has joined #aichallenge
+2011-03-10T19:07:32  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-10T19:09:47  *** superflit_ <superflit_!~superflit@140.226.49.148> has quit IRC (Ping timeout: 250 seconds)
+2011-03-10T19:16:29  *** chemuduguntar <chemuduguntar!~ravic@smtp.touchcut.com> has joined #aichallenge
+2011-03-10T19:22:19  <jmcarthur> bss03: ping
+2011-03-10T19:37:21  <bss03> jmcarthur: pong
+2011-03-10T19:46:09  *** delt0r___ <delt0r___!~delt0r@188-22-167-16.adsl.highway.telekom.at> has quit IRC (Remote host closed the connection)
+2011-03-10T19:46:30  *** delt0r___ <delt0r___!~delt0r@188-22-167-16.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-10T19:48:57  <amstan> jmcarthur, bss03: 0% packet loss
+2011-03-10T19:50:00  <bss03> amstan: I like to think of it as a rtt of 1800000ms or so.
+2011-03-10T19:50:22  <amstan> contestbot: ping
+2011-03-10T19:50:22  <contestbot> pong
+2011-03-10T19:50:27  <bss03> amstan: Which means jmcarthur should reply in about 2 minutes. :)
+2011-03-10T19:57:10  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Quit: Konversation terminated!)
+2011-03-10T19:57:12  *** amstan_ <amstan_!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-10T19:57:12  *** ChanServ sets mode: +o amstan_
+2011-03-10T19:57:12  <antimatroid> oh god, it's almost format time
+2011-03-10T19:58:39  <sigh> format time?
+2011-03-10T19:59:10  <antimatroid> my system is a mess, it's been needed for a while
+2011-03-10T19:59:14  <antimatroid> i'm finally formatting
+2011-03-10T19:59:34  <antimatroid> i'm only putting xp on again for the moment, i'll try to find a spare drive and put ubunutu on it
+2011-03-10T20:01:11  <jmcarthur> bss03: sorry, distractions
+2011-03-10T20:01:31  <jmcarthur> bss03: i've stuck what i have so far on the rewrite on darcsden. i just replaces the old repo with it
+2011-03-10T20:01:34  <jmcarthur> *replaced
+2011-03-10T20:01:50  <antimatroid> sigh: did you talk to McLeopold at all today
+2011-03-10T20:01:58  <sigh> nope
+2011-03-10T20:02:00  <antimatroid> he doesn't think there was any issues with conflicts
+2011-03-10T20:02:02  <sigh> ping McLeopold
+2011-03-10T20:02:04  <antimatroid> possibly badly named functions
+2011-03-10T20:02:28  <sigh> badly named functions by me?
+2011-03-10T20:02:31  <jmcarthur> bss03: i just blew away all my SPECIALIZE pragmas and stuff because i split it up a bit more, so it's slower than it was earlier, but that should be easy to get back. there's also some extra functionality yet to add, like a timer, and i also want to make some more accessors and stuff like distance function and junk
+2011-03-10T20:02:33  <antimatroid> by him
+2011-03-10T20:02:46  <jmcarthur> bss03: anyway, i've gotta go
+2011-03-10T20:02:49  <bss03> Kk.
+2011-03-10T20:02:53  <bss03> Thanks for the update.
+2011-03-10T20:03:02  <jmcarthur> bss03: http://darcsden.com/jmcarthur/ants-bot
+2011-03-10T20:03:06  <antimatroid> basically he was marking a square as occupied once an ant moved there, then killing conflicts as they occured, i think?
+2011-03-10T20:03:12  <jmcarthur> there's no example included in that yet either, sadly
+2011-03-10T20:03:21  <jmcarthur> but i have one sitting around that i can't get to right now
+2011-03-10T20:03:24  <jmcarthur> i'll be back later
+2011-03-10T20:03:34  <sigh> antimatroid: yes, but that doesn't help when it conflicts with an ant that has yet to move
+2011-03-10T20:03:43  <bss03> I'll be around for about 3 more hours.
+2011-03-10T20:03:50  <antimatroid> sigh: it should still be marked as occupied yeah?
+2011-03-10T20:04:08  <McLeopold> sigh: pong
+2011-03-10T20:04:14  <antimatroid> there we go
+2011-03-10T20:04:20  <sigh> anyway, I've changed the code for other reasons, so it's a moot point :)
+2011-03-10T20:04:39  <antimatroid> McLeopold: when you removed 2 ants that collided, the square was still marked as occupied yeah?
+2011-03-10T20:05:00  <McLeopold> uh, let me check
+2011-03-10T20:05:07  <sigh> McLeopold: I centralised all the management of ants either way, so that keeping track of history is easy
+2011-03-10T20:05:16  <antimatroid> yeah, i don't think it matters now
+2011-03-10T20:07:39  <McLeopold> antimatroid: yes
+2011-03-10T20:07:55  <McLeopold> so if others moved there, they would still die
+2011-03-10T20:08:41  <sigh> McLeopold: anyway, I'm still working on the replay but could you review the AntStore stuff? it should be stable now https://github.com/sigh/aichallenge/blob/replay/ants/ants.py
+2011-03-10T20:09:01  <sigh> all the add/kill/move of ants is controlled by that class now
+2011-03-10T20:09:07  <McLeopold> I did look at it.  I'm leaning toward not having the ant store class
+2011-03-10T20:09:41  <sigh> fairly simple to take it out, but any reason why not?
+2011-03-10T20:09:51  * amstan_ is amazed to look at the impact graph: https://github.com/aichallenge/aichallenge/graphs/impact
+2011-03-10T20:09:59  <amstan_> look at all the colours!
+2011-03-10T20:10:35  <McLeopold> sigh: it makes it more complex with no benefit
+2011-03-10T20:11:41  <sigh> McLeopold: it means that different parts of the code don't have to all know how to kill or add an ant
+2011-03-10T20:11:46  <McLeopold> also, it looked like I confused  you with my "resolve_orders" function name
+2011-03-10T20:13:45  <sigh> ah, it did at first, then I coopted it to a different place :)
+2011-03-10T20:15:05  <sigh> point is, now there is a lot more info to be updated, because there is the list of current ants, the list of all ants that have been created, list of killed ants... keeping them in a class just keeps things consistant
+2011-03-10T20:16:32  *** amstan_ <amstan_!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-10T20:16:46  <sigh> did you look at the version I have up now? it's actually quite simple now, and certainly simpler than the one I had up when I messaged you yesterday
+2011-03-10T20:16:56  <McLeopold> I'll need to review it.
+2011-03-10T20:17:04  <McLeopold> so, here's my thoughts on it...
+2011-03-10T20:17:21  <McLeopold> I want something that people can look at and understand how the game works.
+2011-03-10T20:17:23  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.14/20110221053559])
+2011-03-10T20:17:51  <McLeopold> That's why I was trying to keep each part in a separate function, do_attack, do_spawn, etc...
+2011-03-10T20:18:24  <sigh> Sure, I think this helps that
+2011-03-10T20:18:46  <sigh> the only game logic in the class is the resolve_moves function, which you an move back into Ants
+2011-03-10T20:18:53  <sigh> if that's the issue
+2011-03-10T20:18:56  <McLeopold> okay, if it stays easy to understand, so others can implement their own engine, then it is good
+2011-03-10T20:19:39  <McLeopold> the resolve_orders function was really to cleanup all the conflict flags in the map
+2011-03-10T20:19:47  <McLeopold> it didn't actually resolve_orders
+2011-03-10T20:20:03  <sigh> :)
+2011-03-10T20:20:11  <sigh> I don't need the conflict flags anymore
+2011-03-10T20:20:31  <sigh> I think that makes it clearer, now there is an explict list of killed ants
+2011-03-10T20:20:41  <McLeopold> it was just a flag to be used while resolving orders, and to be cleared to land after the next state was sent
+2011-03-10T20:21:05  <sigh> yes, and it was also used to mark dead ants in later parts of the game
+2011-03-10T20:21:31  <McLeopold> yes, and there was a list of dead ants already
+2011-03-10T20:21:33  <sigh> *later parts of the turn
+2011-03-10T20:22:33  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-10T20:24:53  <antimatroid> bleh copying files takes so damn long
+2011-03-10T20:26:02  <McLeopold> sigh: are you going to be around later?
+2011-03-10T20:26:22  <sigh> yeah
+2011-03-10T20:26:35  <McLeopold> okay, I've gotta take off for a few hours
+2011-03-10T20:26:42  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-03-10T20:53:14  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has left #aichallenge
+2011-03-10T21:12:40  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-03-10T21:12:55  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-10T21:26:09  <sigh> @later tell McLeopold I remove AntStore by essentially moving the functions into the Ants class so that the single-point-of-control is kept: https://github.com/sigh/aichallenge/blob/replay/ants/ants.py
+2011-03-10T21:26:09  <contestbot> sigh: I think that worked...
+2011-03-10T21:30:59  *** boegel <boegel!~boegel@91.182.131.126> has quit IRC (Ping timeout: 252 seconds)
+2011-03-10T21:35:51  *** boegel <boegel!~boegel@91.182.127.98> has joined #aichallenge
+2011-03-10T22:17:21  <sigh> @later tell McLeopold I've finished the replay output, it is merged into my main epsilon branch now: https://github.com/sigh/aichallenge
+2011-03-10T22:17:21  <contestbot> sigh: Ready to serve.
+2011-03-10T22:18:21  <sigh> @later tell Frontier I've finished the replay output if you are ready to try it out: https://github.com/sigh/aichallenge
+2011-03-10T22:18:21  <contestbot> sigh: Aye, aye, sir
+2011-03-10T22:19:47  *** amstan <amstan!~alex@70.52.167.207> has joined #aichallenge
+2011-03-10T22:19:47  *** ChanServ sets mode: +o amstan
+2011-03-10T22:27:02  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-10T22:27:07  <antimatroid> ... and i'm back
+2011-03-10T22:28:13  <sigh> *crickets*
+2011-03-10T22:28:29  *** amstan <amstan!~alex@70.52.167.207> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T22:38:14  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-03-10T22:41:07  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has joined #aichallenge
+2011-03-10T22:41:07  *** ChanServ sets mode: +o amstan
+2011-03-10T22:50:59  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has quit IRC (Ping timeout: 255 seconds)
+2011-03-10T23:16:37  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-10T23:31:33  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-10T23:32:33  *** amstan_ <amstan_!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-10T23:32:33  *** ChanServ sets mode: +o amstan_
+2011-03-10T23:36:19  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-10T23:36:28  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-10T23:44:48  <McLeopold> sigh: you around
+2011-03-10T23:45:28  <sigh> I am
+2011-03-10T23:45:37  <sigh> I got rid of AntStore for you :P
+2011-03-10T23:45:45  <McLeopold> yeah
+2011-03-10T23:45:49  <McLeopold> but...
+2011-03-10T23:46:06  <McLeopold> you might have convinced me it was good
+2011-03-10T23:46:10  <sigh> haha
+2011-03-10T23:46:17  <McLeopold> I now feel bad for all the work you are doing
+2011-03-10T23:46:45  <sigh> nah, I don't mind... I like working out the design of code
+2011-03-10T23:46:49  <antimatroid> McLeopold: my command line recognises python now
+2011-03-10T23:47:08  <antimatroid> format fixes all
+2011-03-10T23:47:13  <sigh> one thing I like about it now is that the ant data and the map data are updated in the same function
+2011-03-10T23:47:17  <sigh> which was not the case before
+2011-03-10T23:47:40  <McLeopold> yes, that is good
+2011-03-10T23:47:57  <sigh> either way, I'm not sorry that I implemented AntStore as it helped me put everything into one place
+2011-03-10T23:48:40  <McLeopold> I'm usually against creating classes or object, unless there is a good reason.  At least in python.
+2011-03-10T23:49:02  <antimatroid> McLeopold: I think I turned my map generator into a class :P
+2011-03-10T23:49:15  <antimatroid> i was contemplating doing the same with the map analyzer?
+2011-03-10T23:49:15  <sigh> personally I don't like having really large classes :P
+2011-03-10T23:49:54  <sigh> having stuff separated out makes it easier to reason about, because you have a better idea where things can change
+2011-03-10T23:50:32  <McLeopold> I find the opposite.  Having to follow to many rabbit trails makes code confusing for me.
+2011-03-10T23:50:55  <McLeopold> The Ant class was just on the line of being too big.
+2011-03-10T23:51:15  <antimatroid> i'm with mcleopold there
+2011-03-10T23:51:33  <sigh> well, it is required for keeping all the data together... you could make a case for taking the move method out
+2011-03-10T23:51:35  <antimatroid> i'd rather a big chunk to do something rather than a bunch of different chunks i need to pull up
+2011-03-10T23:51:40  <sigh> I'mnot strongly for or against
+2011-03-10T23:52:13  <McLeopold> I think the ant lists and map data structures should be tied together, as if it was just one complex data structure
+2011-03-10T23:52:25  <McLeopold> the ant lists where originally just a speed up
+2011-03-10T23:52:36  <McLeopold> I wanted just a matrix to be able to calculate everything
+2011-03-10T23:53:10  <sigh> McLeopold: I agree that ants/map/food should be a single object
+2011-03-10T23:53:41  <sigh> which is another reason I got rid of AntStore, ants are too tightly coupled with the map for a seperate store to make sense
+2011-03-10T23:54:04  <McLeopold> But you still have an Ant class?
+2011-03-10T23:54:35  <sigh> Ant is just a container, no different to having a tuple or a dictionary of values
+2011-03-10T23:55:44  <McLeopold> except you have a move method
+2011-03-10T23:56:10  <McLeopold> or, is that just for tracking?
+2011-03-10T23:56:32  <sigh> sure, but the move method contains no game logic
+2011-03-10T23:56:50  <sigh> and it only serves to keeps its internal state consistent
+2011-03-10T23:57:00  <McLeopold> ok
+2011-03-10T23:57:12  <sigh> all the logic about moving an Ant is in the Ants class
+2011-03-10T23:57:26  <sigh> in the resolve_orders and do_orders methods
+2011-03-10T23:57:33  <McLeopold> If we did need to cut down the Ants class, I would say try and move the map data structure, including lists out to a State class.
+2011-03-10T23:57:46  <McLeopold> crap, you kept resolve_orders?
+2011-03-10T23:57:55  <sigh> it does something different now
+2011-03-10T23:58:25  <sigh> resolve_orders is called at the *start* of finish_turn to sort out the conflicts
+2011-03-10T23:58:46  <sigh> it resolves the conflicts, so I think the name is appropriate
+2011-03-10T23:58:52  <McLeopold> oh, so I guess you made it actually resolve orders then :)
+2011-03-10T23:59:04  <sigh> :)
+2011-03-10T23:59:20  <McLeopold> does all the "common game" functions make sense?  My plan is that any contest will use that framework.
+2011-03-10T23:59:40  <sigh> which functions?
+2011-03-10T23:59:46  <McLeopold> If python had true implementation classes, I would do that.

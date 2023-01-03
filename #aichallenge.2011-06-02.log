@@ -1,0 +1,824 @@
+2011-06-02T00:06:01  <janzert> we should get the mime type set to something sane for game replay files
+2011-06-02T00:06:24  <amstan> what do we have now?
+2011-06-02T00:06:59  <janzert> firefox just identifies it as a php File
+2011-06-02T00:07:23  <amstan> how so? it's just a text file
+2011-06-02T00:07:25  <janzert> which actually rather weird
+2011-06-02T00:07:55  <janzert> I was assuming from the mime type but I actually don't have a way to look at the headers of the response easily
+2011-06-02T00:08:06  <jbroman> Maybe if no Content-Type is sent it looks at the extension?
+2011-06-02T00:08:25  <janzert> except there is no extension
+2011-06-02T00:08:30  <janzert> http://aichallengebeta.hypertriangle.com/game/10000
+2011-06-02T00:08:34  <amstan> janzert: you could telnet maybe?
+2011-06-02T00:08:56  <jbroman> janzert: My Firefox does not identify it as PHP.
+2011-06-02T00:09:35  <jbroman> In fact, it is getting served as applicaiton/json
+2011-06-02T00:09:37  <amstan> janzert: i get Content-Type: text/html
+2011-06-02T00:09:38  <jbroman> application*
+2011-06-02T00:09:46  <janzert> heh
+2011-06-02T00:10:03  <amstan> http://pastebin.com/rRXNSwtj
+2011-06-02T00:10:07  <jbroman> curl --head http://aichallengebeta.hypertriangle.com/game/10000
+2011-06-02T00:10:20  <amstan> jbroman: real programmers telnet directly, lol
+2011-06-02T00:10:50  <amstan> we should probably fix the cache for this
+2011-06-02T00:11:08  <amstan> we won't need to change the contents of replay files
+2011-06-02T00:11:20  <jbroman> amstan: You got /, not /game/10000
+2011-06-02T00:11:23  <jbroman> of course the home page is text/html
+2011-06-02T00:11:25  <amstan> oh, right
+2011-06-02T00:11:35  <jbroman> And *I'm* the newbie.
+2011-06-02T00:12:12  <amstan> lol
+2011-06-02T00:16:01  <janzert> hmm
+2011-06-02T00:16:39  <janzert> curl shows application/json raw telnet seems to show some binary encoding? maybe gzipped
+2011-06-02T00:16:56  <jbroman> It is application/json, encoded with gzip.
+2011-06-02T00:17:03  <jbroman> HTTP encoding does not affect MIME type.
+2011-06-02T00:17:10  <jbroman> (Since the user agent is expected to decode it.)
+2011-06-02T00:17:18  <janzert> http://pastebin.com/kYwYzn9T
+2011-06-02T00:17:19  <janzert> right
+2011-06-02T00:17:38  <janzert> I'm not sure why firefox isn't handling it better though
+2011-06-02T00:17:49  <jbroman> Dunno, seems OK for me.
+2011-06-02T00:23:15  *** UncleVasya <UncleVasya!kvirc@178-133-159-241.dialup.umc.net.ua> has joined #aichallenge
+2011-06-02T00:40:04  *** MATPOC <MATPOC!4df6e1a2@gateway/web/freenode/ip.77.246.225.162> has joined #aichallenge
+2011-06-02T00:45:27  <janzert> sweet it only takes an ec2 worker about 7 minutes to set up and start running
+2011-06-02T00:45:48  <amstan> decent
+2011-06-02T00:52:52  <janzert> ok, ec2 server and worker running
+2011-06-02T00:53:00  *** Palmik <Palmik!~palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2011-06-02T00:53:26  <janzert> the automated worker setup executed without a problem
+2011-06-02T00:53:50  <janzert> if anyone wants to add some bots you can access it at aibeta.janzert.com
+2011-06-02T00:53:54  *** UncleVasya <UncleVasya!kvirc@178-133-159-241.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-06-02T00:54:06  <janzert> not sure how long it'll be up though
+2011-06-02T00:54:36  *** yasith <yasith!~yasith@124.43.61.166> has joined #aichallenge
+2011-06-02T00:54:59  *** MATPOC <MATPOC!4df6e1a2@gateway/web/freenode/ip.77.246.225.162> has quit IRC (Quit: Page closed)
+2011-06-02T00:56:35  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T01:05:01  *** Meatkat <Meatkat!~bovard@217.113.66.228> has joined #aichallenge
+2011-06-02T01:10:10  <janzert> McLeopold: ping
+2011-06-02T01:15:12  <McLeopold> ping
+2011-06-02T01:15:18  <McLeopold> janzert:
+2011-06-02T01:15:49  <janzert> so I've got a server and worker up on ec2 at aibeta.janzert.com
+2011-06-02T01:16:11  <janzert> 4 accounts with successful submissions
+2011-06-02T01:16:26  <amstan> sandboxed?
+2011-06-02T01:16:28  <janzert> and a few maps for 4 players
+2011-06-02T01:16:32  <janzert> amstan: yes
+2011-06-02T01:16:41  <amstan> emails?
+2011-06-02T01:16:45  <janzert> what do I need to get games going?
+2011-06-02T01:16:51  <janzert> amstan: no email
+2011-06-02T01:16:57  <amstan>  ./worker.py -n -t 0
+2011-06-02T01:17:08  <janzert> amstan: yeah that's working already
+2011-06-02T01:17:16  <janzert> it's compiling and testing submissions fine
+2011-06-02T01:17:24  <amstan> i think the manager also needs to be on
+2011-06-02T01:17:26  <McLeopold> you need maps in the database
+2011-06-02T01:17:30  <amstan> oh, yes
+2011-06-02T01:17:33  <janzert> ahh
+2011-06-02T01:17:34  <McLeopold> the manager is only needed if you want rankings
+2011-06-02T01:17:34  <janzert> probably
+2011-06-02T01:17:42  <janzert> manager is actually running already
+2011-06-02T01:17:44  <amstan> manager/add_maPS..
+2011-06-02T01:17:57  <janzert> I got the maps in the directory but not added to the database
+2011-06-02T01:18:40  <McLeopold> don't include asymmetric, btw
+2011-06-02T01:19:13  <janzert> hmm, "No maps added, priorities not changed."
+2011-06-02T01:19:21  <McLeopold> Automattic map creation is something I was planning to put in the manager
+2011-06-02T01:19:41  <janzert> ahh, map names need to end with .map
+2011-06-02T01:19:41  <McLeopold> did you copy maps files from aichallenge/ants/maps to maps?
+2011-06-02T01:19:58  <janzert> no, created 20 new ones with symmetric mapgen
+2011-06-02T01:20:49  <McLeopold> an underscore would have looked nicer than a zero...
+2011-06-02T01:23:05  <McLeopold> janzert: did you know about integration_testing/create_test_bots?
+2011-06-02T01:23:29  <janzert> sorta, as in I know exists but haven't used it at all
+2011-06-02T01:23:51  <McLeopold> look at reset_server.sh
+2011-06-02T01:24:03  <janzert> yay, the worker is playing a game
+2011-06-02T01:24:06  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has joined #aichallenge
+2011-06-02T01:25:29  <McLeopold> janzert: did you take a look at the apache settings?  I've got special extensions for serving gzipped files
+2011-06-02T01:25:39  <janzert> nope
+2011-06-02T01:25:45  <McLeopold> so you should be able to gzip the map files with a .mapgz
+2011-06-02T01:26:47  <janzert> they're only basically downloaded by each worker once right?
+2011-06-02T01:26:54  <McLeopold> yes
+2011-06-02T01:27:04  <McLeopold> but others will want to download from the main site
+2011-06-02T01:27:45  <McLeopold> actually, I think urllib had issues with gzipped content...
+2011-06-02T01:27:48  <janzert> we should probably add a @reboot cronjob in the server_setup to start up the manager automatically
+2011-06-02T01:28:34  <janzert> don't expect it to be a major bandwidth drain in any case, do you?
+2011-06-02T01:28:49  <McLeopold> no, but it's there
+2011-06-02T01:29:42  <McLeopold> where's the game?
+2011-06-02T01:29:57  <janzert> still running it looks like
+2011-06-02T01:30:20  <McLeopold> haha, golang issues?
+2011-06-02T01:30:47  <janzert> yep, I think the starter bot isn't compatible with the latest go version
+2011-06-02T01:31:06  <McLeopold> so how does it work on beta?
+2011-06-02T01:31:32  <janzert> that's probably still using r56 I'm guessing?
+2011-06-02T01:32:12  <janzert> the version installed now is r57 I believe
+2011-06-02T01:33:41  <janzert> hmm, so I can see my new serial mode is running 2 bots simultaneously like I set it to but...
+2011-06-02T01:33:54  <janzert> I'm starting to wonder if it has an infinite loop :(
+2011-06-02T01:34:16  <McLeopold> did you do debug?
+2011-06-02T01:34:22  <McLeopold> you should see the turns progress
+2011-06-02T01:34:51  <janzert> nope, it's running exactly as the automatic install left it
+2011-06-02T01:35:25  <janzert> oh, it just finished
+2011-06-02T01:36:33  <McLeopold> game replay not found :(
+2011-06-02T01:36:49  <janzert> hmm, yeah. it doesn't exist on the server
+2011-06-02T01:36:56  <McLeopold> permissions issue?
+2011-06-02T01:36:57  <janzert> the games directory is empty
+2011-06-02T01:37:16  <janzert> yep
+2011-06-02T01:37:52  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-06-02T01:38:01  <McLeopold> beta has the www-data group with rwx
+2011-06-02T01:38:18  <McLeopold> also, the logs files need special permissions
+2011-06-02T01:38:22  <janzert> yeah, logs and maps had the correct group but not games
+2011-06-02T01:38:24  <McLeopold> which I don't really like
+2011-06-02T01:39:06  <McLeopold> www-data needs write access to api_log.txt (which will be turned off for launch)
+2011-06-02T01:39:34  <janzert> needs write access for the apache logs too doesn't it?
+2011-06-02T01:39:40  <McLeopold> no
+2011-06-02T01:39:49  <McLeopold> those are owned by root
+2011-06-02T01:39:54  <janzert> ahh
+2011-06-02T01:40:03  <McLeopold> manager.log did need access, but I think I fixed it
+2011-06-02T01:40:16  <McLeopold> though it would be nice to give it access
+2011-06-02T01:40:42  <McLeopold> I was using rolling log files, and when it rolled over, the new log didn't have rights for www-data
+2011-06-02T01:41:04  <CIA-48> aichallenge: janzert epsilon * rd504b51 / setup/server_setup.py : Fix group of replay directory - http://bit.ly/iSCozk
+2011-06-02T01:41:36  <janzert> yay, game 3 is there
+2011-06-02T01:41:53  <McLeopold> whoa, I see the bug in the go starter...
+2011-06-02T01:42:56  <janzert> oh, I also found a compiler.py problem for the new go install
+2011-06-02T01:44:11  <CIA-48> aichallenge: janzert epsilon * r61211d3 / worker/compiler.py : Don't specify full path to go compiler (recent install changes moved where it is) - http://bit.ly/m9ng1D
+2011-06-02T01:45:46  <janzert> hmm, so why is the map name missing the first letter on the profile page?
+2011-06-02T01:46:03  <janzert> too long or I messed something up when adding them?
+2011-06-02T01:46:19  <McLeopold> there's a 50px style on it
+2011-06-02T01:46:38  <janzert> ahh
+2011-06-02T01:46:56  <McLeopold> err, 85px
+2011-06-02T01:47:38  <janzert> whatever it is, it's a fixed pixel size
+2011-06-02T01:47:39  <McLeopold> something had to give, too much data :)
+2011-06-02T01:49:49  <janzert> yay and the leaderboard updates, but hmm isn't rank supposed to be in order of skill?
+2011-06-02T01:50:22  <McLeopold> that's weird...
+2011-06-02T01:50:34  <McLeopold> I thought I had fixed that...
+2011-06-02T01:51:40  <janzert> want a login?
+2011-06-02T01:51:45  <McLeopold> sure
+2011-06-02T01:52:03  <McLeopold> can I play with a snazzy amazon web app?
+2011-06-02T01:52:54  <janzert> what snazzy amazon web app would that be?
+2011-06-02T01:53:41  <janzert> manager is running in a screen from root right now
+2011-06-02T01:55:27  <McLeopold> Don't they have something?  at least to turn it on and off?
+2011-06-02T01:55:44  <janzert> oh to control the ec2 instances? yeah
+2011-06-02T01:55:57  <janzert> sorry you don't get access to that :P
+2011-06-02T01:56:31  <McLeopold> putty is giving me "No supported authentication methods available"
+2011-06-02T01:57:21  <janzert> ugh, I bet it's set to only allow key logins by default
+2011-06-02T01:58:31  <McLeopold> same with ubuntu
+2011-06-02T01:58:44  <janzert> try again now
+2011-06-02T02:02:35  <janzert> ok, it let me login to that account now
+2011-06-02T02:03:10  <janzert> now the question is, did I get the sudoers set up right for it?
+2011-06-02T02:03:26  <McLeopold> I'm in, with my key
+2011-06-02T02:03:32  <janzert> great
+2011-06-02T02:04:02  <janzert> I'll go ahead and disable password logins again then
+2011-06-02T02:04:03  <McLeopold> may I install hg?
+2011-06-02T02:04:30  <janzert> go ahead
+2011-06-02T02:04:37  *** UncleVasya <UncleVasya!kvirc@178-133-166-84.dialup.umc.net.ua> has joined #aichallenge
+2011-06-02T02:05:00  <janzert> be aware this server is probably only going to stay up overnight or so though
+2011-06-02T02:05:08  <janzert> so don't get to invested in it ;)
+2011-06-02T02:05:20  <McLeopold> oh, it won't be moved to the final contest?
+2011-06-02T02:05:42  <janzert> nah, this was just a quick test for me to make sure everything worked on ec2
+2011-06-02T02:06:13  <McLeopold> who fixed the go starter?  I didn't think I committed?
+2011-06-02T02:06:28  <janzert> I don't think anyone did?
+2011-06-02T02:06:51  <janzert> I fixed the go stuff in compiler.py a little while ago
+2011-06-02T02:06:56  <janzert> the paths that is
+2011-06-02T02:07:03  <McLeopold> my git status is lying to me...
+2011-06-02T02:07:07  <UncleVasya> Are you talking about http://aichallengebeta.hypertriangle.com/ or something else?
+2011-06-02T02:07:24  <janzert> UncleVasya: http://aibeta.janzert.com/
+2011-06-02T02:08:08  <janzert> feel free to create an account and beat up on the starter bots there :)
+2011-06-02T02:08:15  <CIA-48> aichallenge: McLeopold epsilon * rf820b0e / (setup/server_setup.py worker/compiler.py): Merge branch 'epsilon' of https://github.com/aichallenge/aichallenge into epsilon - http://bit.ly/iwKxSw
+2011-06-02T02:09:11  <UncleVasya> janzert: Why thre is two beta servers now?
+2011-06-02T02:09:25  <McLeopold> yeah, shouldn't it be gamma?
+2011-06-02T02:09:42  <janzert> this is just my personal test to check that things work on ec2
+2011-06-02T02:09:58  <janzert> it probably won't stay around very long
+2011-06-02T02:10:22  <janzert> feel free to create an account and play though
+2011-06-02T02:10:47  <janzert> it is probably running games under the machine type that will be used for the final contest
+2011-06-02T02:11:07  <McLeopold> janzert: let's add a ton of java bots...
+2011-06-02T02:12:10  <UncleVasya> "and beat up on the starter bots there."  My current bot is a starter bot + 3 if-else to prevent suicide :)
+2011-06-02T02:18:49  <CIA-48> aichallenge: McLeopold epsilon * rf60df04 / integration_testing/create_test_bot.py : fixed bug in java bot creation - http://bit.ly/lHPLZT
+2011-06-02T02:19:25  <McLeopold> janzert: where's the worker log?
+2011-06-02T02:19:41  <janzert> on the worker I assume?
+2011-06-02T02:19:57  <janzert> worker is an actual separate server
+2011-06-02T02:20:02  * McLeopold facepalm
+2011-06-02T02:20:56  <McLeopold> can amazon tie ssh account together on separate servers?
+2011-06-02T02:21:33  <janzert> not really, it just installs one ssh key on server initialization
+2011-06-02T02:21:46  <McLeopold> so, are the workers working?
+2011-06-02T02:22:16  <janzert> yeah, it's just one but it is cooking away
+2011-06-02T02:22:17  *** yasith <yasith!~yasith@124.43.61.166> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T02:22:29  <McLeopold> did it compile the java bots?
+2011-06-02T02:24:25  <janzert> looks like the java bots had compilation errors
+2011-06-02T02:24:43  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has left #aichallenge
+2011-06-02T02:25:08  <janzert> './MyBot.java:3: class LeftyBot is public, should be declared in a file named LeftyBot.java', 'public class LeftyBot implements Bot {', '       ^', '1 error'
+2011-06-02T02:26:41  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T02:27:39  <UncleVasya> janzert: I've created two accounts but on both I have Login Failed.
+2011-06-02T02:29:34  <janzert> did you click the confirmation link after creating the account?
+2011-06-02T02:31:25  * UncleVasya is blind, me is stupid.
+2011-06-02T02:31:56  <janzert> it's because we don't have email confirmation working yet
+2011-06-02T02:34:33  *** yasith <yasith!~yasith@124.43.56.19> has joined #aichallenge
+2011-06-02T02:38:18  <UncleVasya> testacc1 is ruilov? After previous contest Brazil associated with ruilov for me :)
+2011-06-02T02:38:53  <janzert> :) nah, testacc are both just test accounts by me
+2011-06-02T02:39:39  <McLeopold> janzert: looks like some incorrect food amounts...
+2011-06-02T02:40:10  <janzert> pretty sure the only setting I changed was 'serial'
+2011-06-02T02:40:28  <janzert> and just in server_info.php
+2011-06-02T02:40:31  <McLeopold> I don't think I committed the correct values then
+2011-06-02T02:41:49  <CIA-48> aichallenge: McLeopold epsilon * rbc42210 / (2 files): update to food amounts - http://bit.ly/jqtZOn
+2011-06-02T02:43:19  <McLeopold> janzert: why is worker so slow?
+2011-06-02T02:43:30  <McLeopold> I hope this isn't how it is going to really work
+2011-06-02T02:43:46  <janzert> I have a feeling it is because of the serial game?
+2011-06-02T02:43:53  <janzert> not sure really
+2011-06-02T02:43:57  <janzert> feel free to poke at it
+2011-06-02T02:44:14  <janzert> you saw the pm on a login to the worker as well?
+2011-06-02T02:44:24  <janzert> I gotta get off to bed soon
+2011-06-02T02:46:11  <McLeopold> jails?
+2011-06-02T02:46:35  <janzert> shouldn't be slowing the actual execution down any
+2011-06-02T02:46:50  <McLeopold> when I ran them it was quite a bit slower
+2011-06-02T02:46:51  <janzert> but it may introduce quite a bit more overhead to start and stop bots
+2011-06-02T02:47:17  <janzert> it looks to me like all the cpu in use is being used by the engine mostly
+2011-06-02T02:48:29  <McLeopold> is worker in a screen?
+2011-06-02T02:48:43  *** ohCrivens <ohCrivens!591b1472@gateway/web/freenode/ip.89.27.20.114> has joined #aichallenge
+2011-06-02T02:48:48  <janzert> also I just realized the way it is sending bots to the get_moves function it doesn't filter out dead bots first
+2011-06-02T02:49:12  <janzert> so it may send only 1 or 0 live bots to it at a time
+2011-06-02T02:49:14  <McLeopold> look at the javabots
+2011-06-02T02:49:24  <janzert> yes?
+2011-06-02T02:49:29  <McLeopold> 429M virtual?
+2011-06-02T02:50:00  <janzert> yes?
+2011-06-02T02:50:34  <janzert> resident is the more important number anyway right?
+2011-06-02T02:50:52  <McLeopold> maybe
+2011-06-02T02:51:14  <janzert> that's my understanding
+2011-06-02T02:51:33  <janzert> I forgot to change the language memory size too
+2011-06-02T02:51:40  <McLeopold> so, is the worker in a screen session??
+2011-06-02T02:51:50  <janzert> I think it might be
+2011-06-02T02:52:06  <janzert> yep
+2011-06-02T02:52:07  <McLeopold> can I look?
+2011-06-02T02:52:16  <janzert> of course :)
+2011-06-02T02:52:47  <McLeopold> you'll need to set suid on /usr/bin/screen, then turn on multiuser and acladd
+2011-06-02T02:53:05  <janzert> you should have sudo
+2011-06-02T02:53:31  <janzert> I'm supposed to be at work in 7 hours so I really gotta go
+2011-06-02T02:53:34  <McLeopold> okay, but I don't have access to the screen
+2011-06-02T02:53:45  <janzert> it's running under root
+2011-06-02T02:53:49  <janzert> pretty sure
+2011-06-02T02:56:21  *** jmcarthur <jmcarthur!~jake@76.73.216.201> has quit IRC (Ping timeout: 258 seconds)
+2011-06-02T02:56:55  <McLeopold> janzert: how do I get the worker to the foreground?
+2011-06-02T02:57:25  <janzert> ?
+2011-06-02T02:57:38  <janzert> oh
+2011-06-02T02:57:56  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-02T02:57:57  <janzert> hmm, probably easiest to kill it and restart it directly
+2011-06-02T02:58:00  <McLeopold> k
+2011-06-02T02:58:29  <janzert> actually in the screen session, fg %1 might have worked
+2011-06-02T02:58:42  <McLeopold> too late :)
+2011-06-02T02:58:50  <McLeopold> yeah, this is really slow
+2011-06-02T02:58:52  <janzert> not sure though since it was started from the start_worker script
+2011-06-02T02:59:23  *** berak <berak!~chatzilla@89.204.153.167> has joined #aichallenge
+2011-06-02T02:59:47  <janzert> the engine still starts and stops bots even when not running in serial mode?
+2011-06-02T03:00:07  <janzert> yes, I see it does
+2011-06-02T03:00:47  <janzert> ugh, and it even starts and stops them multiple times in one turn
+2011-06-02T03:01:03  <McLeopold> I can't compare jails to no jails cause the language were installed only inside the jails :(
+2011-06-02T03:01:36  <janzert> there really isn't any execution overhead in a jail
+2011-06-02T03:01:46  <janzert> it doesn't do any virtualization or such
+2011-06-02T03:01:57  <McLeopold> okay, but something is going on
+2011-06-02T03:02:23  <janzert> it does use the actual kill program to send the stop and resume signals
+2011-06-02T03:02:39  <janzert> I have a feeling that may be what is slowing it down so much
+2011-06-02T03:02:53  <McLeopold> what line?
+2011-06-02T03:03:07  <janzert> sandbox.py line 99
+2011-06-02T03:03:17  <janzert> it has to sudo and then run kill
+2011-06-02T03:03:30  <janzert> 4 times per bot per move
+2011-06-02T03:04:06  <janzert> and running it through a shell
+2011-06-02T03:04:08  <McLeopold> for a dead bot only?
+2011-06-02T03:04:24  <janzert> actually just for alive bots
+2011-06-02T03:04:58  <janzert> getting rid of the shell=True which also requires formatting the command as a list might help some
+2011-06-02T03:05:13  <janzert> it'd be one less process started per call
+2011-06-02T03:06:26  <janzert> something like subprocess.cal(['sudo', '-u', self.name, 'kill', '-'+signal, '-1'])
+2011-06-02T03:07:24  <McLeopold> why do we need subprocess?  doesn't python support signals?
+2011-06-02T03:07:44  <janzert> we have to send the signal as the jailuser
+2011-06-02T03:08:19  <janzert> contest won't have permission to send signals to a jailuser process
+2011-06-02T03:09:18  <UncleVasya> janzert: Skill of some bots became changed but their Latest Games list is empty.
+2011-06-02T03:09:19  <janzert> one way to check the theory may be to just comment out the places in the engine where the bots are paused and resumed
+2011-06-02T03:09:54  <McLeopold> hmm..
+2011-06-02T03:09:57  * janzert points toward McLeopold, he's the one that would know about that
+2011-06-02T03:10:09  * McLeopold points to sigh
+2011-06-02T03:10:42  <McLeopold> bedtime, this something to solve later, and it would be a showstopper
+2011-06-02T03:11:28  <janzert> yeah, I'm really out too. I'll leave the server up for now
+2011-06-02T03:13:09  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-06-02T03:24:36  *** jmcarthur <jmcarthur!~jake@76.73.216.201> has joined #aichallenge
+2011-06-02T03:27:40  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T03:29:58  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-06-02T03:36:00  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-02T03:41:08  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-06-02T03:47:16  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-06-02T03:54:25  *** antimatroid <antimatroid!~nick@207.215-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T03:55:47  *** antimatroid <antimatroid!~nick@207.215-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-06-02T04:01:23  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-06-02T04:15:40  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-06-02T04:20:31  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-02T04:36:21  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-06-02T04:54:14  *** UncleVasya <UncleVasya!kvirc@178-133-166-84.dialup.umc.net.ua> has quit IRC (Ping timeout: 260 seconds)
+2011-06-02T04:58:38  <Frontier> janzert: on the beta test server virtual memory is the important number btw.
+2011-06-02T05:07:14  *** UncleVasya <UncleVasya!kvirc@31.144.216.92> has joined #aichallenge
+2011-06-02T05:09:35  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-06-02T05:11:29  *** yasith <yasith!~yasith@124.43.56.19> has quit IRC (Read error: Operation timed out)
+2011-06-02T05:26:18  *** tomh <tomh!~tomh@unaffiliated/tomh> has joined #aichallenge
+2011-06-02T05:29:05  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-06-02T05:29:57  *** olexs <olexs!~Leviathan@drms-590edc2b.pool.mediaWays.net> has joined #aichallenge
+2011-06-02T05:32:23  *** yasith <yasith!~yasith@124.43.56.19> has joined #aichallenge
+2011-06-02T05:38:05  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T05:43:59  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-02T05:44:18  *** Quasar <Quasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-02T05:44:44  *** Quasar is now known as Guest78089
+2011-06-02T05:48:22  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T05:49:34  *** olexs <olexs!~Leviathan@drms-590edc2b.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-02T05:50:40  *** Guest78089 <Guest78089!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T05:57:17  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-02T06:08:32  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-06-02T06:12:08  <Frontier> It is quite cool to use JavaScript and the HTML canvas to make scetches and visualy verify algorithms before you implement them in a static language.
+2011-06-02T06:18:05  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC (Ping timeout: 260 seconds)
+2011-06-02T06:18:51  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-02T06:36:47  <ohCrivens> Does anyone have any idea what could cause the Beta server to crash a Java bot with a message stating: "Could not create the Java virtual machine." ?
+2011-06-02T06:44:30  <Frontier> I have, but it is a long story
+2011-06-02T06:44:43  <Frontier> In short: it is out of memory.
+2011-06-02T06:46:25  <Frontier> ohCrivens: I'm quite sure it is not possible to run 10 Java bots in one game at the moment. On the real servers this will be different.
+2011-06-02T06:46:59  <Ice_Harley> Frontier, what does "" symbols mean in visualizer after player names?
+2011-06-02T06:47:13  <Ice_Harley> my encoding problems?
+2011-06-02T06:47:53  *** delt0r___ <delt0r___!~delt0r@188-22-174-225.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-02T06:48:30  <Frontier> probably. There should be ticks and x.
+2011-06-02T06:48:57  *** delt0r_ <delt0r_!~delt0r@188-22-165-38.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-06-02T06:49:37  <Frontier> Ice_Harley: these two: ✓✕
+2011-06-02T06:50:34  <Frontier> Ice_Harley: do you use the Java visualizer or the html one? Did you change your browser web site encoding to ASCII or something?
+2011-06-02T06:51:20  <Ice_Harley> Frontier, no. Actually I see squares both in Opera and in Chrome
+2011-06-02T06:52:35  <Frontier> maybe someone changed the php files... I'll check
+2011-06-02T06:53:10  <Frontier> hmm seems to be working for me. You are on ... Mac? Linux?
+2011-06-02T06:53:42  <Frontier> I think I remember you were a Mac user
+2011-06-02T06:53:44  <Ice_Harley> windows
+2011-06-02T06:53:50  <Ice_Harley> no-no, never )
+2011-06-02T06:53:52  <Frontier> ah ok :p ... strange
+2011-06-02T06:55:58  <Ice_Harley> Frontier, how i see it: http://imageshost.ru/photo/132778/id644883.html
+2011-06-02T06:56:01  <Frontier> These are symbol characters not present in every font. Therefor the OS has to set up a chain of fallbacks. I had problems in Java with other symbols before, but found these to be working for me and others. Next time I boot into Windows Vista I'll veryfy that.
+2011-06-02T06:57:13  <Frontier> Ice_Harley: You did not mod your Windows in any way that could have an effect on installed fonts?
+2011-06-02T06:59:11  <Frontier> I'm just asking because I actually get a few bug reports where the problem is in the system/browser configuration. So I want to go sure before I pull my hair.
+2011-06-02T06:59:43  <ohCrivens> frontier: thanks. Half expected that answer :)
+2011-06-02T07:05:14  <Frontier> I'm trying to precompute some data for ants, but the algorithm runs for minutes in JavaScript. I don't think it is feasible even in pure C :p
+2011-06-02T07:09:20  <Frontier> ah I just confused Chrome again with my constant tapping on 'reload'
+2011-06-02T07:16:00  <Ice_Harley> Frontier, I have this problem on 3 windowses: at home, at work and at virtual machine
+2011-06-02T07:16:51  <Frontier> that's bad. I'll have to replace them somehow then.
+2011-06-02T07:17:20  <Ice_Harley> if it's just symbols - maybe use small pictures?
+2011-06-02T07:18:11  <Frontier> Can you draw some for me?
+2011-06-02T07:18:29  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Read error: Connection reset by peer)
+2011-06-02T07:32:41  <Ice_Harley> me? I have both left hands :)
+2011-06-02T07:35:22  *** GreenTea <GreenTea!c15d66f9@gateway/web/freenode/ip.193.93.102.249> has joined #aichallenge
+2011-06-02T07:35:45  <GreenTea> why java machine of sir_macelon is never crash?..
+2011-06-02T07:36:45  <antimatroid> my question would be, why java?
+2011-06-02T07:49:46  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Read error: Operation timed out)
+2011-06-02T07:53:02  *** mcstar <mcstar!mcstar@2002:5984:b3e::5984:b3e> has joined #aichallenge
+2011-06-02T07:53:24  <mcstar> portal 2: done
+2011-06-02T07:59:35  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 260 seconds)
+2011-06-02T08:01:29  <antimatroid> mcstar: have you done the coop?
+2011-06-02T08:01:35  <antimatroid> i haven't even played portal yet :P
+2011-06-02T08:04:51  <mcstar> then how do you know about coop?
+2011-06-02T08:04:54  <mcstar> no i havent
+2011-06-02T08:05:01  <mcstar> because thats multiplayer
+2011-06-02T08:05:23  <mcstar> and i dont think that ill be playing that with anyone i know
+2011-06-02T08:05:50  <mcstar> (oh, and the copy of my portal is borrowed from the internet)
+2011-06-02T08:06:21  <mcstar> im sure u would appreciate the game though
+2011-06-02T08:06:38  <mcstar> try it when u dont have to prepare foir exams
+2011-06-02T08:08:43  <Frontier> GreenTea: maybe sir_macelon is first in the order the database returns the players so his VM gets memory first. That's just a wild guess.
+2011-06-02T08:10:29  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T08:11:46  *** olexs <olexs!~Leviathan@drms-590edc2b.pool.mediaWays.net> has joined #aichallenge
+2011-06-02T08:14:21  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-06-02T08:15:41  <antimatroid> sir, I am from the internet
+2011-06-02T08:15:50  <mcstar> gosh
+2011-06-02T08:15:53  <antimatroid> i don't need to do something to be an expert :P
+2011-06-02T08:16:24  <antimatroid> i have my first exam monday and i stil have 5 assignments to finish :P
+2011-06-02T08:16:34  <antimatroid> good thing it's a take home and I don't need to rote memorise a whole bunch of cra
+2011-06-02T08:16:49  <mcstar> p
+2011-06-02T08:17:34  <mcstar> have fun, then with portal, really, do you know the setting?
+2011-06-02T08:17:42  <antimatroid> yes
+2011-06-02T08:17:55  <antimatroid> place portal holes to help maneuvre yourself through the levels?
+2011-06-02T08:17:56  <mcstar> then as a matematician i think u would find it amusing
+2011-06-02T08:18:18  <antimatroid> frontier and i were talking yesterday about games we'd like
+2011-06-02T08:18:25  <mcstar> periodic boundary conditions in real space ....
+2011-06-02T08:18:33  <antimatroid> the one we both really wanted is a game where you can write your own scripts and have it all be fair play
+2011-06-02T08:19:00  <antimatroid> another i would like is a game where there was one big world developers could write games for, think gta/ea skate/ etc. online all in the one world where everyone does their own thing
+2011-06-02T08:19:44  <mcstar> different objecives with different players on the same map?
+2011-06-02T08:19:48  <mcstar> t
+2011-06-02T08:19:50  <antimatroid> yep
+2011-06-02T08:19:59  <antimatroid> hell, you already have that with something like ea skate
+2011-06-02T08:20:03  <antimatroid> but completely different things :P
+2011-06-02T08:20:12  <antimatroid> you're skating around a city while other players are jacking cars
+2011-06-02T08:20:25  <mcstar> im only versed in coutner strike, half life, portal, and urban terror
+2011-06-02T08:20:42  <antimatroid> the only time i ever really play video games is at friends on consoles
+2011-06-02T08:20:54  <antimatroid> and we all used to skate (hardly any of us find the time anymore), so ea skate <3
+2011-06-02T08:20:54  <mcstar> ive never used a console
+2011-06-02T08:21:00  <mcstar> except linux console
+2011-06-02T08:21:11  <antimatroid> ba dum cha
+2011-06-02T08:21:51  <mcstar> unfortunately i played a lot with urbanterror, during uni. years
+2011-06-02T08:22:21  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC ()
+2011-06-02T08:22:24  <antimatroid> did you do anything besides physics at uni?
+2011-06-02T08:22:42  <mcstar> no not really
+2011-06-02T08:22:45  <mcstar> computers
+2011-06-02T08:22:49  <mcstar> but nothing professinally
+2011-06-02T08:23:48  <mcstar> well to be honest there were times when i was drunk once a week
+2011-06-02T08:23:53  <mcstar> so theres that too
+2011-06-02T08:24:15  <antimatroid> hehe, in college that's what we'd do on the nights at the weekend
+2011-06-02T08:24:16  <antimatroid> drink
+2011-06-02T08:24:37  <antimatroid> i don't know how we used to survive hanging around outside in the cold drinking pre18
+2011-06-02T08:24:41  <mcstar> when do you use in?
+2011-06-02T08:24:47  <antimatroid> i go outside at night now and I'm like BRRRRRRRRRR
+2011-06-02T08:24:48  <mcstar> at the weeke. in the wekk.
+2011-06-02T08:24:54  <antimatroid> say what?
+2011-06-02T08:25:08  <mcstar> what is best? in the weekend or at the weekend
+2011-06-02T08:25:20  <antimatroid> for drinking?
+2011-06-02T08:25:25  <mcstar> grammar
+2011-06-02T08:25:27  <mcstar> in or at
+2011-06-02T08:25:31  <antimatroid> nothing beats getting smashed in the middle of the day :P
+2011-06-02T08:25:39  <antimatroid> particularly with warm weather
+2011-06-02T08:25:55  <antimatroid> (*nothing alcohol related)
+2011-06-02T08:26:42  <mcstar> smashed wo alcohol? how?
+2011-06-02T08:26:57  <mcstar> (and answer pls in or at i have to know)
+2011-06-02T08:27:28  <antimatroid> i meant nothing beats that if you're talking about stuff to do with alcohol
+2011-06-02T08:27:36  *** ohCrivens <ohCrivens!591b1472@gateway/web/freenode/ip.89.27.20.114> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T08:27:38  <antimatroid> i'm sure i could make a large list of other things i would prefer to do
+2011-06-02T08:28:07  <antimatroid> particularly at www.fallsfestival.com.au
+2011-06-02T08:28:17  <Frontier> maybe it is "on the weekend"
+2011-06-02T08:28:18  <antimatroid> 3 day music festival from 29dec - 1jan every year :)
+2011-06-02T08:28:31  <mcstar> lol
+2011-06-02T08:28:37  <mcstar> its hard winter
+2011-06-02T08:28:41  <mcstar> here
+2011-06-02T08:28:44  <antimatroid> it's summer in australia :P
+2011-06-02T08:28:49  <antimatroid> i love having summer at that time of year
+2011-06-02T08:28:58  <mcstar> your christmas must suck
+2011-06-02T08:29:19  <antimatroid> erm?
+2011-06-02T08:29:27  <mcstar> i could neve imagine christmas wo snow
+2011-06-02T08:29:29  <mcstar> r
+2011-06-02T08:29:35  <antimatroid> we get to drink beers in the backyard :P
+2011-06-02T08:30:14  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-06-02T08:32:43  <mcstar> my stepbrother planned to move to new zealand to cultivate wine
+2011-06-02T08:33:13  <mcstar> maybe some day ill visit down-under
+2011-06-02T08:34:09  <mcstar> frankly im afraid of moving there,(nz) cause im afraid of tsunamies and earth quakes
+2011-06-02T08:35:05  <mcstar> i like central europe, noting bad can happen here
+2011-06-02T08:35:40  <mcstar> did you hear that noise? what the.......help im stuck in a crack under the house!!!
+2011-06-02T08:36:01  <antimatroid> apparently there was an earthquake here in tasmania once while i was alive
+2011-06-02T08:36:04  <antimatroid> i slept through it though D:
+2011-06-02T08:36:23  <antimatroid> and we don't get tsunamis in tasmania, we're surprising well protected from bad weather
+2011-06-02T08:36:32  <antimatroid> considering the next stop is antarctica from the south
+2011-06-02T08:36:33  <mcstar> i mmeant nz
+2011-06-02T08:36:46  <antimatroid> yeah okay :P
+2011-06-02T08:37:09  <antimatroid> nz was/is my backup plan for something like australia if we keep going to same way politically
+2011-06-02T08:37:17  <mcstar> rly?
+2011-06-02T08:37:25  <antimatroid> australia sucks politically
+2011-06-02T08:37:25  <mcstar> where are you heading?
+2011-06-02T08:37:31  <mcstar> i mean politically
+2011-06-02T08:37:54  <antimatroid> australia is turning into a very big nanny country
+2011-06-02T08:37:56  <mcstar> i know nothing about australian politics except that a woman is the president
+2011-06-02T08:38:21  <antimatroid> wrapping everyone up into a tight fluffy ball so they couldn't possibly ever be hurt/offended
+2011-06-02T08:38:28  <antimatroid> she is awful
+2011-06-02T08:38:36  <antimatroid> but better than the other option in the election
+2011-06-02T08:38:55  <antimatroid> it was her or a religious nutjob
+2011-06-02T08:39:06  <mcstar> lol
+2011-06-02T08:39:18  <mcstar> i never new tasmania wasnt on the continent
+2011-06-02T08:39:31  <antimatroid> we are on the continent? i think?
+2011-06-02T08:39:37  <antimatroid> you mean connected by land?
+2011-06-02T08:39:41  <mcstar> sure
+2011-06-02T08:40:02  <antimatroid> we're the "island state" as an advertising campaign back in the day put it :P
+2011-06-02T08:40:15  <mcstar> i mean im not totally illiterate geographically but i never noticed tasmania was disconnected
+2011-06-02T08:40:51  <antimatroid> i am illiterate geographically, give me an empty map with no countries listed and I'd struggle to correctly identify much more than maybe 5?
+2011-06-02T08:40:56  *** UncleVasya <UncleVasya!kvirc@31.144.216.92> has quit IRC ()
+2011-06-02T08:41:00  <antimatroid> including aus and nz
+2011-06-02T08:41:29  <mcstar> sure youre kidding
+2011-06-02T08:41:31  <antimatroid> hmm, alright, i might be able to bust out antarctica and us
+2011-06-02T08:41:44  <antimatroid> but i'd really struggle after that, honestly, i've just never commited it to long term memory
+2011-06-02T08:41:56  <mcstar> nice tasman sea
+2011-06-02T08:42:39  <antimatroid> abel tasman (the guy who first landed it) originally called it Van Demon's Land after his "boss" back in England, TYL :P
+2011-06-02T08:42:43  <mcstar> i think i can see your house come out and wave for me
+2011-06-02T08:43:03  <antimatroid> it takes a good 4-5 hours to drive from the top to bottom :P
+2011-06-02T08:43:07  <antimatroid> it's not a tiny island
+2011-06-02T08:43:31  <antimatroid> australia is deceiving because it's quite a large country in a small continent
+2011-06-02T08:44:18  <mcstar> yeah i can see that
+2011-06-02T08:44:25  <mcstar> beats india easily
+2011-06-02T08:44:47  <mcstar> i read theres 1 billion ppl there approximately
+2011-06-02T08:45:03  <mcstar> but australia is mainly desert
+2011-06-02T08:45:25  <mcstar> you could easily solve your energy problems
+2011-06-02T08:45:28  <antimatroid> yeah screw that
+2011-06-02T08:45:31  <antimatroid> we have like 21 million?
+2011-06-02T08:45:36  <antimatroid> how?
+2011-06-02T08:45:42  <antimatroid> solar power isn't very efficient is it?
+2011-06-02T08:45:53  <antimatroid> and sand causes huge problems with solar panel from my internet expertise :P
+2011-06-02T08:46:11  <mcstar> i mean water the desert, plant trees wait for some time, then mine the coal
+2011-06-02T08:46:20  <antimatroid> lol :P
+2011-06-02T08:46:23  <antimatroid> good luck with that
+2011-06-02T08:46:39  <antimatroid> we've got plenty of resources anyway
+2011-06-02T08:46:59  <antimatroid> the main reasons australia did so well through the financial crisis was our export boom
+2011-06-02T08:47:27  <mcstar> omg this i havent noticed either ur landmass is very close to he us's
+2011-06-02T08:47:52  <antimatroid> it is?
+2011-06-02T08:48:01  <antimatroid> i've only ever been overseas to nz, and that was when i was like under 5
+2011-06-02T08:48:04  <mcstar> just take  a look at it, it almost overlaps
+2011-06-02T08:48:34  <antimatroid> russia is ridiculously large
+2011-06-02T08:48:37  <mcstar> tbh youre in a very comfortable situation
+2011-06-02T08:48:55  <mcstar> beacuse you can make the prisoners work when youre in crisis
+2011-06-02T08:49:11  <mcstar> (russia is also collapsed economically)
+2011-06-02T08:52:35  <mcstar> SUCCEESSSS
+2011-06-02T08:52:52  <mcstar> speedfan is working and i can finally hear my thoughts
+2011-06-02T09:00:35  <mcstar> google maps really kicks ass
+2011-06-02T09:01:08  <mcstar> the way they display the vertical displacement even on the ocean floor is very informative
+2011-06-02T09:03:18  <mcstar> lets unboot windows
+2011-06-02T09:03:22  *** mcstar <mcstar!mcstar@2002:5984:b3e::5984:b3e> has quit IRC (Quit: Leaving)
+2011-06-02T09:04:12  <Frontier> trouble with windows? - reboot, trouble with linux? be root!
+2011-06-02T09:05:11  *** mcstar <mcstar!~mcstar@adsl-89-135-204-191.monradsl.monornet.hu> has joined #aichallenge
+2011-06-02T09:10:26  <janzert> Frontier: why is virtual memory the important one? it's a basically a measure of everything including shared libraries, swapped out pages, memmapped pages that have never been loaded and everything. whereas resident set size is the amount of actual physical memory used
+2011-06-02T09:11:48  <janzert> in any case it has 17GB so even if the full virtual memory was in use it wouldn't be a problem
+2011-06-02T09:12:01  <antimatroid> my only gripe with ubuntu so far is that it likes to slow down to an absolute crawl or just plain freeze too much
+2011-06-02T09:13:30  <Frontier> What has 17 GB? I thought you referred to the beta test server
+2011-06-02T09:13:51  *** boegel <boegel!~boegel@91.182.86.201> has joined #aichallenge
+2011-06-02T09:14:46  <janzert> the worker running on ec2 for the server at aibeta.janzert.com
+2011-06-02T09:15:02  <janzert> that's what Mcleopold and I were working on last night
+2011-06-02T09:16:45  <Frontier> oh good luck with that then and forget what I said. it applys to OpenVZ.
+2011-06-02T09:25:38  <janzert> contestbot: later tell McLeopold did a quick test by changing the jail pause and resume methods to simply immediately return and this seems to speed up the worker engine considerably. So I think the main problem may be sending the signals to the jailed processes
+2011-06-02T09:25:38  <contestbot> janzert: Yes master!
+2011-06-02T09:26:30  <janzert> contestbot: later tell McLeopold if you could confirm that, I have a few ideas on how to speed it up
+2011-06-02T09:26:30  <contestbot> janzert: I come to serve.
+2011-06-02T09:30:55  *** choas <choas!~lars@p5792C8BC.dip.t-dialin.net> has joined #aichallenge
+2011-06-02T09:46:01  *** boegel <boegel!~boegel@91.182.86.201> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-02T09:56:09  *** amstan <amstan!~alex@142.222.14.88> has joined #aichallenge
+2011-06-02T09:56:09  *** ChanServ sets mode: +o amstan
+2011-06-02T10:04:49  *** GreenTea <GreenTea!c15d66f9@gateway/web/freenode/ip.193.93.102.249> has quit IRC (Quit: Page closed)
+2011-06-02T10:12:11  <mcstar> antimatroid: theres a physical law, that prohibits ubuntu to slow donw to an absolute crawl in most universes
+2011-06-02T10:12:24  <mcstar> maybe you happen to be in a special case
+2011-06-02T10:13:03  <mcstar> come on, whats the problem? you mentioned the browser before
+2011-06-02T10:13:40  <mcstar> i cant beleive that any linux distro today slows down or something unless it hasnt got a decent amount of memory
+2011-06-02T10:13:56  <mcstar> (or failing hard disk)
+2011-06-02T10:19:48  <CIA-48> aichallenge: Alexandru Stan epsilon * r01f9d0a / (3 files):
+2011-06-02T10:19:48  <CIA-48> aichallenge: Merge pull request #138 from smiley1983/epsilon
+2011-06-02T10:19:48  <CIA-48> aichallenge: OCaml starter: removed unnecessary debug output, updated comments and readme
+2011-06-02T10:20:11  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T10:20:19  <amstan> linux will slow down to a crawl if it's out of ram
+2011-06-02T10:20:35  <amstan> depends on your swap settings
+2011-06-02T10:20:59  <amstan> but usually when you have a memory leak, it doesn't stop when the ram is full, so it'll continue writing to hd
+2011-06-02T10:21:03  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-06-02T10:21:05  <amstan> that usually makes the swap useless as well
+2011-06-02T10:22:45  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-06-02T10:23:16  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has joined #aichallenge
+2011-06-02T10:24:37  <mcstar> antimatroid has 4gb if i remember correctly, what could possibly leak that much? i wouldnt use that program
+2011-06-02T10:25:59  <mcstar> and if this is true, it might be better to disable swap altogether
+2011-06-02T10:26:23  <amstan> that just makes the system freeze compleatelly
+2011-06-02T10:26:29  <amstan> with swap you have a chance to kill stuff
+2011-06-02T10:26:48  <mcstar> no linux kill the the process
+2011-06-02T10:26:50  <mcstar> s
+2011-06-02T10:27:01  <amstan> oh?
+2011-06-02T10:27:14  <mcstar> i only have swap beacuse i hivernate
+2011-06-02T10:27:17  <amstan> wouldn't the malloc calls just return -1?
+2011-06-02T10:27:37  <mcstar> i read somewhere when i was researching this that it actually kills it
+2011-06-02T10:27:52  <mcstar> never experienced it myself
+2011-06-02T10:27:57  <mcstar> i think
+2011-06-02T10:28:15  <mcstar> i cant remember the name of the subsystem that manages it
+2011-06-02T10:29:07  <mcstar> oom
+2011-06-02T10:29:12  <mcstar> trivially
+2011-06-02T10:29:31  <amstan> the kernel?
+2011-06-02T10:30:48  <mcstar> http://www.win.tue.nl/~aeb/linux/lk/lk-9.html
+2011-06-02T10:30:53  <mcstar> here are some relevant notes
+2011-06-02T10:32:01  <mcstar> so i think that by setting overcommit the process can be killed automatically
+2011-06-02T10:34:42  *** boegel <boegel!~boegel@91.182.86.201> has joined #aichallenge
+2011-06-02T10:39:33  <mcstar> im going to test it now
+2011-06-02T10:41:27  <mcstar>  SystemException[MemoryAllocationFailure
+2011-06-02T10:42:21  <mcstar> and it eats up now
+2011-06-02T10:42:38  <mcstar> amstan: you there?
+2011-06-02T10:42:46  <amstan> mcstar: hmm?
+2011-06-02T10:42:59  <mcstar> echo 0 > /proc/sys/vm/overcommit_memory
+2011-06-02T10:43:03  <mcstar> sry
+2011-06-02T10:43:07  <mcstar> echo 2 > /proc/sys/vm/overcommit_memory
+2011-06-02T10:43:19  <mcstar> echo 0 > /proc/sys/vm/overcommit_ratio
+2011-06-02T10:43:42  <mcstar> with these settings i get oom errors, and the system remains ok
+2011-06-02T10:43:46  <amstan> you want me to do that on the server?
+2011-06-02T10:44:42  <amstan> mcstar: http://pastebin.com/14102Ui7
+2011-06-02T10:46:57  <amstan> mcstar: i have to leave soon.. so..
+2011-06-02T10:48:29  *** mcstar <mcstar!~mcstar@adsl-89-135-204-191.monradsl.monornet.hu> has quit IRC (Ping timeout: 246 seconds)
+2011-06-02T10:48:51  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2011-06-02T10:49:39  *** mcstar <mcstar!~mcstar@adsl-89-134-20-253.monradsl.monornet.hu> has joined #aichallenge
+2011-06-02T10:49:43  <mcstar> huh
+2011-06-02T10:50:09  <mcstar> when operative and swap memory filled up the oom killer killed X aparently
+2011-06-02T10:52:00  <mcstar> so with the above settings it can be controlled how much memory can be committed, and if you reach the upper limit, malloc will return null
+2011-06-02T11:04:22  *** mcstar <mcstar!~mcstar@adsl-89-134-20-253.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-02T11:04:24  *** boegel <boegel!~boegel@91.182.86.201> has quit IRC (Quit: This computer has gone to sleep)
+2011-06-02T11:08:21  <Ice_Harley> janzert, how long does it take for submission to be unzipped and compiled on your aibeta server?
+2011-06-02T11:25:18  <Palmik> Hmm, are ther starter packages somewhere on github?
+2011-06-02T11:25:43  <Palmik> I could not find them in the aichallenge repository
+2011-06-02T11:25:57  <olexs> aichallenge\ants\dist\starter_bots
+2011-06-02T11:26:00  <Palmik> thanks
+2011-06-02T11:28:18  <Ice_Harley> janzert, it took 25 minute for me
+2011-06-02T11:36:04  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-06-02T11:41:34  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T11:42:10  *** UncleVasya <UncleVasya!kvirc@31.144.216.92> has joined #aichallenge
+2011-06-02T11:43:06  *** |UncleVasya| <|UncleVasya|!kvirc@31.144.146.168> has joined #aichallenge
+2011-06-02T11:46:39  *** UncleVasya <UncleVasya!kvirc@31.144.216.92> has quit IRC (Ping timeout: 260 seconds)
+2011-06-02T11:56:16  *** hhtt <hhtt!5ea96fc5@gateway/web/freenode/ip.94.169.111.197> has joined #aichallenge
+2011-06-02T12:02:43  *** amstan <amstan!~alex@142.222.14.88> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T12:17:09  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has joined #aichallenge
+2011-06-02T12:22:31  *** yasith <yasith!~yasith@124.43.56.19> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T12:30:32  *** amstan <amstan!~alex@142.222.1.37> has joined #aichallenge
+2011-06-02T12:30:32  *** ChanServ sets mode: +o amstan
+2011-06-02T12:34:40  *** yasith <yasith!~yasith@124.43.59.189> has joined #aichallenge
+2011-06-02T12:41:34  *** bhasker <bhasker!~bhasker@nat/yahoo/x-gahpcelplfpayujz> has joined #aichallenge
+2011-06-02T12:41:49  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110413222027])
+2011-06-02T12:42:31  *** _0x471 <_0x471!~slash@p5B12FB2C.dip.t-dialin.net> has joined #aichallenge
+2011-06-02T12:42:55  <bhasker> morning
+2011-06-02T12:43:20  <olexs> evening
+2011-06-02T12:44:17  *** _0x47 <_0x47!~slash@p57B3E55D.dip.t-dialin.net> has quit IRC (Ping timeout: 250 seconds)
+2011-06-02T12:45:24  <jbroman> afternoon
+2011-06-02T12:53:35  <bhasker> sir_macelon is still kicking butt given that it was uploaded only once
+2011-06-02T12:53:38  <bhasker> still leading all the other bots
+2011-06-02T12:54:08  <bhasker> olexs leviathan is your bot right?
+2011-06-02T12:54:15  <olexs> bhasker yes
+2011-06-02T12:54:31  <bhasker> doing quite well
+2011-06-02T12:54:51  <olexs> better than i expected, tbh
+2011-06-02T12:55:09  *** amstan <amstan!~alex@142.222.1.37> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T13:00:13  <bhasker> though i am still to see any really complex bots
+2011-06-02T13:00:29  <bhasker> most seem to be food gatherers with fight when one can win
+2011-06-02T13:00:38  <bhasker> in fact most don't even seem to want to fight
+2011-06-02T13:03:26  <Frontier> oh no, the D compiler makes my executables really huge now. I'm at 7.5 MB and I don't know where it will go if I continue developing.
+2011-06-02T13:05:05  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-ckqvktcxxzscoiob> has joined #aichallenge
+2011-06-02T13:05:46  *** bhasker <bhasker!~bhasker@nat/yahoo/x-gahpcelplfpayujz> has quit IRC (Ping timeout: 248 seconds)
+2011-06-02T13:05:50  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has joined #aichallenge
+2011-06-02T13:05:56  <GreenTea> Epic: http://aichallengebeta.hypertriangle.com/visualizer.php?game=11571
+2011-06-02T13:08:10  <Frontier> wow he didn't time out :p
+2011-06-02T13:08:18  <|UncleVasya|> lol
+2011-06-02T13:08:26  <|UncleVasya|> Durakam vezet :)
+2011-06-02T13:09:46  <GreenTea> |UncleVasya|, you bot is so strong.. amazing.
+2011-06-02T13:09:52  <|UncleVasya|> Frontier: It's a super optimization tehchnique, baby. :D
+2011-06-02T13:11:04  <Frontier> "no I don't want to eat my meal! no! no! aaaaahhhrrrr" *flash* *flash* *flash* WIN
+2011-06-02T13:11:29  <GreenTea> xD
+2011-06-02T13:12:36  <|UncleVasya|> Esli dolgo smotret' na reku, to uvidish proplivayushiy po nei trup vraga.
+2011-06-02T13:15:30  <bhasker_> wth happened in that game
+2011-06-02T13:15:33  <Frontier> i bet one of the 'n' words means 'no' or 'not'
+2011-06-02T13:15:37  <bhasker_> 1000 turns nothing and then an explosion
+2011-06-02T13:16:36  <bhasker_> but it was beautiful to watch though
+2011-06-02T13:16:44  <bhasker_> it was like a flood fill algorithm
+2011-06-02T13:25:34  *** mcstar <mcstar!~mcstar@adsl-89-134-15-143.monradsl.monornet.hu> has joined #aichallenge
+2011-06-02T13:32:53  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has quit IRC (Remote host closed the connection)
+2011-06-02T13:42:02  *** olexs1 <olexs1!~Leviathan@drms-590ec4d5.pool.mediaWays.net> has joined #aichallenge
+2011-06-02T13:45:17  *** olexs <olexs!~Leviathan@drms-590edc2b.pool.mediaWays.net> has quit IRC (Ping timeout: 276 seconds)
+2011-06-02T13:56:21  <Frontier> oh btw, I found out what made my program so big. I use huge static arrays in some structs and classes. Seems like they go into the exe as an 'init' block.
+2011-06-02T13:56:49  <bhasker_> :)
+2011-06-02T14:21:38  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-06-02T14:25:18  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-ckqvktcxxzscoiob> has quit IRC (Quit: bhasker_)
+2011-06-02T14:47:54  *** delt0r_ <delt0r_!~delt0r@188-22-172-246.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-02T14:49:30  *** delt0r___ <delt0r___!~delt0r@188-22-174-225.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-06-02T14:53:38  *** bhasker <bhasker!~bhasker@nat/yahoo/x-sjcsvhokuxxhqlgd> has joined #aichallenge
+2011-06-02T14:59:12  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T15:10:07  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has joined #aichallenge
+2011-06-02T15:34:06  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-06-02T15:37:00  *** mcstar <mcstar!~mcstar@adsl-89-134-15-143.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-06-02T15:55:23  *** boegel <boegel!~boegel@91.182.25.208> has joined #aichallenge
+2011-06-02T16:02:03  *** boegel <boegel!~boegel@91.182.25.208> has quit IRC (Quit: Leaving)
+2011-06-02T16:04:38  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-06-02T16:14:39  *** locutus_ <locutus_!59cc9969@gateway/web/freenode/ip.89.204.153.105> has joined #aichallenge
+2011-06-02T16:17:28  <aeter> hi, is there a way to look at the logs for http://aichallengebeta.hypertriangle.com/visualizer.php?game=11713?
+2011-06-02T16:17:44  <aeter> I get some strange stderr for it
+2011-06-02T16:18:02  <aeter> are replay/logs available for debugging?
+2011-06-02T16:18:43  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-06-02T16:22:20  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-06-02T16:23:01  <bhasker> you can probably pull up the replay data from the source for the html page
+2011-06-02T16:23:14  <bhasker> but you will have to convert the replay data into a stream format
+2011-06-02T16:23:18  <bhasker> to play it back to your bot
+2011-06-02T16:24:10  <locutus_> hi, i registered me at http://aichallengebeta.hypertriangle.com/ with the username locutus, but has not received my activation mail
+2011-06-02T16:24:13  <aeter> which part of the html source contains the data?
+2011-06-02T16:24:22  <Frontier> none :)
+2011-06-02T16:24:36  <aeter> :)
+2011-06-02T16:24:43  <Frontier> use /game/#### as url
+2011-06-02T16:25:00  <bhasker> doh
+2011-06-02T16:25:03  <locutus_> i have checked my junk folder and wait over half an hour, what can i do?
+2011-06-02T16:25:06  <bhasker> it used to in planetwars
+2011-06-02T16:25:09  <bhasker> locutus
+2011-06-02T16:25:11  <bhasker> its not sending mail
+2011-06-02T16:25:20  <bhasker> on the page there is an activation link at the bottom
+2011-06-02T16:25:23  <Frontier> This will load the gzipped replay. It depends on your browser if it magically uncompresses it for you or you need a gzip program
+2011-06-02T16:25:23  <bhasker> you need to click that
+2011-06-02T16:25:28  <aeter> like, http://aichallengebeta.hypertriangle.com/game=11713?
+2011-06-02T16:25:59  <bhasker> http://aichallengebeta.hypertriangle.com/game/11713
+2011-06-02T16:26:00  <Frontier> aeter, no like i wrote it, replace the = with / an
+2011-06-02T16:26:01  <bhasker> like that
+2011-06-02T16:26:14  <aeter> thanks :)
+2011-06-02T16:26:43  <aeter> awesome
+2011-06-02T16:26:51  <Frontier> I doubt you will get anything out of it though. Anyway the format is described in the wiki.
+2011-06-02T16:27:57  <bhasker> it will be easier once mcleopold starts storing the stream format itself
+2011-06-02T16:28:03  <bhasker> the engine outputs both
+2011-06-02T16:28:09  <bhasker> then you could easily replay the stream to your bot
+2011-06-02T16:28:35  <bhasker> replay to stream is harder
+2011-06-02T16:28:58  <bhasker> frontier does the replay format store the moves per player too
+2011-06-02T16:31:03  <Frontier> yes, they are there for each ant.
+2011-06-02T16:31:54  *** |UncleVasya| <|UncleVasya|!kvirc@31.144.146.168> has quit IRC (Ping timeout: 260 seconds)
+2011-06-02T16:32:01  <Frontier> bhasker: What tells you that the stream format will be stored on the server?
+2011-06-02T16:32:31  <bhasker> well its not today, i was talking to mcleopold he was saying there might be a way to get it to move from worker to webserver and gzip it
+2011-06-02T16:32:32  <bhasker> etc
+2011-06-02T16:32:35  <bhasker> but its not there yet
+2011-06-02T16:32:44  <locutus_> @bhasker: i can't see an activation link at the site
+2011-06-02T16:32:45  <contestbot> locutus_: I have no idea what you mean.
+2011-06-02T16:32:55  <bhasker> when you complete the registration
+2011-06-02T16:33:03  <bhasker> the page which tells you that you will receive a mail
+2011-06-02T16:33:07  <bhasker> has an activation link
+2011-06-02T16:33:09  <bhasker> at the bottom
+2011-06-02T16:33:14  <bhasker> no way to go back to it
+2011-06-02T16:33:17  <bhasker> try registering a new id
+2011-06-02T16:33:37  <bhasker> locotus2 ors omething, main reason why my id on the beta server is hbhasker2 :)
+2011-06-02T16:33:49  <bhasker> since this is a test server, the email module doesn't work
+2011-06-02T16:33:56  <Frontier> bhasker: That would be helpful for debugging in deed. Uncompressed the stream is about 10x bigger than the sotrage format. That's why didn't store the stream.
+2011-06-02T16:34:03  <bhasker> or rather is deliberately switched off
+2011-06-02T16:34:26  <bhasker> yea i know its much larger,but without the stream and no easy way to go from replay to stream
+2011-06-02T16:34:29  <bhasker> its harder to debug
+2011-06-02T16:34:50  <locutus_> ok, i understand. the site is already closed. I create a new id. thank you for help
+2011-06-02T16:34:51  *** locutus_ <locutus_!59cc9969@gateway/web/freenode/ip.89.204.153.105> has quit IRC (Quit: Page closed)
+2011-06-02T16:35:01  <bhasker> hmm and stream format doesn't seem to be documented
+2011-06-02T16:39:45  *** locutus_ <locutus_!59cc9969@gateway/web/freenode/ip.89.204.153.105> has joined #aichallenge
+2011-06-02T16:40:23  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Read error: Connection reset by peer)
+2011-06-02T16:42:53  <Frontier> bhasker: McLeopold needs a hint again to document it ;)
+2011-06-02T16:43:21  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-06-02T16:43:53  <locutus_> ok, i register a new id. thanks bhasker (if this message doubled ignore it, i lost my session, so i repeat it)
+2011-06-02T16:44:36  <bhasker> :)
+2011-06-02T16:44:48  <bhasker> good now there shall be another good bot
+2011-06-02T16:44:56  <bhasker> i remember your planetwar bots were quite good
+2011-06-02T16:57:25  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has joined #aichallenge
+2011-06-02T16:57:44  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has joined #aichallenge
+2011-06-02T16:58:11  <GreenTea> who knows, what means Skill? why not Elo points?
+2011-06-02T16:59:33  <Frontier> I think this is TruSkill, not bayeselo.
+2011-06-02T16:59:47  <Frontier> or whatever they are called and spelled :p
+2011-06-02T17:05:40  *** needsch1 <needsch1!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-06-02T17:07:57  <locutus_> and your bot was even better! in the last month of the contest i sadly had no more time due to my job (to many projects in too few time, that's busness!). So i could not fight for the top! But place 216 is not half bad. Wish a good fight for this contest
+2011-06-02T17:21:43  *** locutus_ <locutus_!59cc9969@gateway/web/freenode/ip.89.204.153.105> has quit IRC (Quit: Page closed)
+2011-06-02T17:22:12  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has quit IRC (Ping timeout: 252 seconds)
+2011-06-02T17:28:24  *** _0x471 <_0x471!~slash@p5B12FB2C.dip.t-dialin.net> has quit IRC (Remote host closed the connection)
+2011-06-02T17:28:55  *** _0x47 <_0x47!~slash@p5B12FB2C.dip.t-dialin.net> has joined #aichallenge
+2011-06-02T17:29:38  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has left #aichallenge
+2011-06-02T17:34:07  *** Palmik <Palmik!~palmik@PalmikPC.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-06-02T17:35:21  *** filter <filter!admin@adsl-70-131-93-29.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-06-02T17:38:19  *** berak <berak!~chatzilla@89.204.153.167> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-06-02T17:47:39  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Ping timeout: 244 seconds)
+2011-06-02T17:53:14  *** xQuasar <xQuasar!~xQuasar@123-243-2-159.static.tpgi.com.au> has quit IRC ()
+2011-06-02T18:18:52  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-06-02T18:27:22  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-06-02T18:43:48  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-06-02T18:49:23  *** tomh <tomh!~tomh@unaffiliated/tomh> has quit IRC (Read error: Connection reset by peer)
+2011-06-02T18:50:24  *** tomh <tomh!~tomh@unaffiliated/tomh> has joined #aichallenge
+2011-06-02T19:00:54  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-06-02T19:13:12  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-06-02T19:33:41  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-06-02T19:34:01  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-06-02T19:40:39  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-06-02T19:51:49  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has joined #aichallenge
+2011-06-02T19:54:38  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Read error: Connection reset by peer)
+2011-06-02T19:55:06  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-06-02T19:55:49  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has quit IRC (Read error: Connection reset by peer)
+2011-06-02T20:03:43  *** pvarga_ <pvarga_!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has joined #aichallenge
+2011-06-02T20:07:56  *** pvarga <pvarga!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has quit IRC (Ping timeout: 260 seconds)
+2011-06-02T20:09:47  *** choas <choas!~lars@p5792C8BC.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-06-02T20:12:34  <bhasker> i was wondering if we could get some stats per game per player in the replay
+2011-06-02T20:12:38  <bhasker> like # of ants spawned
+2011-06-02T20:12:42  <bhasker> #of ants died
+2011-06-02T20:12:54  <bhasker> etc or is it possible to extrapolate that from the score?
+2011-06-02T20:13:02  <bhasker> i meant extract rather*
+2011-06-02T20:13:50  <olexs1> score should be (#ants_spawned + #enemies_killed), as i remember it
+2011-06-02T20:14:45  <olexs1> from that and final ant amount of your bot alone, don't see how it's possible to get kills/deaths reliably
+2011-06-02T20:14:48  <bhasker> what about ants lost though?
+2011-06-02T20:14:59  <bhasker> ah nm
+2011-06-02T20:15:00  <bhasker> doh
+2011-06-02T20:15:10  <bhasker> ant spawed - final ant count
+2011-06-02T20:15:15  <bhasker> not thinking
+2011-06-02T20:15:45  <olexs1> but you'll need the enemies killed number, which you don't have on its own either
+2011-06-02T20:15:46  <bhasker> olexs your bot is doing quite well
+2011-06-02T20:15:54  <bhasker> hmm k
+2011-06-02T20:16:19  <olexs1> I know, I'm actually surpsised. there are a few quite obvious flaws in him I'm simply to lazy to fix :)
+2011-06-02T20:16:33  <bhasker> heh i have been tinkering with my bots exploration code
+2011-06-02T20:16:33  <bhasker> se
+2011-06-02T20:16:38  <bhasker> seems to do a bit better
+2011-06-02T20:16:38  <bhasker> http://aichallengebeta.hypertriangle.com/visualizer.php?game=11874
+2011-06-02T20:17:17  <bhasker> though its still a bit stupid retraces paths a lot
+2011-06-02T20:17:22  <bhasker> especially at start of the game
+2011-06-02T20:17:56  <olexs1> start is a bit slow-ish, but less chance single explorers will get killed
+2011-06-02T20:19:07  <olexs1> midgame is interesting though, you and pimmie control fairly equal map parts and yet you get the upper hand having less ants to start with
+2011-06-02T20:21:52  <olexs1> hm... my bot's aggression seems broken, a lot of situations where I surround an ant at safe distance but don't attack :)
+2011-06-02T20:22:43  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-06-02T20:29:31  <bhasker> yea my bot does that too, sometimes it will cover the ant but just stay out of range:)
+2011-06-02T20:30:13  <olexs1> it makes sense when having one ant of mine encounter an enemy, safety and such, but for some reason it seems also to apply for groups
+2011-06-02T20:34:00  *** pvarga_ <pvarga_!~pvarga@pool-71-172-108-117.nwrknj.east.verizon.net> has quit IRC (Quit: pvarga_)
+2011-06-02T20:52:07  <a1k0n> hahaha leviathan's bot is great
+2011-06-02T20:52:13  <a1k0n> he draws circles around the last ants
+2011-06-02T20:53:16  <bhasker> ah suicide bots
+2011-06-02T20:53:17  <bhasker> :(
+2011-06-02T20:55:37  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: time to go)
+2011-06-02T21:00:39  <bhasker> i am issuing a lot of invalid orders will have to recheck my order code:-\
+2011-06-02T21:05:01  *** bhasker <bhasker!~bhasker@nat/yahoo/x-sjcsvhokuxxhqlgd> has quit IRC (Ping timeout: 244 seconds)
+2011-06-02T21:14:20  *** tomh <tomh!~tomh@unaffiliated/tomh> has quit IRC (Quit: tomh)
+2011-06-02T21:30:21  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-06-02T21:30:21  *** ChanServ sets mode: +o amstan
+2011-06-02T21:31:51  <amstan> hello
+2011-06-02T21:31:53  <amstan> what's new?
+2011-06-02T21:58:58  <amstan> contestbot: later tell frontier perfect, how's ie8 support again? http://tech.slashdot.org/story/11/06/02/2011225/Google-Incrementally-Dropping-Support-For-Older-Browsers?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+Slashdot%2Fslashdot+%28Slashdot%29
+2011-06-02T21:58:58  <contestbot> amstan: Ready to serve, my lord.
+2011-06-02T22:00:20  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-06-02T22:04:47  <janzert> amstan: we've still got ~5% of visitors using IE8 though, with say 10,000 users that's still 500 people :(
+2011-06-02T22:05:39  <amstan> well.. let's see: http://browsershots.org/http://aichallengebeta.hypertriangle.com/
+2011-06-02T22:10:27  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC ()
+2011-06-02T22:13:02  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-06-02T22:23:02  *** yasith <yasith!~yasith@124.43.59.189> has quit IRC (Ping timeout: 244 seconds)
+2011-06-02T22:30:54  *** olexs1 <olexs1!~Leviathan@drms-590ec4d5.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-06-02T22:31:57  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-06-02T22:34:10  <janzert> McLeopold: about to head off myself, but do you want me to leave an ec2 worker running for aichallengebeta for you to pick at or just shut it down for the night
+2011-06-02T22:34:24  <McLeopold> no, I won't being doing anything on it tonight
+2011-06-02T22:34:30  <janzert> ok
+2011-06-02T22:34:41  <McLeopold> did you solve jails yet?
+2011-06-02T22:35:02  <janzert> it would be great if you can confirm that it is the signal sending that is causing the slowdown
+2011-06-02T22:35:05  *** yasith <yasith!~yasith@124.43.61.118> has joined #aichallenge
+2011-06-02T22:35:27  <McLeopold> I'm not sure what my confirmation is worth, but I can look at it tomorrow
+2011-06-02T22:35:49  <janzert> I think the way to solve will be to have a contest script that runs inside the jail as part of the sandbox and it will basically relay the stdio and send signals to the processes
+2011-06-02T22:36:30  <janzert> basically I know that the worker sped up when I disabled signals being sent but I'm not sure if that was all of or even necessarily the main slowdown
+2011-06-02T22:37:00  <janzert> but yeah, I don't have any time to work on it tonight anyway
+2011-06-02T22:37:05  <McLeopold> tomorrow, let's get all the languages installed outside the jail, then we can have 3 comparisons
+2011-06-02T22:48:23  *** delt0r___ <delt0r___!~delt0r@188-22-172-75.adsl.highway.telekom.at> has joined #aichallenge
+2011-06-02T22:50:38  *** delt0r_ <delt0r_!~delt0r@188-22-172-246.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-06-02T23:04:01  <CIA-48> aichallenge: Scott Hamilton epsilon * r66ea495 / website/profile_submissions_widget.php :
+2011-06-02T23:04:01  <CIA-48> aichallenge: Merge pull request #140 from olexs/epsilon
+2011-06-02T23:04:01  <CIA-48> aichallenge: Added version and skill columns to user submission table on profile page. - http://bit.ly/lxwSni
+2011-06-02T23:07:46  <CIA-48> aichallenge: McLeopold epsilon * r749cbb3 / website/profile_submissions_widget.php : fixed colspan - http://bit.ly/kV604W
+2011-06-02T23:15:24  *** yasith_ <yasith_!~yasith@124.43.61.203> has joined #aichallenge
+2011-06-02T23:16:59  <McLeopold> you can timeout, but still win! http://aichallengebeta.hypertriangle.com/visualizer.php?game=12047
+2011-06-02T23:18:14  *** yasith <yasith!~yasith@124.43.61.118> has quit IRC (Ping timeout: 250 seconds)
+2011-06-02T23:20:38  <McLeopold> I dub this game "falling water" http://aichallengebeta.hypertriangle.com/visualizer.php?game=12048
+2011-06-02T23:21:45  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)

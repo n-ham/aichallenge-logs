@@ -1,0 +1,221 @@
+2012-03-25T00:48:31  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-232-18-238.asm.bellsouth.net> has joined #aichallenge
+2012-03-25T00:55:45  *** yoden <yoden!~horstman@cpe-76-190-245-7.neo.res.rr.com> has quit IRC (Quit: Leaving.)
+2012-03-25T01:32:09  <amstan> what does this mean? It is not guaranteed that __del__() methods are called for objects that still exist when the interpreter exits.
+2012-03-25T01:32:21  <amstan> nvm, wrong channel, lol
+2012-03-25T01:33:18  <thestinger> it gets called when the object is GC'ed
+2012-03-25T01:33:28  <thestinger> the interpreter is allowed to just be lazy and let the OS free the memory
+2012-03-25T01:33:44  <thestinger> don't know what cpython actually does
+2012-03-25T01:34:40  <Zannick> for sanity, you want to assume that __del__ is only called when you del the object itself
+2012-03-25T01:35:02  <Zannick> cause otherwise you have no guarantee it'll be run in a reasonable timeframe. ie. ever.
+2012-03-25T01:41:48  <amstan> yeah, so the issue i was having
+2012-03-25T01:41:56  <amstan> is that i needed a global inside my del
+2012-03-25T01:42:06  <amstan> but by the time it got to del, it deleted that global
+2012-03-25T01:42:12  <amstan> so it was complaining that it couldn't find it
+2012-03-25T01:42:26  <amstan> kind of uncool
+2012-03-25T01:42:34  <amstan> i fixed it by making the global part of the class
+2012-03-25T01:42:47  <amstan> kinda sad that there isn't a better way
+2012-03-25T01:43:25  <Zannick> usually not needing a __del__ function is good
+2012-03-25T01:43:35  <amstan> this is for a serial device thing
+2012-03-25T01:43:42  <amstan> i need to send a message just before app closes
+2012-03-25T01:43:44  <Zannick> i haven't come across many circumstances where it's needed
+2012-03-25T01:43:46  <Zannick> ah
+2012-03-25T01:44:05  <Zannick> atexit?
+2012-03-25T01:44:07  <thestinger> amstan: could you force the use of a with statement?
+2012-03-25T01:44:12  <amstan> didn't want to deal with atexit, i liked the __del__ thing more
+2012-03-25T01:44:19  <thestinger> __enter__ and __exit__
+2012-03-25T01:44:20  <Zannick> :P
+2012-03-25T01:44:22  <amstan> thestinger: hmm?
+2012-03-25T01:44:43  <Zannick> yeah, i'd recommend that, too
+2012-03-25T01:44:51  <thestinger> amstan: implement a context handler
+2012-03-25T01:44:57  <amstan> i'm not sure what you guys mean
+2012-03-25T01:45:03  <Zannick> if you're using python2.7 or feel like importing with_statement from __future__
+2012-03-25T01:45:05  <amstan> for what though? it's a device, it should be a class
+2012-03-25T01:45:12  <amstan> 2.7, yes
+2012-03-25T01:45:24  <Zannick> in 2.7 you can use with statements
+2012-03-25T01:45:33  <Zannick> like with open(filename, 'r') as f:
+2012-03-25T01:45:36  <amstan> yes, but how and why?
+2012-03-25T01:45:40  <Zannick> f is open within the block
+2012-03-25T01:45:46  <Zannick> and once you leave the block it's closed
+2012-03-25T01:45:57  <thestinger> amstan: it's equivalent to RAII in C++
+2012-03-25T01:46:04  <Zannick> no matter how you leave the block
+2012-03-25T01:46:05  <thestinger> it doesn't rely on the garbage collector doing the right thing
+2012-03-25T01:46:06  <amstan> what i did: i moved that finally block into the __del__ of the class Floppy: https://github.com/amstan/floppy/blob/master/interface/floppy.py#L145
+2012-03-25T01:46:08  <thestinger> and it's exception safe
+2012-03-25T01:46:36  <thestinger> try/finally can be replaced by a with statement
+2012-03-25T01:46:36  <amstan> the garbage collector is fairly exception friendly as well
+2012-03-25T01:46:44  <amstan> yes, but i'm not using that try finally
+2012-03-25T01:46:53  <amstan> i wanted to replace that
+2012-03-25T01:48:16  <Zannick> yeah
+2012-03-25T01:48:17  <thestinger> a with statement handles it inside the class
+2012-03-25T01:48:33  <thestinger> it gives an interface that's easy to use, and the user of the interface doesn't have to worry or call del themselves
+2012-03-25T01:49:08  <Zannick> you should be able to define __exit__ as what you have as del
+2012-03-25T01:49:13  <Zannick> and __enter__ as simply pass
+2012-03-25T01:49:25  <Zannick> or
+2012-03-25T01:49:39  <Zannick> define a wrapper class whose __enter__ method creates a Floppy
+2012-03-25T01:49:45  <Zannick> and whose __exit__ method dels it
+2012-03-25T01:50:10  <Zannick> and then write "with ___:"
+2012-03-25T01:50:12  <amstan> Zannick: that's too complicated for what i wanted to do
+2012-03-25T01:50:13  <Zannick> in place of try:
+2012-03-25T01:50:35  <amstan> my fix solved it, it's not too pretty but it's prettier than a wrapper class
+2012-03-25T01:50:54  <Zannick> i'd go with the first one
+2012-03-25T01:51:11  <thestinger> amstan: it's just as simple
+2012-03-25T01:51:14  <Zannick> defining __enter__ and __exit__ on the class itself
+2012-03-25T01:51:21  <thestinger> your __del__ is __exit__ _and_ close
+2012-03-25T01:51:32  <thestinger> someone can either use with or do it explicitly/manually with .close
+2012-03-25T01:52:08  <Zannick> with is pretty common to use for devices
+2012-03-25T01:52:45  <Zannick> but that's just my 2c, that's how i'd do it
+2012-03-25T01:52:52  <Zannick> glad to hear you got it working
+2012-03-25T01:52:53  <amstan> Zannick: https://github.com/amstan/floppy/commit/c0609bdc8f977c42e68d9d237fca29d25140700f
+2012-03-25T01:53:49  <amstan> oh! i can do __exit__ on Floppy you say and then use with Floppy() as floppy? that's a good idea
+2012-03-25T01:54:00  <Zannick> yes.
+2012-03-25T01:54:39  <amstan> oh no, i have to indent everything one more level with that again
+2012-03-25T01:54:45  <Zannick> haha
+2012-03-25T01:55:01  <thestinger> amstan: that's why the implicit version in C++ is nice :P
+2012-03-25T01:55:34  <amstan> thestinger: you would think in python destructors would be easier
+2012-03-25T01:55:40  <amstan> but i guess nobody needs them too often
+2012-03-25T01:55:45  <thestinger> garbage collection makes them pretty useless
+2012-03-25T01:55:52  <thestinger> since it's not deterministic when it gets called
+2012-03-25T01:56:20  <thestinger> in C++ you know exactly when they get called, and it will be the same with each run (even with smart pointers which is refcounting)
+2012-03-25T01:56:41  <thestinger> D probably has the same thing (not sure)
+2012-03-25T01:57:02  <thestinger> and I'm guessing Rust has something similar
+2012-03-25T01:57:25  <Zannick> you also need __enter__ which can be simply "pass" (or move some of the logic from __init__ in)
+2012-03-25T01:57:43  <Zannick> __enter__ doesn't really have to do anything
+2012-03-25T01:57:49  <thestinger> Zannick: doesn't it have to return self?
+2012-03-25T01:57:59  <Zannick> does it?
+2012-03-25T01:58:21  <amstan> hmm.. it's not as easy as just adding __exit__
+2012-03-25T01:58:36  <thestinger> Zannick: yeah, that's what with binds to the name you give it
+2012-03-25T01:58:37  <Zannick> oh, indeed.
+2012-03-25T01:59:25  <Zannick> i assumed "with foo as f" would call foo.__enter__() and save foo as f
+2012-03-25T01:59:34  <Zannick> rather than as the return value of foo.__enter__()
+2012-03-25T01:59:46  <Zannick> shows you what i know, only using with for files and locks ;)
+2012-03-25T01:59:51  <thestinger> not sure why it does that, but there's probably a use case
+2012-03-25T02:00:32  <amstan> yeah, __enter__ must return self
+2012-03-25T02:01:23  * Zannick is reading the PEP
+2012-03-25T02:01:39  <thestinger> http://docs.python.org/reference/datamodel.html#context-managers there's the section on it
+2012-03-25T02:01:48  <thestinger> http://docs.python.org/library/stdtypes.html#typecontextmanager more there
+2012-03-25T02:02:00  <amstan> idk still, it's rather ugly
+2012-03-25T02:02:14  <amstan> if i don't use a context switcher it won't stop the floppy properly
+2012-03-25T02:02:27  <thestinger> amstan: do it like python's files
+2012-03-25T02:02:53  <amstan> but it's not really a file, it's an object
+2012-03-25T02:03:02  <amstan> yes.. i can't use context managers
+2012-03-25T02:03:28  <amstan> this class will be an attribute to another class
+2012-03-25T02:03:53  <amstan> and i have to init it in the init of the other class
+2012-03-25T02:04:25  <amstan> i won't be able to have it in a context switcher, unless i call the __enter__ and __exit__ manually, which defeat the point of having them in the first place
+2012-03-25T02:05:06  <Zannick> oh, you can't edit the other class and it's the one dealing with the Floppy object?
+2012-03-25T02:05:21  <amstan> i can
+2012-03-25T02:05:38  <amstan> but the other class will have something like this in the init: self.floppy=Floppy(blabla)
+2012-03-25T02:05:51  <amstan> and then i'll use the floppy instance in the other methods as well
+2012-03-25T02:06:22  <thestinger> I guess that forces you to give the other class __enter__ and __exit__ too
+2012-03-25T02:06:34  <Zannick> that really complicates things
+2012-03-25T02:06:36  <thestinger> and just call self.floppy.__exit__() in that exit
+2012-03-25T02:06:44  <amstan> yes, so that's just weird
+2012-03-25T02:07:26  <Zannick> i would have recommended simply moving the stuff from __init__ into __enter__ and have withs all over your other class, but then you'd be constantly opening and closing the serial connection
+2012-03-25T02:07:45  <thestinger> Zannick: I don't think you need a with in the other class
+2012-03-25T02:07:50  <thestinger> you just make it a context handler too
+2012-03-25T02:07:54  <amstan> that's probably not a good idea
+2012-03-25T02:08:11  <amstan> because the serial driver for this uart device has problems as is
+2012-03-25T02:08:14  <Zannick> i think i would still rather use atexit :P
+2012-03-25T02:09:51  <Zannick> alternately
+2012-03-25T02:10:14  <Zannick> make the other class the context manager, and have its __exit__ function do the cleanup on floppy
+2012-03-25T02:10:29  <Zannick> you don't need to make Floppy a context manager in that case
+2012-03-25T02:11:36  <Zannick> up to you
+2012-03-25T02:12:05  <Zannick> and good luck
+2012-03-25T02:12:11  * Zannick ->
+2012-03-25T02:12:41  <amstan> there's a possiblity i'll have more than 1 floppy for the other class
+2012-03-25T02:14:14  <thestinger> amstan: http://sprunge.us/CQSG
+2012-03-25T02:15:56  <Zannick> def __exit__(self, *args):
+2012-03-25T02:16:04  <Zannick>     for floppy in self.floppies:
+2012-03-25T02:16:20  <Zannick>         floppy.__exit__(*args)
+2012-03-25T02:16:29  <amstan> yes, but how is that better than what i already have?
+2012-03-25T02:16:34  <Zannick> (or floppy.cleanup, etc. doesn't need to be called __exit__)
+2012-03-25T02:17:03  <Zannick> code cleanliness? ;)
+2012-03-25T02:17:05  * Zannick shrugs
+2012-03-25T02:17:06  <thestinger> amstan: you know when it gets closed
+2012-03-25T02:17:33  <amstan> thestinger: but i don't care that much, if less than 1 second it's ok with me.
+2012-03-25T02:18:04  <thestinger> __del__ is only run when it's garbage collected though
+2012-03-25T02:18:13  <thestinger> it could be 10 mins, it might be never
+2012-03-25T02:18:28  <amstan> the main purpose of that code is to make the floppy shut up when i close the program
+2012-03-25T02:18:42  <amstan> so when i ctrl+c, i want that message sent before the program quits
+2012-03-25T02:19:56  <thestinger> nice, gcc 4.7
+2012-03-25T02:38:03  *** loglog <loglog!~loglog@ec2-174-129-169-22.compute-1.amazonaws.com> has joined #aichallenge
+2012-03-25T02:56:15  *** kurnevsky <kurnevsky!~kurnevsky@79.170.111.182> has joined #aichallenge
+2012-03-25T03:23:25  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has quit IRC (Quit: sleep)
+2012-03-25T03:41:26  *** epicmonkey <epicmonkey!~epicmonke@188.134.41.211> has joined #aichallenge
+2012-03-25T03:46:31  *** loglog <loglog!~loglog@ec2-174-129-169-22.compute-1.amazonaws.com> has quit IRC (Remote host closed the connection)
+2012-03-25T03:46:48  *** loglog <loglog!~loglog@ec2-107-21-157-206.compute-1.amazonaws.com> has joined #aichallenge
+2012-03-25T03:47:09  *** Jak_o_Shadows <Jak_o_Shadows!~Fake@unaffiliated/jak-o-shadows/x-0479135> has joined #aichallenge
+2012-03-25T03:52:34  *** dici <dici!~Dici@port-92-204-48-146.dynamic.qsc.de> has joined #aichallenge
+2012-03-25T04:48:39  *** loglog <loglog!~loglog@ec2-107-21-157-206.compute-1.amazonaws.com> has quit IRC (Remote host closed the connection)
+2012-03-25T05:01:11  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2012-03-25T05:31:42  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Read error: Operation timed out)
+2012-03-25T05:33:34  *** amstan <amstan!~alex@aichallenge/admin/amstan> has quit IRC (Ping timeout: 246 seconds)
+2012-03-25T05:41:03  <Accoun> http://dis.4chan.org/read/prog/1331845575
+2012-03-25T05:49:20  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2012-03-25T06:21:36  *** antimatroid <antimatroid!~nick@88.129-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 245 seconds)
+2012-03-25T06:25:02  *** epicmonkey <epicmonkey!~epicmonke@188.134.41.211> has quit IRC (Ping timeout: 246 seconds)
+2012-03-25T06:36:01  *** antimatroid <antimatroid!~nick@185.129-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2012-03-25T06:37:40  *** epicmonkey <epicmonkey!~epicmonke@188.134.41.211> has joined #aichallenge
+2012-03-25T06:55:26  *** choas <choas!~lars@p4FDC4D04.dip.t-dialin.net> has joined #aichallenge
+2012-03-25T07:03:23  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: quit)
+2012-03-25T07:12:25  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2012-03-25T07:14:14  *** loglog <loglog!~loglog@ec2-184-72-199-118.compute-1.amazonaws.com> has joined #aichallenge
+2012-03-25T07:16:51  *** choas <choas!~lars@p4FDC4D04.dip.t-dialin.net> has quit IRC (Ping timeout: 265 seconds)
+2012-03-25T07:38:24  *** coeus <coeus!~coeus@dslb-084-061-056-177.pools.arcor-ip.net> has quit IRC (Read error: Operation timed out)
+2012-03-25T07:58:27  *** hara <hara!~hara@e182036221.adsl.alicedsl.de> has joined #aichallenge
+2012-03-25T07:58:27  *** mceier <mceier!~mceier@89-77-239-61.dynamic.chello.pl> has joined #aichallenge
+2012-03-25T08:13:25  *** dici <dici!~Dici@port-92-204-48-146.dynamic.qsc.de> has quit IRC (Read error: Connection reset by peer)
+2012-03-25T08:21:47  *** loglog <loglog!~loglog@ec2-184-72-199-118.compute-1.amazonaws.com> has quit IRC (Remote host closed the connection)
+2012-03-25T08:22:03  *** loglog <loglog!~loglog@ec2-107-20-77-246.compute-1.amazonaws.com> has joined #aichallenge
+2012-03-25T08:24:39  *** Jak_o_Shadows <Jak_o_Shadows!~Fake@unaffiliated/jak-o-shadows/x-0479135> has quit IRC (Remote host closed the connection)
+2012-03-25T08:38:10  *** mleyen <mleyen!~mleyen@p4FEA0871.dip0.t-ipconnect.de> has joined #aichallenge
+2012-03-25T08:48:30  *** archdori <archdori!~Fandekasp@p19102-ipngn100202yosemiya.okinawa.ocn.ne.jp> has joined #aichallenge
+2012-03-25T09:07:58  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Read error: Connection reset by peer)
+2012-03-25T09:10:33  *** archdori <archdori!~Fandekasp@p19102-ipngn100202yosemiya.okinawa.ocn.ne.jp> has quit IRC (Remote host closed the connection)
+2012-03-25T09:17:21  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2012-03-25T09:27:50  *** loglog <loglog!~loglog@ec2-107-20-77-246.compute-1.amazonaws.com> has quit IRC (Remote host closed the connection)
+2012-03-25T09:32:20  *** UncleVasya <UncleVasya!kvirc@31.144.159.245> has joined #aichallenge
+2012-03-25T09:59:24  *** loglog <loglog!~loglog@ec2-174-129-166-101.compute-1.amazonaws.com> has joined #aichallenge
+2012-03-25T10:03:35  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has joined #aichallenge
+2012-03-25T10:17:02  *** UncleVasya <UncleVasya!kvirc@31.144.159.245> has quit IRC (Ping timeout: 260 seconds)
+2012-03-25T10:27:02  *** yoden <yoden!~horstman@cpe-76-190-245-7.neo.res.rr.com> has joined #aichallenge
+2012-03-25T10:32:31  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2012-03-25T10:33:37  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 244 seconds)
+2012-03-25T10:37:52  *** Kingpin13 <Kingpin13!~Kingpin13@cpc25-aztw23-2-0-cust226.aztw.cable.virginmedia.com> has joined #aichallenge
+2012-03-25T10:37:52  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2012-03-25T10:39:09  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 246 seconds)
+2012-03-25T10:39:58  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2012-03-25T10:40:53  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Max SendQ exceeded)
+2012-03-25T10:41:59  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2012-03-25T10:53:27  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 260 seconds)
+2012-03-25T10:53:37  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2012-03-25T11:03:23  *** hara <hara!~hara@e182036221.adsl.alicedsl.de> has quit IRC ()
+2012-03-25T11:07:35  *** loglog <loglog!~loglog@ec2-174-129-166-101.compute-1.amazonaws.com> has quit IRC (Remote host closed the connection)
+2012-03-25T11:14:25  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 264 seconds)
+2012-03-25T11:24:10  *** KP13 is now known as Kingpin13
+2012-03-25T11:38:40  *** amstan <amstan!~alex@aichallenge/admin/amstan> has joined #aichallenge
+2012-03-25T11:38:40  *** ChanServ sets mode: +o amstan
+2012-03-25T12:05:10  *** coeus <coeus!~coeus@dslb-084-061-056-177.pools.arcor-ip.net> has joined #aichallenge
+2012-03-25T12:20:18  *** coeus <coeus!~coeus@dslb-084-061-056-177.pools.arcor-ip.net> has quit IRC (Ping timeout: 246 seconds)
+2012-03-25T12:24:59  *** epicmonkey_ <epicmonkey_!~epicmonke@188.134.41.211> has joined #aichallenge
+2012-03-25T12:25:03  *** epicmonkey <epicmonkey!~epicmonke@188.134.41.211> has quit IRC (Read error: No route to host)
+2012-03-25T13:01:18  *** loglog <loglog!~loglog@ec2-72-44-60-198.compute-1.amazonaws.com> has joined #aichallenge
+2012-03-25T13:08:22  *** mleyen <mleyen!~mleyen@p4FEA0871.dip0.t-ipconnect.de> has quit IRC (Quit: ~ Trillian Astra - www.trillian.im ~)
+2012-03-25T13:08:25  *** dici <dici!~Dici@port-92-204-39-192.dynamic.qsc.de> has joined #aichallenge
+2012-03-25T13:10:19  *** hara <hara!~hara@e182036221.adsl.alicedsl.de> has joined #aichallenge
+2012-03-25T14:04:26  *** loglog <loglog!~loglog@ec2-72-44-60-198.compute-1.amazonaws.com> has quit IRC (Remote host closed the connection)
+2012-03-25T14:04:39  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2012-03-25T14:04:44  *** loglog <loglog!~loglog@ec2-107-22-140-201.compute-1.amazonaws.com> has joined #aichallenge
+2012-03-25T14:07:35  *** Palmik <Palmik!~palmik@man-208-106.pks.muni.cz> has joined #aichallenge
+2012-03-25T20:19:48  *** contestbot <contestbot!~supybot@aichallenge/bot/contestbot> has joined #aichallenge
+2012-03-25T20:19:48  *** ChanServ sets mode: +o contestbot
+2012-03-25T20:37:35  *** epicmonkey_ <epicmonkey_!~epicmonke@188.134.41.211> has joined #aichallenge
+2012-03-25T20:49:53  *** epicmonkey_ <epicmonkey_!~epicmonke@188.134.41.211> has quit IRC (Ping timeout: 246 seconds)
+2012-03-25T21:05:27  *** archdori_ <archdori_!~Fandekasp@KD182249019128.au-net.ne.jp> has joined #aichallenge
+2012-03-25T21:08:53  *** archdori <archdori!~Fandekasp@KD182249000172.au-net.ne.jp> has quit IRC (Ping timeout: 260 seconds)
+2012-03-25T21:32:13  *** coeus <coeus!~coeus@dslb-084-061-056-177.pools.arcor-ip.net> has joined #aichallenge
+2012-03-25T21:33:48  *** archdori_ <archdori_!~Fandekasp@KD182249019128.au-net.ne.jp> has quit IRC (Ping timeout: 245 seconds)
+2012-03-25T21:34:08  *** archdori <archdori!~Fandekasp@KD182249019128.au-net.ne.jp> has joined #aichallenge
+2012-03-25T22:04:32  *** dom7b5 <dom7b5!~dom7b5@c-50-129-221-225.hsd1.in.comcast.net> has joined #aichallenge
+2012-03-25T22:58:10  *** dom7b5 <dom7b5!~dom7b5@c-50-129-221-225.hsd1.in.comcast.net> has quit IRC ()
+2012-03-25T23:17:54  *** Bluedgis <Bluedgis!~redgis@88-191-147-49.rev.dedibox.fr> has quit IRC (Ping timeout: 272 seconds)
+2012-03-25T23:17:59  *** Bluedgis <Bluedgis!~redgis@88-191-147-49.rev.dedibox.fr> has joined #aichallenge

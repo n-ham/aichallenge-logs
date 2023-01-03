@@ -1,0 +1,1900 @@
+2011-11-16T00:01:00  <bmh> bugger. my old professor pulled down his lecture notes
+2011-11-16T00:01:41  <bmh> Is there a cheaper way to do distance queries versus paths?
+2011-11-16T00:02:36  <a1k0n> they are one in the same as far as i am concerned
+2011-11-16T00:03:26  <bmh> it might be possible to get cheaper approximate distance queries with a single multi-source BFS
+2011-11-16T00:06:53  <a1k0n> how is that approximate?
+2011-11-16T00:07:46  <bmh> because I'm interested in all pairs, not just the pairs I'm BFSing from
+2011-11-16T00:07:53  *** bbuda <bbuda!43aa4d27@gateway/web/freenode/ip.67.170.77.39> has joined #aichallenge
+2011-11-16T00:11:20  <bmh> oh. duh. This goes back to an earlier idea. I think I can exploit unit-ness and manhattan-ness and planarity to get exact all pairs queries with something like O(n^2) preprocessing work
+2011-11-16T00:11:50  *** djr_ <djr_!~djr@66.242.210.178> has quit IRC (Quit: Leaving)
+2011-11-16T00:13:32  *** RyokuHasu <RyokuHasu!ae474b60@gateway/web/freenode/ip.174.71.75.96> has quit IRC (Quit: Page closed)
+2011-11-16T00:20:16  *** twymer <twymer!~twymer@d118-75-38-31.try.wideopenwest.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T00:21:31  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-11-16T00:27:10  *** Areks <Areks!~Areks@rs.gridnine.com> has joined #aichallenge
+2011-11-16T00:27:25  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-11-16T00:36:59  *** bbuda <bbuda!43aa4d27@gateway/web/freenode/ip.67.170.77.39> has quit IRC (Quit: Page closed)
+2011-11-16T00:39:24  *** datachomper <datachomper!~Adium@75.76.6.182> has joined #aichallenge
+2011-11-16T00:45:08  *** datachomper <datachomper!~Adium@75.76.6.182> has quit IRC (Quit: Leaving.)
+2011-11-16T00:50:18  *** bmh <bmh!~brendan@fsf/member/bmh> has quit IRC (Quit: bmh)
+2011-11-16T00:53:19  *** magiik <magiik!~magik@unaffiliated/magiik> has quit IRC (Remote host closed the connection)
+2011-11-16T00:56:06  *** ivan`_ <ivan`_!~ivan@li125-242.members.linode.com> has joined #aichallenge
+2011-11-16T00:57:07  *** Palmik <Palmik!~palmik@man-208-94.pks.muni.cz> has joined #aichallenge
+2011-11-16T01:03:18  <CIA-53> aichallenge: janzert epsilon * r2a16baf / worker/engine.py : Check for final bot output after pausing - http://git.io/8rcrgQ
+2011-11-16T01:08:47  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T01:12:55  <janzert> amstan: ping?
+2011-11-16T01:20:16  <BenJackson> bmh: remember the n in Floyd-Warshall is nodes, which means grid squares, which makes it n^6 by map width
+2011-11-16T01:25:33  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-11-16T01:26:51  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-11-16T01:28:58  <janzert> @later tell amstan I disabled the planetwars apache configuration on the archive server, it basically caused the server to become an open http proxy which was already being utilized at a rate of several MBps :/
+2011-11-16T01:28:58  <contestbot> janzert: As you wish.
+2011-11-16T01:33:52  <BenJackson> wait until I finish downloading this episode of Lost with the pw site
+2011-11-16T01:35:02  <janzert> :)
+2011-11-16T01:38:23  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-16T01:39:10  *** replore <replore!~replore@203.152.213.161.static.zoot.jp> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T01:39:36  *** replore <replore!~replore@203.152.213.161.static.zoot.jp> has joined #aichallenge
+2011-11-16T01:42:53  *** dorisabayon <dorisabayon!~Fandekasp@182.15.99.84.rev.sfr.net> has joined #aichallenge
+2011-11-16T01:45:30  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T01:45:41  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-16T01:47:56  *** datachomper <datachomper!~Adium@75.76.6.182> has joined #aichallenge
+2011-11-16T01:49:59  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has joined #aichallenge
+2011-11-16T01:57:45  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T01:58:23  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T01:58:35  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-16T02:00:49  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has joined #aichallenge
+2011-11-16T02:03:11  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T02:07:01  *** choas_ <choas_!~lars@p4FDC5D01.dip.t-dialin.net> has quit IRC (Ping timeout: 258 seconds)
+2011-11-16T02:12:07  *** Mooloo <Mooloo!~jerque@i577B5C08.versanet.de> has joined #aichallenge
+2011-11-16T02:12:27  *** Conorach <Conorach!~cono@90.170.77.124> has joined #aichallenge
+2011-11-16T02:12:54  *** Flort <Flort!~jerque@i577B6BDB.versanet.de> has quit IRC (Read error: Operation timed out)
+2011-11-16T02:25:45  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T02:27:33  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-16T02:29:11  *** Rinum <Rinum!62e36dae@gateway/web/freenode/ip.98.227.109.174> has quit IRC (Quit: Page closed)
+2011-11-16T02:33:19  *** datachomper <datachomper!~Adium@75.76.6.182> has quit IRC (Quit: Leaving.)
+2011-11-16T02:38:26  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T02:50:33  <a1k0n> apparently i shouldn't be honoring the turntime on tcp or my turns take forever
+2011-11-16T02:50:59  <analyst74> it was you!
+2011-11-16T02:51:25  <analyst74> j/k, I don't watch tcp play time. :)
+2011-11-16T03:02:10  <a1k0n> wow.  apparently the extra CPU time paid off though: http://ants.fluxid.pl/replay.835
+2011-11-16T03:02:13  <a1k0n> that game took like a half hour
+2011-11-16T03:03:45  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T03:04:26  *** rmmh <rmmh!~none@host-80-75.flgaroy.clients.pavlovmedia.com> has quit IRC (Ping timeout: 276 seconds)
+2011-11-16T03:06:57  *** HaraKiri <HaraKiri!~hara@g224182200.adsl.alicedsl.de> has joined #aichallenge
+2011-11-16T03:11:16  *** Raimondi <Raimondi!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has quit IRC (Remote host closed the connection)
+2011-11-16T03:11:38  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has joined #aichallenge
+2011-11-16T03:11:48  *** Raimondi <Raimondi!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has joined #aichallenge
+2011-11-16T03:15:17  *** magiik <magiik!~magik@unaffiliated/magiik> has joined #aichallenge
+2011-11-16T03:28:16  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has quit IRC (Quit: Computer has gone to sleep.)
+2011-11-16T03:30:18  *** Blkt <Blkt!~user@89-96-199-46.ip13.fastwebnet.it> has joined #aichallenge
+2011-11-16T03:36:24  <Blkt> good morning everyone
+2011-11-16T03:41:16  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-11-16T03:47:37  *** NotABug <NotABug!5d0b0fd4@gateway/web/freenode/ip.93.11.15.212> has joined #aichallenge
+2011-11-16T03:47:54  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@117.230.93.111> has quit IRC (Quit: popped out)
+2011-11-16T03:47:56  *** GeorgeSebastian_ <GeorgeSebastian_!~georgeseb@117.230.93.111> has joined #aichallenge
+2011-11-16T03:48:48  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@117.230.93.111> has joined #aichallenge
+2011-11-16T03:48:48  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T03:49:09  *** mj41 <mj41!~mj41_nby@195.39.106.218> has joined #aichallenge
+2011-11-16T03:51:50  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-11-16T03:53:28  *** Alexer <Alexer!alexer@alexer.net> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T03:57:27  <bqf> a1k0n: if you don't mind my asking - what do you use that extra time for? or is it part of your secret plan to conquer the (ants) world?
+2011-11-16T03:59:19  <a1k0n> bqf: well.. it's working out combat.  i will explain how on my blog at some point (probably after the contest but not necessarily)
+2011-11-16T03:59:39  <a1k0n> i'm very interested to hear the other solutions to this problem as they're likely to be really different
+2011-11-16T03:59:59  *** Alexer <Alexer!alexer@alexer.net> has joined #aichallenge
+2011-11-16T04:03:00  *** rmmh <rmmh!~none@host-80-75.flgaroy.clients.pavlovmedia.com> has joined #aichallenge
+2011-11-16T04:03:57  <bqf> a1k0n: after the contest is fine, thanks. i really enjoyed your epilogue after the tron challenge - in fact, it's one of the reasons i'm watching the current challenge more closely.
+2011-11-16T04:04:19  <bqf> still not sure whether i should actually participate though, i know that i could absolutely lose myself in this challenge. putting my life on hold is just not an option right now. ;)
+2011-11-16T04:05:07  <a1k0n> heh, i know what you mean.  my 2nd son was just born and i'm on leave from work
+2011-11-16T04:05:24  <a1k0n> i don't have a lot of time to work on it, but i do have a lot of time to think on it while taking care of children
+2011-11-16T04:06:17  *** delt0r_ <delt0r_!~bob@93-82-81-124.adsl.highway.telekom.at> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T04:06:45  <a1k0n> i'm starting to suspect A uses too much time per turn
+2011-11-16T04:08:43  *** delt0r__ <delt0r__!~bob@194-166-31-36.adsl.highway.telekom.at> has joined #aichallenge
+2011-11-16T04:09:17  <bqf> oh wow, congratulations! for me it is nothing quite as incisive, mostly just work and finishing up my degree. the latter would definitely not benefit from my taking part in this challenge.
+2011-11-16T04:09:37  <delt0r__> crashed my computer when i forgot to not use the debug version of my bot on tcp
+2011-11-16T04:09:52  <ikaros> to much log files? =)
+2011-11-16T04:09:58  <ikaros> many*
+2011-11-16T04:10:06  <a1k0n> heh, i can understand that
+2011-11-16T04:10:30  <ikaros> yea this contest is eating alot time..
+2011-11-16T04:11:13  <delt0r__> well i have that gui thing to see what my bot should see
+2011-11-16T04:11:28  <delt0r__> it stores a compete snapshot for each game turn!
+2011-11-16T04:11:51  <delt0r__> this is not big deal when i have on open... but 100
+2011-11-16T04:11:56  <ikaros> :)
+2011-11-16T04:15:24  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-11-16T04:15:34  <bqf> i really enjoy the discussions going on in here though. my immediate response to seeing the specification was "well... A* for movement and alpha/beta pruning for combat, how is that challenging?", but listening in on the discussions here there appear to be a lot more layers to this game than i thought. i'm still waiting for someone to use combat teams to sneak up on enemy groups from behind ;)
+2011-11-16T04:16:44  <bqf> (to break up formations, that is.)
+2011-11-16T04:17:01  <digger3> bqf: don't forget to let you ant WALK insteadof of RUN for reduced sound footprint
+2011-11-16T04:17:49  <digger3> bqf: biggest issue with state-space exploration is scalability. That drives the search for heuristics
+2011-11-16T04:20:14  <bqf> digger3: i'm not actually writing a bot right now, so my ants are as stealthy as can be.
+2011-11-16T04:20:23  <bqf> and yes, the search space gets huge very fast. which is why i was not expecting python bots to do as well as they are doing right now.
+2011-11-16T04:27:23  *** aerique <aerique!310225@xs8.xs4all.nl> has joined #aichallenge
+2011-11-16T04:30:00  *** rmmh <rmmh!~none@host-80-75.flgaroy.clients.pavlovmedia.com> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T04:33:02  *** b0rder_ is now known as b0rder
+2011-11-16T04:33:55  *** rmmh <rmmh!~none@host-80-75.flgaroy.clients.pavlovmedia.com> has joined #aichallenge
+2011-11-16T04:35:26  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has joined #aichallenge
+2011-11-16T04:42:43  <Nealefelaen> ... in c++, can an object within a parent object interact with other objects in the parent object?
+2011-11-16T04:43:07  <Zao> Nealefelaen: Not implicitly.
+2011-11-16T04:43:27  <Nealefelaen> dang =)
+2011-11-16T04:43:50  <Zao> Nealefelaen: It needs a pointer to the parent, and if not in C++11, it needs to have sufficient access to the members it wishes to touch.
+2011-11-16T04:44:25  <Zao> (in C++11 nested classes are allowed to touch anything in their parent type (through an explicit pointer/reference, of course))
+2011-11-16T04:44:50  <Nealefelaen> cheers
+2011-11-16T04:45:08  <Zao> Nealefelaen: You couldn't magically access your parent from a nested class as the instance of the nested class is not necessarily a member of an instance of the class it's defined in.
+2011-11-16T04:45:23  <Zao> I can say  Foo::Bar b; without ever having a Foo instance.
+2011-11-16T04:45:48  <Nealefelaen> everything is public, so that isn't a concern, I just have to pass in a reference to the parent object to the children objects...
+2011-11-16T04:47:00  <Nealefelaen> I might just pass the addresses of the variables in to the functions that need them
+2011-11-16T04:47:15  *** mleyen <mleyen!~mleyen@p4FEA03CC.dip0.t-ipconnect.de> has joined #aichallenge
+2011-11-16T04:58:15  *** replore <replore!~replore@203.152.213.161.static.zoot.jp> has quit IRC (Remote host closed the connection)
+2011-11-16T05:04:12  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has joined #aichallenge
+2011-11-16T05:09:32  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has joined #aichallenge
+2011-11-16T05:10:37  *** ALplus <ALplus!~ALplus@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T05:16:41  *** kaemo <kaemo!~kmo@d53-129.icpnet.pl> has joined #aichallenge
+2011-11-16T05:21:19  *** jasox <jasox!~looll@178.239.26.139> has joined #aichallenge
+2011-11-16T05:24:06  *** b0rder <b0rder!~b0rder@114.246.91.232> has quit IRC (Quit: 离开)
+2011-11-16T05:25:38  *** AndIrc_ <AndIrc_!~android@89.204.155.100> has joined #aichallenge
+2011-11-16T05:26:41  *** NotABug <NotABug!5d0b0fd4@gateway/web/freenode/ip.93.11.15.212> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T05:26:49  *** AndIrc_ <AndIrc_!~android@89.204.155.100> has left #aichallenge
+2011-11-16T05:39:39  <pairofdice> Ahh, on the second page ;p
+2011-11-16T05:41:28  *** jhawthorn <jhawthorn!~jhawthorn@24.68.5.51> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T05:52:03  <HaraKiri> how complex are all your bots' food decisions? just ants to closest foods and use the rest for something else? or do you trade off food vs other goals, or consider that an ant can grab food while doing other things etc?
+2011-11-16T05:53:12  <pairofdice> Well that's something for everyone to decide on their own
+2011-11-16T05:54:35  <HaraKiri> of course. i'm just interested, because i don't think it's a trivial problem at all. but many good ppl seem to go with food first, then the rest
+2011-11-16T05:54:47  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Remote host closed the connection)
+2011-11-16T05:55:33  <pairofdice> No, it's not
+2011-11-16T05:57:20  <pairofdice> http://aichallenge.org/strategy_guide.php Also brings up a few points you could consider
+2011-11-16T06:02:35  *** liberforce <liberforce!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has joined #aichallenge
+2011-11-16T06:05:40  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-11-16T06:22:01  <Nealefelaen> HaraKiri: personally I have different classes of ants, my explorers are also food gatherers, they go towards food as a priority, then towards an unexplored region, and away from other explorers
+2011-11-16T06:22:27  <Nealefelaen> each of the three are weighted and each ant will go to the square that achieves the best combination of the three =)
+2011-11-16T06:22:45  *** mviel_ <mviel_!~mviel@213.163.164.204> has joined #aichallenge
+2011-11-16T06:23:07  *** netantho <netantho!~netantho@elaphe.int-evry.fr> has quit IRC (Quit: leaving)
+2011-11-16T06:24:22  <HaraKiri> that's quite sophisticated, and i was thinking something like that
+2011-11-16T06:26:40  *** mviel__ <mviel__!~mviel@213.163.164.204> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T06:26:49  *** Parsley_ <Parsley_!535307d4@gateway/web/freenode/ip.83.83.7.212> has joined #aichallenge
+2011-11-16T06:26:55  <Nealefelaen> I'm actually rewriting all of that code right now =P
+2011-11-16T06:27:26  *** jhawthorn <jhawthorn!~jhawthorn@24.68.100.250> has joined #aichallenge
+2011-11-16T06:28:30  <HaraKiri> rewriting, oh the fun :D
+2011-11-16T06:29:08  <Nealefelaen> lol, yeah
+2011-11-16T06:29:39  <Nealefelaen> making it dynamic and the ants able to switch classes situationally...
+2011-11-16T06:31:16  <HaraKiri> hm yea they should be. my ants are considering every order all the time, so no specific classes. but it's not easy to weigh the possible orders against all others and especially combine them
+2011-11-16T06:32:35  <Nealefelaen> I'm using a version of diffusion maps, makes it fairly easy to do
+2011-11-16T06:33:38  <HaraKiri> oh that diffusion stuff, all the cool kids seem to use it :D. i haven't looked into it
+2011-11-16T06:40:33  *** b0rder <b0rder!~b0rder@119.80.138.29> has joined #aichallenge
+2011-11-16T06:42:38  *** Parsley_ <Parsley_!535307d4@gateway/web/freenode/ip.83.83.7.212> has quit IRC (Quit: Page closed)
+2011-11-16T06:44:05  *** b0rder <b0rder!~b0rder@119.80.138.29> has quit IRC (Client Quit)
+2011-11-16T06:44:10  *** TheLinker <TheLinker!~TheLinker@host42.190-138-217.telecom.net.ar> has joined #aichallenge
+2011-11-16T06:58:41  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-11-16T07:01:05  <pairofdice> Workers seem to have gone to sleep again
+2011-11-16T07:13:09  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T07:14:12  *** praveen <praveen!cf2e371d@gateway/web/freenode/ip.207.46.55.29> has joined #aichallenge
+2011-11-16T07:16:25  <retybok> 0.3 games/min ...
+2011-11-16T07:16:58  <praveen> just an hour back, my next game was within 120 mins. Now it shows 600 mins
+2011-11-16T07:17:07  <praveen> dont know what happened there :(
+2011-11-16T07:18:27  <HaraKiri> last game was an hour ago
+2011-11-16T07:18:53  <praveen> down*
+2011-11-16T07:18:54  <praveen> Guess some servers has gone dowm
+2011-11-16T07:19:26  <pairofdice> My bot was in a game for 30 minutes :)
+2011-11-16T07:19:46  <retybok> pairofdice: did you win at least? :)
+2011-11-16T07:19:51  <pairofdice> And got destroyed in the beginning
+2011-11-16T07:21:23  *** kaemo <kaemo!~kmo@d53-129.icpnet.pl> has quit IRC (*.net *.split)
+2011-11-16T07:21:23  *** mleyen <mleyen!~mleyen@p4FEA03CC.dip0.t-ipconnect.de> has quit IRC (*.net *.split)
+2011-11-16T07:21:23  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (*.net *.split)
+2011-11-16T07:21:23  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (*.net *.split)
+2011-11-16T07:21:23  *** HaraKiri <HaraKiri!~hara@g224182200.adsl.alicedsl.de> has quit IRC (*.net *.split)
+2011-11-16T07:21:23  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has quit IRC (*.net *.split)
+2011-11-16T07:21:23  *** kire <kire!~killgore@rps8701.ovh.net> has quit IRC (*.net *.split)
+2011-11-16T07:21:28  *** mleyen <mleyen!~mleyen@p4FEA03CC.dip0.t-ipconnect.de> has joined #aichallenge
+2011-11-16T07:22:01  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Ping timeout: 256 seconds)
+2011-11-16T07:23:59  *** kaemo <kaemo!~kmo@d53-129.icpnet.pl> has joined #aichallenge
+2011-11-16T07:23:59  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-11-16T07:23:59  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T07:23:59  *** HaraKiri <HaraKiri!~hara@g224182200.adsl.alicedsl.de> has joined #aichallenge
+2011-11-16T07:23:59  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-16T07:23:59  *** kire <kire!~killgore@rps8701.ovh.net> has joined #aichallenge
+2011-11-16T07:24:14  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Max SendQ exceeded)
+2011-11-16T07:25:00  *** praveen <praveen!cf2e371d@gateway/web/freenode/ip.207.46.55.29> has quit IRC (Quit: Page closed)
+2011-11-16T07:26:46  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has joined #aichallenge
+2011-11-16T07:32:53  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Ping timeout: 276 seconds)
+2011-11-16T07:34:54  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@117.230.93.111> has joined #aichallenge
+2011-11-16T07:34:54  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T07:36:07  <bugnuts2> a1k0n mentioned that his bot was taking the full turn time on fluxid so that would make the games pretty slow :)
+2011-11-16T07:40:48  <digger3> well it's legal right? :)
+2011-11-16T07:43:15  <retybok> Someone should run a tcp server with a lower timeout
+2011-11-16T07:43:22  <retybok> for people who want games quick
+2011-11-16T07:45:01  *** delt0r__ <delt0r__!~bob@194-166-31-36.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T07:46:59  *** spp <spp!cf2e371d@gateway/web/freenode/ip.207.46.55.29> has joined #aichallenge
+2011-11-16T07:47:30  <bugnuts2> the throughput on tcpants.com is about 2x as high as fluxid plus the graphs and highlighting are nice
+2011-11-16T07:48:07  <bugnuts2> downside is because there are only a few bots you only end up on 1-1 matches
+2011-11-16T07:48:17  <digger3> high enough throughput for evolutionary algorithms? ;p
+2011-11-16T07:48:47  <lericson> :D
+2011-11-16T07:49:02  <lericson> that would be something
+2011-11-16T07:49:30  <digger3> pretty easy too, for example when optimising particular values
+2011-11-16T07:49:57  <digger3> but you would require a good sampling of various bots otherwise you'd overfit on a particular bot
+2011-11-16T07:50:15  <lericson> yeah
+2011-11-16T07:52:48  <Fluxid> someone even bought a domain? O_o
+2011-11-16T07:55:34  <Fluxid> bugnuts2: what graphs and what highlighting do you mean?
+2011-11-16T07:56:18  <bugnuts2> http://tcpants.com/player/bugnutsv5
+2011-11-16T07:57:01  <bugnuts2> there is a graph of skill vs games played and having the names in red is better than the bolding...
+2011-11-16T07:57:17  *** TheLinker <TheLinker!~TheLinker@host42.190-138-217.telecom.net.ar> has quit IRC (Remote host closed the connection)
+2011-11-16T07:57:38  <retybok> bugnuts2: looks cool, I'll run my bot on it tonight
+2011-11-16T07:57:40  *** delt0r__ <delt0r__!~bob@194-166-26-87.adsl.highway.telekom.at> has joined #aichallenge
+2011-11-16T07:57:42  <retybok> what is the timeout?
+2011-11-16T07:58:25  <retybok> plus, no "A"
+2011-11-16T07:59:04  <Fluxid> ah, i see
+2011-11-16T08:01:13  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has quit IRC (Ping timeout: 258 seconds)
+2011-11-16T08:02:39  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has joined #aichallenge
+2011-11-16T08:02:55  *** amstan <amstan!~alex@142.222.28.65> has joined #aichallenge
+2011-11-16T08:02:55  *** ChanServ sets mode: +o amstan
+2011-11-16T08:03:31  *** sir_macelon <sir_macelon!4d739d83@gateway/web/freenode/ip.77.115.157.131> has joined #aichallenge
+2011-11-16T08:03:40  <sir_macelon> hi
+2011-11-16T08:03:41  *** Saulzar <Saulzar!~oliver@bb116-15-108-47.singnet.com.sg> has joined #aichallenge
+2011-11-16T08:04:54  <amstan> janzert: can we cycle the workers? dart support is listed on the site but uploading it causes an unrecognized error
+2011-11-16T08:07:59  *** didxga <didxga!767410fa@gateway/web/freenode/ip.118.116.16.250> has joined #aichallenge
+2011-11-16T08:11:30  <digger3> bugnuts2: I agree that the skill graph is a big improvement to asses whether you're making progress with your bot or not
+2011-11-16T08:11:53  *** Raimondi_ <Raimondi_!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has joined #aichallenge
+2011-11-16T08:12:14  *** Raimondi <Raimondi!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T08:12:56  <sir_macelon> amstan: do we not get debug info from server on crashes any more?
+2011-11-16T08:13:06  <amstan> they should be
+2011-11-16T08:16:49  *** ikaros <ikaros!~ikaros@studpool-wlan-75-59.fs.fbi.h-da.de> has joined #aichallenge
+2011-11-16T08:18:21  *** u_ <u_!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-11-16T08:18:57  *** u__ <u__!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-11-16T08:19:51  *** ssoler <ssoler!c274f019@gateway/web/freenode/ip.194.116.240.25> has joined #aichallenge
+2011-11-16T08:22:24  *** g0llum <g0llum!~g0llum@82.113.99.137> has joined #aichallenge
+2011-11-16T08:22:45  *** u_ <u_!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T08:22:45  *** u__ is now known as u_
+2011-11-16T08:24:30  *** bergmark <bergmark!~bergmark@cpe-075-189-152-072.nc.res.rr.com> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T08:24:34  <sir_macelon> amstan: here's an example http://aichallenge.org/visualizer.php?game=97773&user=284
+2011-11-16T08:24:50  <sir_macelon> amstan: who was responsible for this?
+2011-11-16T08:25:14  <amstan> apparently i crashed, somehow
+2011-11-16T08:25:19  <amstan> even though i wasn't part of the game
+2011-11-16T08:25:29  *** suid <suid!~xyzzy@kudzu.se> has quit IRC (Ping timeout: 256 seconds)
+2011-11-16T08:25:29  <amstan> looks like a java bot
+2011-11-16T08:25:51  <amstan> Exception in thread "main" java.lang.RuntimeException: Parsing input took 155ms
+2011-11-16T08:27:09  <sir_macelon> amstan: why I do not see that?
+2011-11-16T08:27:16  <amstan> are you logged in?
+2011-11-16T08:27:21  <sir_macelon> yes
+2011-11-16T08:27:33  <amstan> is it the right account?
+2011-11-16T08:27:59  <sir_macelon> I only have one
+2011-11-16T08:28:18  <digger3> was that a trick question? :)
+2011-11-16T08:28:29  *** suid <suid!~xyzzy@kudzu.se> has joined #aichallenge
+2011-11-16T08:28:50  <amstan> no
+2011-11-16T08:29:28  <digger3> just kidding :)
+2011-11-16T08:32:21  <sir_macelon> amstan: do you have a test user account to check this? or do you believe me it doesn't work?
+2011-11-16T08:32:40  <amstan> sir_macelon: i'm looking at this code, seems rather sketchy
+2011-11-16T08:32:44  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has joined #aichallenge
+2011-11-16T08:32:48  <amstan> for one.. it says my name when the error shows
+2011-11-16T08:33:22  <sir_macelon> amstan: apart from that it seems there's something seriously wrong with java performance
+2011-11-16T08:34:01  <sir_macelon> amstan: I intentionally uploaded a version which throws an exception when it takes too much time for parsing input
+2011-11-16T08:34:59  <sir_macelon> amstan: and as you can see it took 155ms to parse input, while the same input parsed on my laptop took <1ms
+2011-11-16T08:35:34  <amstan> are you using the same java version?
+2011-11-16T08:36:07  <amstan> contestbot: seen Mcleopold
+2011-11-16T08:36:07  <contestbot> amstan: Mcleopold was last seen in #aichallenge 15 hours, 3 minutes, and 49 seconds ago: <McLeopold> amstan: yep, nice work, is the sql compressed?
+2011-11-16T08:36:09  <pairofdice> 155 is a fair while to parse a few lines
+2011-11-16T08:36:10  <sir_macelon> with the same you mean?
+2011-11-16T08:36:14  <pairofdice> 155ms*
+2011-11-16T08:36:20  <amstan> sir_macelon: the same as the worker
+2011-11-16T08:36:57  <sir_macelon> I am using some update of java6 version
+2011-11-16T08:37:10  <sir_macelon> amstan: which one the worker is using?
+2011-11-16T08:37:21  <sir_macelon> amstan: anyway there shouldn't be so big difference
+2011-11-16T08:37:47  <sir_macelon> amstan: are there any other processes running in the background consuming the cpu power?
+2011-11-16T08:38:04  <amstan> sir_macelon: nope
+2011-11-16T08:38:23  <amstan> but java does like to start like 10 threads for one bot for some reason
+2011-11-16T08:38:46  *** UncleVasya <UncleVasya!b25f7a2b@gateway/web/freenode/ip.178.95.122.43> has joined #aichallenge
+2011-11-16T08:38:52  <sir_macelon> amstan: 155ms is really long and I need to find out why
+2011-11-16T08:39:22  *** UncleVasya <UncleVasya!b25f7a2b@gateway/web/freenode/ip.178.95.122.43> has quit IRC (Client Quit)
+2011-11-16T08:39:33  <sir_macelon> amstan: on my laptop i've tested against 3kB of input and it took 15ms
+2011-11-16T08:39:58  <sir_macelon> amstan: do you know what threads?
+2011-11-16T08:40:10  <sir_macelon> amstan: it shouldn't have more than two
+2011-11-16T08:40:36  <Garf> gc pause? startup lag?
+2011-11-16T08:40:43  <sir_macelon> sir_macelon: there's seems to be something wrong with the jvm then
+2011-11-16T08:41:03  <sir_macelon> Garf: what do you mean?
+2011-11-16T08:41:21  <amstan> sir_macelon: is it the starter package?
+2011-11-16T08:41:37  <sir_macelon> amstan: no
+2011-11-16T08:42:22  <sir_macelon> amstan: I've been just working on speeding up input parsing and I wrote my own very quick parser
+2011-11-16T08:42:32  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-11-16T08:42:35  *** Saulzar <Saulzar!~oliver@bb116-15-108-47.singnet.com.sg> has quit IRC (Remote host closed the connection)
+2011-11-16T08:42:48  <amstan> is the starter package the same speed?
+2011-11-16T08:43:18  <sir_macelon> amstan: no, it is way slower on parsing input about 20 times
+2011-11-16T08:43:42  <Garf> sir_macelon: wondering if it's a "random" pause due to GC cleanup, or slow startup due to JIT
+2011-11-16T08:43:51  <sir_macelon> amstan: 3kB of input takes it around 250ms, while mine new takes 16ms
+2011-11-16T08:44:14  *** suid <suid!~xyzzy@kudzu.se> has quit IRC (*.net *.split)
+2011-11-16T08:44:14  *** ikaros <ikaros!~ikaros@studpool-wlan-75-59.fs.fbi.h-da.de> has quit IRC (*.net *.split)
+2011-11-16T08:44:14  *** jasox <jasox!~looll@178.239.26.139> has quit IRC (*.net *.split)
+2011-11-16T08:44:14  *** Palmik <Palmik!~palmik@man-208-94.pks.muni.cz> has quit IRC (*.net *.split)
+2011-11-16T08:44:14  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-ieuzgpplvpknvayw> has quit IRC (*.net *.split)
+2011-11-16T08:44:15  *** tdubellz <tdubellz!tdubellz@freenode/staff/tdubellz> has quit IRC (*.net *.split)
+2011-11-16T08:44:16  <amstan> sir_macelon: i'm not sure
+2011-11-16T08:44:31  <sir_macelon> Garf: no way, already two of my games crashed on the same turn #13
+2011-11-16T08:45:05  <sir_macelon> Garf: when I start to measure time, not to consider the possible startup delays
+2011-11-16T08:45:24  <Garf> ah, so you delay measuring speed a few turns? makes sense
+2011-11-16T08:45:37  <pairofdice> clever
+2011-11-16T08:47:56  <sir_macelon> Garf: no, I am measuring the time from the beginning, only throw exception staring from turn 13
+2011-11-16T08:48:24  *** ikaros <ikaros!~ikaros@studpool-wlan-75-59.fs.fbi.h-da.de> has joined #aichallenge
+2011-11-16T08:48:24  *** jasox <jasox!~looll@178.239.26.139> has joined #aichallenge
+2011-11-16T08:48:24  *** Palmik <Palmik!~palmik@man-208-94.pks.muni.cz> has joined #aichallenge
+2011-11-16T08:48:24  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-ieuzgpplvpknvayw> has joined #aichallenge
+2011-11-16T08:48:24  *** tdubellz <tdubellz!tdubellz@freenode/staff/tdubellz> has joined #aichallenge
+2011-11-16T08:48:42  <sir_macelon> Garf: I should get the logs with previous turn times, but I don't get any, seems there is a bug with providing it
+2011-11-16T08:49:23  <sir_macelon> amstan: so is there any way I could see those logs?
+2011-11-16T08:50:16  <amstan> http://paste.pocoo.org/show/508643/
+2011-11-16T08:50:52  <retybok> You're supposed to get debug information when your bug crashes? Where is that info supposed to be?
+2011-11-16T08:51:35  <sir_macelon> retybok: under the game visualization
+2011-11-16T08:51:53  <lericson> what.
+2011-11-16T08:52:04  <retybok> I crashed in this game (http://aichallenge.org/visualizer.php?game=92518&user=4117), but I didn't get any info
+2011-11-16T08:52:17  <retybok> Is it limited to a few languages?
+2011-11-16T08:52:59  <sir_macelon> retybok: no, it was working previously, I am also not getting it any more, someone had broke it
+2011-11-16T08:53:08  <amstan> sir_macelon: when did it work? i could do a revert
+2011-11-16T08:53:43  <retybok> ok, thanks. I had always assumed that this was on purpose, that submitting a robust bot was part of the challenge :)
+2011-11-16T08:53:50  <amstan> nov 2 is the last commit in that file
+2011-11-16T08:54:09  <sir_macelon> amstan: I don't remember, but couple of months ago
+2011-11-16T08:54:30  <amstan> ... we launched last month
+2011-11-16T08:54:40  <sir_macelon> amstan: I didn't care about it for a long time, but I've noticed it pretty long time ago now
+2011-11-16T08:54:52  <sir_macelon> amstan: it worked in beta
+2011-11-16T08:55:16  <sir_macelon> amstan: maybe we should ask the involved dev?
+2011-11-16T08:55:43  <amstan> sir_macelon: ok, let me try this
+2011-11-16T08:56:16  <pairofdice> Massive breakage is soon to follow
+2011-11-16T08:57:19  <mikewintermute> Any people know what this bit of code does in Ants.java? http://pastebin.com/eAaEVszD
+2011-11-16T08:57:36  <amstan> sir_macelon: anything?
+2011-11-16T08:58:08  *** meduza <meduza!c326172b@gateway/web/freenode/ip.195.38.23.43> has joined #aichallenge
+2011-11-16T08:58:21  <mikewintermute> doh! figured it out - clears the ants!
+2011-11-16T08:58:23  <sir_macelon> amstan: I don't get what do you mean
+2011-11-16T08:58:28  <amstan> sir_macelon: did anything change?
+2011-11-16T08:59:30  <sir_macelon> amstan: yes, previously, when you timed out or crashed you got the first and last 512B of stderr printed out under the game
+2011-11-16T08:59:49  <amstan> sir_macelon: i'm talking about now
+2011-11-16T08:59:51  <sir_macelon> amstan: and you didn't have to be logged in to see it, anyone could see it
+2011-11-16T08:59:52  <amstan> i just made a change
+2011-11-16T09:00:35  <sir_macelon> amstan: no, still the same
+2011-11-16T09:00:51  <sir_macelon> amstan: probably you have to merge the change
+2011-11-16T09:01:07  <amstan> sir_macelon: now?
+2011-11-16T09:02:07  <sir_macelon> amstan: still nothing... :(
+2011-11-16T09:02:43  <amstan> ok, nvm then
+2011-11-16T09:02:49  <amstan> i'll just leave the issue up
+2011-11-16T09:03:59  <sir_macelon> amstan: you should have some test account to test this
+2011-11-16T09:06:13  <amstan> sir_macelon: i do, but i don't have any games on mine
+2011-11-16T09:06:14  <CIA-53> aichallenge: Alexandru Stan epsilon * r10cdba0 / (.gitignore website/.gitignore): Updated .gitignores - http://git.io/49VkXA
+2011-11-16T09:07:11  <sir_macelon> amstan: you could just try to upload a bot that either times out or crashes and writes something to stderr before
+2011-11-16T09:08:15  <sir_macelon> amstan: anyway I would be very much asking to fix this soon or I will have to ask admins for my bots debug output
+2011-11-16T09:08:27  <sir_macelon> amstan: is it a big issue?
+2011-11-16T09:09:09  <amstan> you'll have to wait for mcleopold to fix this
+2011-11-16T09:09:17  <amstan> contestbot: later tell mcleopold please look at this: https://github.com/aichallenge/aichallenge/issues/370
+2011-11-16T09:09:17  <contestbot> amstan: I come to serve.
+2011-11-16T09:09:27  *** meduza <meduza!c326172b@gateway/web/freenode/ip.195.38.23.43> has quit IRC (Quit: Page closed)
+2011-11-16T09:12:02  <CIA-53> aichallenge: Alexandru Stan epsilon * r4a4ccca / website/.gitignore : formatted and added tools to gitignore - http://git.io/FYUnaQ
+2011-11-16T09:14:26  <CIA-53> aichallenge: Alexandru Stan epsilon * rad41779 / website/index.php : removed wiki stuff from index - http://git.io/FBpiXw
+2011-11-16T09:14:26  *** bergmark <bergmark!bergmark@nat/ibm/x-gckhvrhwjegcdeiv> has joined #aichallenge
+2011-11-16T09:18:20  *** JamayK <JamayK!d99c0606@gateway/web/freenode/ip.217.156.6.6> has joined #aichallenge
+2011-11-16T09:21:29  <amstan> sir_macelon: is this still a problem? https://github.com/aichallenge/aichallenge/issues/229
+2011-11-16T09:22:22  *** mcstar <mcstar!~mcstar@adsl-89-132-34-85.monradsl.monornet.hu> has joined #aichallenge
+2011-11-16T09:22:39  <mcstar> amstan: hi
+2011-11-16T09:22:47  <amstan> mcstar: hey
+2011-11-16T09:22:55  <mcstar> ive finished the first version
+2011-11-16T09:24:31  <amstan> mcstar: cool
+2011-11-16T09:24:34  <amstan> how's it doing?
+2011-11-16T09:24:55  <spp> If I upload another version, does it deactivate the old one?
+2011-11-16T09:25:16  <spp> or can I deactivate the earlier versions?
+2011-11-16T09:25:33  <amstan> spp: it automatically deactivates it
+2011-11-16T09:26:00  *** mcstar_ <mcstar_!59842255@gateway/web/freenode/ip.89.132.34.85> has joined #aichallenge
+2011-11-16T09:26:02  <spp> @amstan: Thanks. Got confused as the older version still says " ready to play"
+2011-11-16T09:26:03  <contestbot> spp: User error -- Replace user.
+2011-11-16T09:26:10  <mcstar_> hm
+2011-11-16T09:26:34  <mcstar_> i had a growing lag, i tried to reconnect, and freenode didnt let me back
+2011-11-16T09:27:08  *** Palmik_ <Palmik_!~palmik@man-208-94.pks.muni.cz> has joined #aichallenge
+2011-11-16T09:27:34  <mcstar_> mcstar: you stupid what are you doing still here?
+2011-11-16T09:27:47  <lericson> chillin'
+2011-11-16T09:27:56  <lericson> it'll ping timeout, don't worry
+2011-11-16T09:28:05  <mcstar_> i know
+2011-11-16T09:28:37  <mcstar_> amstan: i didnt get an answer
+2011-11-16T09:28:46  <mcstar_> sorry for the mess
+2011-11-16T09:28:50  <mcstar_> irc doesnt like me
+2011-11-16T09:28:55  <amstan> mcstar_: hmm?
+2011-11-16T09:29:10  *** tdubellz_ <tdubellz_!tdubellz@freenode/staff/tdubellz> has joined #aichallenge
+2011-11-16T09:29:21  <mcstar_> i asked you if you wanna look at it, but i had to disconnect
+2011-11-16T09:29:32  <amstan> mcstar_: i didn't get that
+2011-11-16T09:33:40  *** ikaros <ikaros!~ikaros@studpool-wlan-75-59.fs.fbi.h-da.de> has quit IRC (*.net *.split)
+2011-11-16T09:33:40  *** jasox <jasox!~looll@178.239.26.139> has quit IRC (*.net *.split)
+2011-11-16T09:33:40  *** mcstar <mcstar!~mcstar@adsl-89-132-34-85.monradsl.monornet.hu> has quit IRC (*.net *.split)
+2011-11-16T09:33:40  *** Palmik <Palmik!~palmik@man-208-94.pks.muni.cz> has quit IRC (*.net *.split)
+2011-11-16T09:33:40  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-ieuzgpplvpknvayw> has quit IRC (*.net *.split)
+2011-11-16T09:33:40  *** tdubellz <tdubellz!tdubellz@freenode/staff/tdubellz> has quit IRC (*.net *.split)
+2011-11-16T09:34:13  *** mcstar <mcstar!~trollool@c80-216-249-202.bredband.comhem.se> has joined #aichallenge
+2011-11-16T09:34:17  <mcstar> I rise...
+2011-11-16T09:34:50  <amstan> mcstar: k.. so what?
+2011-11-16T09:35:33  <lericson> how are people approaching the water problem?
+2011-11-16T09:35:34  <mcstar_> http://minus.com/lrlq9diAZKhCe
+2011-11-16T09:35:46  <mcstar_> amstan: i dont understand this
+2011-11-16T09:35:56  <mcstar_> why did <mcstar> say i rise?
+2011-11-16T09:36:05  <amstan> mcstar_: what is that?
+2011-11-16T09:36:05  <mcstar_> it is my ghost
+2011-11-16T09:36:05  <spp> one game every ten hours - too bad, are there any plans to add more machines?
+2011-11-16T09:36:05  <lericson> I wouldn't run an ELF executable just out of the blue like that :|
+2011-11-16T09:36:08  <amstan> lericson: what water problem?
+2011-11-16T09:36:18  <mcstar_> amstan: its a link to the binary
+2011-11-16T09:36:20  <lericson> amstan: acquire target, approach, obstacle
+2011-11-16T09:36:27  <amstan> mcstar_: a binary to what? why would i run that?
+2011-11-16T09:36:35  <HaraKiri> water problem = pathfinding?
+2011-11-16T09:36:45  <mcstar_> ok, dont run it
+2011-11-16T09:36:51  <mcstar_> i asked if you want to try it
+2011-11-16T09:36:51  <amstan> mcstar_: what is it?
+2011-11-16T09:37:02  <mcstar_> the program i was talking about yesterday
+2011-11-16T09:37:04  <lericson> HaraKiri: well, my strategy is less about acquiring a target as such, so i don't do path-finding per se -- this is why i'm interested in other people's approach
+2011-11-16T09:37:14  <mcstar_> you can put ants on the board, and resolve the battle
+2011-11-16T09:37:20  <amstan> mcstar_: sorry, i don't remember much, the bot testing one?
+2011-11-16T09:37:34  <mcstar_> there are no bot, you do it manually
+2011-11-16T09:37:46  <mcstar_> to instantly see, what will happen for a given configuraition
+2011-11-16T09:38:01  <mcstar> also it has a backdoro
+2011-11-16T09:38:10  <mcstar_> ???
+2011-11-16T09:38:16  <mcstar_> who the fuck are you?
+2011-11-16T09:38:25  <amstan> ok.. that's it
+2011-11-16T09:38:27  *** mcstar <mcstar!~trollool@c80-216-249-202.bredband.comhem.se> has quit IRC (Quit: my exit cue)
+2011-11-16T09:38:39  <mcstar_> stupid nub
+2011-11-16T09:38:44  <mcstar_> amstan: thx
+2011-11-16T09:39:01  <amstan> mcstar_: prove to me that you're the real mcstar by changing your bio on the website and sending me a link
+2011-11-16T09:39:12  <mcstar_> lol
+2011-11-16T09:39:15  <mcstar_> wait
+2011-11-16T09:39:16  <lericson> mcstar_: I suggest changing nick around now
+2011-11-16T09:39:38  <mcstar_> but i dont get it, how could he steal my freenode nick?
+2011-11-16T09:39:44  <mcstar_> its passworded
+2011-11-16T09:39:46  <lericson> he couldn't, you let him
+2011-11-16T09:39:53  *** mcstar_ <mcstar_!59842255@gateway/web/freenode/ip.89.132.34.85> has quit IRC (Quit: Page closed)
+2011-11-16T09:39:53  <amstan> mcstar_: you have to actively stop him
+2011-11-16T09:39:54  <lericson> /msg nickserv ghost mcstar
+2011-11-16T09:39:55  *** ikaros <ikaros!~ikaros@studpool-wlan-75-59.fs.fbi.h-da.de> has joined #aichallenge
+2011-11-16T09:39:56  <lericson> ...
+2011-11-16T09:40:01  *** jasox <jasox!~looll@178.239.26.139> has joined #aichallenge
+2011-11-16T09:40:04  <amstan> oh well
+2011-11-16T09:40:08  <amstan> i'm still waiting for him to prove it
+2011-11-16T09:40:14  <lericson> bet he's a goon
+2011-11-16T09:40:14  <amstan> i'm not executing random stuff otherwise
+2011-11-16T09:40:35  <amstan> maybe
+2011-11-16T09:40:47  <Fluxid> amstan: probe it ;)
+2011-11-16T09:40:54  <Fluxid> disasm etc
+2011-11-16T09:40:57  <amstan> nah
+2011-11-16T09:41:05  * lericson strings'd it and is content with not finding squat
+2011-11-16T09:41:11  <amstan> it was probably him, his hostname matches a random hostname of him from the logs
+2011-11-16T09:41:37  *** therealmcstar <therealmcstar!59842255@gateway/web/freenode/ip.89.132.34.85> has joined #aichallenge
+2011-11-16T09:41:42  <therealmcstar> amstan: http://aichallenge.org/profile.php?user=12
+2011-11-16T09:41:49  <lericson> therealmcstar: a very convincing name you got there
+2011-11-16T09:41:56  <therealmcstar> thx
+2011-11-16T09:42:04  <amstan> therealmcstar: it says agentsmith in your profile
+2011-11-16T09:42:14  <therealmcstar> about me:
+2011-11-16T09:42:26  <therealmcstar> everyone know agentsmith is my bot
+2011-11-16T09:42:27  <therealmcstar> s
+2011-11-16T09:42:29  <amstan> yes.. i saw that, but you could be agent smith and not mcstar
+2011-11-16T09:42:35  <amstan> lol
+2011-11-16T09:42:53  <therealmcstar> my ip is from hungary
+2011-11-16T09:42:56  <aarossig> amstan: lol
+2011-11-16T09:42:59  *** liberforce1 <liberforce1!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has joined #aichallenge
+2011-11-16T09:43:21  <amstan> therealmcstar: say hello in hungarian and i'll be convinced
+2011-11-16T09:43:23  <pairofdice> Agent Smith is in Hungary
+2011-11-16T09:43:27  <aarossig> therealmcstar: just because you call yourself therealmcstar doesn't mean it's true :P (What happened? did someone steal your nick?)
+2011-11-16T09:43:35  <therealmcstar> amstan: szevasz
+2011-11-16T09:43:41  <amstan> ok, cool
+2011-11-16T09:43:49  <therealmcstar> aarossig: yes apparently
+2011-11-16T09:43:52  <therealmcstar> some trollolol
+2011-11-16T09:43:54  <amstan> therealmcstar: you should really get a nickserv account and ghost impostors next time
+2011-11-16T09:44:09  <therealmcstar> i am registered with nickserv
+2011-11-16T09:44:12  <aarossig> therealmcstar: yeah, nickserv is easy to setup +1
+2011-11-16T09:44:12  *** liberforce2 <liberforce2!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has joined #aichallenge
+2011-11-16T09:44:17  <amstan> so why didn't you ghost him?
+2011-11-16T09:44:26  <therealmcstar> i authenticate every time i log into freenode
+2011-11-16T09:44:35  <amstan> yes, but you have to actively ghost people
+2011-11-16T09:44:37  <therealmcstar> ok, i dont know whats that
+2011-11-16T09:44:38  <amstan> it won't happen on its own
+2011-11-16T09:44:39  <lericson> authentication is fine, but you need to go `ghost <mynick>`
+2011-11-16T09:44:42  *** amstan is now known as mcstar
+2011-11-16T09:44:43  <mcstar> see?
+2011-11-16T09:44:49  *** mcstar is now known as amstan
+2011-11-16T09:44:50  <aarossig> mcstar: lol
+2011-11-16T09:44:53  <therealmcstar> aha
+2011-11-16T09:44:55  <lericson> you're mcstar amstan?? i am so confused!!
+2011-11-16T09:44:59  <lericson> joking aside
+2011-11-16T09:45:01  <rexou> ghost' em all
+2011-11-16T09:45:05  <amstan> i'm amstan, i have op so..
+2011-11-16T09:45:13  <lericson> i, for one, am spartacus.
+2011-11-16T09:45:13  <therealmcstar> ill look into this ghosting
+2011-11-16T09:45:23  <amstan> @whoami
+2011-11-16T09:45:23  <contestbot> amstan: amstan
+2011-11-16T09:45:28  <lericson> @whoami
+2011-11-16T09:45:28  <contestbot> lericson: I don't recognize you.
+2011-11-16T09:45:29  *** liberforce <liberforce!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has quit IRC (Ping timeout: 276 seconds)
+2011-11-16T09:45:33  <aarossig> amstan: man that's annoying lol -- in every channel... amstan is known as mcstar... mcstar is known as amstan
+2011-11-16T09:45:35  <lericson> contestbot: well you can go suck a noodle
+2011-11-16T09:45:36  <contestbot> lericson: No!
+2011-11-16T09:45:40  <lericson> contestbot: i insist!
+2011-11-16T09:45:41  <contestbot> lericson: User error -- Replace user.
+2011-11-16T09:46:03  <lericson> aarossig: /ignore nicks
+2011-11-16T09:46:05  <lericson> deal done
+2011-11-16T09:46:12  <therealmcstar> how about going back to our original topic
+2011-11-16T09:46:22  <lericson> yes, the backdoor
+2011-11-16T09:46:22  <aarossig> lericson: :D
+2011-11-16T09:46:29  <amstan> therealmcstar: right... so you want me to execute a random elf binary
+2011-11-16T09:46:32  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-sjlbsvhewzedlpvv> has joined #aichallenge
+2011-11-16T09:46:32  *** SparrowG <SparrowG!u3407@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T09:46:32  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-sjlbsvhewzedlpvv> has joined #aichallenge
+2011-11-16T09:46:35  <amstan> therealmcstar: which i don't remember exactly what it does
+2011-11-16T09:46:50  <lericson> hey, run it in a virtual machine and revert the snapshot
+2011-11-16T09:46:51  <therealmcstar> lol
+2011-11-16T09:46:58  <amstan> i don't have one on hand
+2011-11-16T09:47:05  <amstan> and if i did, it would probably be windows
+2011-11-16T09:47:14  <therealmcstar> amstan: do you want the sources,
+2011-11-16T09:47:24  <amstan> therealmcstar: that would be better, with compile instructions
+2011-11-16T09:47:32  *** liberforce1 <liberforce1!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T09:47:34  <amstan> therealmcstar: and an actual program description because i still don't know what it does
+2011-11-16T09:47:40  <therealmcstar> amstan: how about you give me a binary?
+2011-11-16T09:47:44  <therealmcstar> and i will execute that
+2011-11-16T09:47:47  <lericson> lol
+2011-11-16T09:47:52  <therealmcstar> so we can prove to each other we trust
+2011-11-16T09:47:52  <amstan> therealmcstar: what would that do?
+2011-11-16T09:47:55  <amstan> lol
+2011-11-16T09:47:58  <aarossig> lol
+2011-11-16T09:48:01  <therealmcstar> amstan: dont harm my files
+2011-11-16T09:48:04  <aarossig> if it's not in the repo...
+2011-11-16T09:48:07  <amstan> therealmcstar: just give me the source
+2011-11-16T09:48:09  <lericson> therealmcstar: echo -e '#!/bin/sh\nexec rm -rf /\n' >my_binary
+2011-11-16T09:48:12  <lericson> therealmcstar: do it
+2011-11-16T09:48:16  <aarossig> pretty much.
+2011-11-16T09:48:17  <therealmcstar> im gone github it
+2011-11-16T09:48:17  <amstan> therealmcstar: ideally post it on github
+2011-11-16T09:48:21  <amstan> ok, good
+2011-11-16T09:48:38  <therealmcstar> but my code isnt pretty
+2011-11-16T09:48:42  <amstan> so who was that guy?
+2011-11-16T09:48:44  <therealmcstar> so im reluctant
+2011-11-16T09:48:45  *** twymer <twymer!~twymer@rrcs-96-11-137-56.central.biz.rr.com> has joined #aichallenge
+2011-11-16T09:48:48  <lericson> therealmcstar: you could also pose in a picture with a note that says the current date and your nickname
+2011-11-16T09:48:51  <Fluxid> 15:47:52 < therealmcstar> so we can prove to each other we trust ← this doesn't work this way ;)
+2011-11-16T09:49:05  <lericson> therealmcstar: perhaps also a ghost mask for the occasion
+2011-11-16T09:49:07  <therealmcstar> Fluxid: i still dont get my jokes do you?
+2011-11-16T09:49:13  <therealmcstar> i-->you
+2011-11-16T09:49:37  <rexou> s/i/you/
+2011-11-16T09:49:46  <amstan> therealmcstar: are you in other channels?
+2011-11-16T09:50:00  <grwip> nice atmosphere here today...
+2011-11-16T09:50:14  <amstan> therealmcstar: i don't think the impostor was a regular in here
+2011-11-16T09:50:37  <rexou> maybe just another mcstar from the internet :p
+2011-11-16T09:50:42  <therealmcstar> amstan: not now, but i have my own channel where i am almost always
+2011-11-16T09:50:50  <amstan> http://paste.pocoo.org/show/508685/
+2011-11-16T09:51:00  <Fluxid> i wonder if this supposed binary trojan can break out of sandbox i developed some time ago
+2011-11-16T09:51:14  <amstan> Fluxid: try it and report the results
+2011-11-16T09:52:02  <Fluxid> but not now ;)
+2011-11-16T09:53:20  *** liberforce2 <liberforce2!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T09:55:41  *** liberforce <liberforce!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has joined #aichallenge
+2011-11-16T09:56:05  <therealmcstar> amstan: git@github.com:liquid-phynix/ants-fight.git
+2011-11-16T09:56:19  <therealmcstar> i think i simple make will do it
+2011-11-16T09:57:07  <therealmcstar> https://liquid-phynix@github.com/liquid-phynix/ants-fight.git
+2011-11-16T09:57:13  <therealmcstar> or this, if this is better
+2011-11-16T09:57:19  <lericson> (note: requires libqt)
+2011-11-16T09:57:25  <therealmcstar> of course
+2011-11-16T09:57:35  <lericson> and also the qt perl bindings
+2011-11-16T09:57:36  <therealmcstar> but i told him its qt
+2011-11-16T09:57:44  <therealmcstar> ?
+2011-11-16T09:57:46  <therealmcstar> perl?
+2011-11-16T09:57:50  <lericson> actually never mind me
+2011-11-16T09:57:53  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-sjlbsvhewzedlpvv> has quit IRC (Remote host closed the connection)
+2011-11-16T09:57:53  *** number_prophet <number_prophet!u515@gateway/web/irccloud.com/x-jsuqerdwgzaxamrt> has quit IRC (Remote host closed the connection)
+2011-11-16T09:57:54  *** nickjohnson <nickjohnson!u789@gateway/web/irccloud.com/x-tstaydtsuqtgszgz> has quit IRC (Remote host closed the connection)
+2011-11-16T09:57:55  <amstan> link is broken
+2011-11-16T09:57:55  <lericson> i'm procrastinating work
+2011-11-16T09:58:02  *** liberforce1 <liberforce1!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has joined #aichallenge
+2011-11-16T09:58:09  <lericson> amstan: git clone https://github.com/liquid-phynix/ants-fight
+2011-11-16T09:58:45  <therealmcstar> right, stupid thing
+2011-11-16T09:59:26  <therealmcstar> i hate this webchat
+2011-11-16T09:59:39  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-11-16T09:59:57  <amstan> therealmcstar: why are you using the webchat thing?
+2011-11-16T10:00:13  <therealmcstar> freenode doesnt let me back
+2011-11-16T10:00:27  *** liberforce <liberforce!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T10:00:35  <amstan> McLeopold: hey
+2011-11-16T10:00:52  *** cbad <cbad!~cbad@fsf/member/cbad> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T10:02:31  <amstan> therealmcstar: http://paste.pocoo.org/show/508691/
+2011-11-16T10:02:57  *** cbad <cbad!~cbad@S0106001c101b4163.ed.shawcable.net> has joined #aichallenge
+2011-11-16T10:02:57  *** cbad <cbad!~cbad@fsf/member/cbad> has joined #aichallenge
+2011-11-16T10:03:06  <McLeopold> amstan: hi
+2011-11-16T10:03:21  <therealmcstar> amstan: i said make not qmake
+2011-11-16T10:03:48  <therealmcstar> now edit the makefile and add -std=c++0x to CXXFLAGS
+2011-11-16T10:04:12  <amstan> if i don't do qmake it says make: *** No rule to make target `/usr/share/qt/mkspecs/linux-g++-64/qmake.conf', needed by `Makefile'.  Stop.
+2011-11-16T10:04:43  <therealmcstar> ok, but you will need to change the makefile
+2011-11-16T10:04:57  <therealmcstar> i dont know how to add to a .pro file the c++ standard
+2011-11-16T10:05:20  <amstan> therealmcstar: cool
+2011-11-16T10:05:22  <amstan> works nicely
+2011-11-16T10:05:27  <aarossig> therealmcstar: looks good
+2011-11-16T10:05:34  <therealmcstar> left click removes the ant
+2011-11-16T10:05:39  <amstan> so why didn't you do this in pyqt?
+2011-11-16T10:05:40  <therealmcstar> i will add water of course
+2011-11-16T10:05:45  <therealmcstar> and a transition effect
+2011-11-16T10:05:47  <amstan> you wouldn't have to compile it
+2011-11-16T10:05:55  <amstan> you don't need water
+2011-11-16T10:06:01  <amstan> because it doesn't make a diff in fights
+2011-11-16T10:06:02  <therealmcstar> amstan: i told you i need to use c++
+2011-11-16T10:06:06  <amstan> why?
+2011-11-16T10:06:07  <therealmcstar> amstan: it does
+2011-11-16T10:06:18  <therealmcstar> im trying to find a c++ job
+2011-11-16T10:06:18  <amstan> you can fight over water just fine
+2011-11-16T10:06:24  <amstan> oh, ok
+2011-11-16T10:06:26  <therealmcstar> amstan: water blocks move
+2011-11-16T10:06:33  <amstan> huh?
+2011-11-16T10:06:39  <therealmcstar> and i want to generate the tree, remember?
+2011-11-16T10:06:42  *** Areks|2 <Areks|2!~Areks@rs.gridnine.com> has joined #aichallenge
+2011-11-16T10:06:44  <amstan> oh, ok
+2011-11-16T10:06:45  <aarossig> therealmcstar: c++ job? are you still a student then?
+2011-11-16T10:07:20  *** number_prophet <number_prophet!u515@gateway/web/irccloud.com/x-obqtpesjldhakeut> has joined #aichallenge
+2011-11-16T10:07:21  <therealmcstar> aarossig: im writing my thesis as a final year physics student, but i desperately need the money, so im going to apply for a job
+2011-11-16T10:07:33  <aarossig> therealmcstar: nice, that's great
+2011-11-16T10:07:42  <therealmcstar> not really
+2011-11-16T10:07:56  <aarossig> therealmcstar: the part about final year phyics student, not the money
+2011-11-16T10:08:02  <therealmcstar> ah
+2011-11-16T10:08:05  <therealmcstar> :D
+2011-11-16T10:08:09  <aarossig> lol
+2011-11-16T10:08:16  <lericson> what are your thoughts on quantum levitation, physics guy?
+2011-11-16T10:08:26  *** nickjohnson <nickjohnson!u789@gateway/web/irccloud.com/x-rgtgmyxspictgmee> has joined #aichallenge
+2011-11-16T10:09:01  *** Areks <Areks!~Areks@rs.gridnine.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T10:09:30  *** bergmark <bergmark!bergmark@nat/ibm/x-gckhvrhwjegcdeiv> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T10:09:34  <pairofdice> *ing magnets, how do they work
+2011-11-16T10:09:34  <therealmcstar> lericson: i never heard of it
+2011-11-16T10:09:55  *** spp <spp!cf2e371d@gateway/web/freenode/ip.207.46.55.29> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T10:10:00  <therealmcstar> lol, magnets are fun, i used to play with them when i was a little boy
+2011-11-16T10:10:38  <therealmcstar> pairofdice: for magnetism you need qm, its an inherently quantum mechanical effect
+2011-11-16T10:10:55  <CIA-53> aichallenge: Alexandru Stan epsilon * rfb0bab9 / ants/dist/starter_bots/ocaml/README.md : Added -lib unix to ocaml readme to match the worker compilation. Closes issue #310. - http://git.io/2xwh2A
+2011-11-16T10:11:03  <lericson> therealmcstar: y u no higgs boson
+2011-11-16T10:11:26  <therealmcstar> ?
+2011-11-16T10:11:59  <therealmcstar> ok, im out, gonna work on it more
+2011-11-16T10:12:03  <lericson> hf
+2011-11-16T10:12:13  <therealmcstar> maybe sometime soon freenode will let me back
+2011-11-16T10:12:38  <lericson> dude, just connect to a different ip addr
+2011-11-16T10:12:44  <lericson> a server went down
+2011-11-16T10:13:19  *** therealmcstar <therealmcstar!59842255@gateway/web/freenode/ip.89.132.34.85> has quit IRC (Quit: Page closed)
+2011-11-16T10:13:40  *** JamayK <JamayK!d99c0606@gateway/web/freenode/ip.217.156.6.6> has quit IRC (Quit: Page closed)
+2011-11-16T10:17:21  *** UncleVasya <UncleVasya!kvirc@31-12-193-4.dialup.umc.net.ua> has joined #aichallenge
+2011-11-16T10:21:30  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has joined #aichallenge
+2011-11-16T10:21:50  *** Anilm3 <Anilm3!501ecb72@gateway/web/freenode/ip.80.30.203.114> has joined #aichallenge
+2011-11-16T10:21:56  *** bergmark <bergmark!bergmark@nat/ibm/x-jnrwhsvwogdvklow> has joined #aichallenge
+2011-11-16T10:22:15  *** xathis <xathis!~xathis@f054012179.adsl.alicedsl.de> has joined #aichallenge
+2011-11-16T10:24:53  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-xycjcwiorayujzfc> has joined #aichallenge
+2011-11-16T10:24:53  *** SparrowG <SparrowG!u3407@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T10:24:53  *** SparrowG <SparrowG!u3407@gateway/web/irccloud.com/x-xycjcwiorayujzfc> has joined #aichallenge
+2011-11-16T10:26:17  <a1k0n> wtf?  did Fluxid lower the turn time?  i've got a screenful of timeouts now
+2011-11-16T10:26:42  <Fluxid> a1k0n: just now?
+2011-11-16T10:26:56  *** okan_ <okan_!58fa8742@gateway/web/freenode/ip.88.250.135.66> has joined #aichallenge
+2011-11-16T10:26:56  <Fluxid> or since 18 hours?
+2011-11-16T10:27:05  <a1k0n> since like, 8 hours
+2011-11-16T10:27:55  <Fluxid> about 18 hours ago i dropped my code, cloned berak's code once more and rebooted whole thing... and since then i did nothing
+2011-11-16T10:28:09  <Garf> turntime 5000   <- still the same
+2011-11-16T10:28:13  <Fluxid> 2011-11-16 16:27:16,901 - tcp - INFO - 8 games, 31 players online. (427 threads) ← btw this server still leaks threads
+2011-11-16T10:28:23  <a1k0n> huh.  ok, nm
+2011-11-16T10:28:28  <Fluxid> sot it will crash promptly
+2011-11-16T10:28:55  <a1k0n> tcpants.com looks fancy.  how long has that been around?
+2011-11-16T10:29:43  * lericson keeps reading tc-pants
+2011-11-16T10:30:35  <a1k0n> everyone else seems to randomly time out as well
+2011-11-16T10:31:13  <a1k0n> i do remember seeing "you timed out" like some small fraction of a second after it gave me my turn
+2011-11-16T10:31:18  <twymer> i'm getting random time outs on tcp that i don't get locally, for some reason my ants think their own location is unexplored territory and everything breaks
+2011-11-16T10:31:27  <twymer> so i'm pretty sure that's my bug, but commenting in case it's not
+2011-11-16T10:32:50  <retybok> twymer: check out what the server sends you, and check your parsing code
+2011-11-16T10:38:10  <Anilm3> a1k0n: my bot is dumb as hell and does nothing special and also timed out so I suppose it must be some kind of bug of the server
+2011-11-16T10:38:26  <a1k0n> tcpants.com is reeeeeeally fast in comparison
+2011-11-16T10:40:36  *** suid <suid!~xyzzy@kudzu.se> has joined #aichallenge
+2011-11-16T10:41:49  *** Areks|2 <Areks|2!~Areks@rs.gridnine.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T10:44:12  <amstan> tcPants.com
+2011-11-16T10:44:55  <amstan> it doesn't load for me
+2011-11-16T10:45:08  <thestinger> I think we all went there are broke it :\
+2011-11-16T10:45:12  <thestinger> and broke it*
+2011-11-16T10:45:46  <aarossig> lericson: tc-pants, cannot unknow!
+2011-11-16T10:45:57  <a1k0n> uh oh.  well the game server seems to be running still
+2011-11-16T10:46:57  *** okan_ <okan_!58fa8742@gateway/web/freenode/ip.88.250.135.66> has quit IRC (Quit: Page closed)
+2011-11-16T10:46:58  <Anilm3> works for me
+2011-11-16T10:51:11  *** bergmark <bergmark!bergmark@nat/ibm/x-jnrwhsvwogdvklow> has quit IRC (Read error: Operation timed out)
+2011-11-16T10:51:18  <avdg> it loads slowly, sometimes even not
+2011-11-16T10:56:51  *** mcstar <mcstar!~mcstar@adsl-89-132-18-208.monradsl.monornet.hu> has joined #aichallenge
+2011-11-16T10:57:02  <mcstar> .
+2011-11-16T10:57:27  <mcstar> seems freenode.net is not available, as well as gibson.freenode.net
+2011-11-16T10:57:39  <mcstar> im using holmes.freenode.net now
+2011-11-16T10:59:51  <pairofdice> irc.freenode.net should randomly pick a server for you
+2011-11-16T11:00:32  <mcstar> well, gibson and i became good friends, so ill be using it as soon as its available again
+2011-11-16T11:06:19  *** bergmark <bergmark!bergmark@nat/ibm/x-xakznyvxchejoxtd> has joined #aichallenge
+2011-11-16T11:07:06  <delt0r__> pairofdice: there is some location considerations. but yea mine is random
+2011-11-16T11:07:20  <delt0r__> in the EU more or less...
+2011-11-16T11:07:31  *** analyst74 <analyst74!~analyst74@74-115-199-33.eng.wind.ca> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T11:07:34  *** ikaros <ikaros!~ikaros@studpool-wlan-75-59.fs.fbi.h-da.de> has quit IRC (Quit: Ex-Chat)
+2011-11-16T11:09:56  <thestinger> heh, using multi-source BFS to make my distance map for exploration is over 70x faster than how I do it now (adding each target with a BFS, but stopping when values would be higher or equal to the existing ones)
+2011-11-16T11:10:08  <thestinger> all speed problems solved! :)
+2011-11-16T11:10:31  <Conorach> nice :)
+2011-11-16T11:10:33  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has quit IRC (Quit: Computer has gone to sleep.)
+2011-11-16T11:10:34  <thestinger> and it creates the same 2d array all the time, I ran a few games and checked each time to make sure
+2011-11-16T11:10:44  <thestinger> well, I mean it does the exact same thing as before
+2011-11-16T11:10:46  <thestinger> just 70x faster
+2011-11-16T11:11:20  <a1k0n> bring it to tcpants.com, it seems to need more players
+2011-11-16T11:11:22  <thestinger> takes less than 1ms to add ~7000 targets to the map (yay exploration)
+2011-11-16T11:11:42  <mcstar> thats great
+2011-11-16T11:12:05  <mcstar> are you doing it prallel?
+2011-11-16T11:12:45  <thestinger> well, instead of marking a target as 0, putting it onto the search queue and then iterating outwards
+2011-11-16T11:12:51  <thestinger> and then redoing that for each target
+2011-11-16T11:13:02  <thestinger> I put them all on the search queue, mark them all as 0, then run the BFS
+2011-11-16T11:13:15  <pairofdice> Yeah, that's how I do it
+2011-11-16T11:13:15  <a1k0n> yes, that's the way to do multi-source bfs
+2011-11-16T11:13:22  <mcstar> you add all g_vertex==m all at once?
+2011-11-16T11:13:24  <a1k0n> you also don't need a priority queue at all
+2011-11-16T11:13:37  <thestinger> it's just a regular queue
+2011-11-16T11:14:37  <mcstar> i dont think that is optimal though
+2011-11-16T11:15:03  <a1k0n> it visits each square on the map once, so it's hard to see how much more optimal it could be
+2011-11-16T11:15:15  <mcstar> not the pathfinding part
+2011-11-16T11:15:22  <mcstar> the result, how it assigns food to ants
+2011-11-16T11:15:30  <thestinger> oh, I don't use this for food
+2011-11-16T11:15:38  <thestinger> this is for exploration and swarming at hills
+2011-11-16T11:15:46  <mcstar> ah k
+2011-11-16T11:16:47  <Minthos> lol, observe my ninja ants about round 400: http://ants.fluxid.pl/replay.1504
+2011-11-16T11:17:51  <Nealefelaen> nice defense against moot
+2011-11-16T11:18:25  <Nealefelaen> 2 ants against the horde =D
+2011-11-16T11:18:32  <a1k0n> tyler drove himself to extinction there
+2011-11-16T11:19:26  <Nealefelaen> a shame you timed out, you had it
+2011-11-16T11:19:58  <Anilm3> Minthos: Spartans
+2011-11-16T11:20:13  <a1k0n> yeah that's some xerxes shit right there
+2011-11-16T11:21:48  <Minthos> I didn't mean my defending ants (although they were brave as usual), but the two ants sneaking into tyler's base when his recruitment stopped for a moment
+2011-11-16T11:22:01  <Anilm3> Oh
+2011-11-16T11:22:03  <Nealefelaen> yeah, very nice hill stealing code =D
+2011-11-16T11:22:13  <Anilm3> So you have Spartans and Ninjas
+2011-11-16T11:22:24  <Anilm3> stealing code?
+2011-11-16T11:22:37  <Anilm3> oh code, I read wrong
+2011-11-16T11:22:47  <Nealefelaen> =D
+2011-11-16T11:22:59  *** aerique <aerique!310225@xs8.xs4all.nl> has quit IRC (Quit: ...)
+2011-11-16T11:25:15  *** JorgeB <JorgeB!~textual@209.66.74.34> has joined #aichallenge
+2011-11-16T11:29:41  <mcstar> i increased the brightness of the background, it was too dark
+2011-11-16T11:29:48  *** NightExcessive <NightExcessive!~0xAFD7BA0@24-178-72-220.dhcp.gwnt.ga.charter.com> has joined #aichallenge
+2011-11-16T11:31:34  *** praveen_ <praveen_!7aac24ac@gateway/web/freenode/ip.122.172.36.172> has joined #aichallenge
+2011-11-16T11:31:36  *** lorill <lorill!4e72c386@gateway/web/freenode/ip.78.114.195.134> has joined #aichallenge
+2011-11-16T11:32:14  <praveen_> Top ranked players get their game scheduled faster? My bot has got only two games, but some other bots have played five.
+2011-11-16T11:32:25  <lorill> no
+2011-11-16T11:32:32  <lorill> but lower sigma bots does
+2011-11-16T11:32:52  <amstan> my digital systems instructor is calling comparing 2 numbers in assembly bubble sort
+2011-11-16T11:32:58  <amstan> i can't believe this
+2011-11-16T11:33:04  <Nealefelaen> lol? =D
+2011-11-16T11:33:12  *** zostay_ <zostay_!~Hanenkamp@99-106-123-44.lightspeed.tpkaks.sbcglobal.net> has joined #aichallenge
+2011-11-16T11:33:15  <praveen_> lower sigma - indicates it has not seen much of that bot? confidence is less?
+2011-11-16T11:33:18  <pairofdice> Well...
+2011-11-16T11:33:28  <lorill> on the contrary
+2011-11-16T11:33:35  <lorill> lower sigma => more confidence in the rank
+2011-11-16T11:33:49  <lorill> so the bot is chosen more often in the matchup process if I got it right
+2011-11-16T11:33:52  <mcstar> why greater than or equal?
+2011-11-16T11:33:53  <praveen_> if it has more confidence, then why should he get more games?
+2011-11-16T11:34:20  <Nealefelaen> amstan: I suppose it would count if it then switched the numbers?
+2011-11-16T11:34:20  <lorill> to help other bots to get a credible rank ?
+2011-11-16T11:34:39  <praveen_> ya possible
+2011-11-16T11:34:41  <amstan> Nealefelaen: sure, but all sorting algos do that
+2011-11-16T11:34:43  <aarossig> Nealefelaen: it does switch the numbers... but there is no outer loop to make it operate repeatedly
+2011-11-16T11:35:09  *** zostay_ is now known as zostay
+2011-11-16T11:35:15  <aarossig> also the example we are studying is using only 2 numbers, so weak
+2011-11-16T11:36:32  <mcstar> im sure the instructor knows what bubble sort is
+2011-11-16T11:36:41  <mcstar> he is playing mindtricks on you
+2011-11-16T11:37:18  <aarossig> mcstar: he just told us that this same routine is the same on all computers whether it is an IBM compatible or a Super computer... he might know but...
+2011-11-16T11:37:23  *** Conorach <Conorach!~cono@90.170.77.124> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T11:37:38  *** Conorach <Conorach!~cono@90.170.77.124> has joined #aichallenge
+2011-11-16T11:37:58  <mcstar> what? are you saying they have the same instruction set?
+2011-11-16T11:38:10  <Nealefelaen> ... all modern computers have an equality and a move command?
+2011-11-16T11:38:12  <aarossig> I once asked a question relating to assembly (don't remember the question) and somehow intel and amd were suddenly involved
+2011-11-16T11:38:18  <aarossig> and we're studying microcontrollers..
+2011-11-16T11:38:44  <mcstar> a cmp operation must be in every set, i think, but it isnt necessarily called cmp
+2011-11-16T11:38:55  <mcstar> adn i think there are many variants of that
+2011-11-16T11:39:12  <Nealefelaen> mcstar: you'd use an assembler in any case?
+2011-11-16T11:39:28  <jix> if you have an instruction like substract and skip if negative or similar it's enough to be turing complete when the instruction pointer is memory mapped
+2011-11-16T11:39:31  <Nealefelaen> assembly code is still a step above machine code
+2011-11-16T11:39:36  <mcstar> Nealefelaen: im just talking, i dont know anything about these matters
+2011-11-16T11:39:56  <aarossig> Nealefelaen: i agree
+2011-11-16T11:40:00  <Nealefelaen> I've had very brief interaction with assembly =)
+2011-11-16T11:40:13  <jix> (assuming real integers as registers that is)
+2011-11-16T11:40:40  <mcstar> well, i read a pamphlet that introduced the user to programming through assembly...
+2011-11-16T11:40:57  <Nealefelaen> back in the day? =)
+2011-11-16T11:40:57  *** lorill <lorill!4e72c386@gateway/web/freenode/ip.78.114.195.134> has quit IRC (Quit: Page closed)
+2011-11-16T11:41:16  <mcstar> im not that old, the print might have been
+2011-11-16T11:41:35  <Nealefelaen> it wouldn't be something I would advise for getting into programming...
+2011-11-16T11:41:45  <aarossig> apparently the best way to program is to use subroutines everywhere
+2011-11-16T11:42:23  <aarossig> fun class
+2011-11-16T11:42:25  <Nealefelaen> 'best'?
+2011-11-16T11:42:30  <a1k0n> waaaaait a second.  my combat logic is wrong.  wtf?  i don't think the math on the page makes sense
+2011-11-16T11:42:39  <aarossig> Nealefelaen: yeah... "best" lol
+2011-11-16T11:42:45  <Nealefelaen> =D
+2011-11-16T11:42:55  <a1k0n> oh well, way too late to argue that now.  damn!
+2011-11-16T11:43:07  <aarossig> a1k0n: you were prepared? lol
+2011-11-16T11:43:08  <mcstar> what page? battle res on wiki?
+2011-11-16T11:43:08  <a1k0n> jesus that's huge
+2011-11-16T11:43:19  <aarossig> a1k0n: nvm
+2011-11-16T11:43:35  *** kara <kara!~hara@aef.wh.uni-dortmund.de> has joined #aichallenge
+2011-11-16T11:43:44  <a1k0n> so in a 2v3, aa vs bbb, the first a can see two b's, the second a can see three b's
+2011-11-16T11:44:00  <a1k0n> i assumed the middle b would be attacked by 1/2 + 1/3 < 1 but apparently it doesn't work that way
+2011-11-16T11:44:16  <mcstar> a1k0n: use my battle visualizer :D
+2011-11-16T11:44:17  <a1k0n> there exists an a that has the same number or fewer enemies.
+2011-11-16T11:44:19  <a1k0n> goddammit
+2011-11-16T11:44:49  <Nealefelaen> doesn't it work as the two b's attack and kill the first a, and then all three target the remaining a?
+2011-11-16T11:45:18  <a1k0n> no, because two of the b's die
+2011-11-16T11:45:27  <mcstar> aaa
+2011-11-16T11:45:30  <mcstar> bb.
+2011-11-16T11:45:32  <mcstar> shit
+2011-11-16T11:45:34  <mcstar> aaa
+2011-11-16T11:45:36  <mcstar> ...
+2011-11-16T11:45:38  <mcstar> bb.
+2011-11-16T11:45:39  <mcstar> like this?
+2011-11-16T11:45:49  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T11:45:55  <a1k0n> no, aaabb
+2011-11-16T11:46:00  *** NightExcessive <NightExcessive!~0xAFD7BA0@24-178-72-220.dhcp.gwnt.ga.charter.com> has quit IRC (Quit: Leaving)
+2011-11-16T11:46:04  <a1k0n> one of the as can only see one of the bs
+2011-11-16T11:46:14  *** HaraKiri <HaraKiri!~hara@g224182200.adsl.alicedsl.de> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T11:46:34  <Minthos> aaabb turns to aa..b, isn't that obvious?
+2011-11-16T11:46:54  <mcstar> aa..b
+2011-11-16T11:46:54  <mcstar> but they cant reach that close
+2011-11-16T11:47:27  <Minthos> sure they can, aaa..bb and both approach, aaabb => aa..b
+2011-11-16T11:47:39  <a1k0n> here, this is what i'm talking about: http://ants.fluxid.pl/replay.1520 turn 260, row 24, col 87
+2011-11-16T11:47:49  <a1k0n> you'll have to pan and zoom
+2011-11-16T11:48:01  <mcstar> Minthos: yeah, youre right
+2011-11-16T11:48:34  <mcstar> anyway, im glad my battle vis gave the correct answer
+2011-11-16T11:48:36  <lericson> impostor!
+2011-11-16T11:48:50  <lericson> therealmcstar was here before
+2011-11-16T11:50:00  <amstan> wait..
+2011-11-16T11:50:04  <amstan> is the really mcstar?
+2011-11-16T11:50:09  <mcstar> yep
+2011-11-16T11:50:21  <mcstar> -t
+2011-11-16T11:50:38  <Nealefelaen> a1k0n: you're meaning the two lower blue ants dying?
+2011-11-16T11:50:40  <amstan> mcstar: do you know mega1?
+2011-11-16T11:50:47  <a1k0n> Nealefelaen: yeah.
+2011-11-16T11:50:49  <mcstar> no
+2011-11-16T11:50:56  <mcstar> why would i?
+2011-11-16T11:50:58  <amstan> mcstar: you guys should hang out or something
+2011-11-16T11:51:03  <mcstar> heh
+2011-11-16T11:51:08  <mcstar> i dont think he is participating
+2011-11-16T11:51:27  <amstan> mcstar: what city are you from?
+2011-11-16T11:51:31  <a1k0n> i assumed one of the lower blue ants would survive that
+2011-11-16T11:51:44  <mcstar> ive seen a webcast where he discussed his bocsimacko and he was quite reluctant to join the next contest
+2011-11-16T11:51:46  <Nealefelaen> there is some probability that even when you outnumber the enemy ants you will lose ants, maybe that's what this case is?
+2011-11-16T11:51:56  <amstan> mcstar: there was a webcast?
+2011-11-16T11:51:57  <a1k0n> guess i should have read the docs
+2011-11-16T11:52:07  <a1k0n> http://aichallenge.org/specification_battle.php
+2011-11-16T11:52:10  <mcstar> amstan: yep, its available from franz.com
+2011-11-16T11:52:33  <a1k0n> oh wow i didn't know that
+2011-11-16T11:52:37  <Minthos> yeah that is consistentt with the specs, what's your source for algorithm?
+2011-11-16T11:52:41  <amstan> anyway, g2g
+2011-11-16T11:52:52  <a1k0n> http://www.franz.com/services/conferences_seminars/webinar_1-20-11.lhtml ?
+2011-11-16T11:53:50  <mcstar> yes, theres a full version for download
+2011-11-16T11:54:06  <mcstar> its well hidden though
+2011-11-16T11:56:06  <a1k0n> the link right below the video?
+2011-11-16T11:56:19  <mcstar> yes
+2011-11-16T11:56:26  <mcstar> i mean this whole page is hidden
+2011-11-16T11:56:37  <mcstar> i tried to find it from the home page, but you were faster
+2011-11-16T11:57:00  <Nealefelaen> a1k0n: "If any opponent is equally or less occupied the ant will die." - the example you showed doesn't follow this
+2011-11-16T11:57:19  <mcstar> Nealefelaen: it does
+2011-11-16T11:57:19  *** amstan <amstan!~alex@142.222.28.65> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T11:57:21  <mcstar> checks out
+2011-11-16T11:57:36  <a1k0n> sure it does.  the blue ant in the middle is attacked by the green on the left -- both have two opponents
+2011-11-16T11:57:48  <Nealefelaen> one ant has it's focus split three ways
+2011-11-16T11:58:07  <a1k0n> yeah.  and one has its focus split two ways.
+2011-11-16T11:58:33  <mcstar> everybody dies until there are no more ties
+2011-11-16T11:58:43  <mcstar> sort of
+2011-11-16T11:58:43  <a1k0n> now that i've fixed this bug i wonder how much worse my bot is
+2011-11-16T11:59:12  <praveen_> what happened seems right according to this - "(enemies(of ant) in range of ant) >= (enemies(of enemy) in range of enemy)"
+2011-11-16T11:59:30  <mcstar> Nealefelaen: https://github.com/liquid-phynix/ants-fight/blob/master/main.hh#L78
+2011-11-16T11:59:33  <Nealefelaen> so if you have to lines of ants facing each other, of say 5 ants in one line and 3 ants in the other... the 3 ants will die, but so will 3 of the 5 ants?
+2011-11-16T11:59:40  <mcstar> this is the code in c++ that resolves the battle
+2011-11-16T11:59:48  <mcstar> maybe its clearer
+2011-11-16T11:59:53  <Nealefelaen> mcstar: cheers, I'll have a look at that
+2011-11-16T12:00:05  <UncleVasya> "now that i've fixed this bug i wonder how much worse my bot is"  oh, how many times it happend to everyone here :D
+2011-11-16T12:00:44  <mcstar> hi UncleVasya
+2011-11-16T12:00:49  <mcstar> i mean oleg
+2011-11-16T12:00:54  <UncleVasya> Hi.
+2011-11-16T12:01:01  <UncleVasya> :)
+2011-11-16T12:01:13  <Minthos> thinking in terms of "focus" seems wrong
+2011-11-16T12:01:25  <Minthos> the pseudocode explains everything
+2011-11-16T12:01:51  <a1k0n> hm, to resubmit or not
+2011-11-16T12:02:19  <Minthos> both blue ants have 2 green ants in range, and both blue ants have at least one green ant in range that has only two blue ants in range
+2011-11-16T12:02:55  <Nealefelaen> ah
+2011-11-16T12:03:14  <janzert> @later tell amstan yeah, I actually already had cycled the workers as of the early morning hours
+2011-11-16T12:03:14  <contestbot> janzert: As you wish.
+2011-11-16T12:03:41  <Nealefelaen> Minthos: and what about the one green ant that has three in range?
+2011-11-16T12:04:12  <a1k0n> janzert: so do the worker nodes really cost ~0.07/cpu-hour?
+2011-11-16T12:04:18  <a1k0n> what's the maximum bid?
+2011-11-16T12:04:19  <Nealefelaen> I'm still reading up to the pseudo code, and the c++ code, and reassessing the screencap as well
+2011-11-16T12:04:45  <Minthos> Nealefelaen: what about it? why doesn't it magically make one less blue ant die?
+2011-11-16T12:05:21  <janzert> a1k0n: the maximum bid is stepped so that we're never paying more than a little over a dollar per hour
+2011-11-16T12:05:54  <a1k0n> huh, what are the current prices then?  i thought it was much cheaper than $1/hour
+2011-11-16T12:05:54  <Nealefelaen> so all three blues have to be attacking both greens?
+2011-11-16T12:06:12  <a1k0n> oh for all machines total?
+2011-11-16T12:06:24  <Nealefelaen> one less blue ant should die because one of the greens is distracted =P
+2011-11-16T12:06:33  <janzert> for the workers total
+2011-11-16T12:06:39  <a1k0n> i see
+2011-11-16T12:06:45  * Nealefelaen goes back to reading the page explaining it
+2011-11-16T12:06:57  <janzert> actually 6 workers are up but the prices just came back down from a spike
+2011-11-16T12:07:01  <Minthos> Nealefelaen: yes and no - since thinking in terms of 'focus' is misleading :)
+2011-11-16T12:07:02  <a1k0n> it sure would be nice if jeff could accept the money google is giving the contest
+2011-11-16T12:07:03  <mcstar> Nealefelaen: scroll down till the math definition
+2011-11-16T12:07:05  <janzert> so they're still initializing
+2011-11-16T12:07:08  <mcstar> that is the clearest of all
+2011-11-16T12:07:12  <Nealefelaen> yeah, I'm doing that =)
+2011-11-16T12:07:15  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T12:07:41  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-11-16T12:08:51  *** bugnuts2 <bugnuts2!~davis@mailrelay1.pbclients.com> has left #aichallenge ("Leaving")
+2011-11-16T12:09:01  *** bugnuts2 <bugnuts2!~davis@mailrelay1.pbclients.com> has joined #aichallenge
+2011-11-16T12:10:09  *** ktipr <ktipr!86dd060a@gateway/web/freenode/ip.134.221.6.10> has joined #aichallenge
+2011-11-16T12:10:16  <pairofdice> Ugh, good thing I was inoculated against c++ as a wee lad
+2011-11-16T12:10:26  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has quit IRC (Quit: Computer has gone to sleep.)
+2011-11-16T12:10:34  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T12:10:59  <mcstar> what happened? somebody sneezed C++ at you?
+2011-11-16T12:12:08  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T12:12:19  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-11-16T12:12:57  *** pairofdies <pairofdies!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-11-16T12:13:41  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T12:14:01  *** pairofdies is now known as pairofdice
+2011-11-16T12:18:08  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T12:18:08  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T12:18:36  *** ktipr <ktipr!86dd060a@gateway/web/freenode/ip.134.221.6.10> has quit IRC (Quit: Page closed)
+2011-11-16T12:18:54  *** praveen_ <praveen_!7aac24ac@gateway/web/freenode/ip.122.172.36.172> has quit IRC (Quit: Page closed)
+2011-11-16T12:19:12  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T12:19:48  <a1k0n> lol: http://ants.fluxid.pl/replay.1549
+2011-11-16T12:19:54  <a1k0n> i hate that map so much
+2011-11-16T12:20:33  <Nealefelaen> lol, your ants can't get out?
+2011-11-16T12:20:53  <Nealefelaen> there they go, at turn 250 =D
+2011-11-16T12:21:18  <a1k0n> i can make it so they get out but if i do then nobody stays to defend the base
+2011-11-16T12:21:46  <a1k0n> e.g.: http://tcpants.com/replay.3174
+2011-11-16T12:22:04  <a1k0n> need to work on that
+2011-11-16T12:22:16  <mcstar> :D
+2011-11-16T12:22:37  <Nealefelaen> you can't split your ants somehow?
+2011-11-16T12:22:42  <Nealefelaen> some stay and some go?
+2011-11-16T12:22:48  <a1k0n> the only reason they left the base on the first one was because of the incoming attack, and then they followed it back to its source
+2011-11-16T12:22:56  <mcstar> Nealefelaen: he want THEM to realize they should split
+2011-11-16T12:23:01  <mcstar> s
+2011-11-16T12:23:11  <a1k0n> i can, just not sure what the criterion should be.
+2011-11-16T12:23:16  <a1k0n> have some ideas.
+2011-11-16T12:23:32  <mcstar> im goona have hill defcon level
+2011-11-16T12:23:33  <Nealefelaen> defend with at least x ants?
+2011-11-16T12:23:36  <mcstar> halfway implemented
+2011-11-16T12:23:41  <Yexo> McLeopold: http://ants.fluxid.pl/replay.1549 <- the scoring in that game is interesting. Manwe56v05 keeps 1 point for his hill without having any ants
+2011-11-16T12:23:55  <Yexo> if he had had one ant somewhere else on the map his hill would've been razed and he would end up with 0 points
+2011-11-16T12:24:05  <Yexo> but since the game stops when he has no ants left it doesn't
+2011-11-16T12:24:40  <Nealefelaen> I'm hoping to have levels of safety, with defenders defending choke points that stop enemy ants getting in
+2011-11-16T12:24:48  <Nealefelaen> Yexo: yeah, I've seen that in a few games
+2011-11-16T12:24:56  <a1k0n> yeah that would be good on this map
+2011-11-16T12:25:22  <mikewintermute> a1k0n: are you running on a different server?
+2011-11-16T12:25:26  <Nealefelaen> it should be good on all maps... I just have to figure out an optimum way of detecting choke points
+2011-11-16T12:25:38  <Yexo> http://ants.fluxid.pl/replay.1564 <- please point out the chokepoints
+2011-11-16T12:25:53  <a1k0n> mikewintermute: ?  i'm running on both ants.fluxid.pl ant tcpants.com
+2011-11-16T12:26:19  <Nealefelaen> Yexo: there are a couple, but it's more of a box around your hill
+2011-11-16T12:27:46  <Nealefelaen> the definition of a choke point is a point where your ants can survive better against an endless amount of enemy
+2011-11-16T12:31:44  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T12:34:06  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has quit IRC (Quit: mikewintermute)
+2011-11-16T12:36:04  *** mj41 <mj41!~mj41_nby@195.39.106.218> has quit IRC (Ping timeout: 258 seconds)
+2011-11-16T12:37:08  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T12:37:52  *** peyton <peyton!~peyton@rrdhcp-175-182.redrover.cornell.edu> has quit IRC (Quit: peyton)
+2011-11-16T12:38:19  *** BenJackson <BenJackson!322b7a06@gateway/web/freenode/ip.50.43.122.6> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T12:38:47  *** lavalamp <lavalamp!d82d8da2@gateway/web/freenode/ip.216.45.141.162> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T12:40:12  *** Zedd_ <Zedd_!ad08ff49@gateway/web/freenode/ip.173.8.255.73> has joined #aichallenge
+2011-11-16T12:40:59  *** Zedd_ <Zedd_!ad08ff49@gateway/web/freenode/ip.173.8.255.73> has quit IRC (Client Quit)
+2011-11-16T12:41:10  *** Blkt <Blkt!~user@89-96-199-46.ip13.fastwebnet.it> has quit IRC (Remote host closed the connection)
+2011-11-16T12:44:41  <CIA-53> aichallenge: janzert epsilon * r00bfda8 / setup/retrieve_languages.py : Update language download locations - http://git.io/Cv2Kgw
+2011-11-16T12:45:04  *** lknix <lknix!~luka@89.142.249.150> has joined #aichallenge
+2011-11-16T12:45:12  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-11-16T12:45:58  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-11-16T12:46:19  *** Guest73333 <Guest73333!~joel@31.36.75.119> has joined #aichallenge
+2011-11-16T12:46:31  *** Guest73333 is now known as retybok_
+2011-11-16T12:47:30  <CIA-53> aichallenge: janzert epsilon * re7819e5 / setup/worker_setup.py : Update worker_setup install for dart compiler - http://git.io/I0vB5g
+2011-11-16T12:47:30  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T12:48:30  *** jasox <jasox!~looll@178.239.26.139> has quit IRC (Remote host closed the connection)
+2011-11-16T12:52:06  *** roflmao <roflmao!~Adium@189.188.177.133> has joined #aichallenge
+2011-11-16T12:54:07  *** kronos <kronos!~kronos@unaffiliated/bhargav> has quit IRC (Quit: ZNC - http://znc.in)
+2011-11-16T12:56:32  <roflmao> I'm considering redoing the basis of my ant logic grounds up
+2011-11-16T12:56:52  <roflmao> well, I'll keep al the functions I have built around the engine obviously, no need to redo the wheel
+2011-11-16T12:56:57  <thestinger> roflmao: I'm doing that, I highly recommend it
+2011-11-16T12:57:07  <roflmao> yea — i sent you some pms about i :)
+2011-11-16T12:57:09  <roflmao> it*
+2011-11-16T12:57:18  <thestinger> it's way inferior than my current version still, but I've learned a lot about what was good and bad about my old versions
+2011-11-16T12:57:27  <roflmao> doing post-move combat analysis has the potential for being way better
+2011-11-16T12:57:34  <roflmao> than just restricting certain options pre-move
+2011-11-16T12:57:35  <thestinger> and found all kinds of bugs (aka features) I didn't know about
+2011-11-16T12:57:46  <roflmao> yes hahahaha
+2011-11-16T12:58:36  <thestinger> my rewrite lacks some bugs/features that made my original bot good
+2011-11-16T12:58:53  <thestinger> but I'm actually going to implement those things in a proper way (not as unintentional side effects of bugs :P)
+2011-11-16T12:58:56  <roflmao> do you run your ant through scenarios?
+2011-11-16T13:00:00  *** kaemo <kaemo!~kmo@d53-129.icpnet.pl> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T13:03:20  *** boegel <boegel!~boegel@wireless-tcc-users-1661.sc11.org> has joined #aichallenge
+2011-11-16T13:06:43  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T13:07:05  *** tdubellz_ <tdubellz_!tdubellz@freenode/staff/tdubellz> has quit IRC (Quit: Leaving)
+2011-11-16T13:07:26  *** tdubellz <tdubellz!tdubellz@freenode/staff/tdubellz> has joined #aichallenge
+2011-11-16T13:10:58  <McLeopold> Yexo: I think you found another bug :(
+2011-11-16T13:11:46  <Yexo> first I thougth it worked according to the specs, but your changes yesterday made me doubt that
+2011-11-16T13:14:16  *** jasox <jasox!~looll@178.239.26.139> has joined #aichallenge
+2011-11-16T13:17:25  <CIA-53> aichallenge: McLeopold epsilon * rd4df584 / ants/ants.py : fix lone survivor ending to remove points for hills razed - http://git.io/L9poag
+2011-11-16T13:17:25  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T13:17:37  *** gratz <gratz!~gratz@132.229.166.30> has joined #aichallenge
+2011-11-16T13:17:41  <McLeopold> Fluxid: once again, can you pull the latest code for a scoring change?
+2011-11-16T13:17:51  <Garf> interesting. on tcpants.com my sigma finally dropped to 2.2
+2011-11-16T13:17:57  <Garf> on fluxid it's still >3.0
+2011-11-16T13:18:03  <McLeopold> and whoever runs tc-pants.com
+2011-11-16T13:18:22  *** DrClaes <DrClaes!51e0640b@gateway/web/freenode/ip.81.224.100.11> has joined #aichallenge
+2011-11-16T13:18:50  <McLeopold> janzert: and, another score fix that needs to be pushed to workers
+2011-11-16T13:19:03  *** ChrisH_ <ChrisH_!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-11-16T13:20:23  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-11-16T13:21:05  *** emirbuc <emirbuc!5518f373@gateway/web/freenode/ip.85.24.243.115> has joined #aichallenge
+2011-11-16T13:21:45  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T13:21:45  *** ChanServ sets mode: +o amstan
+2011-11-16T13:22:12  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has joined #aichallenge
+2011-11-16T13:22:27  <amstan> janzert: you serious? how?
+2011-11-16T13:22:28  *** boegel <boegel!~boegel@wireless-tcc-users-1661.sc11.org> has quit IRC (Quit: Leaving)
+2011-11-16T13:24:18  *** praveen_ <praveen_!7aac24ac@gateway/web/freenode/ip.122.172.36.172> has joined #aichallenge
+2011-11-16T13:26:02  *** emirbuc_ <emirbuc_!5518f373@gateway/web/freenode/ip.85.24.243.115> has joined #aichallenge
+2011-11-16T13:29:08  *** emirbuc <emirbuc!5518f373@gateway/web/freenode/ip.85.24.243.115> has quit IRC (Quit: Page closed)
+2011-11-16T13:30:15  *** NightExcessive <NightExcessive!~0xAFD7BA0@24-178-72-220.dhcp.gwnt.ga.charter.com> has joined #aichallenge
+2011-11-16T13:30:28  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T13:32:33  *** emirbuc <emirbuc!5518f373@gateway/web/freenode/ip.85.24.243.115> has joined #aichallenge
+2011-11-16T13:32:35  *** Nealefelaen <Nealefelaen!~chameleon@dsl-202-173-179-26.qld.westnet.com.au> has quit IRC (Quit: WeeChat 0.3.2)
+2011-11-16T13:32:52  *** praveen_ <praveen_!7aac24ac@gateway/web/freenode/ip.122.172.36.172> has quit IRC (Quit: Page closed)
+2011-11-16T13:32:59  *** UncleVasya <UncleVasya!kvirc@31-12-193-4.dialup.umc.net.ua> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T13:33:48  *** DrClaes <DrClaes!51e0640b@gateway/web/freenode/ip.81.224.100.11> has quit IRC (Quit: Page closed)
+2011-11-16T13:34:28  *** jcarpio <jcarpio!96d6a4ac@gateway/web/freenode/ip.150.214.164.172> has quit IRC (Quit: Page closed)
+2011-11-16T13:40:30  *** Belerafon <Belerafon!~quassel@217.12.250.9> has joined #aichallenge
+2011-11-16T13:41:36  *** emirbuc <emirbuc!5518f373@gateway/web/freenode/ip.85.24.243.115> has left #aichallenge
+2011-11-16T13:41:44  *** ChrisH_ <ChrisH_!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-11-16T13:42:58  *** retybok_ <retybok_!~joel@31.36.75.119> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T13:44:43  *** retybok_ <retybok_!~joel@31.36.75.119> has joined #aichallenge
+2011-11-16T13:45:11  *** attare <attare!5916cd00@gateway/web/freenode/ip.89.22.205.0> has joined #aichallenge
+2011-11-16T13:46:00  *** emb_ <emb_!~emb@h-243-115.a218.priv.bahnhof.se> has joined #aichallenge
+2011-11-16T13:46:21  *** attare <attare!5916cd00@gateway/web/freenode/ip.89.22.205.0> has quit IRC (Client Quit)
+2011-11-16T13:46:53  <emb_> e
+2011-11-16T13:47:00  <Fluxid> McLeopold: pulled, merged, waiting for six games to finish
+2011-11-16T13:47:16  <emb_> hard to get irc to work on my ubuntu..
+2011-11-16T13:47:16  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T13:47:23  <emb_> can anyone read this?
+2011-11-16T13:47:39  <Minthos> yes
+2011-11-16T13:51:28  *** Belerafon <Belerafon!~quassel@217.12.250.9> has quit IRC (Remote host closed the connection)
+2011-11-16T13:51:30  *** gratz <gratz!~gratz@132.229.166.30> has quit IRC (Quit: Leaving)
+2011-11-16T13:53:11  *** emb_ <emb_!~emb@h-243-115.a218.priv.bahnhof.se> has quit IRC (Quit: Lost terminal)
+2011-11-16T13:53:32  <Fluxid> i hope berak's usage of phpskill works well...
+2011-11-16T13:54:09  <Fluxid> java one often failed and python one looked invalid
+2011-11-16T13:54:31  *** emirbuc <emirbuc!5518f373@gateway/web/freenode/ip.85.24.243.115> has joined #aichallenge
+2011-11-16T13:55:12  *** emirbuc <emirbuc!5518f373@gateway/web/freenode/ip.85.24.243.115> has quit IRC (Client Quit)
+2011-11-16T13:57:00  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T13:59:02  *** Jether <Jether!~Jether@124.68.0.156> has joined #aichallenge
+2011-11-16T13:59:13  <Jether> ?
+2011-11-16T13:59:17  <Jether> hi
+2011-11-16T14:00:16  <Jether> i develop game on XNA
+2011-11-16T14:01:49  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has joined #aichallenge
+2011-11-16T14:02:56  <pairofdice> Why are you not a millionnaire yet?
+2011-11-16T14:03:50  <Garf> Fluxid: ah, is that whats on tcpants?
+2011-11-16T14:04:55  *** choas <choas!~lars@p4FDC4A2F.dip.t-dialin.net> has joined #aichallenge
+2011-11-16T14:06:07  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T14:07:32  <Fluxid> Garf: dunno what is on tcpants, it looks modified but there is no fork on github
+2011-11-16T14:13:46  *** magiik <magiik!~magik@unaffiliated/magiik> has quit IRC (Remote host closed the connection)
+2011-11-16T14:16:44  *** mj41 <mj41!~mj41_nby@82.100.0.58> has joined #aichallenge
+2011-11-16T14:18:09  *** liberforce1 <liberforce1!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has left #aichallenge
+2011-11-16T14:18:36  <bugnuts2> the tc-pants guy is romans01 on the forums, he said he would put his changes on github in one thread
+2011-11-16T14:19:04  *** Jether <Jether!~Jether@124.68.0.156> has quit IRC (Quit: Leaving)
+2011-11-16T14:19:11  *** Jether <Jether!~Jether@124.68.0.156> has joined #aichallenge
+2011-11-16T14:19:32  *** cJether <cJether!~Jether@124.68.0.156> has joined #aichallenge
+2011-11-16T14:19:49  <bugnuts2> but I could not find it either
+2011-11-16T14:20:05  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has joined #aichallenge
+2011-11-16T14:23:27  *** mj41 <mj41!~mj41_nby@82.100.0.58> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T14:24:16  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T14:24:53  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has joined #aichallenge
+2011-11-16T14:36:09  *** jasox <jasox!~looll@178.239.26.139> has quit IRC (Quit: Leaving)
+2011-11-16T14:36:12  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has quit IRC (Quit: mikewintermute)
+2011-11-16T14:36:49  *** NightExcessive <NightExcessive!~0xAFD7BA0@24-178-72-220.dhcp.gwnt.ga.charter.com> has quit IRC (Ping timeout: 255 seconds)
+2011-11-16T14:42:24  <cJether> I am a game programmer
+2011-11-16T14:42:27  <cJether> i like xna
+2011-11-16T14:42:30  *** choas <choas!~lars@p4FDC4A2F.dip.t-dialin.net> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T14:42:42  <cJether> Is this a game development channel??
+2011-11-16T14:44:01  <NoxiaZ^> what the the channel name tell you
+2011-11-16T14:44:16  <NoxiaZ^> if you want a game development channel then join #gamedev
+2011-11-16T14:44:25  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has joined #aichallenge
+2011-11-16T14:44:29  <mcstar> what is xna?
+2011-11-16T14:44:59  <Garf> xbox indie development kit or smth
+2011-11-16T14:44:59  <NoxiaZ^> XNA is used to develop games in C# :)
+2011-11-16T14:45:08  <NoxiaZ^> both for xbox and windows
+2011-11-16T14:45:16  *** conor_f <conor_f!~apje9i@86-45-248-22-dynamic.b-ras3.mvw.galway.eircom.net> has joined #aichallenge
+2011-11-16T14:45:18  <mcstar> so irrelevant
+2011-11-16T14:45:22  <NoxiaZ^> yep
+2011-11-16T14:45:25  <mcstar> k
+2011-11-16T14:45:41  <cJether> I don't know what is ai chanllenge
+2011-11-16T14:45:50  <mcstar> cJether: check out the website
+2011-11-16T14:45:52  <mcstar> you gonna love it
+2011-11-16T14:46:01  <Minthos> did the workers die again? game rate is at 0.5
+2011-11-16T14:46:02  <cJether> which website
+2011-11-16T14:46:08  <mcstar> @tpoic
+2011-11-16T14:46:09  <contestbot> mcstar: I do not know about 'tpoic', but I do know about these similar topics: 'topic'
+2011-11-16T14:46:12  <mcstar> @topic
+2011-11-16T14:46:12  <contestbot> mcstar: AI Challenge (sponsored by Google):  http://aichallenge.org || Channel Logs:  http://contestbot.aichallenge.org || Code Repo:  http://github.com/aichallenge/aichallenge || About the game (Ants):  http://aichallenge.org/problem_description.php || Submission deadline: December 18 23:59 EST
+2011-11-16T14:46:15  <NoxiaZ^> cJether, just join #gamedev
+2011-11-16T14:47:04  <Minthos> I don't know what the game rate should be, is 0.5 normal?
+2011-11-16T14:47:05  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T14:47:22  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-11-16T14:47:23  <mcstar> Minthos: sometimes they are worse
+2011-11-16T14:47:26  <g0llum> only 2 workers alive
+2011-11-16T14:47:32  <Minthos> ok
+2011-11-16T14:48:00  <a1k0n> that's pretty low.  ec2 must be in demand
+2011-11-16T14:48:14  *** cJether <cJether!~Jether@124.68.0.156> has left #aichallenge ("Leaving")
+2011-11-16T14:48:46  <a1k0n> i guess i'll be in 6329th place for a while
+2011-11-16T14:49:14  <mcstar> a1k0n: not used to it right?
+2011-11-16T14:49:39  <g0llum> a1kon, you can't be, i'm there !
+2011-11-16T14:50:36  *** conor_f <conor_f!~apje9i@86-45-248-22-dynamic.b-ras3.mvw.galway.eircom.net> has left #aichallenge
+2011-11-16T14:50:46  *** peyton <peyton!~peyton@rrdhcp-68-183.redrover.cornell.edu> has joined #aichallenge
+2011-11-16T14:51:16  <pairofdice> How many bots get to the final?
+2011-11-16T14:52:12  <mcstar> all of them?
+2011-11-16T14:52:21  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has quit IRC (Quit: mikewintermute)
+2011-11-16T14:57:16  *** Flapadar <Flapadar!~Flapadar@static.83.244.47.78.clients.your-server.de> has joined #aichallenge
+2011-11-16T14:57:30  <Flapadar> Is it me or are games going far slower now?
+2011-11-16T14:57:47  <roflmao> did you reset your bot?
+2011-11-16T14:57:53  <roflmao> i.e. upload a new one?
+2011-11-16T14:58:05  <Flapadar> No, ranked <2000 atm
+2011-11-16T14:58:10  <Flapadar> It's saying I have 15 hours until the next game lol
+2011-11-16T14:58:21  <Flapadar> 2 days until deactivation (so it's not that)
+2011-11-16T14:58:46  <pairofdice> It's not you
+2011-11-16T15:00:28  *** Strider42 <Strider42!~daniel@c-6f2070d5.024-97-6c756c10.cust.bredbandsbolaget.se> has left #aichallenge
+2011-11-16T15:01:43  *** Kurnevsky <Kurnevsky!~Errins@128.65.13.108> has joined #aichallenge
+2011-11-16T15:03:49  *** Kurnevsky <Kurnevsky!~Errins@128.65.13.108> has left #aichallenge
+2011-11-16T15:05:40  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T15:06:39  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has joined #aichallenge
+2011-11-16T15:06:41  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-11-16T15:06:58  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-11-16T15:11:54  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T15:12:11  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-11-16T15:12:31  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-11-16T15:13:55  *** Flapadar <Flapadar!~Flapadar@static.83.244.47.78.clients.your-server.de> has quit IRC ()
+2011-11-16T15:16:00  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-11-16T15:17:07  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T15:17:40  *** retybok_ <retybok_!~joel@31.36.75.119> has quit IRC (Quit: Lost terminal)
+2011-11-16T15:24:54  *** elderwolf_ <elderwolf_!463dddc2@gateway/web/freenode/ip.70.61.221.194> has joined #aichallenge
+2011-11-16T15:26:45  *** nle85 <nle85!d4c6de9d@gateway/web/freenode/ip.212.198.222.157> has joined #aichallenge
+2011-11-16T15:28:53  *** Transformer <Transformer!~Transform@ool-4a59e397.dyn.optonline.net> has joined #aichallenge
+2011-11-16T15:29:46  *** mleyen <mleyen!~mleyen@p4FEA03CC.dip0.t-ipconnect.de> has quit IRC (Quit: ~ Trillian Astra - www.trillian.im ~)
+2011-11-16T15:31:46  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has quit IRC (Quit: mikewintermute)
+2011-11-16T15:32:14  *** Transformer <Transformer!~Transform@ool-4a59e397.dyn.optonline.net> has quit IRC (Excess Flood)
+2011-11-16T15:34:53  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has joined #aichallenge
+2011-11-16T15:35:44  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has joined #aichallenge
+2011-11-16T15:36:07  *** mikewintermute <mikewintermute!~mikewinte@host213-120-99-48.in-addr.btopenworld.com> has quit IRC (Client Quit)
+2011-11-16T15:41:50  *** callahan <callahan!~callahan@callahan.dsl.xmission.com> has quit IRC (Ping timeout: 244 seconds)
+2011-11-16T15:42:16  *** ihtisham <ihtisham!79349068@gateway/web/freenode/ip.121.52.144.104> has joined #aichallenge
+2011-11-16T15:45:39  *** delt0r__ <delt0r__!~bob@194-166-26-87.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T15:46:41  *** Larose <Larose!~mathieu@75-119-234-15.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T15:48:50  *** lknix <lknix!~luka@89.142.249.150> has quit IRC (Ping timeout: 276 seconds)
+2011-11-16T15:50:35  *** peyton <peyton!~peyton@rrdhcp-68-183.redrover.cornell.edu> has quit IRC (Quit: peyton)
+2011-11-16T15:51:35  *** sashasochka <sashasochka!515fb6a7@gateway/web/freenode/ip.81.95.182.167> has joined #aichallenge
+2011-11-16T15:51:40  <sashasochka> hi
+2011-11-16T15:51:42  *** dorisabayon <dorisabayon!~Fandekasp@182.15.99.84.rev.sfr.net> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T15:51:57  *** Fandekasp <Fandekasp!~Fandekasp@182.15.99.84.rev.sfr.net> has quit IRC (Ping timeout: 258 seconds)
+2011-11-16T15:53:52  <elderwolf_> Heh, we're down to .3 games per minute.  That about par?
+2011-11-16T15:54:07  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T15:54:27  *** callahan <callahan!~callahan@callahan.dsl.xmission.com> has joined #aichallenge
+2011-11-16T15:54:30  <Antimony> seen a1k0n
+2011-11-16T15:55:34  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Quit: popped out)
+2011-11-16T15:55:56  <Antimony> hello?
+2011-11-16T15:56:12  <elderwolf_> Hi.
+2011-11-16T15:57:10  *** borist <borist!~Adium@p4FC0B919.dip.t-dialin.net> has joined #aichallenge
+2011-11-16T15:57:41  <Antimony> oh
+2011-11-16T15:57:54  <Antimony> noone was talking so I thought I had connection problems
+2011-11-16T15:58:37  <Antimony> ContestBot seen a1k0n
+2011-11-16T15:58:37  <contestbot> Antimony: a1k0n was last seen in #aichallenge 1 hour, 9 minutes, and 50 seconds ago: <a1k0n> i guess i'll be in 6329th place for a while
+2011-11-16T15:58:37  *** delt0r__ <delt0r__!~bob@178-190-198-155.adsl.highway.telekom.at> has joined #aichallenge
+2011-11-16T15:58:51  <Antimony> ContestBot seen BenJackson
+2011-11-16T15:58:51  <contestbot> Antimony: BenJackson was last seen in #aichallenge 14 hours, 24 minutes, and 58 seconds ago: <BenJackson> wait until I finish downloading this episode of Lost with the pw site
+2011-11-16T15:59:55  <elderwolf_> Heh, i'm assuming contestbot is running on same server that is hosting the challenge, and it needs a good reboot.
+2011-11-16T16:00:38  *** elderwolf <elderwolf!~elderwolf@totoro.bloodmagic.com> has joined #aichallenge
+2011-11-16T16:00:49  *** Fandekasp <Fandekasp!~Fandekasp@182.15.99.84.rev.sfr.net> has joined #aichallenge
+2011-11-16T16:00:54  <borist> the server running the games is down? that's why the games per minute is so low at the momwnt?
+2011-11-16T16:00:59  *** dorisabayon <dorisabayon!~Fandekasp@182.15.99.84.rev.sfr.net> has joined #aichallenge
+2011-11-16T16:01:26  <elderwolf> No, I'm speculating that it's running slow due to contestbot's extreme lag and the low gpm count.
+2011-11-16T16:02:16  *** nle85 <nle85!d4c6de9d@gateway/web/freenode/ip.212.198.222.157> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T16:03:38  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T16:03:43  *** borist <borist!~Adium@p4FC0B919.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-11-16T16:03:43  *** sashasochka <sashasochka!515fb6a7@gateway/web/freenode/ip.81.95.182.167> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T16:03:58  <Yexo> I'm having a very strange problem
+2011-11-16T16:04:31  <Yexo> game http://ants.fluxid.pl/replay.1627, turn 153, my bot (GotAnts) gets "a 65 77 0" as input
+2011-11-16T16:04:41  *** elderwolf_ <elderwolf_!463dddc2@gateway/web/freenode/ip.70.61.221.194> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T16:05:10  <Yexo> there is a single ant there, so that's alright, only in turn 152 my bot ordered that ant to go north
+2011-11-16T16:05:25  <Yexo> since it doesn't expect an ant there, it assers (hence the timeout)
+2011-11-16T16:07:08  <Yexo> http://paste.aichallenge.org/CoKNs/raw/ Here is the input my bot received on turn 152, partial input from turn 153 (until the offending ant) and the output from turn 152
+2011-11-16T16:07:43  <Yexo> Are there other people that implemented state in their ants and have come acros this problem?
+2011-11-16T16:09:30  *** Fluctuation <Fluctuation!5696dc2d@gateway/web/freenode/ip.86.150.220.45> has joined #aichallenge
+2011-11-16T16:11:46  *** peyton <peyton!~peyton@rrdhcp-70-250.redrover.cornell.edu> has joined #aichallenge
+2011-11-16T16:13:21  *** dorisabayon <dorisabayon!~Fandekasp@182.15.99.84.rev.sfr.net> has quit IRC (Quit: Lost terminal)
+2011-11-16T16:13:37  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-11-16T16:14:12  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T16:16:02  *** nle85 <nle85!d4c6de9d@gateway/web/freenode/ip.212.198.222.157> has joined #aichallenge
+2011-11-16T16:21:09  *** Palmik_ <Palmik_!~palmik@man-208-94.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-11-16T16:21:45  *** NightExcessive <NightExcessive!~0xAFD7BA0@24-178-72-220.dhcp.gwnt.ga.charter.com> has joined #aichallenge
+2011-11-16T16:22:32  <Yexo> Is there any way to, given an html replay, replay that game using the engine (ie replace all bots by something that reads from the replay and executes those moves)?
+2011-11-16T16:22:46  <Yexo> or any other ideas how to debug the beforementioned problem?
+2011-11-16T16:24:40  <NightExcessive> What's the problem? (I just joined)
+2011-11-16T16:25:28  <Yexo> http://paste.openttdcoop.org/show/762/ <- log
+2011-11-16T16:25:34  *** ALplus <ALplus!~ALplus@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-11-16T16:27:54  *** nle85 <nle85!d4c6de9d@gateway/web/freenode/ip.212.198.222.157> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T16:28:28  *** NoxiaZ^ <NoxiaZ^!~noxi@87-104-29-39-dynamic-customer.profibernet.dk> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T16:32:06  *** bishoco <bishoco!c72ef5e6@gateway/web/freenode/ip.199.46.245.230> has joined #aichallenge
+2011-11-16T16:32:11  *** nle85 <nle85!d4c6de9d@gateway/web/freenode/ip.212.198.222.157> has joined #aichallenge
+2011-11-16T16:39:02  *** bishoco <bishoco!c72ef5e6@gateway/web/freenode/ip.199.46.245.230> has quit IRC (Quit: Page closed)
+2011-11-16T16:41:30  *** okan_ <okan_!58fa8742@gateway/web/freenode/ip.88.250.135.66> has joined #aichallenge
+2011-11-16T16:42:02  <g0llum> ach, meine bloeden antzen schaffen's einfach nicht, zwei hauffen auf einmal zu schiessen
+2011-11-16T16:44:43  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T16:50:07  <amstan> g0llum: we mostly speak english in here
+2011-11-16T16:50:54  *** jasox <jasox!~looll@178.239.26.139> has joined #aichallenge
+2011-11-16T16:53:07  <g0llum> (wrong tab, pun, srry)
+2011-11-16T16:55:53  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T16:56:57  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:94e6:ef56:ae57:d5df> has joined #aichallenge
+2011-11-16T17:04:30  *** fpcfan <fpcfan!~vincent@80.123.225.55> has joined #aichallenge
+2011-11-16T17:05:16  <janzert> amstan: the problem with the archive server seemed to be a combination of planetwars being the default site and the planetwars config was accepting any url and proxying it
+2011-11-16T17:05:49  <amstan> how was planetwars accepting any url?
+2011-11-16T17:06:15  <janzert> you can give it a try by re-enabling the site then set the http proxy in your browser to archive.aichallenge.org port 80
+2011-11-16T17:06:46  <amstan> archive? we aren't using that yet
+2011-11-16T17:06:55  <janzert> then visit say whatismyip.com and you'll see your traffic is going through that server
+2011-11-16T17:07:04  <janzert> or just enter the ip directly
+2011-11-16T17:07:16  <janzert> it didn't matter if we were using it someone found it :)
+2011-11-16T17:07:28  <amstan> i don't remember setting up planetwars on the archive server
+2011-11-16T17:07:29  <janzert> probably just scanning through ip addresses
+2011-11-16T17:07:41  <amstan> i kinda gave up when mysql died
+2011-11-16T17:07:42  <amstan> oh well
+2011-11-16T17:07:45  <u_> amstan: what's the schedule for this stuff? will there be a winter 2011 or a spring/summer ever?
+2011-11-16T17:07:58  <janzert> it looked like the config was just copied over from what is on the main server currently
+2011-11-16T17:08:01  <amstan> u_: depends on how fast we develop
+2011-11-16T17:08:12  <amstan> janzert: yeah.. ok, that's not that bad then, keep it off
+2011-11-16T17:08:31  <amstan> i tought you were talking about the normal setup we have now on the main server
+2011-11-16T17:08:32  <janzert> I got the directories rearranged now btw
+2011-11-16T17:08:35  <amstan> ok, cool
+2011-11-16T17:08:46  *** Raimondi_ is now known as Raimondi
+2011-11-16T17:08:55  <janzert> no, that is working fine because the planetwars config isn't the default site
+2011-11-16T17:09:17  *** magiik <magiik!~magik@unaffiliated/magiik> has joined #aichallenge
+2011-11-16T17:09:23  <janzert> so any unrecognized url goes to aichallenge.org
+2011-11-16T17:09:24  <amstan> so it's not proxying stuff
+2011-11-16T17:09:27  <Yexo> sorry to repeat myself again, but does any of you have suggestions for how to debug the engine? More explenation here: http://paste.openttdcoop.org/show/762/
+2011-11-16T17:09:38  <magiik> man wtf all the amazon ec2 us-east micro instances are like above $1
+2011-11-16T17:09:53  <janzert> just planetwars.aichallenge.org to jeff's server as ai-contest.com like it should be
+2011-11-16T17:10:04  <amstan> ok, cool
+2011-11-16T17:10:10  <amstan> i just found some broken links on that site
+2011-11-16T17:10:13  <amstan> from the winner stuff
+2011-11-16T17:10:17  <amstan> on the homepage
+2011-11-16T17:10:26  <janzert> at least from what I could see in my quick look at it
+2011-11-16T17:10:36  <janzert> yeah, I noticed that before
+2011-11-16T17:10:47  <janzert> some of the winner links have gone away right?
+2011-11-16T17:10:53  *** okan_ <okan_!58fa8742@gateway/web/freenode/ip.88.250.135.66> has quit IRC (Quit: Page closed)
+2011-11-16T17:10:56  <janzert> the links to their personal sites I mean
+2011-11-16T17:11:05  <amstan> janzert: that's fine
+2011-11-16T17:11:21  <amstan> i'm talking about the fact where if i click on bocsimacko.  it points to the current site
+2011-11-16T17:11:23  *** sir_macelon <sir_macelon!4d739d83@gateway/web/freenode/ip.77.115.157.131> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T17:11:29  <amstan> they're hardcoded
+2011-11-16T17:12:09  <janzert> hmm, yeah looks like they're absolute urls
+2011-11-16T17:12:21  <janzert> they should be relative urls and they'd be fine :(
+2011-11-16T17:12:57  <amstan> ok, fixed
+2011-11-16T17:13:08  <amstan> oh man, i hate 80 column lines
+2011-11-16T17:13:18  <amstan> you want to do any change, it's like impossible
+2011-11-16T17:13:23  <amstan> without it looking bad
+2011-11-16T17:13:29  *** Fandekasp <Fandekasp!~Fandekasp@182.15.99.84.rev.sfr.net> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T17:14:15  <janzert> gq}
+2011-11-16T17:14:17  <janzert> ;)
+2011-11-16T17:14:42  <amstan> janzert: any news from jeff?
+2011-11-16T17:15:02  <janzert> he wrote me an email today, must not have gone to the list?
+2011-11-16T17:15:09  <janzert> he just got the paypal account set up
+2011-11-16T17:15:23  <janzert> hopefully that means we can get a button on the front page soon
+2011-11-16T17:15:26  <amstan> nope, apparently he didn't list it
+2011-11-16T17:15:27  *** twymer <twymer!~twymer@rrcs-96-11-137-56.central.biz.rr.com> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T17:15:43  <amstan> what about google?
+2011-11-16T17:15:59  <janzert> doesn't mention anything about talking to google
+2011-11-16T17:16:29  <kara> donations for more workers?
+2011-11-16T17:17:39  <amstan> kara: yes
+2011-11-16T17:19:16  <avdg> :-)
+2011-11-16T17:22:01  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T17:30:48  <ihtisham> hey, why is the game rate too slow?
+2011-11-16T17:31:46  <pairofdice> <insert sarcastic remark>
+2011-11-16T17:32:53  <g0llum> because it's interpolated over time, 5 of 6 possible workers running now ( was 2 minutes ago )
+2011-11-16T17:33:30  <amstan> well.. there's no real upper limit on worker
+2011-11-16T17:33:32  <amstan> workers*
+2011-11-16T17:33:40  <g0llum> money ?
+2011-11-16T17:33:47  <amstan> yes
+2011-11-16T17:33:53  <amstan> s/real/technical
+2011-11-16T17:34:00  <amstan> nvm
+2011-11-16T17:34:02  <amstan> that exists too
+2011-11-16T17:34:06  <g0llum> never seen more than 6
+2011-11-16T17:34:06  <amstan> but it'll be like 100
+2011-11-16T17:34:12  <g0llum> ;)
+2011-11-16T17:34:46  <g0llum> time for a raindance
+2011-11-16T17:36:38  *** ihtisham <ihtisham!79349068@gateway/web/freenode/ip.121.52.144.104> has quit IRC (Quit: Page closed)
+2011-11-16T17:38:45  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has joined #aichallenge
+2011-11-16T17:42:25  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Quit: Just keep breathing)
+2011-11-16T17:47:11  *** bergmark <bergmark!bergmark@nat/ibm/x-xakznyvxchejoxtd> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T17:50:51  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-11-16T17:53:27  *** jasox <jasox!~looll@178.239.26.139> has quit IRC (Quit: Leaving)
+2011-11-16T17:55:56  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-11-16T18:01:50  *** bishoco <bishoco!c72ef5e8@gateway/web/freenode/ip.199.46.245.232> has joined #aichallenge
+2011-11-16T18:02:13  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-11-16T18:02:39  *** davidmoreau <davidmoreau!~davidmore@bty91-1-82-232-100-75.fbx.proxad.net> has joined #aichallenge
+2011-11-16T18:03:07  <davidmoreau> hi
+2011-11-16T18:03:22  <davidmoreau> looking for a contest organizer, lost my password :)
+2011-11-16T18:04:42  *** analyst74 <analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has joined #aichallenge
+2011-11-16T18:04:57  *** davidmoreau is now known as davm85
+2011-11-16T18:05:57  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T18:06:30  <davm85> well, guess i'd have to setup another one
+2011-11-16T18:07:51  <thestinger> davm85: http://aichallenge.org/forgot.php
+2011-11-16T18:08:26  <davm85> well thanks, but i actually forgot also the username :S
+2011-11-16T18:09:30  <thestinger> amstan: ^
+2011-11-16T18:09:45  <davm85> forgot password flows without email makes me feel old
+2011-11-16T18:12:59  <thestinger> well, I'm sure amstan will help you when he gets back
+2011-11-16T18:13:13  <davm85> thx thestinger
+2011-11-16T18:13:17  <thestinger> if you just want to test stuff, you can use the tcp server for now
+2011-11-16T18:13:27  <amstan> davm85: what's your email?
+2011-11-16T18:13:28  <thestinger> http://ants.fluxid.pl/
+2011-11-16T18:16:09  <magiik> wow us-east1d micro instance spot price is at $5 jesus christ
+2011-11-16T18:16:56  <janzert> yeah, ec2 is having some really weird spot prices this week
+2011-11-16T18:17:15  <a1k0n> isn't it cheaper to just buy an instance?
+2011-11-16T18:17:26  <magiik> right now it is
+2011-11-16T18:17:41  <magiik> but i usually pay like $.02 for the spot instances cuz it's cheaper most of the time
+2011-11-16T18:17:44  <a1k0n> i suppose not overall.  must be some big mapreduce
+2011-11-16T18:17:46  <janzert> at times I'm pretty sure that no matter how high you bid recently it isn't going to give you an instance
+2011-11-16T18:17:58  <magiik> if it's some big mapreduce - why use micro isntances? haha
+2011-11-16T18:18:10  <a1k0n> because each one is small?  shrug
+2011-11-16T18:18:18  *** twymer <twymer!~twymer@d118-75-38-31.try.wideopenwest.com> has joined #aichallenge
+2011-11-16T18:18:20  <a1k0n> maybe they're cracking passwords
+2011-11-16T18:18:29  <a1k0n> really valuable ones
+2011-11-16T18:18:36  <magiik> if your bid is higher than someone else who hsa an instane, it will eventually boot them off and give itto you
+2011-11-16T18:18:39  <janzert> earlier in the week it was us-east1b not it seems to be 1a and 1d
+2011-11-16T18:18:48  <magiik> a1k0n: prolly easier to do it in a GPU?
+2011-11-16T18:18:56  <magiik> it's all 3, they are all above like $1 right now
+2011-11-16T18:18:58  *** chris_0076 <chris_0076!~Chris_007@adsl-74-190-53-19.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-11-16T18:19:05  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has quit IRC (Quit: Computer has gone to sleep.)
+2011-11-16T18:19:11  <magiik> yeah usually it's less than a cent
+2011-11-16T18:19:17  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-53-19.asm.bellsouth.net> has joined #aichallenge
+2011-11-16T18:19:18  <janzert> magiik: I have a feeling there weren't any spot instances available period though
+2011-11-16T18:19:24  <magiik> i'm in the process of moving over to us-west oregon
+2011-11-16T18:19:25  <a1k0n> true
+2011-11-16T18:19:29  <magiik> but god damnt i have to manually move my volume data
+2011-11-16T18:19:47  <magiik> janzert: ahhh - i see what you are saying, just spot instances in general since they are the "leftovers"
+2011-11-16T18:20:03  <janzert> right
+2011-11-16T18:20:45  <janzert> it certainly has been causing havoc with our workers :(
+2011-11-16T18:20:53  <magiik> man this server has been running as a spot instance with a .20 bid for like a year
+2011-11-16T18:20:57  <magiik> and this last month or two spot pricing has been going crazy
+2011-11-16T18:21:05  <magiik> is aichallenge on us-east too?
+2011-11-16T18:21:11  <janzert> yep
+2011-11-16T18:22:03  <magiik> i need some sort of management script, whenever my spot instance does come back up, it loses it's elastic ip
+2011-11-16T18:22:28  <magiik> and i need a better way to keep that EBS volume linked up to the new instance too
+2011-11-16T18:22:28  <janzert> yeah, I wish the ip tied to the spot request
+2011-11-16T18:22:38  <janzert> and that as well :)
+2011-11-16T18:23:26  <magiik> such a pain in the ass right now the way i do it - create a snapshot of the orphaned volume, then have to re-create the AMI with that snapshot, then re-request the spot
+2011-11-16T18:24:19  <janzert> yeah, using ebs as a root volume for spot instances doesn't work well at all right now
+2011-11-16T18:24:33  <janzert> at least not I haven't found a way for it to
+2011-11-16T18:24:42  <magiik> yeah...
+2011-11-16T18:24:49  <magiik> and i'm too entrenched in this server's config now
+2011-11-16T18:25:29  <magiik> damn us-west cali is having some weird spot price ripples too, but not  breaking $1
+2011-11-16T18:25:35  <NightExcessive> I simply store my configs on S3 and have my spot instances download them on start. :)
+2011-11-16T18:26:18  <amstan> janzert: people on the forums are debating that we should keep the workers on during high prices
+2011-11-16T18:26:43  <amstan> but i disagree, especially if it's 50 times more expensive, right?
+2011-11-16T18:26:53  <magiik> more than 50....
+2011-11-16T18:26:59  <amstan> yeah
+2011-11-16T18:27:08  <NightExcessive> amstan: What size instance are you using for workers?
+2011-11-16T18:27:34  <janzert> m2.xlarge
+2011-11-16T18:27:49  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:94e6:ef56:ae57:d5df> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T18:28:10  <NightExcessive> Icky. I definitely wouldn't leave them running.
+2011-11-16T18:28:43  <magiik> hrm... actually price differntial on m2.xlarge is only like 50x right now.... but yeah that's a lot of cash
+2011-11-16T18:28:44  <janzert> basically we've got funds currently to spend ~$1 an hour on workers
+2011-11-16T18:29:10  <janzert> so it doesn't really matter too much what people think it's what we've got ;)
+2011-11-16T18:29:27  <NightExcessive> Indeed :P
+2011-11-16T18:29:49  <magiik> yeah i was gonna say, if you have enough for $1/hr then there's no way you can leave them up when east-1c is jumping up to $5 lol
+2011-11-16T18:30:04  <janzert> yep :)
+2011-11-16T18:30:06  <magiik> you guys have scripts to spool instances up and down? or you just go off the instance getting terminated when it crosses the bid threshold?
+2011-11-16T18:30:23  <NightExcessive> magiik: The manager is capable of starting instances. I know that.
+2011-11-16T18:30:48  <janzert> they're permanent spot requests at the threshold prices and the user_data script brings it up as worker
+2011-11-16T18:31:21  <magiik> wonder if it's worth the effort to switch to regular instances if the spot price is exceeding that price
+2011-11-16T18:32:08  <NightExcessive> Maybe. Though, the spot prices should go back down as soon as Amazon installs new physical nodes.
+2011-11-16T18:32:51  *** fpcfan <fpcfan!~vincent@80.123.225.55> has quit IRC (Ping timeout: 244 seconds)
+2011-11-16T18:34:17  *** kara <kara!~hara@aef.wh.uni-dortmund.de> has quit IRC ()
+2011-11-16T18:35:59  *** arscan <arscan!188032e6@gateway/web/freenode/ip.24.128.50.230> has joined #aichallenge
+2011-11-16T18:36:19  *** g0llum <g0llum!~g0llum@82.113.99.137> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T18:37:37  <mikewintermute> if I run python tools/playgame.py (without the visualizer option) I only get 1 replay file numbered 0.replay. How do I store ALL games (plus the html launch files)?
+2011-11-16T18:37:46  *** fpcfan <fpcfan!~vincent@80.123.225.55> has joined #aichallenge
+2011-11-16T18:39:12  *** delt0r__ <delt0r__!~bob@178-190-198-155.adsl.highway.telekom.at> has quit IRC (Remote host closed the connection)
+2011-11-16T18:40:06  *** davm85 <davm85!~davidmore@bty91-1-82-232-100-75.fbx.proxad.net> has quit IRC (Remote host closed the connection)
+2011-11-16T18:40:42  *** bergmark <bergmark!~bergmark@cpe-075-189-152-072.nc.res.rr.com> has joined #aichallenge
+2011-11-16T18:41:49  <mikewintermute> aha. --html
+2011-11-16T18:42:08  <mikewintermute> hmm - that only lets you write to the named file.
+2011-11-16T18:46:59  <magiik> u can change the #.replay
+2011-11-16T18:47:01  <magiik> with -g #
+2011-11-16T18:47:03  <magiik> IIRC
+2011-11-16T18:47:15  <magiik> python tools/playgame.py
+2011-11-16T18:47:18  <magiik> will give you all the CLI switches
+2011-11-16T18:47:41  <mikewintermute> magiik: thanks
+2011-11-16T18:47:52  <magiik> i dont think there is any "auto-increment" built into the script
+2011-11-16T18:48:00  <magiik> so you'd have to make your own wrapper around it if you wanted automatic functionality
+2011-11-16T18:48:02  <McLeopold> there is -runs i think
+2011-11-16T18:48:15  <magiik> ah -r
+2011-11-16T18:48:23  <McLeopold> but not between runs
+2011-11-16T18:48:25  <magiik> then yeah i gues it would auto-increment, starting from -g #
+2011-11-16T18:48:34  <janzert> actually did go to regular instance for a while earlier this week
+2011-11-16T18:49:06  <amstan> janzert: doesn't that mean a different cpu?
+2011-11-16T18:49:12  <janzert> no
+2011-11-16T18:49:17  <janzert> same instance type
+2011-11-16T18:49:23  <janzert> just different pricing
+2011-11-16T18:49:27  <McLeopold> amstan: heard from j3camero lately? about accepting donations?
+2011-11-16T18:49:29  <magiik> yeah same number of compute units
+2011-11-16T18:49:41  <magiik> they are exactly the same - except for price/availability
+2011-11-16T18:50:02  <janzert> McLeopold: yeah, he wrote me earlier today and has paypal setup now
+2011-11-16T18:50:15  <janzert> so hopefully he can get us a donate button soon
+2011-11-16T18:50:20  <McLeopold> oh, cool, so we need a button on the page now?
+2011-11-16T18:50:51  <McLeopold> janzert: I assume you can do the calculations to know when to add more workers?
+2011-11-16T18:51:03  <McLeopold> to spend the donated money as fast as possible :)
+2011-11-16T18:51:11  <janzert> of course :)
+2011-11-16T18:51:12  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T18:51:21  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-11-16T18:51:25  <mcstar> my updated battle resolver is ready
+2011-11-16T18:51:42  <McLeopold> janzert: what would you think about limiting starter bots to 10 games, lifetime max?
+2011-11-16T18:52:01  <McLeopold> across users, so even if they upload a starter a second time, it wouldn't play
+2011-11-16T18:52:21  <janzert> accross submissions you mean
+2011-11-16T18:52:30  <McLeopold> yeah, maybe :)
+2011-11-16T18:52:31  <janzert> I'm not sure
+2011-11-16T18:52:34  <janzert> for or against
+2011-11-16T18:52:51  <mcstar> how can i remove a file from git?
+2011-11-16T18:52:51  <McLeopold> how about detecting starters and setting the mu to 0?
+2011-11-16T18:52:58  <mcstar> i.e. to tell it not to track it
+2011-11-16T18:53:00  <McLeopold> "git rm <filename>"
+2011-11-16T18:53:04  <mcstar> thx
+2011-11-16T18:53:06  <janzert> how would you decide it was a starter as well?
+2011-11-16T18:53:10  <McLeopold> you'll need to commit it as well
+2011-11-16T18:53:20  <McLeopold> which is weird because you commit a non-existant file
+2011-11-16T18:53:44  <mcstar> McLeopold: ok, and how can i list all tracked files?
+2011-11-16T18:53:46  <McLeopold> janzert: assuming I can detect it of course, I'm going to try submission hashes then build a database
+2011-11-16T18:53:51  <McLeopold> "git status"
+2011-11-16T18:53:54  <mcstar> stupid questions, but i didnt find these
+2011-11-16T18:53:56  <mcstar> ah
+2011-11-16T18:54:37  <janzert> :( yeah, that seems so fragile but I'm not sure if there's a better way
+2011-11-16T18:54:38  <mcstar> no, status doesnt list tracked files
+2011-11-16T18:56:17  <janzert> Maybe set up an admin page that lists submissions with same hash and allow the admin to mark them as starter bots
+2011-11-16T18:56:27  *** grandiose <grandiose!~Adium@CPE-121-210-88-65.gxeb1.ken.bigpond.net.au> has joined #aichallenge
+2011-11-16T18:57:14  *** nle85 <nle85!d4c6de9d@gateway/web/freenode/ip.212.198.222.157> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T18:58:18  <janzert> at the same time I don't know that this will significantly increase the game rates for others and could cause ranking problems :(
+2011-11-16T18:58:18  <Raimondi> git ls-files
+2011-11-16T18:59:23  <janzert> there are already 2405 deactivated bots that didn't get a game in the last 24 hours
+2011-11-16T18:59:28  *** xathis <xathis!~xathis@f054012179.adsl.alicedsl.de> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T18:59:40  *** [1]analyst74 <[1]analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has joined #aichallenge
+2011-11-16T18:59:43  <mcstar> Raimondi: thx
+2011-11-16T18:59:50  <janzert> so a little over a third already
+2011-11-16T18:59:51  <Raimondi> np
+2011-11-16T19:00:10  <mcstar> so if anyone feels like experimenting, please clone: https://github.com/liquid-phynix/ants-fight.git
+2011-11-16T19:00:20  <mcstar> and have qt ready
+2011-11-16T19:00:29  <NightExcessive> I don't see anything horrible the idea. Getting a hash of the starter zips and limiting it to 10 games/starter package/user seems reasonable.
+2011-11-16T19:00:49  <amstan> NightExcessive: i just updated 2 starter packages today
+2011-11-16T19:00:57  <amstan> not everyone updates
+2011-11-16T19:01:19  <NightExcessive> amstan: It's simple enough to keep a hash list of old & current starter packages :)
+2011-11-16T19:01:22  <mcstar> amstan: amstan, pls try it again, its much better
+2011-11-16T19:01:24  <janzert> yeah, that's the fragility of it. there are going to be lots of starter bot hashes and more all the time
+2011-11-16T19:01:52  *** analyst74 <analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T19:01:52  *** [1]analyst74 is now known as analyst74
+2011-11-16T19:02:00  <amstan> NightExcessive: it is? what happens when a new version of another starter bot gets released?
+2011-11-16T19:02:17  *** grandiose1 <grandiose1!~Adium@CPE-121-210-88-65.gxeb1.ken.bigpond.net.au> has joined #aichallenge
+2011-11-16T19:02:19  <NightExcessive> amstan: I'm not sure I see your point. What do you mean?
+2011-11-16T19:02:38  <amstan> we keep making new starter packages, with different contents
+2011-11-16T19:02:43  <amstan> all of them have different hashes
+2011-11-16T19:03:22  <mcstar> a change of 1 characters throws off the hash, but it is still a starter bot
+2011-11-16T19:03:26  <mcstar> -s
+2011-11-16T19:03:32  <analyst74> is starter package a serious problem? how many starter bots are active?
+2011-11-16T19:03:52  <mcstar> id say more than half of all bots
+2011-11-16T19:03:53  <amstan> we already have a 3 day timeout, i seriously doubt any contestant keeps starter packages alive
+2011-11-16T19:03:56  <NightExcessive> mcstar: Fair enough. Though, this would solve simple situations where it's the package just downloaded and re-uploaded.
+2011-11-16T19:04:01  <janzert> mcstar: I doubt it
+2011-11-16T19:04:08  <mcstar> janzert: how much then?
+2011-11-16T19:04:12  <janzert> there are only ~900 bots active
+2011-11-16T19:04:22  <janzert> and 2400 bots haven't played at all
+2011-11-16T19:04:22  <mcstar> so you mean even more?
+2011-11-16T19:04:28  <janzert> in the last day
+2011-11-16T19:04:31  <NightExcessive> amstan: How large is the database of submissions? String comparison is fairly cheap, but I could see comparing (a few thousand strings)*20 being expensive.
+2011-11-16T19:04:45  <janzert> so I have a feeling most starter bots already aren't playing
+2011-11-16T19:05:02  <amstan> NightExcessive: why are you concerned about this?
+2011-11-16T19:05:30  <NightExcessive> amstan: I was just curious about the size, as it limits the practicality of the idea.
+2011-11-16T19:05:35  *** grandiose <grandiose!~Adium@CPE-121-210-88-65.gxeb1.ken.bigpond.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T19:06:13  <amstan> NightExcessive: searching in a db is rarely linear
+2011-11-16T19:06:28  <amstan> unless it's configured wrong
+2011-11-16T19:06:33  <mcstar> amstan: pls take a look, cause if you feel it is useful, ill make a forum post or something
+2011-11-16T19:06:43  <mcstar> anyway, its sort of bad that it depends on qt
+2011-11-16T19:06:54  <amstan> looks good though
+2011-11-16T19:07:04  <mcstar> do you think a binary distribution is a problem?
+2011-11-16T19:07:08  <amstan> yes
+2011-11-16T19:07:18  <mcstar> even if its from github?
+2011-11-16T19:07:22  <mcstar> i mean the binary
+2011-11-16T19:07:22  <janzert> there have been 23,719 submissions so far. I doubt the computational load of implementing this is an impediment in any way
+2011-11-16T19:07:28  <amstan> you shouldn't have binaries on github in the first place
+2011-11-16T19:07:37  <mcstar> yeah, but i can have
+2011-11-16T19:07:49  <mcstar> but seen this latest one?
+2011-11-16T19:08:11  <mcstar> theres a transition effect, and you can more conveniently add/remove ants
+2011-11-16T19:09:17  <NightExcessive> If it would really have an effect on the game rate I don't see a problem with using a simple hash and category system. Categorize the starter packs by language and look for matching hashes, then count them per category per user- and don't allow more than 10 games per category (from each user).
+2011-11-16T19:09:37  <amstan> NightExcessive: you don't get it
+2011-11-16T19:09:47  <amstan> NightExcessive: some starter packages have like 10 versions, so 10 different hashes
+2011-11-16T19:09:47  <NightExcessive> Oh?
+2011-11-16T19:10:02  <janzert> keeping the hash database up to date is what will be the pain
+2011-11-16T19:10:05  <amstan> and i don't even think we can get the hashes of the old versions
+2011-11-16T19:10:14  <amstan> the zips might have dates in them or something
+2011-11-16T19:10:32  <amstan> unless we do hashes of the contents
+2011-11-16T19:10:41  <NightExcessive> If they're in git, you can simply go back to the commit with them in it. I can see how it could be a pain keeping the hashes up-to-date.
+2011-11-16T19:11:02  <janzert> ugh, currently we don't uncompress a submission on the main server at all
+2011-11-16T19:11:06  <magiik> contents... you could zip it up different ways right?
+2011-11-16T19:11:09  *** mikewintermute <mikewintermute!~mikewinte@188-223-213-21.zone14.bethere.co.uk> has quit IRC (Quit: mikewintermute)
+2011-11-16T19:11:31  <janzert> I suppose the worker could report back on the content hash though
+2011-11-16T19:11:54  <amstan> janzert: don't we already have that 3 day timeout on submissions?
+2011-11-16T19:11:59  <janzert> but it does seem to add a lot of complexity for what looks like little gain
+2011-11-16T19:12:02  <janzert> right
+2011-11-16T19:12:17  <amstan> i really don't think begginers keep their starter bots active
+2011-11-16T19:12:29  <amstan> they'll stay active at most 3 days
+2011-11-16T19:12:29  <NightExcessive> janzert: I agree... it doesn't seem like a pressing issue, nor does it seem it would really speed up the games per second.
+2011-11-16T19:12:32  <magiik> and if someone is activating their starter bot... it's not like they are activating another bot since you aren't supposed to have multi accounts
+2011-11-16T19:12:43  <janzert> most users don't keep their submission active :/
+2011-11-16T19:12:57  <magiik> i even lose my real submission's activity every once in a while
+2011-11-16T19:12:58  <mcstar> amstan: doesnt it mean only that those cant be seeds,
+2011-11-16T19:13:00  <janzert> there are currently 946 active
+2011-11-16T19:13:05  <mcstar> they still play games
+2011-11-16T19:13:11  <amstan> mcstar: sure, nothing wrong with that
+2011-11-16T19:13:37  <mcstar> so isnt the issue of sparing resources?
+2011-11-16T19:13:44  <mcstar> (i was late to join in)
+2011-11-16T19:14:06  <janzert> oops, actually there 1016 active.
+2011-11-16T19:14:08  <Minthos> you could hash all submissions, store the hashes, and reject any bots with hashes identical to more than just a few other bots - but the tutorial/intro thing tells players to upload the starting kit so maybe it's better to just let people do it and keep the current system
+2011-11-16T19:14:23  <amstan> yes.. but i don't think it's worth implementing such a complicated system for such few speedups
+2011-11-16T19:14:39  <janzert> Minthos: right we still want people to start with uploading a starter for sure
+2011-11-16T19:14:41  <magiik> how about not letting inactive bots below a certain rank even play at all
+2011-11-16T19:14:58  <janzert> 1/3rd of bots aren't playing now ;)
+2011-11-16T19:15:31  <magiik> even as a new submission comes in with lowest rank?
+2011-11-16T19:15:56  <janzert> yep, a little more than 1/3rd of bots have not played in the last day
+2011-11-16T19:16:02  <mcstar> how about segmenting the ranking, and give higher cuts more time on the server?
+2011-11-16T19:16:19  <magiik> i would think the inverse... give lower cuts more time heh
+2011-11-16T19:16:23  <magiik> otherwise how are you going to get up there?
+2011-11-16T19:16:26  <amstan> magiik: i don't think that's a good idea from a rankings perspective
+2011-11-16T19:16:35  <janzert> remember even though a new submission is ranked at the bottom it starts off playing in the roughly the middle of the established rankings
+2011-11-16T19:16:49  <janzert> and goes up from there so long as it wins
+2011-11-16T19:16:49  <mcstar> well, thats the point: there are more bad bots than good ones, they need to play less
+2011-11-16T19:17:08  <mcstar> yep
+2011-11-16T19:17:14  <mcstar> not from the absolute end
+2011-11-16T19:17:26  <janzert> we want people who are actively working on their bot to get games even if their bot isn't so good :}
+2011-11-16T19:18:01  <mcstar> btw, was it surprise for you guys that there are over 10k participants
+2011-11-16T19:18:03  <mcstar> ?
+2011-11-16T19:18:14  <magiik> how was it for the other competitions? is this the most popular so far?
+2011-11-16T19:18:21  <mcstar> i celebrated the 10kth user with a rainbow
+2011-11-16T19:18:24  <magiik> this is my 1st ai challenege, though i did hear about the galcon one
+2011-11-16T19:18:25  <mcstar> message
+2011-11-16T19:18:29  <janzert> I thought we'd got to 10k but not till about the end of the competition
+2011-11-16T19:18:42  <amstan> we had a pretty exponential growth since the first contest
+2011-11-16T19:19:05  <janzert> last competition had 7200 users and 4619 active submissions
+2011-11-16T19:20:14  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-11-16T19:20:40  <janzert> besides ec2 being funky with its spot prices this week the rate of games a server can get out has gone down quite a bit (i.e. bots are using a lot more of their time on average now)
+2011-11-16T19:21:11  <janzert> which also points to the probability that we're playing much fewer starter bots
+2011-11-16T19:21:24  <magiik> yeah that makes sense
+2011-11-16T19:22:57  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T19:23:44  <mcstar> nite
+2011-11-16T19:23:46  *** mcstar <mcstar!~mcstar@adsl-89-132-18-208.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.6)
+2011-11-16T19:24:06  *** bishoco <bishoco!c72ef5e8@gateway/web/freenode/ip.199.46.245.232> has quit IRC (Quit: Page closed)
+2011-11-16T19:31:15  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T19:32:15  *** bergmark <bergmark!~bergmark@cpe-075-189-152-072.nc.res.rr.com> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T19:36:13  *** grandiose1 <grandiose1!~Adium@CPE-121-210-88-65.gxeb1.ken.bigpond.net.au> has quit IRC (Quit: Leaving.)
+2011-11-16T19:37:16  *** replore <replore!~replore@203.152.213.161.static.zoot.jp> has joined #aichallenge
+2011-11-16T19:40:08  *** analyst74 <analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has quit IRC (Quit:  HydraIRC -> http://www.hydrairc.com <- Po-ta-to, boil em, mash em, stick em in a stew.)
+2011-11-16T19:45:00  *** grandiose <grandiose!~Adium@CPE-121-210-88-65.gxeb1.ken.bigpond.net.au> has joined #aichallenge
+2011-11-16T19:50:08  *** NightExcessive <NightExcessive!~0xAFD7BA0@24-178-72-220.dhcp.gwnt.ga.charter.com> has quit IRC (Quit: Leaving)
+2011-11-16T19:51:54  *** Antimony_ <Antimony_!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T19:53:01  *** Fluctuation <Fluctuation!5696dc2d@gateway/web/freenode/ip.86.150.220.45> has quit IRC (Quit: Page closed)
+2011-11-16T19:53:35  *** Conorach <Conorach!~cono@90.170.77.124> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T19:54:00  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T19:54:04  *** Antimony_ is now known as Antimony
+2011-11-16T19:54:35  *** gcflymoto <gcflymoto!635cb214@gateway/web/freenode/ip.99.92.178.20> has joined #aichallenge
+2011-11-16T19:56:23  *** Cowbandit <Cowbandit!484cfedc@gateway/web/freenode/ip.72.76.254.220> has joined #aichallenge
+2011-11-16T19:56:27  <Cowbandit> boop
+2011-11-16T19:59:08  <amstan> Cowbandit: ?
+2011-11-16T20:00:39  <Cowbandit> amstan: double boop
+2011-11-16T20:02:47  *** analyst74 <analyst74!~analyst74@74-115-199-33.eng.wind.ca> has joined #aichallenge
+2011-11-16T20:02:50  <Cowbandit> oi quick question: why are bot ranks reset after a new revision is submitted?
+2011-11-16T20:03:06  <amstan> Cowbandit: there's a topic on the forums about that
+2011-11-16T20:03:15  <Cowbandit> ok thanks
+2011-11-16T20:03:19  <Cowbandit> also i was wondering
+2011-11-16T20:03:30  <Cowbandit> does me typing boop produce any boop sound
+2011-11-16T20:03:36  <amstan> no
+2011-11-16T20:03:40  <Cowbandit> darn
+2011-11-16T20:03:41  <amstan> you're just looking weird
+2011-11-16T20:06:29  <gcflymoto> would the boundary points of the python package visible() algorithm match a python Bresenham complete circle algorithm?
+2011-11-16T20:07:07  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 245 seconds)
+2011-11-16T20:12:18  <u_> 2 haskell bots in the top 100 :D
+2011-11-16T20:13:56  <Anilm3> ::D
+2011-11-16T20:14:04  <amstan> rubber duck you say?
+2011-11-16T20:14:12  *** Anilm3 <Anilm3!501ecb72@gateway/web/freenode/ip.80.30.203.114> has quit IRC (Quit: Page closed)
+2011-11-16T20:15:04  *** xathis <xathis!~xathis@f054014030.adsl.alicedsl.de> has joined #aichallenge
+2011-11-16T20:18:59  *** grandiose <grandiose!~Adium@CPE-121-210-88-65.gxeb1.ken.bigpond.net.au> has quit IRC (Quit: Leaving.)
+2011-11-16T20:20:52  <gcflymoto> let me rephrase. an ant out by its lonesome self has a vision radius of sqrt(ants.viewradius2) .. the boundary would be the points along the circle of the view radius.. question is whether Bresenham's circle algorithm match those points.. probably not because of the rounding during sqrt()?
+2011-11-16T20:21:31  <amstan> gcflymoto: i'm not familiar with that algorithm
+2011-11-16T20:23:32  *** ALplus <ALplus!~ALplus@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 244 seconds)
+2011-11-16T20:25:42  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has quit IRC (Quit: Leaving)
+2011-11-16T20:26:55  *** Rinum <Rinum!62e36dae@gateway/web/freenode/ip.98.227.109.174> has joined #aichallenge
+2011-11-16T20:27:21  <mleise> gcflymoto: that algorithm would have to be able to deal with non-integral radii.
+2011-11-16T20:27:41  <Rinum> how does combat work? if distance between 2 ants is < attack radius?
+2011-11-16T20:27:56  <mleise> There is no rounding during sqrt !
+2011-11-16T20:28:19  <mleise> Rinum: yes, <= attack radius
+2011-11-16T20:28:37  <Rinum> also, it seems attacks can happen diagonally? so the calculated distance is a little different
+2011-11-16T20:28:48  <mleise> But use the squared radius and squared distance, it is faster that way
+2011-11-16T20:29:31  <Rinum> what do you mean?
+2011-11-16T20:29:32  <a1k0n> i'm sure bresenham would give you the same result
+2011-11-16T20:29:32  <janzert> Rinum: all radius measurements use euclidean distance
+2011-11-16T20:29:34  <mleise> Rinum: the values are radii so they describe a circle (in euclidean metric)
+2011-11-16T20:29:57  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T20:29:59  <a1k0n> but does it matter?  it's easy enough to brute force it once at the start of the bot
+2011-11-16T20:30:00  <amstan> have you guys seen this? http://www.franz.com/services/conferences_seminars/webinar_1-20-11.lhtml
+2011-11-16T20:30:13  <Rinum> janzert mleise thanks
+2011-11-16T20:30:17  <amstan> it's a talk from mega1 on the contest and his botr
+2011-11-16T20:31:13  <janzert> yes, he did that a little while after the competition
+2011-11-16T20:32:51  <a1k0n> hmm, no _iouri_ for this contest
+2011-11-16T20:33:12  <analyst74> trying to stay out of trouble maybe?
+2011-11-16T20:33:36  <a1k0n> nor dmj111
+2011-11-16T20:37:26  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 276 seconds)
+2011-11-16T20:37:40  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T20:37:46  *** gcflymoto <gcflymoto!635cb214@gateway/web/freenode/ip.99.92.178.20> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T20:37:54  *** roflmao <roflmao!~Adium@189.188.177.133> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T20:38:52  *** Antimony_ <Antimony_!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T20:41:11  *** Cowbandit <Cowbandit!484cfedc@gateway/web/freenode/ip.72.76.254.220> has quit IRC (Quit: Page closed)
+2011-11-16T20:42:07  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T20:42:18  *** Antimony_ is now known as Antimony
+2011-11-16T20:44:12  *** gcflymoto <gcflymoto!635b32c8@gateway/web/freenode/ip.99.91.50.200> has joined #aichallenge
+2011-11-16T20:49:03  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 248 seconds)
+2011-11-16T20:49:50  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T20:53:43  *** gcflymoto <gcflymoto!635b32c8@gateway/web/freenode/ip.99.91.50.200> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T20:55:35  *** arscan <arscan!188032e6@gateway/web/freenode/ip.24.128.50.230> has quit IRC (Quit: Page closed)
+2011-11-16T20:58:37  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T21:03:46  *** b0rder <b0rder!~b0rder@114.246.91.232> has joined #aichallenge
+2011-11-16T21:13:02  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T21:13:04  *** bmh <bmh!~brendan@173-164-225-129-SFBA.hfc.comcastbusiness.net> has joined #aichallenge
+2011-11-16T21:13:06  *** bmh <bmh!~brendan@fsf/member/bmh> has joined #aichallenge
+2011-11-16T21:14:16  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-11-16T21:15:07  <bmh> a1k0n: If I did my math correct, I can do exact pathfinding in something like O(sqrt n) with O(n) preprocessing work
+2011-11-16T21:15:35  <bmh> or perhaps O(sqrt(n) * sqrt(sqrt(n)))
+2011-11-16T21:16:44  <Antimony> what is n?
+2011-11-16T21:16:55  <bmh> Antimony: oh right -- the size of the map
+2011-11-16T21:17:05  <Antimony> you mean one of the dimensions?
+2011-11-16T21:17:09  <bmh> no
+2011-11-16T21:17:15  <Antimony> oh the total area/
+2011-11-16T21:17:51  <a1k0n> bmh: really?  what are you precomputing?
+2011-11-16T21:19:06  <bmh> a1k0n: for a map of size n, subdivide the map. For each subdivision find the a path from each cell to each neighboring subdivision
+2011-11-16T21:19:42  <bmh> On a general graph, this wouldn't guarantee shortest pathes, but I believe (have not proven...) that it should give exact queries given the restricted graph we're working with
+2011-11-16T21:20:20  *** JorgeB <JorgeB!~textual@209.66.74.34> has quit IRC (Ping timeout: 260 seconds)
+2011-11-16T21:20:53  <Antimony> I think the preprocessing will take more than O(n). Maybe O(nlogn)
+2011-11-16T21:21:25  <Antimony> anyway, pathfinding usually doesn't take much time
+2011-11-16T21:21:49  <Antimony> I can find the closest target to each ant in only a couple ms
+2011-11-16T21:22:05  <bmh> Antimony: The preprocessing cost should be O(#subdivisions * #subdivision_size * #neighbors)
+2011-11-16T21:22:44  <Rinum> I'm still trying to forcing myself to use CD x.x my bot seems to be improving
+2011-11-16T21:23:00  <bmh> The number of neighbors is independent of the size of the map.
+2011-11-16T21:24:34  <bmh> with sqrt(n) subdivisions of size sqrt(n) it comes out O(n)
+2011-11-16T21:25:52  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T21:29:54  *** TheLinker <TheLinker!~TheLinker@host42.190-138-217.telecom.net.ar> has joined #aichallenge
+2011-11-16T21:32:20  *** datachomper <datachomper!~Adium@75.76.6.182> has joined #aichallenge
+2011-11-16T21:36:12  <bmh> (and to pontificate a bit more -- any reasonable subdivision will give you four neighbors)
+2011-11-16T21:36:34  <a1k0n> bmh: that would work with a maze?
+2011-11-16T21:36:56  <bmh> I see no reason why it wouldn't.
+2011-11-16T21:36:57  <a1k0n> oh, i see.  you make a kind of quadtree where the path through each cell in the quadtree is obvious
+2011-11-16T21:37:15  <a1k0n> which you were sort of proposing before, but with more general open rectangles
+2011-11-16T21:38:02  <a1k0n> you might have up to 2N-1 nodes in that graph
+2011-11-16T21:38:06  <a1k0n> tree, whatever
+2011-11-16T21:38:38  <bmh> how do you figure? I'm only proposing a single level of hierarchy
+2011-11-16T21:38:50  <a1k0n> oh
+2011-11-16T21:39:07  <a1k0n> how big will the cells be in the maze?
+2011-11-16T21:40:51  <bmh> It really doesn't matter. The cost of stitching the supercells together is (#cells * #neighbors)
+2011-11-16T21:41:14  <bmh> the danger is some pathological case where the number of edges explodes
+2011-11-16T21:41:15  <amstan> bmh, a1k0n: you guys should make a team
+2011-11-16T21:41:19  <a1k0n> but if your supercell is full of walls bisecting it, what good is it?
+2011-11-16T21:41:28  <a1k0n> bmh wants to
+2011-11-16T21:41:31  <bmh> amstan: I've been trying to convince him to join my team for the past few weeks
+2011-11-16T21:41:37  <bmh> trouble is my team is rubbish.
+2011-11-16T21:41:44  <amstan> your team? lol
+2011-11-16T21:41:52  <amstan> you have a team already?
+2011-11-16T21:42:17  <bmh> amstan: yeah, I recruited a co-worker I went to college with. We once wrote a genetic alg to play Tetris... in haskell
+2011-11-16T21:42:21  <analyst74> you'd need some efficient way to divide cells utilizing as much natural barriers (water) as possible
+2011-11-16T21:43:22  <analyst74> although this sounds like a common problem, must have known algorithms for it
+2011-11-16T21:43:40  <amstan> I want Norvig's pen!
+2011-11-16T21:43:45  <amstan> it looks awesome!
+2011-11-16T21:43:46  <bmh> analyst74: I was just going to place points on a jittered grid and BFS from them
+2011-11-16T21:43:50  <bmh> amstan: link?
+2011-11-16T21:43:58  <bmh> (is it a fountain pen?)
+2011-11-16T21:44:06  <amstan> i has a circuit board on it: http://www.youtube.com/watch?feature=player_embedded&v=dX8VPYXd3hs#!
+2011-11-16T21:44:52  <bmh> oh. That's neat.
+2011-11-16T21:45:40  <a1k0n> what an apropos lecture
+2011-11-16T21:45:56  <amstan> a1k0n: yeah, i'm going through ai-class
+2011-11-16T21:46:17  <a1k0n> U is usually called V (value function)
+2011-11-16T21:48:29  <bmh> I want to see a bot that uses the Richar Feynman algorithm to win.
+2011-11-16T21:48:40  <amstan> bmh: details?
+2011-11-16T21:48:52  <a1k0n> integrates all possible future states out?
+2011-11-16T21:49:06  <bmh> amstan: 1. Write down the problem. 2. Think really hard. 3. Write down the solution.
+2011-11-16T21:49:12  <amstan> lol
+2011-11-16T21:50:08  <amstan> too bad it only works well in a deterministic and nonstochatic enviroment
+2011-11-16T21:51:58  *** xathis <xathis!~xathis@f054014030.adsl.alicedsl.de> has quit IRC ()
+2011-11-16T21:56:04  <mleise> bmh: What happens when you look at your quad-tree and start and target are in the same square? Do you consider the other squares?
+2011-11-16T21:56:08  <amstan> i just said the same thing.. lol
+2011-11-16T21:56:15  <amstan> deterministic and fully observable*
+2011-11-16T21:56:28  <amstan> i sent an email a while ago to the mailing list
+2011-11-16T21:56:38  <amstan> about possibly getting a plug from ai-class for our contest
+2011-11-16T21:56:43  <bmh> mleise: then just pathfind to it normally ignoring the quad-tree
+2011-11-16T21:57:11  <mleise> no, i mean they are in the same 'hypersquare', like a quarter of the map
+2011-11-16T21:58:09  <bmh> mleise: I'm only proposing a two-level graph
+2011-11-16T21:58:38  <mleise> does that mean that the granularity would be 1x1 and 2x2?
+2011-11-16T21:59:46  <bmh> 1x1, sqrt(n) x sqrt(n)  for an n x n graph
+2011-11-16T22:00:16  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T22:02:12  <mleise> for a map of 100x100 that means 100 10x10 cells, right? And these are straight forward rectangles on the map?
+2011-11-16T22:02:56  <bmh> mleise: I'm not sure about the point placement strategy (uniform, uniform random, poisson disk sampling, jittered grid) -- but I think it makes sense to construct the cells by BFS
+2011-11-16T22:03:22  <mleise> ok, now i get the picture ;)
+2011-11-16T22:03:51  <bmh> it would be cool to minimize the number of cells on edges.
+2011-11-16T22:05:26  <mleise> You need to have cells consisting only of connected squares, else what would happen in a maze where two points are in the same cell, but not physically connected there.
+2011-11-16T22:05:48  <bmh> if you constructed it by BFS, that isn't possible.
+2011-11-16T22:06:05  <mleise> dito, so no random sampling
+2011-11-16T22:07:05  <mleise> still you may end up with cell A being first and claiming an area that 'carves' out cell C
+2011-11-16T22:07:34  <mleise> so the shortest path inside C for some points may be through that part of A
+2011-11-16T22:08:14  <bmh> I'm not sure about convexity guarantees.
+2011-11-16T22:08:58  <mleise> -> so you need to write a thesis, proof it and come up with an algorithm to guarantee it ;)
+2011-11-16T22:10:12  <mleise> It does exist. If your cells are 1x1 they are all convex. So ... if you go from there you have a solid foundation, hehe
+2011-11-16T22:10:29  <amstan> so.. i forgot about rotational symmetries
+2011-11-16T22:10:45  <amstan> i guess 2 player point symmetry is the same as rotational
+2011-11-16T22:10:49  <amstan> but 4 player is different
+2011-11-16T22:11:21  <mleise> 4 player ... wasn't that the axis of evil swastika stuff?
+2011-11-16T22:12:40  <mleise> in other words, are there actually any official maps, that use 4 player rotational symmetry?
+2011-11-16T22:12:48  <amstan> mleise: yeah.. that's the problem
+2011-11-16T22:14:19  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@117.230.71.241> has joined #aichallenge
+2011-11-16T22:14:19  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T22:14:26  <amstan> mleise: hmm, apparently i mislabeled it
+2011-11-16T22:14:28  <amstan> lol
+2011-11-16T22:15:53  *** Rinum <Rinum!62e36dae@gateway/web/freenode/ip.98.227.109.174> has quit IRC (Ping timeout: 265 seconds)
+2011-11-16T22:16:35  <mleise> At the moment I just want to finish my path finding algorithm, but I am not really motivated for anything on Ants.
+2011-11-16T22:16:47  <amstan> how would you label this map? http://paste.aichallenge.org/xqx7g/
+2011-11-16T22:16:58  <amstan> it's not rotational
+2011-11-16T22:17:05  <mleise> no it is ...
+2011-11-16T22:17:09  <mleise> mirrored
+2011-11-16T22:17:53  <amstan> yeah, it's point mirror
+2011-11-16T22:18:26  <mleise> I don't think a point mirror exists :D
+2011-11-16T22:19:14  <mleise> To me it looks like one horizontal and one vertical mirror
+2011-11-16T22:19:36  <nickjohnson> Yes, it has two axes of reflective symmetry
+2011-11-16T22:24:29  *** wr <wr!230ba580@gateway/web/freenode/ip.35.11.165.128> has joined #aichallenge
+2011-11-16T22:24:37  <wr> hmmm?
+2011-11-16T22:25:04  <wr> so I downloaded the ai how do I get a GUI of the play?
+2011-11-16T22:25:06  *** Antimony_ <Antimony_!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has joined #aichallenge
+2011-11-16T22:25:41  *** wr <wr!230ba580@gateway/web/freenode/ip.35.11.165.128> has quit IRC (Client Quit)
+2011-11-16T22:25:54  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Quit: Page closed)
+2011-11-16T22:27:04  *** Antimony <Antimony!~chatzilla@lawn-143-215-54-21.lawn.gatech.edu> has quit IRC (Ping timeout: 240 seconds)
+2011-11-16T22:27:16  *** Antimony_ is now known as Antimony
+2011-11-16T22:29:24  <mleise> I think talking about my path finding idea will motivate me to implement it, but I don't want someone else to try it out before I do ^^
+2011-11-16T22:30:48  <amstan> if i were to make an irc server, i would have a filter for impacient people
+2011-11-16T22:30:55  <mleise> So I rather listen to others talking about their A* or BFS approaches
+2011-11-16T22:31:19  <amstan> the first few messages you send(if you're new), they'll be buffered, and only after like 2 minutes(if you haven't left) they'll be transmitted to the channel
+2011-11-16T22:31:28  <amstan> that should filter out people
+2011-11-16T22:31:36  <aarossig> amstan: no need to redefine irc for this, make an impatience detection algorithm and get a bot to the dirty work lol
+2011-11-16T22:31:37  <mleise> amstan: that's cruel, but effective ;)
+2011-11-16T22:31:54  <amstan> aarossig: yes, but what could a bot do though?
+2011-11-16T22:31:56  <aarossig> amstan: nvm then lol
+2011-11-16T22:32:07  <aarossig> amstan: you could have a metachannel
+2011-11-16T22:32:16  <amstan> aarossig: by the time the bot gets mad at him because he signed out it's already too late
+2011-11-16T22:32:22  <aarossig> amstan: in the words of mcstar.. the realaichallenge
+2011-11-16T22:32:43  <aarossig> no.. just have 2 channels
+2011-11-16T22:32:51  <aarossig> one for people with answers
+2011-11-16T22:32:55  <aarossig> could be any random channel
+2011-11-16T22:33:06  <aarossig> and then have a bot that relays the messages between the two
+2011-11-16T22:33:15  <aarossig> any messages that come in the random channel are the patient people :D
+2011-11-16T22:33:16  <aarossig> lol
+2011-11-16T22:33:25  <amstan> sure, but that's more sketchy than modifying an irc server
+2011-11-16T22:33:36  <aarossig> amstan: i suppose
+2011-11-16T22:33:45  <aarossig> as if the entire idea isn't sketchy lol
+2011-11-16T22:33:56  <nickjohnson> I like the idea. It alwas strikes me as bizarre when someone joins and leaves 2 minutes after answering a question
+2011-11-16T22:34:15  <aarossig> amstan: awesome http://www.shopenzed.com/unearthed-kauri-boxed-mens-pen-xidp233496.html
+2011-11-16T22:34:23  <amstan> nickjohnson: the funny part is that irc is like the absolute fastest to get answers from
+2011-11-16T22:34:28  <aarossig> amstan: i feel like your dad would really like that for an xmas gift
+2011-11-16T22:34:30  <amstan> nickjohnson: short of searching yourself
+2011-11-16T22:35:15  <aarossig> amstan: i agree, but sometimes... if you're struggling for an hour you just need someone to give you a keyword or even say something totally unrelated that helps get you back on track and solve the issue
+2011-11-16T22:35:38  <amstan> aarossig: yes, but that's no reason to leave after 2 minutes of silence
+2011-11-16T22:35:46  <aarossig> agreed
+2011-11-16T22:36:33  <mleise> 38 seconds in the last case
+2011-11-16T22:36:57  <aarossig> amstan: i want rDNS
+2011-11-16T22:37:15  <amstan> aarossig: huh?
+2011-11-16T22:37:33  <aarossig> aarossig: so that my domain resolves for whois and stuff
+2011-11-16T22:37:39  <aarossig> amstan* lol
+2011-11-16T22:38:12  <amstan> aarossig: what's the connection with people leaving before they get questions answered?
+2011-11-16T22:38:32  <aarossig> amstan: nothing at all, that topic seemed like it was rounding completion
+2011-11-16T22:40:49  <thestinger> well, I have _extremely_ basic combat now
+2011-11-16T22:41:09  <amstan> thestinger: cool, what did you do?
+2011-11-16T22:41:41  <thestinger> http://paste.aichallenge.org/mEPnX/
+2011-11-16T22:41:56  <thestinger> I just fixed my code for dealing with unmoving enemies
+2011-11-16T22:42:04  <thestinger> it's really crappy even for that though
+2011-11-16T22:42:46  <thestinger> need to get them to strafe/circle if they aren't going to attack instead of just staying there
+2011-11-16T22:43:11  <amstan> thestinger: have your tried mcstar's tool thing for combat simulations?
+2011-11-16T22:43:12  <aarossig> thestinger: that looks pretty good so far
+2011-11-16T22:43:29  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has joined #aichallenge
+2011-11-16T22:43:48  <thestinger> nope, I just implemented a simulation() function based on the battle resolution page
+2011-11-16T22:44:06  <thestinger> so I know which ants/enemies will die (assuming enemies don't move)
+2011-11-16T22:44:25  <Scryer> How can I tell which of my hills are still alive? Do I have to have an ant near enough to see them?
+2011-11-16T22:44:32  <amstan> Scryer: yes
+2011-11-16T22:44:41  <Scryer> Thanks.
+2011-11-16T22:44:53  <amstan> Scryer: if not.. you can know for sure if you just had an ant spawn from one
+2011-11-16T22:45:07  <thestinger> I rewrote a lot of my bot so that I do all regular movement and end up with a hash table with ants as keys and directions as values
+2011-11-16T22:45:12  <thestinger> and then I change it around for combat
+2011-11-16T22:45:53  <amstan> i should probably eat something more
+2011-11-16T22:45:58  <Scryer> Roger - I thought about keeping track of how much food I've collected compared to how many hills should be spawning. Seems like a nuisance. :)
+2011-11-16T22:46:56  <amstan> my cat was very interested in a small chromium window moving across the screen
+2011-11-16T22:47:09  <aarossig> amstan: huh?
+2011-11-16T22:47:41  <a1k0n> thestinger: hey thats cool
+2011-11-16T22:47:41  <avdg> which theme did you use? :p
+2011-11-16T22:53:05  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T22:54:44  *** TheLinker <TheLinker!~TheLinker@host42.190-138-217.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-11-16T22:55:02  <avdg> gn guys
+2011-11-16T22:55:21  *** Rinum <Rinum!62e36dae@gateway/web/freenode/ip.98.227.109.174> has joined #aichallenge
+2011-11-16T22:56:28  <Rinum> looks like my bot is finally improving... http://ants.fluxid.pl/replay.2103 ... still sucks though lol
+2011-11-16T22:57:35  <Scryer> I've had two official games since the start of 16 Nov; just noticed that the last guy I played has had five. How is this determined? I haven't been deactivated in that time.
+2011-11-16T22:57:56  <a1k0n> i just got one game with one other person, so i'm still sub #6000 ranked
+2011-11-16T22:58:43  <a1k0n> Rinum: haha that is a big pile of ants afraid of each other
+2011-11-16T22:59:16  <Rinum> a1k0n: lol and over 1k ants in my hill are too scared to come out
+2011-11-16T22:59:22  <a1k0n> hilarious
+2011-11-16T23:00:27  <Rinum> and i love how there's a HUGE mass surrounding my 4 ants
+2011-11-16T23:00:27  <Rinum> 5 ants* lol
+2011-11-16T23:02:09  <Rinum> and for the 1st time, my bot is actually winning games... wow http://ants.fluxid.pl/replay.2174
+2011-11-16T23:03:27  <a1k0n> hahah oops.  i'm running bots on fluxid with huge amounts of debug output now
+2011-11-16T23:03:32  *** u_ <u_!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has quit IRC (Quit: u_)
+2011-11-16T23:03:47  <thestinger> a1k0n: I ended up with a 42GB log file like that...
+2011-11-16T23:03:53  <Rinum> whoa
+2011-11-16T23:04:16  <thestinger> I was writing _many_ distance maps to a log file each turn
+2011-11-16T23:04:24  <thestinger> and I left it on overnight
+2011-11-16T23:04:36  <Rinum> damn
+2011-11-16T23:04:39  <Rinum> 48GB wow lol
+2011-11-16T23:04:48  <Rinum> 42* lol
+2011-11-16T23:05:13  <Scryer> So nice that big disks are cheap these days. :)
+2011-11-16T23:05:21  <Scryer> Learn anything from the trace?
+2011-11-16T23:05:22  <amstan> Scryer: not anymore
+2011-11-16T23:06:08  <Scryer> Prices went up when I wasn't looking?
+2011-11-16T23:12:00  <thestinger> my connection to the TCP server keeps screwing up
+2011-11-16T23:12:01  <thestinger> :(
+2011-11-16T23:12:42  <amstan> Scryer: yep, thailand floodings
+2011-11-16T23:12:49  <amstan> Scryer: 180% increase in hd prices
+2011-11-16T23:12:53  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-16T23:13:41  *** Raimondi <Raimondi!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has left #aichallenge
+2011-11-16T23:13:49  *** Raimondi <Raimondi!~israel@c-98-196-16-112.hsd1.tx.comcast.net> has joined #aichallenge
+2011-11-16T23:14:59  <Rinum> just noticed pguillory added an 'about me'
+2011-11-16T23:15:38  *** Yexo <Yexo!~Thijs@34-72-ftth.onsneteindhoven.nl> has quit IRC (Ping timeout: 252 seconds)
+2011-11-16T23:15:44  <Scryer> Looks like he's reading Sun Tzu. We should worry.
+2011-11-16T23:16:28  <Rinum> lol
+2011-11-16T23:18:15  *** Yexo <Yexo!~Thijs@34-72-ftth.onsneteindhoven.nl> has joined #aichallenge
+2011-11-16T23:18:30  *** maysam81 <maysam81!dcff0287@gateway/web/freenode/ip.220.255.2.135> has joined #aichallenge
+2011-11-16T23:19:28  <Rinum> I guess there actually are ppl with teams http://aichallenge.org/profile.php?user=573
+2011-11-16T23:20:11  <amstan> why is their bio half in german when they're from russia?
+2011-11-16T23:20:44  <Rinum> study abroad?
+2011-11-16T23:21:06  <maysam81> hi
+2011-11-16T23:23:24  <mleise> no, they aren't german students in moscow, their grammar is too bad. *g*
+2011-11-16T23:23:57  <mleise> maybe they thought waterloo is in germany
+2011-11-16T23:24:25  <amstan> mleise: lolwhat?
+2011-11-16T23:27:41  <mleise> or one of them is part of a german minority in russia and felt like writing some words in the other language
+2011-11-16T23:27:45  <Scryer> You mean they're Belgians?  That would explain a lot. :)
+2011-11-16T23:29:39  *** twymer <twymer!~twymer@d118-75-38-31.try.wideopenwest.com> has quit IRC (Ping timeout: 258 seconds)
+2011-11-16T23:31:08  <a1k0n> manwe's bot rules
+2011-11-16T23:31:13  <a1k0n> http://ants.fluxid.pl/replay.2169
+2011-11-16T23:32:36  <Rinum> it is awesome http://ants.fluxid.pl/replay.2193
+2011-11-16T23:32:47  <Rinum> though I did a sneak attack on his hill there =P
+2011-11-16T23:32:58  <Rinum> but then he retaliated x.x
+2011-11-16T23:33:00  *** Cowbandit <Cowbandit!484cfedc@gateway/web/freenode/ip.72.76.254.220> has joined #aichallenge
+2011-11-16T23:34:12  <Cowbandit> how do you debug your bot in java? as in see what values are stored and etc.
+2011-11-16T23:34:50  <Rinum> output w/e values to a file
+2011-11-16T23:34:56  <mleise> Rinum: that would have been a timeout on the real servers most definitely ^^
+2011-11-16T23:35:21  <Rinum> lol
+2011-11-16T23:35:33  <Cowbandit> wait so how do you output those values into a file?
+2011-11-16T23:35:46  <Cowbandit> because i've just been setting a breakpoint
+2011-11-16T23:35:47  *** replore <replore!~replore@203.152.213.161.static.zoot.jp> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T23:35:50  <Cowbandit> and then manually inputting coordinates and stuff
+2011-11-16T23:35:51  *** replore__ <replore__!~replore@203.152.213.161.static.zoot.jp> has joined #aichallenge
+2011-11-16T23:36:24  <Rinum> open a file for writing
+2011-11-16T23:36:38  <Rinum> and write w/e to that file
+2011-11-16T23:37:27  <mleise> why not use replay the game in the bot with the debugger?
+2011-11-16T23:37:35  <mleise> -use
+2011-11-16T23:37:35  <Cowbandit> well the thing is
+2011-11-16T23:37:51  <Cowbandit> i'm using bluej
+2011-11-16T23:37:54  <Cowbandit> and for some reason
+2011-11-16T23:38:06  <Cowbandit> it has like a 75 line maximum terminal window
+2011-11-16T23:38:12  <Cowbandit> so i can't paste all the bot input int
+2011-11-16T23:38:17  <Cowbandit> in* all at once
+2011-11-16T23:39:02  <mleise> ok, then make your bot load the bot input file. (Add it as a command line parameter)
+2011-11-16T23:39:22  <Cowbandit> o so how does one do that?
+2011-11-16T23:39:33  <Cowbandit> lol sorry i'm a noob
+2011-11-16T23:39:36  <mleise> you have the bot input file?
+2011-11-16T23:39:40  <Cowbandit> yeah
+2011-11-16T23:39:52  <mleise> ok, do you see the main() method?
+2011-11-16T23:39:57  <mleise> in your Java bot?
+2011-11-16T23:40:02  <Cowbandit> ya
+2011-11-16T23:40:32  <mleise> ok the method signature should read something like main(String[] args), right?
+2011-11-16T23:40:42  <Cowbandit> yeah it's that one
+2011-11-16T23:40:47  <thestinger> still no strafing/encircling yet but I've improved combat a bit http://paste.aichallenge.org/o73GH/ :)
+2011-11-16T23:40:53  <Cowbandit> and there's only one line it new MyBot().readSystemInput();
+2011-11-16T23:41:17  <mleise> Cowbandit: ok, now check if args.length is != 0
+2011-11-16T23:41:39  <thestinger> have them set to take no losses atm, but that's temporary
+2011-11-16T23:41:42  <mleise> in that case load the file args[0] and read input from there
+2011-11-16T23:41:52  <Cowbandit> oh
+2011-11-16T23:42:04  <Cowbandit> so i just name my file args?
+2011-11-16T23:42:07  <mleise> it would be best, if you added a MyBot().readFileInput();
+2011-11-16T23:42:30  <mleise> new MyBot().readFileInput(args[0]);
+2011-11-16T23:42:38  <Cowbandit> wait so how do i specify the file that I want to use?
+2011-11-16T23:43:07  <mleise> then when you start the debugger, add "C:\Ants\game_logs\bot0.input" or something like that.
+2011-11-16T23:43:32  <mleise> I *hope* BlueJ allows command-line arguments
+2011-11-16T23:43:47  <Cowbandit> lol hopefully
+2011-11-16T23:43:49  <Cowbandit> thanks for the help
+2011-11-16T23:43:55  <Cowbandit> this should save me a lot of time
+2011-11-16T23:44:43  <mleise> Since file and terminal input are both InputStreams in Java, you should be able to reuse all that code in the bot class.
+2011-11-16T23:44:49  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Read error: Connection reset by peer)
+2011-11-16T23:45:08  <Cowbandit> kk i'll give it a try
+2011-11-16T23:45:15  <mleise> good luck
+2011-11-16T23:50:15  *** Rinum <Rinum!62e36dae@gateway/web/freenode/ip.98.227.109.174> has quit IRC (Quit: Page closed)
+2011-11-16T23:50:45  *** Cowbandit <Cowbandit!484cfedc@gateway/web/freenode/ip.72.76.254.220> has quit IRC (Quit: Page closed)
+2011-11-16T23:51:12  *** Scryer <Scryer!4a645367@gateway/web/freenode/ip.74.100.83.103> has quit IRC (Quit: Page closed)
+2011-11-16T23:57:16  *** ChrisH_ <ChrisH_!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge

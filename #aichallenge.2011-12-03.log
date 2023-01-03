@@ -1,0 +1,2202 @@
+2011-12-03T00:00:05  <thestinger> it's fun when I get 17 warnings because gcc tried to inline a recursive function into itself...
+2011-12-03T00:00:13  <a1k0n> e.g. you trade off a multiply instead of a pointer lookup
+2011-12-03T00:00:41  <antimatroid> you forgot the syntax tradeoff :P
+2011-12-03T00:01:01  <thestinger> not much worse imo since it takes the same number of characters
+2011-12-03T00:01:13  <a1k0n> i'm holding a baby with hiccups so i can't type fast enough to explain myself right now
+2011-12-03T00:01:24  <antimatroid> s'all good, i'm just going to overload ()
+2011-12-03T00:04:09  <antimatroid> that just got WAY faster
+2011-12-03T00:04:19  <antimatroid> changing matrix to be a 1d vector
+2011-12-03T00:04:23  <thestinger> oh, nice
+2011-12-03T00:04:27  <thestinger> I'll have to do that :)
+2011-12-03T00:04:50  <thestinger> atm I'm making variable names shorter so these damn lines aren't so long
+2011-12-03T00:04:59  <thestinger> I call enemies "axis" now
+2011-12-03T00:05:02  <antimatroid> ehe, i just fixed a lot of that too
+2011-12-03T00:05:04  <thestinger> and my ants are allies :)
+2011-12-03T00:05:11  <antimatroid> i used to need boolMatrix[loc.row][loc.col]
+2011-12-03T00:05:28  <antimatroid> i can do otherMatrix[loc] again now
+2011-12-03T00:05:30  <a1k0n> right so you can have an operator[](row) which returns data+row*cols
+2011-12-03T00:05:44  <a1k0n> and then [r][c] works
+2011-12-03T00:07:03  <antimatroid> returns what?
+2011-12-03T00:07:15  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-03T00:07:30  <a1k0n> T*
+2011-12-03T00:07:38  <bmh> thestinger, antimatroid: you should be using boosts bitset, not any crazy monkeypatched thing using vector<uint8_t>
+2011-12-03T00:07:59  <bmh> a1k0n: I'm 100 pages into MacKay! :-D
+2011-12-03T00:08:00  <a1k0n> template<class T> T* operator[](int row) { return data_ + row*cols_ }
+2011-12-03T00:08:04  <a1k0n> heh nice
+2011-12-03T00:08:11  <thestinger> bmh: well he wanted a bool vector, but without packing into bitfields
+2011-12-03T00:08:44  <antimatroid> a1k0n: you don't need to redefine a template inside a struct that you already defined it for if that makes sense?
+2011-12-03T00:08:46  <bmh> thestinger: why? for iterators?
+2011-12-03T00:08:57  <antimatroid> ie. wouldn't the operator[] thing go inside the struct def?
+2011-12-03T00:08:57  <a1k0n> i'm just putting it there for clarity, i know
+2011-12-03T00:09:02  <antimatroid> ah okay :)
+2011-12-03T00:09:22  <thestinger> bmh: bitfields make it _really_ slow
+2011-12-03T00:09:29  <thestinger> for access/setting stuff
+2011-12-03T00:11:00  <bmh> thestinger: even the boost lib?
+2011-12-03T00:11:16  *** goffrie <goffrie!~goffrie@69-165-162-182.dsl.teksavvy.com> has quit IRC (Quit: Konversation terminated!)
+2011-12-03T00:11:16  <thestinger> dunno, haven't used it - accessing bytes/words will be faster than bitfields though
+2011-12-03T00:11:20  *** delt0r_ <delt0r_!~bob@213-33-17-194.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-03T00:12:42  <bmh> a1k0n has probably already suggested this, but you could use template meta-programming to generate a fixed size bit-field, complete with statically defined accessors/setters
+2011-12-03T00:13:28  <bmh> template<int N> class Bitfield { uint32_t bf[N]; } // or something like that
+2011-12-03T00:13:30  <BenJackson> std::bitset already does that
+2011-12-03T00:13:41  <bmh> BenJackson: That's why I recommended it.
+2011-12-03T00:14:01  <bmh> %s/std/boost/g
+2011-12-03T00:14:07  <a1k0n> i just popped in here too
+2011-12-03T00:14:21  <a1k0n> interesting.  http://www.marcnewlin.com/2011/12/you-should-probably-start-burning-your_02.html
+2011-12-03T00:14:32  <a1k0n> i should have done that instead of ants
+2011-12-03T00:14:56  <a1k0n> gibbs sampling is actually the right solution there.  or viterbi
+2011-12-03T00:14:59  <thestinger> did you see the mechanical turk solution? that was amusing
+2011-12-03T00:15:05  <a1k0n> heh no
+2011-12-03T00:15:15  <bmh> thestinger: that sounds prohibitively expensive
+2011-12-03T00:15:19  <a1k0n> that was for the instagram challenge wasn't it?
+2011-12-03T00:15:22  <thestinger> oh, yeah
+2011-12-03T00:15:29  <a1k0n> which cost him $0.50
+2011-12-03T00:15:33  <a1k0n> cuz its so easy
+2011-12-03T00:17:27  <BenJackson> wow, KonaEarth was an ass on the forums
+2011-12-03T00:17:35  <BenJackson> or did irc already cover that topic ;-)
+2011-12-03T00:17:35  <bmh> link?
+2011-12-03T00:17:41  <BenJackson> http://forums.aichallenge.org/viewtopic.php?f=25&t=1989#p12387
+2011-12-03T00:17:54  <thestinger> I gave him a polite RTFM response
+2011-12-03T00:18:01  <thestinger> well "RTFM next time"
+2011-12-03T00:18:20  <BenJackson> bmh: I happened to play with std::bitset the other day because someone on SO wanted access to the innards to "optimize" it
+2011-12-03T00:18:38  <BenJackson> so I built his example "clean" code with g++ which made fast code perfectly
+2011-12-03T00:19:08  <thestinger> BenJackson: btw, clang/llvm 3.0 were released :)
+2011-12-03T00:19:19  <bmh> ha. BenJackson: I've been thinking of writing Qn.m fixed point math with template metaprogramming. Good idea, or bad idea?
+2011-12-03T00:19:25  <thestinger> and I discovered there's a JIT compiler + REPL built on them, haven't tried it yet though
+2011-12-03T00:19:34  <thestinger> http://root.cern.ch/drupal/content/cling
+2011-12-03T00:19:56  <BenJackson> do you need metaprogramming?
+2011-12-03T00:20:04  <BenJackson> I think a templatized fixed-point is a great idea
+2011-12-03T00:20:20  <BenJackson> I've seen them before with various levels of completeness
+2011-12-03T00:20:48  <BenJackson> I've implemented some half-baked ones when doing FPGA work where I wanted to simulate the math with the right bit widths
+2011-12-03T00:21:00  <antimatroid> it actually hates me doing a matrix with uint8_t
+2011-12-03T00:21:29  <bmh> I once implemented FP in Java. It was nasty.
+2011-12-03T00:21:56  <thestinger> bmh: it's nearly sane in C++ now :)
+2011-12-03T00:22:13  <antimatroid> thestinger: vector<uint8_t> test(10, 0); cout << test[0] << endl; that doesn't work for me :\
+2011-12-03T00:22:17  <bmh> thestinger: The biggest issue I ran up against is that Java doesn't have unsigned types.
+2011-12-03T00:22:20  <antimatroid> it just outputs as blank
+2011-12-03T00:22:35  <thestinger> bmh: wait, what did you mean by FP?
+2011-12-03T00:22:40  <thestinger> I interpreted that as functional programming
+2011-12-03T00:22:45  <BenJackson> that's because uint8_t is a char
+2011-12-03T00:22:52  <BenJackson> cout << char is printing it as a char
+2011-12-03T00:22:53  <antimatroid> ohhhhhhh
+2011-12-03T00:23:07  <BenJackson> pipe to cat -v you'll see ^@
+2011-12-03T00:23:26  <BenJackson> thestinger: I assume he meant fixed point
+2011-12-03T00:23:30  <thestinger> ah
+2011-12-03T00:24:04  <thestinger> merging both topics: http://harmful.cat-v.org/software/java
+2011-12-03T00:24:20  <thestinger> the "java is a DSL for turning XML into stack traces" quote is great
+2011-12-03T00:24:58  <antimatroid> a1k0n: i don't get your index function :\
+2011-12-03T00:25:01  <bmh> thestinger: fixed point
+2011-12-03T00:25:12  <antimatroid> and it doesn't work..
+2011-12-03T00:25:21  <BenJackson> antimatriod: index function?
+2011-12-03T00:25:53  <bmh> thestinger: re: unsafePerformIO -- yeah... I can wrap Data.Vector in a homebrew Data.Vector.Debug and spew out all the args...
+2011-12-03T00:25:55  <a1k0n> antimatroid: assuming you have a 1d array, it skips to a particular row and returns a pointer to the array at that point which you can then index again for the column
+2011-12-03T00:26:03  <antimatroid> 1d vector
+2011-12-03T00:26:18  * antimatroid changes to array
+2011-12-03T00:26:27  <a1k0n> 1d vector is fine
+2011-12-03T00:26:31  <a1k0n> same thing
+2011-12-03T00:26:34  <BenJackson> oh I did the same thing in my grid class
+2011-12-03T00:26:50  <BenJackson> so that the existing starter code of grid[r][c] would still work
+2011-12-03T00:26:54  <a1k0n> i use operator()(row,col) but whatever
+2011-12-03T00:27:26  <BenJackson> for some reason I did operator()(Location) too but didn't consider just doing [location]
+2011-12-03T00:27:35  <bmh> my points contain the entire grid and execute safe traversals when you move them N/S/E/W
+2011-12-03T00:28:17  <BenJackson> did everyone else move the various utility functions from State.cc to .h?
+2011-12-03T00:28:17  <a1k0n> heh.  how vey haskell of you
+2011-12-03T00:28:29  <a1k0n> i did somewhat
+2011-12-03T00:28:47  <BenJackson> ChrisH was saying he cached huge amounts of stuff at start
+2011-12-03T00:28:55  <thestinger> I wonder what lazy evaluation does with that
+2011-12-03T00:29:01  <BenJackson> I'm wondering if that would pay off or if it would thrash the cache
+2011-12-03T00:29:20  <antimatroid> a1k0n: i can't get it to work, would you be willing to glance at this? http://pastebin.com/2tn4KfMn there's a comment //here above the offending function
+2011-12-03T00:29:49  <a1k0n> oh, right
+2011-12-03T00:30:08  <a1k0n> return &matrix[rows*cols]
+2011-12-03T00:30:11  <a1k0n> er
+2011-12-03T00:30:16  <a1k0n> row
+2011-12-03T00:30:31  <antimatroid> ah, i tried both of those but not together :P
+2011-12-03T00:30:32  <antimatroid> my bad :P
+2011-12-03T00:30:35  <a1k0n> i was assuming array, natch
+2011-12-03T00:30:39  <antimatroid> i was rather confused :P
+2011-12-03T00:30:40  <BenJackson> hm, does operator T* work on vector?
+2011-12-03T00:30:54  <a1k0n> don't think so
+2011-12-03T00:31:02  <a1k0n> though it would be easy to define
+2011-12-03T00:31:19  <BenJackson> I don't see it in stl_vector
+2011-12-03T00:32:08  <BenJackson> antimatriod: you could do matrix.data() + row*cols
+2011-12-03T00:32:16  <antimatroid> i still don't see how this is going to work?
+2011-12-03T00:32:18  <BenJackson> which is the spirit of what the original was
+2011-12-03T00:32:37  <antimatroid> how does the indexing of the returned pointed work?
+2011-12-03T00:33:01  <BenJackson> matrix[row] => pointer to T, [col] indexes within that pointer
+2011-12-03T00:33:17  <BenJackson> like (matrix[row])[col] if that makes it clearer
+2011-12-03T00:33:31  <antimatroid> derp
+2011-12-03T00:33:37  <antimatroid> my other index functions are retarded :P
+2011-12-03T00:33:53  <antimatroid> i was doing r + r.c instead of r.c + r
+2011-12-03T00:33:57  <BenJackson> I would remove your unnecessary casting
+2011-12-03T00:34:20  <BenJackson> you did it again :)
+2011-12-03T00:34:24  <a1k0n> hhahah i don't think r+r*c will work
+2011-12-03T00:34:46  <BenJackson> hah your Location one is even more fucked up :)
+2011-12-03T00:35:01  <a1k0n> same fuckedupness
+2011-12-03T00:35:25  <a1k0n> does this even run?!
+2011-12-03T00:35:26  <BenJackson> oic I thought he meant "row + row*cols" instaed of "col + row*cols"
+2011-12-03T00:35:31  <antimatroid> surprisingly yes
+2011-12-03T00:35:43  <antimatroid> i just wrote it before though and obiously messed it up completely
+2011-12-03T00:35:45  <BenJackson> a1k0n: when he fixes it his bot will get worse, too
+2011-12-03T00:35:51  <a1k0n> yep
+2011-12-03T00:35:54  <antimatroid> i haven't used this with my bot
+2011-12-03T00:36:00  <antimatroid> i just changed it to 1d like 30 minutes ago
+2011-12-03T00:36:03  <thestinger> 'row * cols + col' is what I do
+2011-12-03T00:36:08  <antimatroid> yeah
+2011-12-03T00:36:12  <antimatroid> i was just being stupid
+2011-12-03T00:37:35  <antimatroid> BenJackson: which unnecessary casting?
+2011-12-03T00:37:46  <BenJackson> the various (T&)
+2011-12-03T00:37:53  <antimatroid> (T&) instead of &object?
+2011-12-03T00:38:04  <BenJackson> I would suspect that class needs no casting at all
+2011-12-03T00:38:13  <antimatroid> hmm, i shall try
+2011-12-03T00:38:15  <BenJackson> and if you cast anything you're probably just masking errors
+2011-12-03T00:38:21  <BenJackson> as with the (T*)matrix earlier
+2011-12-03T00:39:47  <antimatroid> pretty sure the cast is needed
+2011-12-03T00:39:52  <antimatroid> it wont compile without it
+2011-12-03T00:40:46  *** nalaginrut <nalaginrut!~nalaginru@113.97.239.64> has joined #aichallenge
+2011-12-03T00:41:46  <bmh> programming is hard, let's go shopping.
+2011-12-03T00:41:49  <thestinger> I should overload [] for Location
+2011-12-03T00:41:58  <thestinger> don't really care enough to bother
+2011-12-03T00:42:53  <antimatroid> i still can't get the [r][c] working :\
+2011-12-03T00:43:48  <antimatroid> yes i can
+2011-12-03T00:43:56  <antimatroid> another stupid mistake on my part :D
+2011-12-03T00:44:01  <antimatroid> a1k0n: cheers
+2011-12-03T00:44:28  *** codetiger <codetiger!7aa482c8@gateway/web/freenode/ip.122.164.130.200> has joined #aichallenge
+2011-12-03T00:44:40  <codetiger> python bumpy anyone?
+2011-12-03T00:45:07  <antimatroid> http://pastebin.com/sHfxaSvk
+2011-12-03T00:45:13  <antimatroid> there's the finished product if anyone wants it
+2011-12-03T00:47:32  *** codetige_ <codetige_!~codetiger@122.164.130.200> has joined #aichallenge
+2011-12-03T00:47:36  <thestinger> http://ants.fluxid.pl/player/strcat_precise this works :)
+2011-12-03T00:47:38  <thestinger> merged it
+2011-12-03T00:47:49  <codetige_> python numpy anyone?
+2011-12-03T00:48:48  <thestinger> codetige_: you can use numpy on the server if that's what you're asking
+2011-12-03T00:49:07  *** codetiger <codetiger!7aa482c8@gateway/web/freenode/ip.122.164.130.200> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T00:49:14  <antimatroid> python is quite slow though..
+2011-12-03T00:49:16  <thestinger> you'll probably get a much better performance boost by using pypy (which is available if you change your MyBot extension to .pypy)
+2011-12-03T00:49:34  <thestinger> antimatroid: pypy is 4.8 faster than cpython
+2011-12-03T00:49:43  <thestinger> so it's only 10x-15x slower than C, which is reasonable
+2011-12-03T00:49:52  <thestinger> 4.8x *
+2011-12-03T00:50:04  <BenJackson> did fluxid manage to submit with a C module?
+2011-12-03T00:50:17  <thestinger> BenJackson: I think so, you can just precompile stuff
+2011-12-03T00:50:39  <thestinger> so he would just need to include a .so for x86_64
+2011-12-03T00:50:39  <BenJackson> http://aichallenge.org/visualizer.php?game=141908
+2011-12-03T00:50:43  <BenJackson> "emergent behavior"
+2011-12-03T00:50:43  <codetige_> thestinger Am already using numpy. I need some help in syntax
+2011-12-03T00:50:48  <antimatroid> how much of your start up time are you guys using?
+2011-12-03T00:50:53  *** codetige_ <codetige_!~codetiger@122.164.130.200> has quit IRC (Read error: Connection reset by peer)
+2011-12-03T00:51:03  <BenJackson> antimatriod: about 0 (whatever the OS overhead is)
+2011-12-03T00:51:09  <BenJackson> ChrisH is the only person I've heard comment about using it
+2011-12-03T00:51:12  <thestinger> same with me atm
+2011-12-03T00:51:20  <antimatroid> yeah i'm now doing much like ChrisH
+2011-12-03T00:51:27  <antimatroid> although not quite hte same info i don't think
+2011-12-03T00:51:36  <antimatroid> during start up that is
+2011-12-03T00:51:56  <thestinger> I might precalculate the tiles from which a tile can be attacked
+2011-12-03T00:51:57  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-12-03T00:52:13  <thestinger> other than that... I can't think of anything to precalculate
+2011-12-03T00:52:25  <antimatroid> i'm precalculating those, not much issue, but then wanting to update them when i get water information
+2011-12-03T00:52:49  <bmh> Assuming I get my bot working, I'm willing to offer a prize.
+2011-12-03T00:53:03  <thestinger> antimatroid: use std::unordered_set, makes it easy to remove stuff
+2011-12-03T00:53:03  *** codetiger <codetiger!~codetiger@122.164.130.200> has joined #aichallenge
+2011-12-03T00:53:05  <bmh> Whoever places immediately after my bot will get a copy of MacKay, should they want it.
+2011-12-03T00:53:12  <antimatroid> i add land neighbours to each square (and remove with water info), calculate translate values for attack, attack border, view and view border
+2011-12-03T00:53:15  <codetiger> sorry got disconnecteed
+2011-12-03T00:53:35  <codetiger> I use this line to update visible cells into land self.map[(self.map == UNSEEN) & self.visible] = LAND, My question is can I use self.visited_count[(self.map == UNSEEN) & self.visible] += 1
+2011-12-03T00:53:37  <antimatroid> thestinger: but how fast are they compared to vectors to iterate through?
+2011-12-03T00:54:30  <thestinger> antimatroid: dunno, but I use them everywhere and that's not where I have speed trouble at all
+2011-12-03T00:54:50  <antimatroid> i might change to that then
+2011-12-03T00:54:56  <thestinger> using a dict as a cache in python is an idiom, so I've been using unordered_map and unordered_set for the same thing and it works well
+2011-12-03T00:55:35  <antimatroid> what i currently need to cut down on is updating battleNeighbours when i get water information near locations, that's too slow atm
+2011-12-03T00:55:47  <thestinger> you can just use key.row * cols + key.col as the hashing algo instead of a generic one for pairs of ints
+2011-12-03T00:56:01  <thestinger> ugly but fast :)
+2011-12-03T00:56:31  <codetiger> need help on numpy python
+2011-12-03T00:56:31  <thestinger> you could use an array as a set but that would use way too much memory
+2011-12-03T00:57:00  <BenJackson> hmm, some experiments suggest that ChrisH is on the right track
+2011-12-03T00:57:16  <thestinger> codetiger: I think numpy has functional programming stuff
+2011-12-03T00:57:25  <BenJackson> optimizing: what to do when you don't know what to do
+2011-12-03T00:57:29  <thestinger> I don't think you'll get a big speed boost from numpy though
+2011-12-03T00:57:40  <thestinger> pypy is a 'for sure' massive speed boost
+2011-12-03T00:57:41  <codetiger> :(
+2011-12-03T00:57:54  <thestinger> your code will run 5x faster and your data structures will use less memory
+2011-12-03T00:58:11  <thestinger> and ctypes in pypy is optimized with the JIT
+2011-12-03T00:58:23  <antimatroid> unorder_set is c++11?
+2011-12-03T00:58:29  <thestinger> antimatroid: yeah
+2011-12-03T00:58:33  <thestinger> also in tr1 I think
+2011-12-03T00:58:37  <thestinger> as tr1/unordered_set
+2011-12-03T00:58:40  <thestinger> just use C++11 :P
+2011-12-03T00:58:43  <antimatroid> that's cool, just not on any of the reference sites :P
+2011-12-03T00:58:47  <thestinger> yeah it is
+2011-12-03T00:58:53  <thestinger> http://en.cppreference.com/w/cpp
+2011-12-03T00:58:56  <thestinger> best reference site
+2011-12-03T00:59:54  <thestinger> cplusplus.com is really out of date
+2011-12-03T01:00:15  <thestinger> doesn't even have the C++03 and tr1 stuff
+2011-12-03T01:00:39  <antimatroid> wtf google "Showing results for unordered set C++
+2011-12-03T01:00:39  <antimatroid> Search instead for unordered_set C++"
+2011-12-03T01:00:57  <antimatroid> oh
+2011-12-03T01:00:59  <antimatroid> nevermind
+2011-12-03T01:01:10  <antimatroid> it's less obvious when it's all underlined
+2011-12-03T01:01:47  <thestinger> you have to specialize std::hash for your own types, and then you can use them as keys
+2011-12-03T01:02:16  *** codetiger <codetiger!~codetiger@122.164.130.200> has quit IRC (Remote host closed the connection)
+2011-12-03T01:02:50  <antimatroid> "For a small number of elements, lookups in a set might be faster than lookups in anunordered_set."
+2011-12-03T01:03:09  <thestinger> depends on the hashing algorithm
+2011-12-03T01:03:24  <antimatroid> i don't get what you mean with all the hash and look up stuff?
+2011-12-03T01:03:38  <a1k0n> for a really small number of elements, a vector you do an O(N) search on is much faster than either of them
+2011-12-03T01:04:17  <thestinger> antimatroid: they're hash tables, so they hash the key and store the value with that hash (and handle collisions for you)
+2011-12-03T01:04:51  <thestinger> for a Location, you can just use 'key.row * cols + key.col' as the hashing algorithm instead of a proper one for pairs of ints if you don't mind evil globals
+2011-12-03T01:05:21  <thestinger> antimatroid: http://pastie.org/2958456 that's the syntax for doing it, took me a while to figure it out
+2011-12-03T01:06:01  <thestinger> there are no collisions, so lookups are always O(1) and fast
+2011-12-03T01:06:12  * antimatroid is confused, but i don't really even understand hash tables aha :P
+2011-12-03T01:06:19  <antimatroid> i'll play around for a bit and see if i can work it out
+2011-12-03T01:06:34  <thestinger> just use the code from my paste and mess around with it
+2011-12-03T01:06:56  <thestinger> needs to be after Location is defined and before you start using it as a key in the containers
+2011-12-03T01:07:17  <thestinger> and it relies on that evil state global :)
+2011-12-03T01:07:20  <antimatroid> what's it actually for? I don't even get that? like you have an unordered_set<Location> set, then?
+2011-12-03T01:07:24  <thestinger> yeah
+2011-12-03T01:07:29  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T01:07:30  <thestinger> you have unordered_set<Location>
+2011-12-03T01:07:33  <thestinger> so
+2011-12-03T01:07:40  <thestinger> s.insert(loc)
+2011-12-03T01:07:48  <thestinger> s.find(loc) == s.end() to test if it's in there
+2011-12-03T01:07:55  <thestinger> it does an O(1) lookup to find it
+2011-12-03T01:08:50  <thestinger> for orders I use std::unordered_map<Location, Direction>
+2011-12-03T01:09:11  <thestinger> so I can do 'orders[ant] = direction', etc.
+2011-12-03T01:10:35  <thestinger> set/map have O(log n) search time
+2011-12-03T01:10:53  <thestinger> this is always O(1)
+2011-12-03T01:11:02  <antimatroid> yeah, i will use these for my ants/hill sets
+2011-12-03T01:11:03  <thestinger> depends on the hashing algorithm though
+2011-12-03T01:11:10  <antimatroid> i might stick to vectors for neighbour locations
+2011-12-03T01:11:17  <antimatroid> i only iterate through those anyway
+2011-12-03T01:11:19  <thestinger> if your hashing algorithm always returns 0, then you have O(n) lookup since they all collide
+2011-12-03T01:11:42  <antimatroid> what about < for ordering locations?
+2011-12-03T01:11:56  <antimatroid> wouldn't you want to return 0 when things are "equally ordered"?
+2011-12-03T01:12:04  <antimatroid> since < implies irreflexivity?
+2011-12-03T01:12:19  <thestinger> well, you only need operator== overloaded for unordered_set and unordered_map
+2011-12-03T01:12:21  <thestinger> there's no ordering
+2011-12-03T01:12:31  <thestinger> your hash algorithm hashes 1 Location into size_t
+2011-12-03T01:12:37  <BenJackson> 22:07 < thestinger> s.find(loc) == s.end() to test if it's in there
+2011-12-03T01:12:40  <BenJackson> s.count(loc)
+2011-12-03T01:13:02  <thestinger> oh, true :)
+2011-12-03T01:13:14  <antimatroid> i wish it had s.elem(loc)
+2011-12-03T01:13:24  <thestinger> it does, BenJackson said how to do it :)
+2011-12-03T01:13:26  <antimatroid> it could just have both to keep sets consistent with other things
+2011-12-03T01:13:33  <thestinger> it will always be 1 and 0 for a regular set
+2011-12-03T01:13:33  <antimatroid> i meant the naming
+2011-12-03T01:13:35  <thestinger> ah
+2011-12-03T01:13:44  <thestinger> 1 or 0*
+2011-12-03T01:13:57  <antimatroid> yeah i currently use s.count(loc) for ordered sets
+2011-12-03T01:14:49  <thestinger> basically if two things have the same hash, it's a collision (and the container handles them for you)
+2011-12-03T01:15:01  <thestinger> if every single Location has 0 as the hash, it's an O(n) container (basically a linked list)
+2011-12-03T01:15:11  <thestinger> but since you can do a perfect hash, it's _always_ O(1)
+2011-12-03T01:15:38  <thestinger> you can make your own hash table with an array
+2011-12-03T01:15:49  <thestinger> but that's a huge waste of memory :)
+2011-12-03T01:17:19  <thestinger> s.insert(loc) is like vec[loc.row * cols + col] = true, with a bit of overhead
+2011-12-03T01:17:52  <thestinger> [loc.row * cols + loc.col] *
+2011-12-03T01:18:14  <thestinger> anyway, easier to just use the standard lib container and only implement it as an array if speed is actually a problem
+2011-12-03T01:20:56  <BenJackson> yeah I found set<Location> performance was only enh if it gets big, but it is so much faster to develop an idea that way
+2011-12-03T01:21:06  <thestinger> set or unordered_set?
+2011-12-03T01:21:10  <BenJackson> set
+2011-12-03T01:21:12  <thestinger> ah
+2011-12-03T01:21:22  <BenJackson> I'm benchmarking now, I'll try unordered_set
+2011-12-03T01:21:25  <thestinger> using unordered_set with a perfect hash like this is very fast
+2011-12-03T01:21:26  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T01:21:50  <thestinger> and all lookups will take the same amount of time, consistency is always nice
+2011-12-03T01:22:21  <thestinger> I bet it's much faster to iterate over a vector though
+2011-12-03T01:22:58  <thestinger> but I'm not really iterating over this stuff, just checking 1 key
+2011-12-03T01:23:00  <BenJackson> aichallenge matchmaker gave me an easy mode game
+2011-12-03T01:27:26  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has quit IRC (Quit: Leaving.)
+2011-12-03T01:28:52  <thestinger> my git repo is now 836KB locally, and 6.1MB for the same thing on bitbucket o_o
+2011-12-03T01:29:02  <BenJackson> http://gcc.gnu.org/onlinedocs/gcc/Function-Specific-Option-Pragmas.html#Function-Specific-Option-Pragmas
+2011-12-03T01:29:05  <BenJackson> I didn't know about that
+2011-12-03T01:29:31  <thestinger> oh, nice
+2011-12-03T01:29:45  <thestinger> I knew about being able to disable/enable warnings but not the optimization part :D
+2011-12-03T01:30:46  *** ztfw <ztfw!~ztfw@219.140.10.93.rev.sfr.net> has joined #aichallenge
+2011-12-03T01:30:55  <BenJackson> could be useful in this specific environment
+2011-12-03T01:31:30  <thestinger> I think it only works with the -f switches though
+2011-12-03T01:32:38  <thestinger> http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html the --param stuff at the bottom of this page is really useful
+2011-12-03T01:34:52  <thestinger> link-time optimization and PGO are way nicer than trying to play around with that crap though
+2011-12-03T01:35:44  <thestinger> since -flto isn't used (it might only be in gcc 4.6+ anyway), I've just been doing 1 big .cpp file with generic stuff in headers
+2011-12-03T01:35:55  <thestinger> I like it this way better anyway :)
+2011-12-03T01:35:59  <BenJackson> heh
+2011-12-03T01:36:16  <BenJackson> I just moved stuff from the starter to headers that should have been there
+2011-12-03T01:36:26  <thestinger> without -flto, gcc can't inline a function from a .cc file into another
+2011-12-03T01:36:32  <thestinger> or do cross-file optimization basically
+2011-12-03T01:36:34  <BenJackson> right
+2011-12-03T01:36:43  <BenJackson> but I don't have any cases where that really matters
+2011-12-03T01:36:47  <thestinger> with -flto, object files are pretty pointless :)
+2011-12-03T01:37:02  <thestinger> I think the memory use increases a ton since it pretty much has to include everything in the .o
+2011-12-03T01:37:32  <thestinger> might as well just compile everything in one go 'gcc -O3 -flto -o whatever *.cc'
+2011-12-03T01:38:35  <thestinger> and I could use -fwhole-program :)
+2011-12-03T01:39:04  <antimatroid> thestinger: hmmm, i take it you mean state needs to be global?
+2011-12-03T01:39:09  <BenJackson> most of my key loops are either self contained (ideal) or are templates anyway
+2011-12-03T01:39:16  <thestinger> antimatroid: yeah, or at least rows/cols
+2011-12-03T01:39:22  <antimatroid> how do you do that?
+2011-12-03T01:39:26  <antimatroid> just define it as global?
+2011-12-03T01:39:33  <BenJackson> I wonder if I should do that
+2011-12-03T01:39:37  <BenJackson> I tried to play it "nice"
+2011-12-03T01:40:04  <thestinger> antimatroid: well, if you just use it in one file just stick it as 'static State state;' outside of function/class scope
+2011-12-03T01:40:28  <antimatroid> i think i see
+2011-12-03T01:40:33  <thestinger> BenJackson: yeah, my binary is so much smaller with it all in one file
+2011-12-03T01:40:41  <thestinger> since I can make all the functions 'static'
+2011-12-03T01:41:10  <thestinger> it's just 1500 lines
+2011-12-03T01:41:16  <thestinger> yay lambdas :)
+2011-12-03T01:41:35  <antimatroid> lambdardise all the things
+2011-12-03T01:42:01  <BenJackson> well, shaved 12% off execution time
+2011-12-03T01:42:04  <BenJackson> not bad
+2011-12-03T01:42:12  <thestinger> putting it all in one file?
+2011-12-03T01:42:15  <thestinger> or unordered_set
+2011-12-03T01:42:19  <BenJackson> oh, no, other stuff
+2011-12-03T01:42:21  <thestinger> oh xD
+2011-12-03T01:42:22  <BenJackson> didn't get to unordered
+2011-12-03T01:42:28  <BenJackson> lemme try one file
+2011-12-03T01:42:38  <thestinger> and make sure to make all functions static
+2011-12-03T01:42:45  <thestinger> or gcc might not try to inline at all
+2011-12-03T01:42:53  <BenJackson> it will still inline
+2011-12-03T01:42:58  <BenJackson> it will just emit the non-inlined versions
+2011-12-03T01:43:01  <thestinger> yeah
+2011-12-03T01:43:05  <thestinger> but then it thinks code size will grow
+2011-12-03T01:43:07  <thestinger> so it won't inline :)
+2011-12-03T01:43:25  <thestinger> inlining is super conservative by default
+2011-12-03T01:43:50  <thestinger> you need to tweak those mysterious --param settings to change that
+2011-12-03T01:44:16  * BenJackson discovers one file missing an include guard :)
+2011-12-03T01:44:30  <BenJackson> you can use __attribute__((__always_inline__))
+2011-12-03T01:44:38  <thestinger> ah
+2011-12-03T01:44:43  <BenJackson> I have used that extensively in ARM where I knew exactly what I wanted
+2011-12-03T01:44:45  <BenJackson> also no_inline
+2011-12-03T01:45:03  <BenJackson> wow that compile was slow... but I'm used to parallel make
+2011-12-03T01:45:03  <janzert> pguillory got taken down by Memetix http://aichallenge.org/visualizer.php?game=155797
+2011-12-03T01:45:53  *** Antimony <Antimony!~chatzilla@lawn-143-215-62-62.lawn.gatech.edu> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 8.0/20111104165243])
+2011-12-03T01:46:20  <thestinger> BenJackson: adding '-s' speeds it up
+2011-12-03T01:46:22  <thestinger> a bit :)
+2011-12-03T01:46:25  <BenJackson> that hill cap at 275 always makes me think of a friend's expression for cutting in late in traffic:  "maximum chiseling"
+2011-12-03T01:46:33  <thestinger> hm, maybe it doesn't
+2011-12-03T01:46:40  <BenJackson> 20.57s vs 20.66s
+2011-12-03T01:47:04  <thestinger> did you make all the functions static?
+2011-12-03T01:47:08  <thestinger> I get a huge boost
+2011-12-03T01:47:23  <BenJackson> making everythign static isn't easy!
+2011-12-03T01:47:35  <BenJackson> wait there is only one global function
+2011-12-03T01:47:39  <BenJackson> what do you want to be static?
+2011-12-03T01:48:14  <bhasker> what is the compiler available on the official servers?
+2011-12-03T01:48:21  <bhasker> for c++ i.e
+2011-12-03T01:48:25  <bhasker> gcc which version?
+2011-12-03T01:48:44  <thestinger> BenJackson: wrap everything in an anon namespace then
+2011-12-03T01:48:55  <thestinger> namespace { } around everything that's not void main() { }
+2011-12-03T01:49:50  <antimatroid> thestinger: i'm getting "hash is not a template" :\
+2011-12-03T01:50:06  <thestinger> did you copy my code exactly?
+2011-12-03T01:50:10  <antimatroid> yes
+2011-12-03T01:50:35  <thestinger> oh
+2011-12-03T01:50:42  <thestinger> you're doing 'using namespace std;'
+2011-12-03T01:50:45  <thestinger> maybe that breaks it
+2011-12-03T01:51:01  <antimatroid> not in the actual State.h file
+2011-12-03T01:51:04  <antimatroid> i do in state.cc
+2011-12-03T01:51:36  <BenJackson> huh, tr1/unordered_set does not work
+2011-12-03T01:52:06  <BenJackson> ohh it's the hash
+2011-12-03T01:54:16  <thestinger> antimatroid: hmm
+2011-12-03T01:54:34  <thestinger> are you sure you can't do 'cout << "something" << endl;' etc. in the file you're in?
+2011-12-03T01:55:28  <thestinger> http://pastie.org/private/0a0lcaa8bm9lahqdca3dg I just do it like that and it works
+2011-12-03T02:00:39  <antimatroid> hmmm
+2011-12-03T02:00:47  <antimatroid> well i can't cout from State.h
+2011-12-03T02:02:01  <thestinger> do this in MyBot.cpp
+2011-12-03T02:02:08  <thestinger> the hash specialization thing
+2011-12-03T02:02:22  <thestinger> .h files just get copypasted by the C preprocessor
+2011-12-03T02:03:30  <thestinger> I just like avoiding the multiple .o file thing because it leads to so much BS, but you have to do it once a project gets big
+2011-12-03T02:03:36  <thestinger> luckily I have no big projects :)
+2011-12-03T02:03:42  <BenJackson> I converted one thing to unordered_set and it was a teensy bit faster
+2011-12-03T02:03:53  <BenJackson> so I converted all sets to unordered_set and it's a teensy bit slower
+2011-12-03T02:03:55  <thestinger> BenJackson: try setting max_load_factor
+2011-12-03T02:03:59  <thestinger> to tell it there won't be collisions
+2011-12-03T02:04:16  <BenJackson> well really at that point I might as well use my grid<> class
+2011-12-03T02:04:41  <BenJackson> unordered_set is just a map of a hash onto a flat array (with the perfect hash)
+2011-12-03T02:04:47  <BenJackson> so it's identical to my grid, really
+2011-12-03T02:04:51  <antimatroid> okay i think i'm good :D
+2011-12-03T02:04:52  <antimatroid> thanks
+2011-12-03T02:05:06  <thestinger> BenJackson: yeah
+2011-12-03T02:05:12  <thestinger> unordered_map might save memory usage though
+2011-12-03T02:05:18  <BenJackson> thestinger: I may also be losing out because I iterate over my sets about as often as I search them
+2011-12-03T02:05:22  <thestinger> ah
+2011-12-03T02:05:24  <BenJackson> probably I should not have converted all of my sets over
+2011-12-03T02:05:28  <thestinger> I never iterate over them really
+2011-12-03T02:05:37  <BenJackson> I do for thing like sets of enemy hills
+2011-12-03T02:05:40  <thestinger> ah
+2011-12-03T02:05:52  <antimatroid> yeah i don't really ping my sets to see what's in them
+2011-12-03T02:05:54  <thestinger> I use a list for unseen targets, enemy hills etc.
+2011-12-03T02:06:01  <thestinger> I just check if a tile is a hile via grid
+2011-12-03T02:06:07  <thestinger> hill*
+2011-12-03T02:06:10  <BenJackson> I actually have a priority queue for moves
+2011-12-03T02:06:18  <BenJackson> dating back to when I relied on that to help avoid collisions
+2011-12-03T02:06:50  <thestinger> like grid[row][col].hill == 0, grid[row][col].ant > 0, etc.
+2011-12-03T02:06:56  *** amstan_ <amstan_!~amstan@69-196-130-230.dsl.teksavvy.com> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T02:07:05  <thestinger> the lists are just for making distance maps out of targets
+2011-12-03T02:07:36  <BenJackson> you didn't start with starter?
+2011-12-03T02:07:40  <thestinger> I did
+2011-12-03T02:07:42  <thestinger> I renamed everything
+2011-12-03T02:07:44  <BenJackson> ok, someone else
+2011-12-03T02:08:00  <BenJackson> anyway, I didn't mess with the starter's notion of 'hill' only working for immediately visible squares
+2011-12-03T02:08:21  <thestinger> ah
+2011-12-03T02:08:29  <thestinger> I did :)
+2011-12-03T02:08:55  <thestinger> I have an enemy_hills list which is accurate based on known info
+2011-12-03T02:09:00  <thestinger> and then visible_enemy_hills
+2011-12-03T02:09:15  <thestinger> and hills on the grid are based on the same thing as enemy_hills
+2011-12-03T02:09:29  <BenJackson> same but vice-versa
+2011-12-03T02:09:47  <BenJackson> since I made a map of distance to all hills I can test that(loc)==0 for enemy hills
+2011-12-03T02:10:09  <BenJackson> it's kind of a mess really what things I added to Square and what went in new grids
+2011-12-03T02:10:16  <thestinger> yeah I make a distance map for my hills and one for enemy hills
+2011-12-03T02:10:23  <thestinger> I just realized the grid info is redundant
+2011-12-03T02:10:35  <thestinger> oh, well the grid does say which player has the hill
+2011-12-03T02:10:37  <thestinger> so it's not
+2011-12-03T02:11:59  <BenJackson> I never got around to caring who is who
+2011-12-03T02:12:11  <BenJackson> my ants live in the moment
+2011-12-03T02:12:55  <antimatroid> well unordered set is faster across the board as far as i can tell
+2011-12-03T02:13:07  <thestinger> definitely faster than set if you aren't using order
+2011-12-03T02:13:07  <Accoun> if bot dead cycled phyton client crashed
+2011-12-03T02:13:25  <Accoun> stuped program
+2011-12-03T02:13:27  <thestinger> the thing saying it might be slower than set assumes you don't have a perfect hash :)
+2011-12-03T02:13:34  <antimatroid> Accoun: then write a better one :P
+2011-12-03T02:13:58  <thestinger> I guess ints have a perfect hash by default
+2011-12-03T02:14:24  <thestinger> but you couldn't do that for strings, etc.
+2011-12-03T02:14:24  <BenJackson> again slower if you iterate
+2011-12-03T02:14:25  <Accoun> please let pithon and all it addicts and autor all die
+2011-12-03T02:14:31  <antimatroid> i must say, the code to get that hash function going is rather rank!
+2011-12-03T02:14:40  <thestinger> antimatroid: yep.
+2011-12-03T02:14:48  <thestinger> it's a functor (struct with () overloaded)
+2011-12-03T02:15:11  <antimatroid> why does it hate std::hash?
+2011-12-03T02:15:32  <thestinger> hmm?
+2011-12-03T02:15:42  <thestinger> std::hash just has hashes for the built-ins
+2011-12-03T02:15:51  <thestinger> I don't think it can even hash a std::pair or std::tuple
+2011-12-03T02:15:52  <antimatroid> so where is this hash located?
+2011-12-03T02:16:10  <antimatroid> like if i took out the namespace std{} part
+2011-12-03T02:16:20  <antimatroid> you'd normally have like std::set, but std::hash it hates
+2011-12-03T02:16:46  <thestinger> well, you need to go into the std namespace and add an overload basically
+2011-12-03T02:16:49  <thestinger> well
+2011-12-03T02:16:53  <thestinger> a template specialization*
+2011-12-03T02:17:01  <antimatroid> yeah, even grosser :P
+2011-12-03T02:17:05  <thestinger> it feels like a hack, but I don't think there's another way to do it
+2011-12-03T02:17:06  <BenJackson> you just use unordered_hash<Location, LocationHash>
+2011-12-03T02:17:12  <thestinger> oh
+2011-12-03T02:17:15  <antimatroid> lol
+2011-12-03T02:17:20  <BenJackson> it's Wrong to put a specialization of std::hash into std :)
+2011-12-03T02:17:42  <thestinger> BenJackson: global variables are Wrong too :P
+2011-12-03T02:18:01  <thestinger> and static local variables are ofc evil according to C++
+2011-12-03T02:19:00  <antimatroid> BenJackson: can you give more explanation for someone who sucks with this stuff? :P
+2011-12-03T02:19:10  <antimatroid> today is my education day for programming it seems
+2011-12-03T02:19:21  <thestinger> antimatroid: well, you can instead make the hash functor in your local namespace
+2011-12-03T02:19:28  <thestinger> and pass it as a template parameter
+2011-12-03T02:19:42  <antimatroid> oh yeah sorry
+2011-12-03T02:19:55  <antimatroid> i can just tell it to use greater<Location>
+2011-12-03T02:20:03  <antimatroid> right?
+2011-12-03T02:20:12  <antimatroid> cause i have > defined
+2011-12-03T02:20:16  <thestinger> no
+2011-12-03T02:20:20  <BenJackson> well that's not a hash
+2011-12-03T02:20:28  <thestinger> unordered_map and unordered_set don't need operator> operator< etc.
+2011-12-03T02:20:32  <thestinger> just a hash functor and operator==
+2011-12-03T02:20:34  <BenJackson> struct LocationHash {
+2011-12-03T02:20:34  <BenJackson>     inline size_t operator () (const Location &loc) const
+2011-12-03T02:20:35  <BenJackson>     {
+2011-12-03T02:20:35  <BenJackson>         return loc.col + loc.row * 256;
+2011-12-03T02:20:35  <BenJackson>     }
+2011-12-03T02:20:37  <BenJackson> };
+2011-12-03T02:20:39  <antimatroid> err yeah sorry
+2011-12-03T02:20:40  <BenJackson> typedef std::tr1::unordered_set<Location, LocationHash> LocationSet;
+2011-12-03T02:20:47  <antimatroid> i'm having a bad day :P
+2011-12-03T02:20:51  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-03T02:21:03  <BenJackson> unordered_set has several template args, they just all have defaults but the first
+2011-12-03T02:21:04  <thestinger> BenJackson: typedefs are evil too according to the C++ committee
+2011-12-03T02:21:07  <thestinger> they added a replacement
+2011-12-03T02:21:10  <thestinger> haven't tried it yet :)
+2011-12-03T02:21:11  <BenJackson> the default for the second is std::hash<T>
+2011-12-03T02:21:16  <BenJackson> which is how thestinger was "cheating"
+2011-12-03T02:21:17  *** rmmh <rmmh!~none@host-80-87.flgaroy.clients.pavlovmedia.com> has joined #aichallenge
+2011-12-03T02:21:55  <thestinger> well, I'm also "cheating" because I use a global var to get a quick hash function
+2011-12-03T02:22:33  <thestinger> yours will have collisions for rows > 256 :)
+2011-12-03T02:22:34  <antimatroid> still need global :P
+2011-12-03T02:22:46  <BenJackson> contest is limited to 200x200
+2011-12-03T02:22:51  <thestinger> I know
+2011-12-03T02:23:02  <thestinger> I like that my bot would work on 500x500 though
+2011-12-03T02:23:14  <antimatroid> what the hell?
+2011-12-03T02:23:17  <thestinger> assuming the limit is 200x200 feels dirtier than a global :P
+2011-12-03T02:23:23  <antimatroid> are you not getting closest hill info each turn?
+2011-12-03T02:23:25  <BenJackson> mine mostly would but some of the algorithms were selected based on the specific "n"
+2011-12-03T02:23:30  <BenJackson> like attack radius, view radius, etc
+2011-12-03T02:23:42  <BenJackson> not that they wouldn't work for different n, but they might not scale
+2011-12-03T02:23:51  <antimatroid> i am going to incrementally calculate that info as i get vision and just recalulate it on the turn that i discover hill(s) have been razed
+2011-12-03T02:24:13  <BenJackson> you don't see your own hills in any special way
+2011-12-03T02:24:18  <BenJackson> you have to have an ant nearby
+2011-12-03T02:24:23  <thestinger> yeah, you have to have vision to know they died
+2011-12-03T02:24:32  <thestinger> and usually all your ants near the hill will be killed
+2011-12-03T02:24:37  <thestinger> unless your defenders are cowards
+2011-12-03T02:24:41  <antimatroid> like i said, when i know the hill has been razed i'll recalculate all shortest info
+2011-12-03T02:24:49  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has joined #aichallenge
+2011-12-03T02:24:50  <antimatroid> when i see an enemy hill i can just expand outwards and update
+2011-12-03T02:24:52  <BenJackson> you could do cleverer things
+2011-12-03T02:24:55  <thestinger> yeah
+2011-12-03T02:24:58  <BenJackson> like notice you are not spawning there when you pick up food
+2011-12-03T02:24:58  <thestinger> like based on ant spawning
+2011-12-03T02:25:01  <thestinger> yep.
+2011-12-03T02:25:09  <thestinger> I thought about that
+2011-12-03T02:25:10  <antimatroid> do you guys track where enemies might be?
+2011-12-03T02:25:13  <BenJackson> I have tons of "clever" ideas
+2011-12-03T02:25:17  <rmmh> uploaded to the contest server for the first time... timeout XD
+2011-12-03T02:25:21  <BenJackson> but I need to make my bot better in non-clever ways
+2011-12-03T02:25:24  <thestinger> BenJackson: same with me, but I'm too lazy to code them :(
+2011-12-03T02:25:31  <thestinger> and it's too hard to test them
+2011-12-03T02:25:34  <thestinger> too much noise
+2011-12-03T02:25:42  <BenJackson> I'm probably going to start a thread on the forum just when the contest closes
+2011-12-03T02:25:45  <BenJackson> about things you can figure out
+2011-12-03T02:25:45  <thestinger> I have to run bots on tcp for days - and testing against my own bots is pretty pointless
+2011-12-03T02:25:52  <BenJackson> from the easy ones like remembering hill locs
+2011-12-03T02:25:54  <antimatroid> yeah, i have a couple of tricks i like
+2011-12-03T02:25:59  <BenJackson> to complex ones like symmetry, ants in hill, etc
+2011-12-03T02:26:13  <thestinger> I liked bmh's trick for enemy hills
+2011-12-03T02:26:19  <BenJackson> which one?
+2011-12-03T02:26:19  <antimatroid> which was?
+2011-12-03T02:26:22  <antimatroid> number of moves?
+2011-12-03T02:26:25  <antimatroid> in n turns?
+2011-12-03T02:26:30  <antimatroid> it was cool, but i'm not using it
+2011-12-03T02:26:34  <BenJackson> the number of moves thing is clever, but there is a much easier way
+2011-12-03T02:26:47  <BenJackson> which I'm not even using because it made my bot worse but I'm still not telling :)
+2011-12-03T02:26:54  <thestinger> if you see an enemy ant their hill must at most # of turns away
+2011-12-03T02:27:11  <BenJackson> I should post it in the final days so people will add it and see what I saw: my bot attacked way before it was ready
+2011-12-03T02:27:11  <thestinger> yay for crappy grammar in that sentence
+2011-12-03T02:27:29  <thestinger> BenJackson: oh, that actually doesn't help my bot at all
+2011-12-03T02:27:38  <thestinger> I can hardcode all enemy hill locations for a map
+2011-12-03T02:27:43  <thestinger> so my bot will go to them right away
+2011-12-03T02:27:50  <thestinger> does not help at all except on those crappy random walks
+2011-12-03T02:27:54  <antimatroid> is there any performance loss from using a global state?
+2011-12-03T02:28:06  <BenJackson> were you here when I pasted my trick where I have the game engine reveal my bot's hills to all other ants?
+2011-12-03T02:28:07  <antimatroid> it might actually make my life easier rather than passing references to it all over the place
+2011-12-03T02:28:10  <BenJackson> for testing
+2011-12-03T02:28:30  <BenJackson> antimatroid: probably gain only
+2011-12-03T02:28:40  <antimatroid> done
+2011-12-03T02:28:40  <BenJackson> making it global is just not Good Programming Practice
+2011-12-03T02:28:50  <BenJackson> what if you wanted to run multiple ants in one process?!
+2011-12-03T02:28:52  <antimatroid> screw programming practice :p
+2011-12-03T02:29:13  <antimatroid> i can run multiple copies of it without it confusing them though right?
+2011-12-03T02:29:28  <antimatroid> i don't see why not :\
+2011-12-03T02:29:47  <antimatroid> i'm not very knowledgeable on processes either :P
+2011-12-03T02:29:51  <antimatroid> i stick to maths most of the time
+2011-12-03T02:29:56  <thestinger> globals are probably faster than passing around references
+2011-12-03T02:30:02  <antimatroid> yeah i got that :P
+2011-12-03T02:30:03  <thestinger> but accessing a local var will be faster than a global
+2011-12-03T02:30:12  <thestinger> so passing by value should sometimes be a lot faster
+2011-12-03T02:30:14  <thestinger> due to cache
+2011-12-03T02:30:23  <thestinger> State is huge though
+2011-12-03T02:30:26  <thestinger> can't pass by value
+2011-12-03T02:30:36  <antimatroid> yeah i realised that the other day :P
+2011-12-03T02:30:49  <thestinger> C++ has move semantics and stuff now anyway
+2011-12-03T02:30:58  <antimatroid> i was also starting my timer in the wrong place too
+2011-12-03T02:31:01  <thestinger> so if you pass by value it will probably not copy (unless you modify it)
+2011-12-03T02:31:04  <antimatroid> i now start it when i read "turn"
+2011-12-03T02:31:09  <antimatroid> rather than when i read "go"
+2011-12-03T02:31:19  <thestinger> like you can have a function return a std::vector, and it will move it not copy it
+2011-12-03T02:31:31  <thestinger> assuming it's a local variable
+2011-12-03T02:31:34  <thestinger> and you return it
+2011-12-03T02:31:52  <antimatroid> wait what?
+2011-12-03T02:32:04  <antimatroid> normally if i want to do that i just pass a reference into a vector
+2011-12-03T02:32:05  <thestinger> https://en.wikipedia.org/wiki/Return_value_optimization
+2011-12-03T02:32:12  <thestinger> well
+2011-12-03T02:32:35  <thestinger> you can have a function make a local std::vector and then return it
+2011-12-03T02:32:58  <thestinger> and it shouldn't copy it
+2011-12-03T02:33:02  <thestinger> it should move it
+2011-12-03T02:33:29  <thestinger> I just don't worry about performance at all
+2011-12-03T02:33:35  <thestinger> I use all the fancy standard lib stuff
+2011-12-03T02:33:41  <thestinger> then I'll optimize the stuff that's actually slow
+2011-12-03T02:33:46  <antimatroid> i usually don't
+2011-12-03T02:33:54  <antimatroid> but now i'm trying to speed those things up :P
+2011-12-03T02:34:03  <antimatroid> because they're too slow
+2011-12-03T02:34:10  <thestinger> yeah
+2011-12-03T02:34:13  <thestinger> always benchmark though
+2011-12-03T02:34:36  <BenJackson> yeah
+2011-12-03T02:34:43  <BenJackson> mine says my innermost combat eval loop is the problem
+2011-12-03T02:34:44  <BenJackson> ...duh!
+2011-12-03T02:35:53  <thestinger> wc -l on the assembly output is my 'feel good' benchmark after refactoring to clean up code :P
+2011-12-03T02:36:25  <thestinger> it's nice seeing that I'm still smarter than a compiler xD
+2011-12-03T02:36:56  <thestinger> sometimes...
+2011-12-03T02:37:46  <thestinger> const hasn't changed the code gcc generates at all, but I like using it everywhere cause it's haskelly
+2011-12-03T02:37:54  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-03T02:37:59  <BenJackson> try pure
+2011-12-03T02:38:04  <BenJackson> helped me in a few places
+2011-12-03T02:38:11  <thestinger> yeah, I should try the function attributes :)
+2011-12-03T02:38:58  <thestinger> I think you could just give gcc a ton of memory in the --param stuff and it would do a better job
+2011-12-03T02:40:20  <thestinger> lambdas have sped up some of my code quite a bit, I guess due to cache reasons
+2011-12-03T02:40:34  <antimatroid> if I have "int index(const Location &loc)", how would i define the unordered_set<Location, ?>?
+2011-12-03T02:41:49  <thestinger> you still need a functor
+2011-12-03T02:42:13  <thestinger> just delete the namespace std { } around the hash functor
+2011-12-03T02:42:27  <thestinger> and call it HashLocation or something
+2011-12-03T02:43:32  <thestinger> I sort possible moves for an ant by how good they are, so I use a functor and pass it to std::sort like that
+2011-12-03T02:44:04  <thestinger> silly, but it works
+2011-12-03T02:45:32  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-12-03T02:45:37  <thestinger> http://ants.fluxid.pl/replay.10443 tcp is getting intense
+2011-12-03T02:45:52  <thestinger> lots of bots do combat now
+2011-12-03T02:47:56  <BenJackson> yeah
+2011-12-03T02:48:09  <BenJackson> but wait until you get on aichallenge.org and play the 200 level bots that just suicide into you again
+2011-12-03T02:48:43  <antimatroid> shouldn't they be easy?
+2011-12-03T02:49:01  <thestinger> antimatroid: no
+2011-12-03T02:49:12  <antimatroid> sit there and let them die
+2011-12-03T02:49:16  <thestinger> my bot assumes the enemies are somewhat sane now
+2011-12-03T02:49:21  <antimatroid> move back until it's safe to do so
+2011-12-03T02:49:23  <thestinger> not unmoving or always offensive
+2011-12-03T02:49:38  <antimatroid> ah, i am not staying static unless it's safe to do so or i need to
+2011-12-03T02:49:40  <BenJackson> http://aichallenge.org/visualizer.php?game=152101&user=3473
+2011-12-03T02:49:43  <thestinger> yeah, so instead of letting them slam into me, my bot might retreat
+2011-12-03T02:49:58  <BenJackson> not to say I shouldn't have done better, but note how purple (cs_bot) sends every ant to my hill around turn 100
+2011-12-03T02:49:59  <thestinger> I've made retreating really unlikely for now
+2011-12-03T02:50:02  <thestinger> holding ground is important
+2011-12-03T02:50:21  <thestinger> and most top bots won't attack because they think I have 100 ants saved up beyond their view or something
+2011-12-03T02:50:25  <BenJackson> he actually loses his hill 20+ turns before taking mine
+2011-12-03T02:50:36  <BenJackson> thestinger: exactly
+2011-12-03T02:50:43  <BenJackson> good bots are cautious
+2011-12-03T02:50:50  <BenJackson> and you both end up building up forces
+2011-12-03T02:51:01  <antimatroid> this is very similar to how planet wars was
+2011-12-03T02:51:02  <BenJackson> bad bots might make game-losing decisions that also cost you the game
+2011-12-03T02:51:09  <antimatroid> you could count on top bots being more catious
+2011-12-03T02:51:25  <thestinger> yeah, making my bot retreat ruins it
+2011-12-03T02:51:32  <thestinger> so I haven't made it very likely at all for that to happen
+2011-12-03T02:52:00  <BenJackson> note that in the same game the fact that purple went all south left a big extra area for orange to take over
+2011-12-03T02:52:01  <thestinger> my second _precise branch also comes up with a better set of moves for the enemy - and I think it's worse than assuming they are bad
+2011-12-03T02:52:14  <thestinger> BenJackson: yeah, n-player games are really noisy
+2011-12-03T02:52:17  <thestinger> especially on open-ish maps
+2011-12-03T02:52:37  <thestinger> the 2-player games are nice, but on open maps it seems really luck based
+2011-12-03T02:53:02  <BenJackson> my combat actually finds the move that would kill the most enemy while losing the fewest ants
+2011-12-03T02:53:06  <thestinger> if a lot of games got played it would be fine
+2011-12-03T02:53:32  <BenJackson> unfortunately it's not really clear on trading off likely losses (due to likely enemy moves) vs likely wins
+2011-12-03T02:53:36  <thestinger> BenJackson: atm I just come up with an offensive move for myself and my opponent (optimized a bit) then do a 2x2 matrix with offensive/defensive
+2011-12-03T02:53:41  <thestinger> that's it.
+2011-12-03T02:53:45  <thestinger> it works somehow
+2011-12-03T02:53:53  <BenJackson> mine works okay
+2011-12-03T02:53:57  <thestinger> optimizing the set of moves is the tricky part :)
+2011-12-03T02:54:06  <antimatroid> thestinger: that's what i do :P
+2011-12-03T02:54:09  <BenJackson> you'll just see it suicide ants occasionally on the off chance of some unlikely move by the enemy
+2011-12-03T02:54:12  <antimatroid> and yes, it just works
+2011-12-03T02:54:17  <rmmh> huh
+2011-12-03T02:54:29  <BenJackson> I actually think mine is worse right nwo because I took out what I thought was a redundant/stale goal
+2011-12-03T02:54:38  <BenJackson> related to attacking ants near my hill vs defending against them
+2011-12-03T02:54:43  <thestinger> I'll probably switch to a method closer to BenJackson's bot once I get the eval function sped up
+2011-12-03T02:54:50  <BenJackson> now I've seen my ants depart my hill and "slide by" attackers
+2011-12-03T02:54:53  <thestinger> I'm just doing it this way for speed reasons
+2011-12-03T02:55:05  <BenJackson> where the whole formation will rotate until my ants can get by and go do something more interesting like attack
+2011-12-03T02:55:37  <thestinger> my ants will never really retreat when it would be a bad thing
+2011-12-03T02:55:58  <thestinger> they only retreat when something horrible is definitely going to happen if the enemy moves towards them
+2011-12-03T02:56:04  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-03T02:56:10  <thestinger> so my foragers get killed off easily
+2011-12-03T02:56:29  <thestinger> before I had combat I just made my foragers avoid the enemy
+2011-12-03T02:56:43  <thestinger> so this is both an improvement and a regression for foraging
+2011-12-03T02:56:45  <BenJackson> that's another area where mid-level bots are a problem
+2011-12-03T02:56:53  <BenJackson> if you do nothing to avoid enemies and play against top bots they will avoid your loners
+2011-12-03T02:56:57  <BenJackson> (unless they can kill them)
+2011-12-03T02:57:00  <BenJackson> but weaker bots will just run into them
+2011-12-03T02:57:02  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has joined #aichallenge
+2011-12-03T02:57:02  <BenJackson> if you don't avoid them
+2011-12-03T02:57:08  <BenJackson> if you DO then the weaker bots will "push you around"
+2011-12-03T02:57:16  <thestinger> yeah
+2011-12-03T02:57:41  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-03T02:58:04  <thestinger> I guess you could figure out how cautious each enemy is with combat
+2011-12-03T02:58:17  <thestinger> I'm sure someone will do that :P
+2011-12-03T02:58:43  <thestinger> probably going to require usage of dead ants to figure out what the hell happened
+2011-12-03T03:03:00  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T03:06:36  *** netantho <netantho!~netantho@elaphe.int-evry.fr> has quit IRC (Read error: Operation timed out)
+2011-12-03T03:09:11  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T03:09:20  <antimatroid> the different between using int and uint8_t is huge
+2011-12-03T03:09:26  <antimatroid> just for making the matrices
+2011-12-03T03:09:29  <rmmh> heh
+2011-12-03T03:09:37  <rmmh> so matrices are the solution to battle resolution?
+2011-12-03T03:09:50  <antimatroid> like for 493 200x200 matrices we're talking like 120ms vs 2ms
+2011-12-03T03:09:54  <thestinger> nice :)
+2011-12-03T03:10:13  <rmmh> what matrices are these
+2011-12-03T03:10:22  <antimatroid> just for storing path information etc.
+2011-12-03T03:10:40  <thestinger> antimatroid: those are just booleans though right?
+2011-12-03T03:10:42  <antimatroid> combat is all about game matrices/trees
+2011-12-03T03:10:48  <antimatroid> uint8_t?
+2011-12-03T03:10:54  <thestinger> yeah, what you're storing
+2011-12-03T03:11:00  <thestinger> cause you can't stick much in 8 bits
+2011-12-03T03:11:12  <thestinger> it will wrap at 255
+2011-12-03T03:11:15  <thestinger> back to 0
+2011-12-03T03:11:27  <antimatroid> characters
+2011-12-03T03:11:33  <antimatroid> true
+2011-12-03T03:11:52  <antimatroid> i don't need paths usually anyway
+2011-12-03T03:12:06  <thestinger> uint16_t is enough for almost everything in this
+2011-12-03T03:12:07  <antimatroid> ever actually
+2011-12-03T03:12:23  <thestinger> I'm just using 'int' and 'unsigned' everywhere because I don't want to benchmark everything
+2011-12-03T03:12:42  <antimatroid> you're back above 100ms with uint16_t
+2011-12-03T03:12:52  <nalaginrut> hi guys! I've written a starter_package for GNU/Guile user. And I tested just now, it works. Anyone interested in it?
+2011-12-03T03:13:27  <BenJackson> antimatroid: it's possible that it's a cache effect (you made your working set fit in the cache vs before it didn't)
+2011-12-03T03:13:36  <BenJackson> but it's also quite possible that you inadvertently changed the behavior of your bot
+2011-12-03T03:13:49  <antimatroid> there is no behaviour to change
+2011-12-03T03:14:08  <thestinger> BenJackson: I think he's just storing bools with this
+2011-12-03T03:14:13  <antimatroid> i stripped it yesterday, this is testing stuff in start up and the beginning of turn 0
+2011-12-03T03:14:33  <antimatroid> thestinger: uint8_t t = 'c'; cout << t << endl; gives 'c'
+2011-12-03T03:14:42  <thestinger> yeah
+2011-12-03T03:14:48  <thestinger> uint8_t is essentially 'char'
+2011-12-03T03:14:48  <antimatroid> that's not a bool?
+2011-12-03T03:14:59  <thestinger> same size as one :)
+2011-12-03T03:15:10  <rmmh> uint8_t is just a typedefed unsigned char on many systems
+2011-12-03T03:15:56  <antimatroid> wouldn't bools just be 1 bit?
+2011-12-03T03:16:22  * antimatroid needs to learn more
+2011-12-03T03:16:26  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-03T03:16:34  <thestinger> antimatroid: nope, bools are 8-bit
+2011-12-03T03:16:42  <antimatroid> that seems a waste?
+2011-12-03T03:16:52  <thestinger> the padding is there because addressing bytes is faster
+2011-12-03T03:16:53  <BenJackson> well, bool is 8 bit
+2011-12-03T03:16:55  <rmmh> bit shifting is usually more expensive than the extra bits of memory
+2011-12-03T03:16:57  <thestinger> pointers go to bytes
+2011-12-03T03:16:57  <BenJackson> vector<bool> is specialized
+2011-12-03T03:16:59  <BenJackson> and is 1 bit
+2011-12-03T03:17:04  <thestinger> so if you use bitfields, you need extra ops
+2011-12-03T03:17:15  <BenJackson> my code sped up quite a bit by changing that to vector<uint8_t>
+2011-12-03T03:17:21  <thestinger> yeah
+2011-12-03T03:17:31  <thestinger> vector<bool> isn't a container of bools
+2011-12-03T03:17:35  <BenJackson> shorthand is:  vector<bool> is not a vector of bool
+2011-12-03T03:17:41  <thestinger> it was a mistake to do it that way, and they want to change it to a proper bool vector
+2011-12-03T03:17:44  <BenJackson> it's a dynamic bitvector named vector<bool>
+2011-12-03T03:17:44  <thestinger> but it will take 10 years :)
+2011-12-03T03:18:03  <thestinger> they need to make a bitvector, so people who need the space-optimization can switch
+2011-12-03T03:18:07  <BenJackson> now while vector<bool> kind of sucks, bitset works pretty well, but obviously is not dynamic
+2011-12-03T03:18:09  <thestinger> then remove vector<bool> completely
+2011-12-03T03:18:15  <thestinger> then add it back later properly xD
+2011-12-03T03:18:30  <thestinger> by 2020 C++ will have a proper bool vector :)
+2011-12-03T03:18:37  <rmmh> agh
+2011-12-03T03:19:18  *** sparrowg_web <sparrowg_web!75ce0d0d@gateway/web/freenode/ip.117.206.13.13> has joined #aichallenge
+2011-12-03T03:21:48  <rmmh> so far I've had 3 compile errors in versions I've submitted :(
+2011-12-03T03:22:59  <antimatroid> damn!
+2011-12-03T03:23:17  <antimatroid> if('0') evaluates to true
+2011-12-03T03:23:28  <rmmh> in C? but of course!
+2011-12-03T03:23:41  <rmmh> if ('0' - '0') evaluates to false though ;)
+2011-12-03T03:24:49  <antimatroid> why the hell would that evaluate as true?
+2011-12-03T03:25:20  <rmmh> because '0' == 48
+2011-12-03T03:25:30  <rmmh> oh, yeah
+2011-12-03T03:25:51  <thestinger> antimatroid: 2 > 3 actually returns an int iirc
+2011-12-03T03:25:59  <rmmh> wait what language is this
+2011-12-03T03:26:02  <thestinger> since pre-ansi C and C89 don't have bool
+2011-12-03T03:26:09  <thestinger> C99 and C++ have bool, but I don't think they changed that
+2011-12-03T03:26:26  <thestinger> so while() and if() actually check for 0 or non-zero, there aren't really "boolean" values of things
+2011-12-03T03:26:29  <antimatroid> if i use bool i can't index by matrix[loc]
+2011-12-03T03:26:52  <thestinger> vector<bool> isn't a vector of bools
+2011-12-03T03:26:59  <antimatroid> exactly
+2011-12-03T03:27:25  <thestinger> yay for legacy choices being stuck in the language for ages
+2011-12-03T03:27:37  <thestinger> in C (even C99) 'c' is an int literal
+2011-12-03T03:27:37  <antimatroid> i want the speed of bool, uint8_t, be able to index as matrix[loc] and be able to call if(matrix[loc]), is that so much to ask?
+2011-12-03T03:27:38  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has joined #aichallenge
+2011-12-03T03:27:39  <thestinger> in C++ it's a char
+2011-12-03T03:27:55  <thestinger> you need (char)'c' in C for a char
+2011-12-03T03:28:01  <thestinger> not that it ever matters
+2011-12-03T03:28:16  <thestinger> like putchar outputs the lowest 8 bits of something
+2011-12-03T03:28:27  <antimatroid> ahhh
+2011-12-03T03:28:45  *** jstrong <jstrong!~jstrong@189.229.21.108> has joined #aichallenge
+2011-12-03T03:28:47  <antimatroid> but i can do matrix.taken(loc)
+2011-12-03T03:29:01  <thestinger> https://www.youtube.com/watch?v=GtQdIYUtAHg this stuff is neat
+2011-12-03T03:29:34  <thestinger> they're holding state in the int, because putchar only outputs the 'char' part of the int
+2011-12-03T03:29:39  *** roflmao <roflmao!~jstrong@189.229.21.108> has quit IRC (Read error: Operation timed out)
+2011-12-03T03:33:09  <rmmh> thestinger: woah, the 3rd iteration of that came out
+2011-12-03T03:33:51  <thestinger> you can just './program | aplay' with ALSA or './program > /dev/dsp' with OSS
+2011-12-03T03:37:47  *** jstrong <jstrong!~jstrong@189.229.21.108> has quit IRC (Quit: Leaving.)
+2011-12-03T03:38:31  <thestinger> my source code sounds kind of interesting
+2011-12-03T03:38:52  <thestinger> 'yes $(cat *.cpp *.hpp) | aplay'
+2011-12-03T03:39:27  <thestinger> python source code sounds prettier :(
+2011-12-03T03:42:12  *** Cyndre <Cyndre!~Cyndre@DOCSIS-182-133.cable-lynx.net> has joined #aichallenge
+2011-12-03T03:43:56  <pairofdice> It IS prettier
+2011-12-03T03:45:17  <thestinger> python is just higher level C++ with less syntax noise
+2011-12-03T03:45:22  <thestinger> it _looks_ prettier
+2011-12-03T03:45:26  <thestinger> it isn't prettier :P
+2011-12-03T03:45:35  <thestinger> haskell is prettier
+2011-12-03T03:45:53  <thestinger> unless you want to be shallow and say beauty is only on the outside :)
+2011-12-03T03:46:46  <thestinger> python does sound prettier though
+2011-12-03T03:47:22  <thestinger> { and } are too high pitch
+2011-12-03T03:48:32  <thestinger> oh crap, I made aplay die a horrible death
+2011-12-03T03:48:39  <thestinger> glibc killed it and the terminal is frozen now :0
+2011-12-03T03:49:16  <thestinger> oh nvm, just the shell is frozen
+2011-12-03T03:50:12  <antimatroid> i prefer c++ to python
+2011-12-03T03:50:18  <antimatroid> even the syntax
+2011-12-03T03:50:47  <thestinger> antimatroid: do you like the Go syntax?
+2011-12-03T03:50:56  <antimatroid> haven't looked at Go
+2011-12-03T03:51:05  <thestinger> basically C syntax but newlines are used instead of semicolons (you can still use semicolons though)
+2011-12-03T03:51:08  <thestinger> for { }
+2011-12-03T03:51:11  <thestinger> that's an infinite loop
+2011-12-03T03:51:15  <thestinger> for condition { }
+2011-12-03T03:51:21  <thestinger> that's like while (condition) { }
+2011-12-03T03:51:44  <thestinger> for i := 0; i < 10; i++ { fmt.Println(i); }
+2011-12-03T03:51:52  <thestinger> just like C syntax cleaned up a bit
+2011-12-03T03:52:23  <antimatroid> i don't want to lose << >> io
+2011-12-03T03:52:26  <antimatroid> i love that
+2011-12-03T03:52:26  <thestinger> and you can scope variables to an if statement
+2011-12-03T03:52:46  <rmmh> antimatroid: quick, what's the equivalent of printf("%04.3f", 3.1) in C++
+2011-12-03T03:53:02  <antimatroid> don't even know :P wouldn't it be the same?
+2011-12-03T03:53:07  <antimatroid> or with cout>
+2011-12-03T03:53:10  <rmmh> with cout
+2011-12-03T03:53:29  <rmmh> (iostreams are terrible)
+2011-12-03T03:53:31  <thestinger> you have to use all that horrific state based stuff, who the hell knows how :P
+2011-12-03T03:53:34  <antimatroid> they compose nicely
+2011-12-03T03:53:46  <thestinger> antimatroid: print(a, b, c, d) isn't that bad
+2011-12-03T03:54:11  <antimatroid> meh :P
+2011-12-03T03:54:14  <antimatroid> i'm stubborn in my ways
+2011-12-03T03:54:22  <antimatroid> i don't like c's way
+2011-12-03T03:54:39  <thestinger> yeah, the C way sucks because it's not polymorphic
+2011-12-03T03:54:58  <thestinger> in Go you can fmt.Printf("%v %v %v", any_type, any_type, any_type)
+2011-12-03T03:54:59  *** ChrisH_ <ChrisH_!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-12-03T03:55:33  <thestinger> or just fmt.Println(anything, anything, anything)
+2011-12-03T03:55:58  <thestinger> antimatroid: http://golang.org/src/pkg/fmt/print.go?s=7013:7065#L232 easy to write vararg functions
+2011-12-03T03:56:03  <rmmh> if you *really like* C++ you'd probably not like Go
+2011-12-03T03:56:23  <thestinger> yeah
+2011-12-03T03:56:26  <thestinger> Go isn't a better C++
+2011-12-03T03:56:28  <thestinger> it's a better C
+2011-12-03T03:56:42  <thestinger> rust looks like it will be a better C++
+2011-12-03T03:56:45  <thestinger> I love the choices they made
+2011-12-03T03:56:53  <thestinger> http://www.rust-lang.org/
+2011-12-03T03:56:57  <antimatroid> it looks pretty good
+2011-12-03T03:57:02  <thestinger> I don't like D
+2011-12-03T03:57:06  <antimatroid> neither
+2011-12-03T03:57:09  <antimatroid> too much to remember
+2011-12-03T03:57:12  <thestinger> it's too big, it suffers from the same problems as C++ but it's worse
+2011-12-03T03:57:18  <antimatroid> haskell i have lost interest in i think
+2011-12-03T03:57:28  <thestinger> haskell is really nice but it's like learning programming all over
+2011-12-03T03:57:29  <antimatroid> i don't want to be looking up syntax to write stuff
+2011-12-03T03:57:40  <thestinger> there isn't much syntax in haskell
+2011-12-03T03:57:41  <antimatroid> not every 10 minutes anyway
+2011-12-03T03:57:43  <thestinger> C++ has more syntax
+2011-12-03T03:57:56  <antimatroid> like how do you do a queue in python?
+2011-12-03T03:58:02  <antimatroid> i have to look that up every time
+2011-12-03T03:58:08  <antimatroid> you have to import deque or something
+2011-12-03T03:58:10  <antimatroid> wtf is that?
+2011-12-03T03:58:16  <thestinger> why is that harder than C++?
+2011-12-03T03:58:23  <antimatroid> it's easier in c++
+2011-12-03T03:58:28  <thestinger> import module is just like #include <queue>
+2011-12-03T03:58:32  <antimatroid> #include <queue> and queue<type> myQueue
+2011-12-03T03:58:51  <thestinger> that's not easier
+2011-12-03T03:58:53  <rmmh> is that a fifo queue
+2011-12-03T03:58:58  <thestinger> rmmh: yes
+2011-12-03T03:59:03  <thestinger> C++ has deque too
+2011-12-03T03:59:12  <antimatroid> my point is in python you aren't importing queue
+2011-12-03T03:59:19  <antimatroid> why are you not just importing queue? that makes no sense
+2011-12-03T03:59:25  <thestinger> antimatroid: it's not the same
+2011-12-03T03:59:25  <rmmh> you don't really need anything special for queues in python
+2011-12-03T03:59:28  <thestinger> C++ has a deque too
+2011-12-03T03:59:39  <rmmh> top, q = q[0], q[1:]
+2011-12-03T03:59:41  <antimatroid> yes, but it's easier to remember how to do something if i'm importing something by that name
+2011-12-03T03:59:41  <thestinger> C++ queue is just a deque by default btw
+2011-12-03T03:59:51  <antimatroid> if i have to associate names with other objects i'm going to get confused
+2011-12-03T03:59:52  <rmmh> q.append(something_to_push)
+2011-12-03T04:00:05  <thestinger> antimatroid: that's a silly example though, a list can be used as a queue :P
+2011-12-03T04:00:24  <antimatroid> yeah, but i don't want to have to use other objects for it
+2011-12-03T04:00:24  <thestinger> deque is just a list where you can append to both ends quickly
+2011-12-03T04:00:35  <antimatroid> i want a queue and i don't want to be associating it to other objects to get it
+2011-12-03T04:00:38  <thestinger> antimatroid: so what about a tree or a graph in C++?
+2011-12-03T04:00:49  <antimatroid> imo they could be there too
+2011-12-03T04:01:06  <antimatroid> but i'd have it as #include <graph> and graph<Node type>
+2011-12-03T04:01:21  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-12-03T04:01:22  <thestinger> data Tree = Empty | Node a (Tree a) (Tree a)
+2011-12-03T04:01:27  <thestinger> that's a full tree implementation in haskell
+2011-12-03T04:01:32  <thestinger> it can derive stuff like Show and Eq
+2011-12-03T04:01:40  <thestinger> there's Data.Tree though, you wouldn't do that
+2011-12-03T04:01:45  <rmmh> algebraic data types are really nice
+2011-12-03T04:01:54  <thestinger> data Maybe = Nothing | Maybe a
+2011-12-03T04:01:57  <rmmh> though *ML are a bit simpler to wrap your head around than haskell
+2011-12-03T04:01:58  <thestinger> data Bool = False | True
+2011-12-03T04:02:14  <thestinger> data Maybe a = Nothing | Maybe a *
+2011-12-03T04:02:16  <thestinger> forgot an a :P
+2011-12-03T04:02:22  <thestinger> and Tree needs that too
+2011-12-03T04:02:32  <thestinger> those are all built into haskell though
+2011-12-03T04:02:54  <thestinger> how do you implement a tree in python or C++ though? it's horrible
+2011-12-03T04:03:16  <rmmh> antimatroid: did you post that matrix technique anywhere?
+2011-12-03T04:03:26  <thestinger> have to use other types, structs with pointers/refs, etc.
+2011-12-03T04:03:37  <antimatroid> which matrix technique?
+2011-12-03T04:03:56  <rmmh> actually, any pointers to good threads for tactics
+2011-12-03T04:04:05  <rmmh> I'm not quite sure where to start... I just have my ants not being suicidal
+2011-12-03T04:04:08  <antimatroid> rmmh: where are you at?
+2011-12-03T04:04:14  <antimatroid> oh for combat?
+2011-12-03T04:04:30  <antimatroid> http://www.sifflez.org/misc/tronbot/index.html
+2011-12-03T04:04:31  <thestinger> rmmh: a good start is implementing a function where you can simulate a scenario
+2011-12-03T04:04:36  <thestinger> and see which ants die
+2011-12-03T04:04:55  <rmmh> then what, just look at a 5x5 window around the ant?
+2011-12-03T04:05:16  <thestinger> well, you could divide stuff up into whole battles
+2011-12-03T04:05:21  <thestinger> that's what I do atm
+2011-12-03T04:05:25  <antimatroid> partition all the ants!
+2011-12-03T04:05:45  <antimatroid> thestinger: what about a...b...c...a
+2011-12-03T04:05:46  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 258 seconds)
+2011-12-03T04:05:53  <antimatroid> do you consider the 2 a's as being in the same battle partition?
+2011-12-03T04:05:56  <thestinger> rmmh: http://aichallenge.org/specification_battle.php there's math/pseudo-code and python at the bottom you can easily turn into simulate
+2011-12-03T04:06:02  <thestinger> antimatroid: atm I think so because my code is retarded
+2011-12-03T04:06:07  <rmmh> right, I understand how it works
+2011-12-03T04:06:20  <rmmh> also, how to coordinate movements between ants
+2011-12-03T04:06:28  <antimatroid> yeah i just realised yesterday i'm probably partitioning those a's together
+2011-12-03T04:06:41  <thestinger> yeah and I have issues with walls
+2011-12-03T04:06:51  <antimatroid> i'm fine with that
+2011-12-03T04:07:21  <antimatroid> here's my way, for all moveable neighbours, add all land neighbours in the battle radius and each of those locations land neighbours
+2011-12-03T04:07:34  <antimatroid> although i only check the land neighbours on the borders of the attack radiuses
+2011-12-03T04:08:04  <thestinger> http://www.rust-lang.org/doc/tutorial/data.html :D
+2011-12-03T04:08:10  <antimatroid> then that gets the enemies for an ant, keep doing that for the enemies of each ant you add
+2011-12-03T04:08:11  <thestinger> wow I'm looking forward to their language getting stable
+2011-12-03T04:08:38  <thestinger> they basically have procedural haskell :)
+2011-12-03T04:08:48  <thestinger> with functional stuff included ofc
+2011-12-03T04:09:05  <rmmh> antimatroid: so when you have an ant that's close to an enemy, you form a cluster with all the ants that could be affected by it?
+2011-12-03T04:09:30  <rmmh> thestinger: not a fan of new languages with semicolons
+2011-12-03T04:09:40  <thestinger> rmmh: meh, they said they will probably remove them
+2011-12-03T04:09:42  <antimatroid> yeah and then a battle partition is a set of ants that could land in battle with one of the enemies in the partition
+2011-12-03T04:09:55  <thestinger> rmmh: they don't have the language stable at all yet, it's still very pre-alpha
+2011-12-03T04:10:03  <rmmh> and then what, monte carlo? exhaustive search?
+2011-12-03T04:10:06  <antimatroid> i'm currently working on storing these battle locations for each land location rather than calculating them to partition the ants
+2011-12-03T04:10:15  <antimatroid> then what the stinger does
+2011-12-03T04:10:19  <rmmh> 5^n simulations seems kinda expensive
+2011-12-03T04:10:33  <thestinger> I do a 2x2 payoff matrix
+2011-12-03T04:10:36  <antimatroid> pick defensive and offensive moves for my and enemy ants and run a minimax type thing where i assume the enemies do what's worst for me
+2011-12-03T04:10:36  <thestinger> offensive/defensive moves
+2011-12-03T04:10:40  <thestinger> but optimized a bit
+2011-12-03T04:11:06  <rmmh> I was considering a pessimistic system
+2011-12-03T04:11:06  <thestinger> I think BenJackson does all possibilities
+2011-12-03T04:11:13  <antimatroid> chrisH does more
+2011-12-03T04:11:17  *** sparrowg_web <sparrowg_web!75ce0d0d@gateway/web/freenode/ip.117.206.13.13> has quit IRC (Quit: Page closed)
+2011-12-03T04:11:31  <thestinger> rmmh: http://ants.fluxid.pl/player/strcat_precise that's what I get with just a 2x2 set of moves
+2011-12-03T04:11:39  <antimatroid> thestinger: i'm considering doing like i am now but then iteraitevly throwing combinations of the ants offensive/defensive moves into the tree and updating
+2011-12-03T04:11:41  <rmmh> oh, strcat_precise
+2011-12-03T04:11:46  <rmmh> also do you have it running 24/7
+2011-12-03T04:11:53  <thestinger> strcat_precise is merged now
+2011-12-03T04:11:56  <thestinger> but yeah
+2011-12-03T04:12:01  <thestinger> I have ~5 running 24/7
+2011-12-03T04:12:16  <thestinger> strcat_next is now what strcat_precise was (hasn't played many games with the new code yet)
+2011-12-03T04:12:32  <thestinger> strcat on fluxid's server is the same as my code on the official site
+2011-12-03T04:12:37  <antimatroid> or you could take the chosen states and incrementally try and move ants into better positions
+2011-12-03T04:12:51  <antimatroid> only moving to a state which is better
+2011-12-03T04:12:59  <antimatroid> so a hill climbing kind of idea i guess?
+2011-12-03T04:13:19  *** nalaginrut <nalaginrut!~nalaginru@113.97.239.64> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T04:13:31  <thestinger> I need to redo all my movement code again
+2011-12-03T04:13:38  <antimatroid> thestinger: how do you pick moves out of the 2x2 payoff matrix?
+2011-12-03T04:13:41  <thestinger> to solve things in a better way
+2011-12-03T04:13:47  <antimatroid> yeah, i've stripped my bot and i'm rewriting it all
+2011-12-03T04:13:58  <ChrisH_> so pguillory took it on the chin in this match: http://aichallenge.org/visualizer.php?game=155797&user=589
+2011-12-03T04:14:09  <thestinger> antimatroid: I just make my ants climb into the enemy attackradius basically
+2011-12-03T04:14:23  <thestinger> doesn't work very well :P
+2011-12-03T04:14:58  <antimatroid> i have neater tricks than that :)
+2011-12-03T04:15:06  <antimatroid> :-X
+2011-12-03T04:15:18  <rmmh> is a lot of it expert logic antimatroid
+2011-12-03T04:15:18  <antimatroid> that's the closest to zipped lips i could find :P
+2011-12-03T04:15:27  <antimatroid> i don't think so
+2011-12-03T04:15:27  <rmmh> :I <-- zipped lips
+2011-12-03T04:15:40  <antimatroid> there's a trick that might be less obvious but i don't think it's that helpful
+2011-12-03T04:16:23  <thestinger> atm I would have to hardcode strategies like flanking basically
+2011-12-03T04:16:35  <rmmh> what's the general flavor of the top-ranked pathfinding
+2011-12-03T04:16:36  <thestinger> I might just generate all the moves... I haven't tried optimizing yet
+2011-12-03T04:16:55  <rmmh> I'm using multi-target bfs so I can get food/hill gradients easily
+2011-12-03T04:17:04  <thestinger> rmmh: xathis said he just used lots of BFS
+2011-12-03T04:17:15  <antimatroid> i have variations all over the place
+2011-12-03T04:17:30  <rmmh> any per-ant bfs though
+2011-12-03T04:17:40  <thestinger> and I think that's what most people are doing (BFS, probably to generate distance maps or do diffusion)
+2011-12-03T04:17:52  <antimatroid> i'd rather not go into too much detail there
+2011-12-03T04:17:57  <rmmh> fair enough :)
+2011-12-03T04:18:06  <antimatroid> i will say that some of my bfs's have specific orderings after ordering by current path length
+2011-12-03T04:18:14  <ChrisH_> I noticed you guys talking about caching stuff in the startup time. I was looking at my pre-game caching code earlier and was reminded that I cache all possible Euclidean distance calculations for a game up front. Saves a lot of calls to SQRT() later.  ;)
+2011-12-03T04:18:22  <thestinger> my bot is really simple, I don't really have any secrets :)
+2011-12-03T04:18:30  <antimatroid> ChrisH_: never call sqrt!
+2011-12-03T04:18:35  <antimatroid> square your euclidean metric
+2011-12-03T04:18:40  <rmmh> hehe
+2011-12-03T04:18:52  <thestinger> yeah, I have euclidean_distance2 as a function
+2011-12-03T04:18:54  <thestinger> no euclidean_distance
+2011-12-03T04:19:02  <ChrisH_> antimatroid: that doesn't work when you are combining the result with other linear values.  :P
+2011-12-03T04:19:10  <rmmh> if you just want to iterate over the things within a radius, you shouldn't even need that
+2011-12-03T04:19:21  <thestinger> rmmh: I don't, I paint that stuff on
+2011-12-03T04:19:34  <antimatroid> ChrisH_: i'm currently working on caching for each square the land locations an ant can be in now to land in battle possibly next turn, then updating hte necessary squares as i get water info
+2011-12-03T04:19:49  <antimatroid> and i'm also going to change my shortest hill stuff
+2011-12-03T04:20:07  <antimatroid> update it as you get vision info, update it as you see enemy hills and re calculate it as you find out about a razed hill
+2011-12-03T04:20:15  <ChrisH_> antimatroid: yeah, i already do a variation of that
+2011-12-03T04:20:20  <thestinger> heh, I don't call euclidean_distance2 anywhere anymore
+2011-12-03T04:20:35  <antimatroid> i'm not quite sure whether it's worth trying to update for a razed hill?
+2011-12-03T04:20:52  <antimatroid> might just be worth the one turn recalculation
+2011-12-03T04:21:27  <antimatroid> the only way i can think of is to bfs out and back in again
+2011-12-03T04:21:55  <antimatroid> and unless you have heaps of hills i don't see it being worthwhile
+2011-12-03T04:22:00  <thestinger> no manhattan/euclidean distance stuff is used in my bot anymore
+2011-12-03T04:22:11  <antimatroid> what about at the beginning?
+2011-12-03T04:22:17  <antimatroid> i have to calculate hte battle/view translations
+2011-12-03T04:22:25  <antimatroid> my bot should still work if you vary those parameters
+2011-12-03T04:22:37  <antimatroid> within reason of course
+2011-12-03T04:22:39  <ChrisH_> I have a trick where I store the point of origin for any BFS expanded node so that I can reset just those nodes later.
+2011-12-03T04:22:52  <thestinger> I copied the way to Java bot does offsets because it was a tiny bit faster than my way
+2011-12-03T04:22:54  <rmmh> cute
+2011-12-03T04:22:56  <thestinger> the Java bot*
+2011-12-03T04:23:06  <antimatroid> ChrisH_: but then you need to know where to start the searches from when you remove them?
+2011-12-03T04:23:12  <rmmh> ChrisH_: you do enough BFS that that's worth it?
+2011-12-03T04:23:27  <ChrisH_> rmmh: yes
+2011-12-03T04:23:45  <rmmh> I can see storing poing of origin being helpful for more things as well
+2011-12-03T04:23:47  <thestinger> I do tons of BFS but it's not where my code is slow :(
+2011-12-03T04:23:57  <thestinger> no point optimizing it atm
+2011-12-03T04:24:01  <ChrisH_> antimatroid: that's easy, any neighbors of those nodes that have a different point of origin get reactivated
+2011-12-03T04:24:37  <antimatroid> so you mark what the closest hill is?
+2011-12-03T04:24:46  <antimatroid> do you mark what all closest hills are?
+2011-12-03T04:24:49  <rmmh> I feel like if I just had some decent defense code my bot would perform a lot better
+2011-12-03T04:24:49  <ChrisH_> that's one use of it, yes
+2011-12-03T04:25:30  <thestinger> rmmh: defense helped my bot a lot
+2011-12-03T04:25:33  <ChrisH_> antimatroid: not sure I understand the question
+2011-12-03T04:25:44  <thestinger> and it results in big waves of ants being sent out after the enemy is repelled :)
+2011-12-03T04:25:47  <antimatroid> like say you have H...H
+2011-12-03T04:25:59  <antimatroid> are you going to mark that both H's are closest to the middle? or just the one that found it first?
+2011-12-03T04:26:30  <antimatroid> oh, that'd be one idea, just queue up the closest hills and their location for each square, as one gets vision
+2011-12-03T04:26:32  <ChrisH_> i used to know both, but managing mutliple values in a cell was too costly, so now it is just one
+2011-12-03T04:26:50  <antimatroid> if you did it as you got vision i think it'd work alright
+2011-12-03T04:27:08  <ChrisH_> but we may be talking about slightly different things here
+2011-12-03T04:27:26  <antimatroid> i could set up a priority queue in each location of the closest hill loction
+2011-12-03T04:27:43  <antimatroid> not sure about updating that info upon a razed hill
+2011-12-03T04:28:13  <ChrisH_> I think the best choice depends on what you are going to do with the info.
+2011-12-03T04:28:13  <antimatroid> or just an ordered set
+2011-12-03T04:28:35  <antimatroid> i only want the current closest, but it's a pita to update when a hill gets razed
+2011-12-03T04:28:54  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-12-03T04:29:35  <antimatroid> recalculating isn't feasible every turn
+2011-12-03T04:29:39  <rmmh> what
+2011-12-03T04:29:39  <antimatroid> it's too expensive on a 200x200 map
+2011-12-03T04:29:49  <ChrisH_> I do it.
+2011-12-03T04:29:50  <antimatroid> it's doable, but uses more time that i want it too
+2011-12-03T04:29:58  <rmmh> I can do that in like 10ms
+2011-12-03T04:30:02  <ChrisH_> yeah, I may redo that bit eventually
+2011-12-03T04:30:04  <antimatroid> on a 200x200 map?
+2011-12-03T04:30:11  <rmmh> let me benchmark it...
+2011-12-03T04:30:19  <antimatroid> 1 hill, no water
+2011-12-03T04:30:34  <thestinger> are you talking about making a distance map?
+2011-12-03T04:30:36  *** VijetRH <VijetRH!75c0871f@gateway/web/freenode/ip.117.192.135.31> has joined #aichallenge
+2011-12-03T04:30:38  <antimatroid> yep
+2011-12-03T04:31:24  <antimatroid> i don't want to spend 100ms each turn calculating information
+2011-12-03T04:31:44  <thestinger> it takes 30ms for me to do 1000x1000 for 5 targets
+2011-12-03T04:31:59  <thestinger> hard to measure 200x200 without making a loop, and then who knows what the sneaky cache is doing
+2011-12-03T04:32:36  <antimatroid> hmmm
+2011-12-03T04:32:52  <thestinger> 114ms for 2000x2000, 497ms with 4000x4000
+2011-12-03T04:32:58  <ChrisH_> thestinger: start with an empty 200x200 map and do a full BFS from one point for the whole map, that's what antimatroid is talking about
+2011-12-03T04:33:05  <thestinger> ChrisH_: yeah, that's what I'm doing
+2011-12-03T04:33:09  <ChrisH_> ok
+2011-12-03T04:33:10  <thestinger> filling a whole 2D array with distances
+2011-12-03T04:33:30  <ChrisH_> what kind of CPU?
+2011-12-03T04:33:44  <thestinger> core2 atm, 2.6GHz
+2011-12-03T04:33:55  <thestinger> runs faster on my new desktop ofc :)
+2011-12-03T04:34:01  <antimatroid> hmmmmmmmm
+2011-12-03T04:34:10  <thestinger> Fluxid got his 3x faster than mine iirc
+2011-12-03T04:34:16  <antimatroid> i'm going to play around once i fix up what i'm doing atm
+2011-12-03T04:34:29  <antimatroid> christ!
+2011-12-03T04:34:37  <thestinger> but he's using C with his own queue implementation, I'm just using std::queue
+2011-12-03T04:34:56  <antimatroid> yeah i'm just using std::queue<pair<Location, int> >
+2011-12-03T04:35:04  <thestinger> try not using pair
+2011-12-03T04:35:08  <thestinger> like
+2011-12-03T04:35:13  <thestinger> use a struct
+2011-12-03T04:35:23  <thestinger> gcc totally screws up optimization when I try using std::pair
+2011-12-03T04:35:53  <thestinger> oh
+2011-12-03T04:35:55  <thestinger> I read that wrong
+2011-12-03T04:36:13  <thestinger> I just put a Location on the queue, I get the new int from the current node I'm coming from +1
+2011-12-03T04:36:17  *** antimatroid1 <antimatroid1!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-03T04:36:22  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-12-03T04:36:46  <thestinger> I read that as std::pair<int, int>
+2011-12-03T04:36:51  <thestinger> silly brain
+2011-12-03T04:37:00  *** ChrisH_ <ChrisH_!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-12-03T04:37:33  <antimatroid1> thestinger: I don't want to store the path lengths, cause then i need to make a matrix of ints :P
+2011-12-03T04:37:47  <antimatroid1> although i think with that i do just use the path info i'm storing
+2011-12-03T04:37:47  <antimatroid1> so yeah
+2011-12-03T04:37:58  <antimatroid1> i'll play around after
+2011-12-03T04:38:41  <thestinger> I just set the 2d array to -1 (meaning unvisited)
+2011-12-03T04:38:47  <thestinger> then flood fill it with multi-source BFS
+2011-12-03T04:38:56  <thestinger> and then -1 means water at the end
+2011-12-03T04:39:07  <thestinger> and the enemy's hill is down
+2011-12-03T04:39:20  <thestinger> ofc I use it for lots of stuff other than attacking hills
+2011-12-03T04:39:30  <thestinger> lots of the searches don't go over the whole map
+2011-12-03T04:41:12  <thestinger> I should really try just using a wrapped 1D array
+2011-12-03T04:41:35  <thestinger> then I can memset (and maybe std::fill would use memset)
+2011-12-03T04:42:05  <thestinger> well, for the bool arrays
+2011-12-03T04:42:39  <thestinger> which are really not bools
+2011-12-03T04:42:51  <thestinger> I use uint8_t for those
+2011-12-03T04:43:28  <thestinger> meh, so that won't really help because I only use a visited array for partitioning battles
+2011-12-03T04:43:41  <thestinger> @monologue
+2011-12-03T04:43:41  <contestbot_> thestinger: Your current monologue is at least 13 lines long.
+2011-12-03T04:48:16  <thestinger> http://ants.fluxid.pl/replay.10605 blue fills space really well
+2011-12-03T04:48:20  <thestinger> I need to implement that
+2011-12-03T04:49:20  *** lawmax <lawmax!5275e83f@gateway/web/freenode/ip.82.117.232.63> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T04:51:39  <pairofdice> I like how he isn't letting it blobs grow more than two lines deep
+2011-12-03T04:51:43  <pairofdice> his*
+2011-12-03T04:52:16  <thestinger> my bot doesn't form lines very well
+2011-12-03T04:52:18  <thestinger> for battles
+2011-12-03T04:53:06  *** VijetRH <VijetRH!75c0871f@gateway/web/freenode/ip.117.192.135.31> has quit IRC (Quit: Page closed)
+2011-12-03T05:00:41  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has joined #aichallenge
+2011-12-03T05:01:05  *** iglo <iglo!~xy@xdsl-188-118-169-28.dip.osnanet.de> has joined #aichallenge
+2011-12-03T05:23:44  *** antimatroid1 <antimatroid1!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T05:25:02  *** antimatroid <antimatroid!~nick@30.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-12-03T05:29:22  <thestinger> oh, C++11 has std::begin and std::end
+2011-12-03T05:29:38  <thestinger> so I can make my generic stuff work on C arrays too :)
+2011-12-03T05:29:39  *** ztfw <ztfw!~ztfw@219.140.10.93.rev.sfr.net> has quit IRC (Ping timeout: 245 seconds)
+2011-12-03T05:31:15  <iglo> hmm do I really need  updateVisionInformation() ?
+2011-12-03T05:31:35  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has joined #aichallenge
+2011-12-03T05:32:10  <thestinger> iglo: if you want to know which tiles are visible, yes
+2011-12-03T05:32:15  <thestinger> you can make it much more efficient
+2011-12-03T05:32:32  <thestinger> you can precalculate the transformations and paint on information for radius-based stuff
+2011-12-03T05:33:47  <antimatroid> it takes me 550ms to set up on a 200x200 grid
+2011-12-03T05:33:56  <thestinger> :0
+2011-12-03T05:34:42  <iglo> but it dont have an effect to find food or enemy hills?  isnt the information is transmitted my the game?
+2011-12-03T05:34:42  <thestinger> meh, I had a util.hpp header with the intention of wrapping some STL stuff, but it only has one function :P
+2011-12-03T05:35:13  <thestinger> iglo: if you don't care which tiles are visible, or when you last saw a tile then you can get rid of it
+2011-12-03T05:35:18  <thestinger> well
+2011-12-03T05:35:20  <thestinger> you do need it
+2011-12-03T05:35:42  <thestinger> I dunno why you want to get rid of it
+2011-12-03T05:35:44  <thestinger> :P
+2011-12-03T05:35:51  <thestinger> how do you know if a hill is dead?
+2011-12-03T05:35:58  <thestinger> you're only given info for hills you can see
+2011-12-03T05:36:06  <iglo> ya
+2011-12-03T05:36:07  <thestinger> so you need to know if they are visible
+2011-12-03T05:36:21  <thestinger> if they are visible and not there, they were razed
+2011-12-03T05:36:24  <iglo> i explore the map  and if thre is a hill i raze it
+2011-12-03T05:36:40  <thestinger> so you never expect the ant that found the hill to die?
+2011-12-03T05:36:50  <thestinger> what if they have 20 defenders?
+2011-12-03T05:36:53  <iglo> if its dead I gues the game wont provide that information anymore
+2011-12-03T05:36:56  <thestinger> and you just saw the hill
+2011-12-03T05:37:05  <thestinger> iglo: you only get info for hills you can currently see
+2011-12-03T05:37:11  <antimatroid> vision is an important aspect of the game
+2011-12-03T05:37:14  <thestinger> if you can't see the enemy hill anymore, you won't be told about it existing
+2011-12-03T05:37:36  <thestinger> so if you lose sight of something, you'll think it's gone if you don't keep track of it yourself
+2011-12-03T05:38:04  <iglo> hmm
+2011-12-03T05:38:22  <antimatroid> iglo: just store oldFood, and hill information
+2011-12-03T05:38:50  <antimatroid> then after you read input, update vision, then for old information, if it's not visible re add it, if it is visible and you didn't get input for it, it's been collected/razed
+2011-12-03T05:38:51  <iglo> currently I hv a pathfinder
+2011-12-03T05:38:58  <iglo> but trouble with time/memory usage
+2011-12-03T05:39:13  <antimatroid> yeah i have translation amounts for everything in the vision radius
+2011-12-03T05:39:13  <iglo> so I cant go for food thats too far away
+2011-12-03T05:39:27  <antimatroid> then i just bomb by getting the translation locations from the given location
+2011-12-03T05:39:49  <thestinger> antimatroid: yeah, I do that for all the radius-based stuff
+2011-12-03T05:39:56  <thestinger> like combat
+2011-12-03T05:40:28  <iglo> anyone uses A* ?
+2011-12-03T05:40:35  <thestinger> and I use layers of attackradius as metadata for various decisions (ar, ar+1, ar+2)
+2011-12-03T05:40:48  <thestinger> need to account for walls in that though
+2011-12-03T05:41:21  <antimatroid> thestinger: have you considered just using like loc.row*200+loc.col for your hash function?
+2011-12-03T05:41:26  <antimatroid> that way you don't actually need a global
+2011-12-03T05:41:30  <thestinger> yes
+2011-12-03T05:41:34  <antimatroid> you could set it at like 2000 to be sure
+2011-12-03T05:41:56  <thestinger> I like that my bot _could_ run on an arbitrary sized map
+2011-12-03T05:41:56  <antimatroid> so why not do that?
+2011-12-03T05:42:02  <thestinger> my State is already global anyway
+2011-12-03T05:42:22  <thestinger> one of two global vars :)
+2011-12-03T05:42:23  <antimatroid> yeah but now i want to have an unordered set in Grid
+2011-12-03T05:42:28  <thestinger> ah
+2011-12-03T05:42:35  <thestinger> yeah, so *200 will be fine
+2011-12-03T05:42:42  <thestinger> I might change it to that
+2011-12-03T05:42:48  <antimatroid> what's the max?
+2011-12-03T05:42:56  <thestinger> 200x200 is max map size in the game spec
+2011-12-03T05:42:57  <antimatroid> ie. what's the max size grid before you'll overflow integer with the hash?
+2011-12-03T05:43:02  <thestinger> size_t
+2011-12-03T05:43:03  <antimatroid> no, otherwise
+2011-12-03T05:43:06  <thestinger> 64-bit unsigned int
+2011-12-03T05:43:08  <thestinger> on x86_64
+2011-12-03T05:43:17  <thestinger> oh
+2011-12-03T05:43:24  <thestinger> well
+2011-12-03T05:43:30  <antimatroid> so sqrt of that?
+2011-12-03T05:43:33  <antimatroid> but what is that :P
+2011-12-03T05:43:39  <thestinger> ?
+2011-12-03T05:43:42  <thestinger> 2**64
+2011-12-03T05:43:47  <thestinger> I guess you want the sqrt of that?
+2011-12-03T05:43:57  <antimatroid> yeah
+2011-12-03T05:44:05  <antimatroid> wolfram time
+2011-12-03T05:44:11  <thestinger> so 2**32
+2011-12-03T05:44:13  <thestinger> :P
+2011-12-03T05:44:25  <thestinger> the highest possible 32-bit unsigned int
+2011-12-03T05:44:28  <thestinger> it's not going to overflow xD
+2011-12-03T05:44:52  <antimatroid> just making sure :)
+2011-12-03T05:44:57  <antimatroid> i'll put it at like 2000
+2011-12-03T05:45:05  <antimatroid> actually 10000
+2011-12-03T05:45:12  <antimatroid> i want to see how large i can get my bot to work on :P
+2011-12-03T05:45:48  <thestinger> well
+2011-12-03T05:45:54  <thestinger> there are no problems if your hash function has collisions
+2011-12-03T05:46:03  <thestinger> it just won't be a perfect hash anymore so lookups won't be O(1)
+2011-12-03T05:46:10  *** Hexren <Hexren!~hexren@port-2813.pppoe.wtnet.de> has joined #aichallenge
+2011-12-03T05:46:14  *** Hexren <Hexren!~hexren@port-2813.pppoe.wtnet.de> has left #aichallenge
+2011-12-03T05:46:19  <thestinger> and unsigned ints just wrap, they don't have undefined behavior on overflow
+2011-12-03T05:46:26  <thestinger> uint8_t i = 255;
+2011-12-03T05:46:28  <thestinger> i++
+2011-12-03T05:46:30  <thestinger> that's 0, it's defined
+2011-12-03T05:46:37  <thestinger> size_t is unsigned so it won't be a problem
+2011-12-03T05:46:55  <thestinger> ssize_t is signed (POSIX type)
+2011-12-03T05:47:13  <antimatroid> i've done #define MAX_COLS 5000
+2011-12-03T05:47:47  <thestinger> why not 'const size_t MAX_COLS = 5000'
+2011-12-03T05:47:53  <thestinger> defines are ugly :P
+2011-12-03T05:48:05  <thestinger> need them in C cause const doesn't do _anything_ in C
+2011-12-03T05:48:13  <thestinger> it's just compiler enforced
+2011-12-03T05:50:58  <thestinger> alright, mine uses *200 now :P
+2011-12-03T05:51:41  <antimatroid> interesting, it didn't love int hdist(const Location &sourceLoc, const unordered_set<Location> &targetLocs)
+2011-12-03T05:51:54  <antimatroid> just pass a reference to targets and it's okay
+2011-12-03T05:52:39  <antimatroid> sorry, unordered_set<Location, LocationIndex>
+2011-12-03T05:56:25  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Quit: http://www.cyphase.com/)
+2011-12-03T05:56:42  <thestinger> http://aichallenge.org/visualizer.php?game=156442&user=2255 well, that sucked
+2011-12-03T05:57:14  <antimatroid> i think i'd be struggling on 500x500
+2011-12-03T05:57:24  <antimatroid> it took just under 3 seconds just then to set up
+2011-12-03T05:58:30  *** iglo <iglo!~xy@xdsl-188-118-169-28.dip.osnanet.de> has quit IRC (Remote host closed the connection)
+2011-12-03T05:59:31  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-03T05:59:40  <thestinger> antimatroid: http://stackoverflow.com/a/8157967 I'm going to listen to this guy :P
+2011-12-03T06:00:42  <thestinger> he has more rep than BenJackson
+2011-12-03T06:00:43  <antimatroid> i don't need to add equality do it?
+2011-12-03T06:00:45  <antimatroid> do i*?
+2011-12-03T06:00:53  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-03T06:00:58  <thestinger> operator==? only if it yells at you I guess
+2011-12-03T06:01:13  <thestinger> but I thought it was required to deal with collisions
+2011-12-03T06:01:20  <antimatroid> it seems good enough now, i don't think this is even really helping
+2011-12-03T06:01:43  <antimatroid> it should be able to infer it from the hash though no?
+2011-12-03T06:01:46  <thestinger> if I take away my operator== overload for Location my code doesn't compile
+2011-12-03T06:01:53  <thestinger> antimatroid: no, because your hash is allowed to have collisions
+2011-12-03T06:01:54  <antimatroid> oh, i have that
+2011-12-03T06:01:58  <thestinger> think about a hash for strings
+2011-12-03T06:02:14  <antimatroid> i even have operator- defined now
+2011-12-03T06:02:18  <antimatroid> to get the translation values
+2011-12-03T06:02:20  <thestinger> collisions just mean more than one thing is stored at the same hash
+2011-12-03T06:02:30  <thestinger> change your hash to 'return 0' and see how slow your bot is
+2011-12-03T06:02:48  <antimatroid> it's not actually doing anything with the sets atm i don't think :P
+2011-12-03T06:02:55  <antimatroid> like i said, i stripped it yesterday
+2011-12-03T06:02:57  <thestinger> all your sets will turn from O(1) access into O(n) like a linked list :P
+2011-12-03T06:02:59  <antimatroid> i'm working on my information
+2011-12-03T06:02:59  <thestinger> oh
+2011-12-03T06:03:01  <thestinger> I see
+2011-12-03T06:03:33  <thestinger> anyway like "cat" and "somelongthing" might both hash to 22
+2011-12-03T06:03:40  <thestinger> so it has to have operator==
+2011-12-03T06:05:32  <antimatroid> but isn't that the same as inserting "cat" twice?
+2011-12-03T06:05:37  <thestinger> no
+2011-12-03T06:06:06  <antimatroid> it is if "cat" == "somelongthing" evaluates to true right?
+2011-12-03T06:06:22  <thestinger> yes, but std::string::operator== doesn't do that
+2011-12-03T06:06:23  <antimatroid> ie. your hashes numerically capture a total weak ordering of your objects?
+2011-12-03T06:06:37  <thestinger> well, the hashes don't have to be in order
+2011-12-03T06:06:38  <antimatroid> sure, i just mean in general
+2011-12-03T06:06:41  <thestinger> yeah
+2011-12-03T06:07:00  <thestinger> if you change your hash function to always return 4 for everything, the container will still work
+2011-12-03T06:07:12  <antimatroid> okay
+2011-12-03T06:07:14  <thestinger> s.insert(loc_a); s.insert(loc_b)
+2011-12-03T06:07:14  <antimatroid> i'm with you now
+2011-12-03T06:07:29  <thestinger> it will store them both in the same place (they both have 4 as the hash)
+2011-12-03T06:07:35  <thestinger> but you'll have O(n) access
+2011-12-03T06:07:38  <antimatroid> so == is like a save you in case your hash function isn't injective
+2011-12-03T06:07:41  <thestinger> yeah
+2011-12-03T06:07:43  <thestinger> to deal with collisions
+2011-12-03T06:07:56  <antimatroid> i think mathematically :P
+2011-12-03T06:08:47  <thestinger> https://upload.wikimedia.org/wikipedia/commons/7/7d/Hash_table_3_1_1_0_1_0_0_SP.svg
+2011-12-03T06:09:04  <thestinger> that's for unordered_map<Name, PhoneNumber> basically
+2011-12-03T06:09:14  <antimatroid> yeah i get it
+2011-12-03T06:09:14  <thestinger> so the Name (the key) is hashed, and then it stores stuff with that hash in that bucket
+2011-12-03T06:09:39  <antimatroid> it's a function h:Objects->Numbers, preferably injective
+2011-12-03T06:10:02  <thestinger> yeah, O(1) if perfect, O(n) if they all end up in the same bucket
+2011-12-03T06:10:39  *** ztfw <ztfw!~ztfw@219.140.10.93.rev.sfr.net> has joined #aichallenge
+2011-12-03T06:10:42  <antimatroid> i'm fairly happy just passing it a function
+2011-12-03T06:11:19  <thestinger> https://en.wikipedia.org/wiki/Hash_table#Collision_resolution there are a bunch of ways to deal with collisions
+2011-12-03T06:12:12  <thestinger> no idea what libstdc++ does, but since they only get you to give one hash it's O(n)
+2011-12-03T06:12:31  <thestinger> for something like strings you could use different hashes, like 1 for the first layer of no collisions, etc.
+2011-12-03T06:13:16  <thestinger> python has frozenset() (immutable set) and I think it will come up with better hashing than a set() since it can figure out an ideal way of dealing with collisions
+2011-12-03T06:13:25  <thestinger> sets are unordered in python
+2011-12-03T06:13:43  <antimatroid> i wish there was syntax for like x = min(x,y) but with x += y, like x min= y or something
+2011-12-03T06:14:05  <antimatroid> one could always overload an allowable operator
+2011-12-03T06:14:11  <antimatroid> but it probably wouldn't make much sense
+2011-12-03T06:14:26  <thestinger> I think there's actually an operation for doing that in x86
+2011-12-03T06:15:33  <thestinger> it's called clamping maybe?
+2011-12-03T06:15:40  <thestinger> I forget
+2011-12-03T06:15:54  <thestinger> because you're clamping x to within a range
+2011-12-03T06:16:12  <thestinger> like x = min(10, x) clamps it to below 10
+2011-12-03T06:16:27  <antimatroid> it's actually surprisingly easy to just get the closest hill info with vision
+2011-12-03T06:17:35  <antimatroid> as you're updating vision if a location isn't seen set the closest hill to the minimum of its neighbours, then if you see a new hill search outwards from there, and if a hill is razed you have you calculate out to the vision border again pretty much
+2011-12-03T06:18:13  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-89-21.neo.res.rr.com> has joined #aichallenge
+2011-12-03T06:25:43  <antimatroid> oh, maybe not
+2011-12-03T06:26:14  <antimatroid> i need to do it on a path
+2011-12-03T06:35:49  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has quit IRC (Ping timeout: 240 seconds)
+2011-12-03T06:35:56  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-12-03T06:41:14  *** g0llum <g0llum!~g0llum@82.113.121.15> has joined #aichallenge
+2011-12-03T06:44:14  *** usuario <usuario!~chatzilla@201.74.168.93> has joined #aichallenge
+2011-12-03T06:44:36  *** usuario is now known as ThiagoRRamos
+2011-12-03T06:44:38  * antimatroid doesn't understand why std::queue.clear() isn't defined
+2011-12-03T06:44:41  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@201.74.168.93> has quit IRC (Changing host)
+2011-12-03T06:44:41  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@wikipedia/Thiago-R-Ramos> has joined #aichallenge
+2011-12-03T06:45:00  <antimatroid> while(!queue.empty()) queue.pop(); is tedious
+2011-12-03T06:45:14  <ThiagoRRamos> Good morning! (for the ones in America)
+2011-12-03T06:45:23  <antimatroid> it's 10 45pm in tassie :P
+2011-12-03T06:45:27  <antimatroid> so good evening :P
+2011-12-03T06:45:30  <ThiagoRRamos> And good other parts of the day for the others
+2011-12-03T06:45:59  <ThiagoRRamos> LOL
+2011-12-03T06:46:13  <thestinger> 6:46am :)
+2011-12-03T06:46:14  <ThiagoRRamos> It`s 9:45 AM in
+2011-12-03T06:46:23  <ThiagoRRamos> It`s 9:45 in Brazil!
+2011-12-03T06:46:38  <thestinger> it's :46
+2011-12-03T06:46:44  <thestinger> :P
+2011-12-03T06:46:45  <ThiagoRRamos> Ops
+2011-12-03T06:46:48  <ThiagoRRamos> Yeah, 46
+2011-12-03T06:46:58  <thestinger> my computer is a stratum 2 time server atm so I trust it :)
+2011-12-03T06:47:14  <thestinger> well, my server is and the other computers get time from that
+2011-12-03T06:47:43  <ThiagoRRamos> Yeah
+2011-12-03T06:47:46  <ThiagoRRamos> It`s 46
+2011-12-03T06:47:57  <thestinger> nope, :47
+2011-12-03T06:48:01  <thestinger> xD
+2011-12-03T06:48:05  <thestinger> we could go on forever
+2011-12-03T06:48:15  <thestinger> :48 now
+2011-12-03T06:48:18  <ThiagoRRamos> Sure we could
+2011-12-03T06:48:19  <thestinger> ask google
+2011-12-03T06:48:22  <thestinger> 'time cityname'
+2011-12-03T06:48:25  <ThiagoRRamos> At the first time I rounded it
+2011-12-03T06:48:32  <ThiagoRRamos> :D
+2011-12-03T06:50:31  <ThiagoRRamos> I`m not sure if `rounded` is the correct expression
+2011-12-03T06:50:54  <thestinger> well, there are different types of rounding
+2011-12-03T06:51:56  <thestinger> https://en.wikipedia.org/wiki/Rounding#Tie-breaking :P
+2011-12-03T06:53:49  <ThiagoRRamos> LOL
+2011-12-03T06:54:01  <thestinger> I guess you mean truncated (round down to nearest int)
+2011-12-03T06:55:04  <thestinger> in math they taught us the 'round half to +infinity' rule only
+2011-12-03T06:55:11  *** pairofdice is now known as cuda
+2011-12-03T06:55:47  <thestinger> and then in chem the teacher was like wtf because we didn't use the 'round half to even' or 'round half to odd' (I forget which)
+2011-12-03T06:56:08  <thestinger> good 'ol high school teaching everything wrong to make it simple
+2011-12-03T06:56:21  <cuda> round half to +infinity? ehh
+2011-12-03T06:56:37  <thestinger> "round up"
+2011-12-03T06:56:47  <thestinger> well maybe they taught us "round half away from zero"
+2011-12-03T06:56:58  <thestinger> so -5.5 would round to -6.0
+2011-12-03T06:58:02  <cuda> I like that stochastic rounding. Flip a coin
+2011-12-03T06:58:07  <thestinger> python does round away from 0 so that must be the common one
+2011-12-03T06:58:22  <thestinger> or not
+2011-12-03T06:58:42  <thestinger> haskell does that too
+2011-12-03T06:59:10  <thestinger> I dunno why wikipedia says round up is the common one
+2011-12-03T06:59:14  <cuda> round(-5.5) -6
+2011-12-03T06:59:15  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@wikipedia/Thiago-R-Ramos> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T06:59:22  <thestinger> yeah
+2011-12-03T06:59:25  <thestinger> so "round away from 0"
+2011-12-03T07:00:34  <thestinger> anyway I remember losing so many marks in grade 12 chem due to forgetting if the teacher wanted 'round half to even' or 'round half to odd'
+2011-12-03T07:01:45  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@201.74.168.93> has joined #aichallenge
+2011-12-03T07:06:04  <ThiagoRRamos> LOL
+2011-12-03T07:07:18  <thestinger> wtf, I broke my combat when I merged it :(
+2011-12-03T07:07:38  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@201.74.168.93> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 8.0/20111104165243])
+2011-12-03T07:08:13  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@201.74.168.93> has joined #aichallenge
+2011-12-03T07:08:28  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@wikipedia/Thiago-R-Ramos> has joined #aichallenge
+2011-12-03T07:10:48  <ThiagoRRamos> I'm pretty sure there are some ways to test my bot for specific parts of matches
+2011-12-03T07:10:57  <ThiagoRRamos> But I can't finad them
+2011-12-03T07:11:25  <ThiagoRRamos> find*
+2011-12-03T07:12:28  <thestinger> Fluxid: you should make the tcp server tell bots they have 500ms turntime (but still allow 3s or whatever so they don't timeout)
+2011-12-03T07:12:41  <thestinger> some of my games take 40+ mins now
+2011-12-03T07:14:09  <antimatroid> how costly is it to add stuff to a set if it's already there?
+2011-12-03T07:15:09  <antimatroid> ie. should i store a matrix to say what i have already added
+2011-12-03T07:16:20  <antimatroid> thestinger: ?
+2011-12-03T07:16:49  <thestinger> antimatroid: not costly
+2011-12-03T07:16:55  <thestinger> it will just hash and compare for equality
+2011-12-03T07:16:58  <thestinger> and then not add it
+2011-12-03T07:17:35  <antimatroid> okie dokie
+2011-12-03T07:18:10  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has quit IRC (Quit: Page closed)
+2011-12-03T07:18:59  <thestinger> antimatroid: also you can .erase(key) from a set/unordered_set without checking if the key is in them first
+2011-12-03T07:19:16  <antimatroid> is that constant too?
+2011-12-03T07:19:28  <thestinger> yeah, it will hash and compare for equality, then erase
+2011-12-03T07:19:31  <Fluxid> thestinger: i'll try
+2011-12-03T07:19:35  <thestinger> or hash and that bucket is empty
+2011-12-03T07:19:48  <thestinger> as long as you have a perfect hash it's all O(1)
+2011-12-03T07:19:49  <antimatroid> what about when i'm deleting an element while iterating through the set?
+2011-12-03T07:19:52  <antimatroid> that's usually a pita?
+2011-12-03T07:20:14  <thestinger> well
+2011-12-03T07:20:23  <thestinger> you can it = s.erase(it)
+2011-12-03T07:20:24  <antimatroid> i usually just copy the set then iterate through the copied version?
+2011-12-03T07:20:30  <thestinger> you don't need to
+2011-12-03T07:20:32  <antimatroid> ahhh
+2011-12-03T07:20:34  <antimatroid> that's nice
+2011-12-03T07:20:35  <thestinger> erasing doesn't invalidate
+2011-12-03T07:20:40  <thestinger> for a set/unordered_set/list
+2011-12-03T07:20:43  <thestinger> for a vector it does
+2011-12-03T07:20:48  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has joined #aichallenge
+2011-12-03T07:20:54  *** lnx <lnx!fredrik@notty.slacker.se> has left #aichallenge
+2011-12-03T07:21:00  <ssclift> Quick question for the admins, please?
+2011-12-03T07:21:17  <antimatroid> so that returns the element before the erased one yeah?
+2011-12-03T07:21:20  <thestinger> so 'if (condition) { it = s.erase(it); } else { ++it; }
+2011-12-03T07:21:25  <thestinger> the iterator after the erased one
+2011-12-03T07:21:51  <ssclift> Does the compilation use my Makefile or does it have its own?  I ask because --funroll-loops seems to break my code.  I checked with valgrind and it's clean, I'm not sure why there's a problem.
+2011-12-03T07:21:54  <antimatroid> ohhh, so it returns the element after it?
+2011-12-03T07:22:00  <thestinger> yeah
+2011-12-03T07:22:06  <thestinger> so you need to ++it if you didn't erase
+2011-12-03T07:22:09  <ikaros> if you want to iterate further you can put the post increment into the erase like s.erase(it++)
+2011-12-03T07:22:12  <antimatroid> you could do it = s.erase(it)--?
+2011-12-03T07:22:41  <antimatroid> ikaros: that would erase the wrong element :P
+2011-12-03T07:22:50  <ikaros> no
+2011-12-03T07:22:51  <thestinger> it++ returns it
+2011-12-03T07:23:02  <thestinger> s.erase(it++) and it = erase(it) do the same thing
+2011-12-03T07:23:06  <ikaros> ++ is evaluated after
+2011-12-03T07:23:40  * antimatroid goes and tries this out
+2011-12-03T07:23:41  <ikaros> oh
+2011-12-03T07:23:45  <ssclift> Gnah... side effects... :(  I always write s.erase(it); ++it; and let the optimizer work out the most efficient thing.  Most important is human readability.
+2011-12-03T07:23:46  <ikaros> i see you did assign it
+2011-12-03T07:23:49  <ikaros> yea true :)
+2011-12-03T07:24:07  <antimatroid> s.erase(it)-- would work though yeah?
+2011-12-03T07:24:09  <antimatroid> i like that most
+2011-12-03T07:24:12  <thestinger> ssclift: you invalidate the current iterator by erasing it though
+2011-12-03T07:24:39  *** kilae <kilae!~chatzilla@catv-161-018.tbwil.ch> has joined #aichallenge
+2011-12-03T07:25:09  <ssclift> Ah, joined after it declared as iterator... yeah, that would be a bad idea.
+2011-12-03T07:26:09  <thestinger> antimatroid: maybe, I think you should just use 's.erase(it++)' or 'it = s.erase(it)' though
+2011-12-03T07:26:18  <thestinger> there are weird rules with when the iterator gets invalidated
+2011-12-03T07:26:26  *** praveen_ <praveen_!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has joined #aichallenge
+2011-12-03T07:26:37  <thestinger> well I'm assuming you're starting at .begin() and going to .end()
+2011-12-03T07:26:53  <thestinger> if you want to go backwards, just use .rbegin() and .rend()
+2011-12-03T07:27:05  <thestinger> doesn't matter with an unordered_set since it has no order :P
+2011-12-03T07:27:09  <thestinger> well, no defined order
+2011-12-03T07:27:24  <thestinger> I guess they are likely ordered by the bucket values
+2011-12-03T07:27:36  <antimatroid> didn't want to compile my way anyway
+2011-12-03T07:37:18  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-12-03T07:45:21  *** xathis <xathis!~xathis@f054013202.adsl.alicedsl.de> has joined #aichallenge
+2011-12-03T07:48:56  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Remote host closed the connection)
+2011-12-03T07:50:10  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-03T07:54:36  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0316.bb.online.no> has joined #aichallenge
+2011-12-03T07:56:05  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-89-21.neo.res.rr.com> has quit IRC (Ping timeout: 260 seconds)
+2011-12-03T07:57:33  *** delt0r_ <delt0r_!~bob@213-33-17-194.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T08:09:09  *** ikaros <ikaros!~ikaros@studpool-wlan-74-160.fs.fbi.h-da.de> has joined #aichallenge
+2011-12-03T08:10:13  *** delt0r_ <delt0r_!~bob@178-190-205-132.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-03T08:10:53  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Remote host closed the connection)
+2011-12-03T08:13:54  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-03T08:18:24  <antimatroid> it takes me 17ms to get closest hill info with 1 hill on 200x200
+2011-12-03T08:21:25  <thestinger> https://www.nytimes.com/2011/12/03/world/europe/britains-gchq-uses-online-puzzle-to-recruit-hackers.html
+2011-12-03T08:23:45  <thestinger> lol apparently it sucks though
+2011-12-03T08:24:58  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has quit IRC (Quit: Page closed)
+2011-12-03T08:35:48  *** liberforce <liberforce!~luis@173.1.72.86.rev.sfr.net> has joined #aichallenge
+2011-12-03T08:42:45  *** liberforce <liberforce!~luis@173.1.72.86.rev.sfr.net> has quit IRC (Quit: Leaving.)
+2011-12-03T08:49:51  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has joined #aichallenge
+2011-12-03T08:52:31  *** analyst74 <analyst74!~analyst74@199.119.234.1> has quit IRC (Read error: Connection reset by peer)
+2011-12-03T08:52:58  <thestinger> janzert: what kernel version do the workers use?
+2011-12-03T08:53:00  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-12-03T08:53:13  *** analyst74 <analyst74!~analyst74@199.119.234.1> has joined #aichallenge
+2011-12-03T08:55:08  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T08:55:54  <thestinger> meh, I just won't compile anything myself - apparently programs compiled against glibc are forwards compatible to new glibc versions but not backwards compatible
+2011-12-03T08:59:16  <antimatroid> are there minimum map dimensions?
+2011-12-03T08:59:37  <antimatroid> ie. <= viewradius?
+2011-12-03T08:59:43  <thestinger> the game spec says there will be minimum distances between hills, but that it isn't decided yet
+2011-12-03T09:00:07  <antimatroid> good point, i think that's a safe assumption
+2011-12-03T09:08:42  *** george_ <george_!56ae9f3d@gateway/web/freenode/ip.86.174.159.61> has joined #aichallenge
+2011-12-03T09:09:38  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-12-03T09:10:18  <george_> hi organisers - can you confirm that the maps will be generated by the python code in branch:  amstam_mapgen      /ants/mapgen/    for the final contest?
+2011-12-03T09:10:36  <george_> (amstan told me to look there to finbd out about symmetries)
+2011-12-03T09:10:49  <george_> but i wanted to be sure that that's the finals version
+2011-12-03T09:10:50  <cuda> It's a work in progress
+2011-12-03T09:12:52  <george_> hi cuda, was that reply to me?
+2011-12-03T09:15:20  <cuda> Yes, the probability of the mapgen being the final version is fairly low
+2011-12-03T09:16:07  <george_> um, so is there any way to discover what the symmetires will be?
+2011-12-03T09:16:16  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has joined #aichallenge
+2011-12-03T09:19:46  *** olexs <olexs!~Leviathan@drms-590cf503.pool.mediaWays.net> has joined #aichallenge
+2011-12-03T09:21:36  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T09:24:35  <antimatroid> george_: how's your bot coming along?
+2011-12-03T09:24:49  <antimatroid> some people are doing symmetry detection
+2011-12-03T09:25:00  <antimatroid> as the person who worked out a lot of it i don't think i should try and exploit it
+2011-12-03T09:25:03  <antimatroid> plus it seems messy :P
+2011-12-03T09:25:15  <antimatroid> but consider it fair game for people to
+2011-12-03T09:26:04  *** ztfw <ztfw!~ztfw@219.140.10.93.rev.sfr.net> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T09:27:22  <george_> hi antimatroid
+2011-12-03T09:27:28  <george_> i'm working on it
+2011-12-03T09:27:34  <antimatroid> same :P
+2011-12-03T09:27:37  <antimatroid> i haven't uploaded anything yet
+2011-12-03T09:27:50  <george_> i find the multiplayer anture of tne game hard to work out
+2011-12-03T09:28:06  <george_> ... i fight too much atm, lose too many ants against many players
+2011-12-03T09:28:08  <antimatroid> yeah i'm mostly ignoring it :P
+2011-12-03T09:28:39  <george_> but the symmetry seemed useful - to eg work out how many players there are
+2011-12-03T09:28:48  <george_> find that out early, and maybe it helps
+2011-12-03T09:29:04  <george_> how's your bot doing?
+2011-12-03T09:34:34  *** iglo <iglo!~xy@xdsl-188-118-169-28.dip.osnanet.de> has joined #aichallenge
+2011-12-03T09:43:27  <antimatroid> getting there i think
+2011-12-03T09:43:31  <antimatroid> i'm pretty happy with my strategy ideas
+2011-12-03T09:43:43  <antimatroid> i stripped it all yesterday to optimise how i calculate used information
+2011-12-03T09:43:52  <antimatroid> mostly finished doing that
+2011-12-03T09:44:01  <antimatroid> number of players is tricky
+2011-12-03T09:44:18  <antimatroid> if you see an enemy hill you don't necessarily know the number of enemies
+2011-12-03T09:44:53  <antimatroid> if you find valid symmetry parameters for translationally symmetric maps you still don't necessarily know the number of players or actual symmetry parameters
+2011-12-03T09:45:03  <antimatroid> ie. a.b.c.d.
+2011-12-03T09:45:22  <antimatroid> you might find translation +4, which would get you to c and then back to a
+2011-12-03T09:46:13  *** raaj <raaj!0e6117f8@gateway/web/freenode/ip.14.97.23.248> has joined #aichallenge
+2011-12-03T09:46:15  <raaj> hey
+2011-12-03T09:46:30  <raaj> I just heard about ants
+2011-12-03T09:46:39  <raaj> is it too late to submit an entry
+2011-12-03T09:46:40  <raaj> ?
+2011-12-03T09:46:42  <thestinger> no
+2011-12-03T09:46:48  <thestinger> over 2 weeks left
+2011-12-03T09:47:01  <thestinger> before submissions close (on dec 18th)
+2011-12-03T09:47:13  <george_> antimatroid - i try all symmetries
+2011-12-03T09:47:22  <george_> reject the ones that donmt match the map i see
+2011-12-03T09:47:32  <george_> when all but 1 are rejected, i know the symmetry
+2011-12-03T09:47:32  <thestinger> well not over 2 weeks :P
+2011-12-03T09:47:49  <thestinger> wait yes, stupid brain
+2011-12-03T09:47:50  <george_> now, does that tell me #players?
+2011-12-03T09:47:54  <thestinger> I didn't sleep well last night >.<
+2011-12-03T09:48:07  <bretep> Does anyone have a idea about how to check vision optimally?
+2011-12-03T09:48:24  <george_> if symmetry=7 then yes
+2011-12-03T09:48:34  <thestinger> bretep: you mean to explore or mark which tiles are currently visible?
+2011-12-03T09:48:42  <george_> if symmetry=8.  well, #players could be 8,4,2
+2011-12-03T09:48:53  <bretep> Mark what is currently visible
+2011-12-03T09:49:05  <thestinger> bretep: what language are you using, C++?
+2011-12-03T09:49:10  <george_> BUT with current mapgen, i am pretty safe assuming #players =8
+2011-12-03T09:49:14  <george_> ...
+2011-12-03T09:49:21  <george_> thats why i'm asking about mapgen
+2011-12-03T09:49:50  <thestinger> follow the spec, not the current mapgen
+2011-12-03T09:50:18  <thestinger> "Maps are limited to 10 players"
+2011-12-03T09:52:23  <antimatroid> i'm an idiot
+2011-12-03T09:52:48  <antimatroid> i can just set uint8_t t = 0, then if(t) is false
+2011-12-03T09:52:55  <bretep> Oh, sorry didn't see it, thestinger I'm using python
+2011-12-03T09:53:22  <thestinger> are you using the starter bot? I think the way it marks tiles as visible is pretty optimal
+2011-12-03T09:53:40  <thestinger> I'm sure you can use matrix magic with numpy to paint them on
+2011-12-03T09:54:04  *** raaj <raaj!0e6117f8@gateway/web/freenode/ip.14.97.23.248> has quit IRC (Quit: Page closed)
+2011-12-03T09:54:30  <thestinger> if you're having speed problems (it's python, so you are :P), start using pypy (change your extension to .pypy and the server will use it)
+2011-12-03T09:56:08  <bretep> Problem with pypy is just that I can't use numpy. Would python+numpy be quicker or pypy?
+2011-12-03T09:56:14  <thestinger> pypy
+2011-12-03T09:56:15  *** praveen_ <praveen_!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T09:56:19  <thestinger> you can't really do much with numpy
+2011-12-03T09:56:26  <thestinger> pypy is ~4.8 times faster than cpython
+2011-12-03T09:56:45  <thestinger> numpy just lets you allocate arrays really fast... you probably don't do much vector/matrix stuff
+2011-12-03T09:57:04  <thestinger> and the pypy version on the server is 1.7, the newest one
+2011-12-03T09:57:25  <thestinger> it has great optimizations for ctypes, so writing stuff in C and using ctypes should let you speed stuff up
+2011-12-03T09:58:14  <thestinger> CPython extensions are hard to write, ctypes lets you write regular C
+2011-12-03T09:58:36  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has quit IRC (Quit: Page closed)
+2011-12-03T09:59:02  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has joined #aichallenge
+2011-12-03T09:59:35  <bretep> But if needed then I can write C code within pypy?
+2011-12-03T09:59:45  <bretep> How does that exactly work
+2011-12-03T10:00:18  <thestinger> it's a python standard lib module that lets you call functions in C libraries
+2011-12-03T10:00:29  <thestinger> so you just include a .so in your package.zip
+2011-12-03T10:01:22  *** ikaros <ikaros!~ikaros@studpool-wlan-74-160.fs.fbi.h-da.de> has quit IRC (Quit: Ex-Chat)
+2011-12-03T10:13:02  <Fluxid> whoa, i implemented near-hill "panic" defence in 15 python lines and it works
+2011-12-03T10:14:09  <Fluxid> actually 7 physical lines broken into 15
+2011-12-03T10:14:11  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-12-03T10:15:12  <thestinger> Fluxid: I do something like that, still haven't fixed/improved it :)
+2011-12-03T10:15:57  <Fluxid> mine works nicely but i tested it only on my test map
+2011-12-03T10:16:01  <thestinger> it's 20 lines of C++ with 4 newlines :)
+2011-12-03T10:16:07  <Fluxid> ;D
+2011-12-03T10:16:08  *** ztfw <ztfw!~ztfw@219.140.10.93.rev.sfr.net> has joined #aichallenge
+2011-12-03T10:16:17  <thestinger> I just make a distance map to enemies, with ones closer to the hill starting at a lower distance
+2011-12-03T10:16:23  <thestinger> not sure how to pick defenders yet
+2011-12-03T10:16:40  <thestinger> and I think I should pathfind to paths they will take to the hill, not really the enemies
+2011-12-03T10:16:43  <Fluxid> well i do the same since i stole the idea from you
+2011-12-03T10:16:43  <Fluxid> ;)
+2011-12-03T10:16:47  <thestinger> xD
+2011-12-03T10:16:57  <thestinger> how do you pick defenders?
+2011-12-03T10:17:00  <thestinger> or do you have no limit
+2011-12-03T10:17:37  <Fluxid> within distance X from hill, an then add higher weight for enemy closer to hill
+2011-12-03T10:18:08  <thestinger> ah
+2011-12-03T10:18:14  <thestinger> so you don't use a limited number of defenders?
+2011-12-03T10:18:21  <thestinger> I'm trying to do that but I haven't really got it working...
+2011-12-03T10:19:04  <thestinger> the problem is that ants closer to enemies can reach them faster, but those might not be the enemies closest to the hill
+2011-12-03T10:19:04  <Fluxid> no, all closest ants rush to defend the hill
+2011-12-03T10:19:08  <Fluxid> one sec, i'll paste
+2011-12-03T10:20:09  <Fluxid> http://paste.aichallenge.org/n7jEL/
+2011-12-03T10:20:37  <Fluxid> at turn 510 enemy breaks closer to hill and ants start to react
+2011-12-03T10:21:16  <thestinger> oh
+2011-12-03T10:21:25  <thestinger> you use a much larger distance within the hill than I do
+2011-12-03T10:21:33  <thestinger> is it based on map size?
+2011-12-03T10:21:58  <Fluxid> before i added the defence my hill got razed at turn 570
+2011-12-03T10:22:05  <Fluxid> no, it's constant now
+2011-12-03T10:22:11  <Fluxid> no idea how to make it dynamic
+2011-12-03T10:22:57  <Fluxid> so it's 35 for enemy and about 60 for defenders (depends on weight)
+2011-12-03T10:23:54  <thestinger> http://ants.fluxid.pl/player/strcat_precise I had a major breakthrough in combat by tweaking constants based on win:loss ratio in local fights :)
+2011-12-03T10:24:01  <thestinger> I wish my bot did things more dynamically
+2011-12-03T10:24:32  <thestinger> but it's hard to figure out a good way to do something like choosing losses that will be accepted in combat based on something like map control
+2011-12-03T10:24:36  <thestinger> same thing with defence...
+2011-12-03T10:25:06  <Fluxid> so when there are more ants than enemy you attack even if your ants may die?
+2011-12-03T10:25:19  <Fluxid> it's next thing on my todo list
+2011-12-03T10:25:22  <thestinger> well, I calculate a score for a given scenario
+2011-12-03T10:25:35  <thestinger> like 'dead_enemies - dead_friends * SOME_VALUE_THAT_VARIES'
+2011-12-03T10:25:47  <Fluxid> ;)
+2011-12-03T10:25:58  <thestinger> the SOME_VALUE_THAT_VARIES is the hard part :)
+2011-12-03T10:25:58  *** BoAnd <BoAnd!~BoAnd@0805ds3-abc.0.fullrate.dk> has quit IRC (Read error: Operation timed out)
+2011-12-03T10:26:20  <Fluxid> just noticed that in this paste my enemy is my 5th bot which isn't really good...
+2011-12-03T10:26:22  <bretep> It must be 42
+2011-12-03T10:26:49  <Fluxid> 9001
+2011-12-03T10:27:10  <bretep> 7331
+2011-12-03T10:27:28  <thestinger> it's sqrt(date_of_my_birth - 2) at the start :)
+2011-12-03T10:27:28  *** marijnfs <marijnfs!~marijn@80-219-197-15.dclient.hispeed.ch> has joined #aichallenge
+2011-12-03T10:27:54  <thestinger> sqrt(date_of_my_birth) - 2 *
+2011-12-03T10:28:04  <Fluxid> lol
+2011-12-03T10:28:19  <thestinger> your mileage may vary depending on when you were born
+2011-12-03T10:28:35  <Fluxid> about the end of that game my bot took around 300ms per turn.. this is bad, i don't have enough time
+2011-12-03T10:28:36  <thestinger> you were born on the 1st, your ants will prefer dying to living
+2011-12-03T10:28:44  <thestinger> mine are biased more towards life
+2011-12-03T10:29:53  *** cuda <cuda!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Quit: leaving)
+2011-12-03T10:30:10  *** bretep_ <bretep_!52a94273@gateway/web/freenode/ip.82.169.66.115> has joined #aichallenge
+2011-12-03T10:30:34  <thestinger> Fluxid: http://www.boost.org/doc/libs/1_48_0/libs/python/doc/tutorial/doc/html/index.html that looks so much nicer than doing C extensions :P
+2011-12-03T10:31:48  <bretep_> Is there a official max time a game can take? (besides the now 1000 turns)
+2011-12-03T10:31:48  <thestinger> does all the glue code for you
+2011-12-03T10:31:49  <Fluxid> i know about boost
+2011-12-03T10:32:56  <Fluxid> as i said before, i wanted to learn cpyext and didn't want to learn boost
+2011-12-03T10:33:00  <thestinger> ah
+2011-12-03T10:33:03  <Fluxid> c==*
+2011-12-03T10:34:26  *** bretep <bretep!52a94273@gateway/web/freenode/ip.82.169.66.115> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T10:34:49  <Fluxid> WHOA SEGFAULT
+2011-12-03T10:34:59  <thestinger> :(
+2011-12-03T10:35:22  <Fluxid> damn, i didn't store input
+2011-12-03T10:36:24  <thestinger> oh, nice
+2011-12-03T10:36:32  <thestinger> I didn't realize clang 3.0 had c1x features
+2011-12-03T10:37:06  <thestinger> meh
+2011-12-03T10:37:20  <thestinger> just generics which you can get using a GNU extension anyway
+2011-12-03T10:38:05  <thestinger> http://llvm.org/releases/3.0/docs/ClangReleaseNotes.html#majorfeatures
+2011-12-03T10:38:20  <thestinger> you should see if clang catches anything in your C code :)
+2011-12-03T10:39:34  <thestinger> Improved code completion for in-class member functions. <- yay!
+2011-12-03T10:40:07  <thestinger> I'm using a broken version from svn atm...
+2011-12-03T10:40:29  <thestinger> when I try to do complete I get an error pasted into my code
+2011-12-03T10:40:33  <thestinger> completion*
+2011-12-03T10:43:18  *** u_ <u_!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-12-03T10:49:59  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-03T10:51:55  *** olexs1 <olexs1!~Leviathan@drms-590ced6b.pool.mediaWays.net> has joined #aichallenge
+2011-12-03T10:52:50  *** olexs <olexs!~Leviathan@drms-590cf503.pool.mediaWays.net> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T11:08:18  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has joined #aichallenge
+2011-12-03T11:09:49  *** ikaros <ikaros!~ikaros@studpool-wlan-74-160.fs.fbi.h-da.de> has joined #aichallenge
+2011-12-03T11:17:15  <ssclift> Can anyone confirm something for me about the Makefiles?
+2011-12-03T11:17:17  <ssclift> Please...
+2011-12-03T11:17:35  <thestinger> ssclift: your Makefile isn't used by the server
+2011-12-03T11:17:42  <bugnuts> the compile process does not use makefiles
+2011-12-03T11:17:58  <thestinger> https://github.com/aichallenge/aichallenge/blob/epsilon/worker/compiler.py
+2011-12-03T11:18:39  <ssclift> Ah... so I can count on GCC -funroll-loops then?  It's giving me trouble on Intel... not on AMD.  Can't find a specific bug report for it for GCC, but localized it to a region of code.  I hate optimizer bugs...
+2011-12-03T11:19:01  <ssclift> All my ants start life heading North on Intel.  Checked with Valgrind... no troubles reported...
+2011-12-03T11:19:18  <ssclift> Thanks.  A bit of re-arrangement of code seems to have worked.
+2011-12-03T11:19:36  <ssclift> Probably my fault for using chained ternary statements. :)
+2011-12-03T11:20:07  <ssclift> x = ? (fu) 0 : ? (bar) : 1 ? (baz) :2 : 3 ... looks pretty when nicely formatted. :)
+2011-12-03T11:20:24  *** deltree_ <deltree_!~chatzilla@97.104.16.141> has joined #aichallenge
+2011-12-03T11:22:44  *** praveen_ <praveen_!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has joined #aichallenge
+2011-12-03T11:23:38  <bugnuts> It's interesting the guys who made Go (and C) deliberately left ternary statements out of Go.
+2011-12-03T11:24:45  <ssclift> It's a hang-over from C's PDP heritage.  IIRC the ternary operator mapped to a single instruction on the PDP-11.  I've booted a PDP-11 from it's front panel but never hacked assembly on one.
+2011-12-03T11:25:04  <ssclift> Except for occasionally shooting myself in the foot with operator precedence I love ternary operations.
+2011-12-03T11:25:20  <ssclift> Let's me write very concise case statements when doing more complex assignments.
+2011-12-03T11:26:06  <ssclift> Shame Ken Wellsch has moved on from UWaterloo, he'd be able to tell us about it...
+2011-12-03T11:26:10  <bugnuts> I am indifferent mostly although I was surprised not to find them in Go.  I think Go as a commentary on what they wished they had done differently in C is telling
+2011-12-03T11:26:47  <ssclift> So Kernaghan is working on Go?
+2011-12-03T11:27:14  <bugnuts> most of my pdp-11 assembly has left me - I did do inner loop optimisation for fortran stuff back in the old days.
+2011-12-03T11:27:42  <ssclift> Nice to see some of us old farts drag the walker out and show up to these competitions. :)
+2011-12-03T11:29:36  <bugnuts> you see Ken Thompson on the golang-dev list not sure about Kernighan.
+2011-12-03T11:29:48  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has quit IRC (Read error: Connection reset by peer)
+2011-12-03T11:30:31  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has joined #aichallenge
+2011-12-03T11:35:24  <bugnuts> I think it's partly a joke but check out the commit date for this in the go project http://code.google.com/p/go/source/detail?name=f6182e5abf5e&r=f6182e5abf5eb0c762dddbb18f8854b7e350eaeb
+2011-12-03T11:37:53  *** choas <choas!~lars@d86-33-20-27.cust.tele2.at> has joined #aichallenge
+2011-12-03T11:37:56  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-03T11:46:29  <thestinger> bugnuts: https://code.google.com/p/go/source/detail?r=8818ac606e92
+2011-12-03T11:49:11  <thestinger> ssclift: try this http://gcc.gnu.org/onlinedocs/gcc/Function-Specific-Option-Pragmas.html http://gcc.gnu.org/wiki/FunctionSpecificOpt
+2011-12-03T11:53:15  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-03T11:55:24  <ssclift> thestinger: Thanks, I've not delved that deeply before.
+2011-12-03T11:55:39  <Anilm3> My bot is getting slow :(
+2011-12-03T11:56:35  <thestinger> ssclift: do you have warnings turned up? it's surprising that -funroll-loops actually breaks something
+2011-12-03T11:57:33  *** dom7b5 <dom7b5!~corey@c-50-129-17-2.hsd1.in.comcast.net> has joined #aichallenge
+2011-12-03T11:59:28  <bmh> thestinger: that is surprising. I wouldn't except an optimization like that to change behavior
+2011-12-03T12:00:06  *** yoden <yoden!~horstman@cpe-76-190-250-126.neo.res.rr.com> has joined #aichallenge
+2011-12-03T12:02:48  <thestinger> niiiice clang 3.0 gives me C++11 completion :D
+2011-12-03T12:03:19  <ssclift> Argh.. right... I'm used to coding at work where -Wall is in the Makefiles... n00b mistake.. thanks.
+2011-12-03T12:03:36  <thestinger> add -Wextra too :)
+2011-12-03T12:04:05  <ssclift> Famous Perl language man page comment under "BUGS"...  -w is not the default. :)
+2011-12-03T12:04:35  <thestinger> clang still doesn't compile my code... but it does completion now in vim again
+2011-12-03T12:05:26  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (Remote host closed the connection)
+2011-12-03T12:05:39  <thestinger> http://ompldr.org/vYmtoaw \o/
+2011-12-03T12:05:55  <thestinger> it doesn't seem fully aware of the C++11 containers
+2011-12-03T12:06:10  <thestinger> I guess _Hashtable is some libstdc++ internal
+2011-12-03T12:06:44  <thestinger> good enough :P
+2011-12-03T12:08:39  *** analyst74 <analyst74!~analyst74@199.119.234.1> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T12:13:43  *** liberforce <liberforce!~luis@AMontsouris-551-1-26-174.w90-24.abo.wanadoo.fr> has joined #aichallenge
+2011-12-03T12:15:48  *** amstan_ <amstan_!~amstan@69-196-130-230.dsl.teksavvy.com> has joined #aichallenge
+2011-12-03T12:15:48  *** ChanServ sets mode: +o amstan_
+2011-12-03T12:16:49  *** yyl <yyl!~androirc@nat-broad-runet-out-29.rutgers.edu> has joined #aichallenge
+2011-12-03T12:18:21  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-92-231.neo.res.rr.com> has joined #aichallenge
+2011-12-03T12:21:13  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-12-03T12:22:13  *** yyl <yyl!~androirc@nat-broad-runet-out-29.rutgers.edu> has quit IRC (Quit: AndroIRC - Android IRC Client ( http://www.androirc.com ))
+2011-12-03T12:30:13  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-03T12:30:18  <ssclift> My 5 year old wants to play.  I told her she has to learn to read a bit better.  Then she suggested she'll tell me how and I can write it for her. :)
+2011-12-03T12:31:43  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-03T12:32:32  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has quit IRC (Client Quit)
+2011-12-03T12:32:59  <Minthos> 5 sounds like a good age to start
+2011-12-03T12:33:21  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T12:33:27  <ssclift> I got the rug-rats the Android tablets from Leap Frog, but they're not very hackable... :(
+2011-12-03T12:33:35  <ssclift> We'll start on Python soon.
+2011-12-03T12:34:13  <thestinger> ssclift: http://scratch.mit.edu/
+2011-12-03T12:34:46  <Minthos> Understandable. If it were a boy, I'd expect C ;)
+2011-12-03T12:35:45  <ssclift> I must admit, at age 11 the 8085 prototyping board my Dad brought home for me wasn't that interesting.  Hex keypad and display... what I really wanted was Pong... or a PET.
+2011-12-03T12:37:26  *** kaemo <kaemo!~kmo@d48-118.icpnet.pl> has joined #aichallenge
+2011-12-03T12:39:40  *** ikaros <ikaros!~ikaros@studpool-wlan-74-160.fs.fbi.h-da.de> has quit IRC (Quit: Ex-Chat)
+2011-12-03T12:40:38  <Minthos> I was playing quake 2 at age 8, didn't try programming until I was 13 or so
+2011-12-03T12:41:11  <Minthos> I liked it, but I wish I'd had someone to teach me and motivate me because I didn't really start until university
+2011-12-03T12:42:25  <Minthos> and then it was all piece of cake until opengl and C++ required me to understand matrix multiplications and bezier transforms
+2011-12-03T12:42:53  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-12-03T12:43:43  <antimatroid> i'd never written a program before uni
+2011-12-03T12:45:15  <ssclift> Motivation and mentors for kids is crucial.  I was lucky that my Dad let me at his PDP-8 at work (it was old even then, but still used for industrial control) and that we had PET's at the high school with teachers happy to let us use them after class.
+2011-12-03T12:45:58  <McLeopold> antimatroid: do you have time to modify the maze generator to comply with the new map specs?
+2011-12-03T12:46:01  <amstan_> my dad made a parallel port thingy with leds and transistors(so it could power stuff properly)
+2011-12-03T12:46:16  <amstan_> in grade 6 i made a crane controlled from Pascal
+2011-12-03T12:46:32  <antimatroid> McLeopold: in the next week or so yeah
+2011-12-03T12:46:35  <amstan_> i still have that parallel board, it's fun stuff for debugging
+2011-12-03T12:50:06  <McLeopold> amstan_: about KonaEarth, did we not capture compile errors because they were really warnings?
+2011-12-03T12:50:18  <McLeopold> so, he compiled ok?
+2011-12-03T12:50:27  <amstan_> McLeopold: that guy.... ugh
+2011-12-03T12:50:44  <amstan_> McLeopold: yeah... i don't know, i think he fixed it
+2011-12-03T12:50:53  <amstan_> he was casting things he wasn't supposed to
+2011-12-03T12:50:57  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-03T12:51:01  <amstan_> and he was pissed off that we didn't warn him of it
+2011-12-03T12:51:04  <McLeopold> I wondering if we should save warnings into the db, even if you compile ok
+2011-12-03T12:51:40  <amstan_> it would be nice i guess
+2011-12-03T12:51:43  <bugnuts> it would be nice if there was a way to see std err for your bot even if you don't crash...
+2011-12-03T12:52:13  <amstan_> McLeopold: ^ there was a reason we didn't want that
+2011-12-03T12:52:32  <amstan_> was there?
+2011-12-03T12:52:38  <bugnuts> a good example is that I don;t know how fast the servers are compared to my local machine and the only way I think I can get that is to dump it to std err and deliberately crash
+2011-12-03T12:52:42  <McLeopold> well, not for games
+2011-12-03T12:52:49  <McLeopold> but for a submission, the more the better
+2011-12-03T12:54:24  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-03T12:55:34  <Anilm3> when will the next challenge be?
+2011-12-03T12:56:21  <amstan_> Anilm3: we're not sure yet
+2011-12-03T12:56:27  <amstan_> Anilm3: keep posting ideas in suggestions
+2011-12-03T12:56:34  <Anilm3> ok
+2011-12-03T12:58:26  <antimatroid> wtf
+2011-12-03T12:58:42  <antimatroid> my computer is taking like 1.2 second to output "go" :s
+2011-12-03T12:58:48  <antimatroid> but only sometimes
+2011-12-03T12:59:03  <antimatroid> i am flushing whenever i output a line
+2011-12-03T12:59:16  *** liberforce <liberforce!~luis@AMontsouris-551-1-26-174.w90-24.abo.wanadoo.fr> has left #aichallenge
+2011-12-03T12:59:58  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-92-231.neo.res.rr.com> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T13:03:23  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-12-03T13:04:25  <antimatroid> http://pastebin.com/JU43RP6n
+2011-12-03T13:04:30  <antimatroid> fml that doesn't even make sense :\
+2011-12-03T13:07:28  <amstan_> antimatroid: wow
+2011-12-03T13:07:38  <Fluxid> i can't track down the segfault this time. i see where it crashes, on which line, but i have no idea why pointer is b0rked
+2011-12-03T13:09:20  *** Cyndre <Cyndre!~Cyndre@DOCSIS-182-133.cable-lynx.net> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T13:12:02  *** choas <choas!~lars@d86-33-20-27.cust.tele2.at> has quit IRC (Ping timeout: 255 seconds)
+2011-12-03T13:12:28  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@wikipedia/Thiago-R-Ramos> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T13:12:51  <ssclift> I've had good success debugging from the tool directory.  Use the game log 0.bot0.input script and run  the bot with
+2011-12-03T13:12:57  <ssclift>    gdb MyBot
+2011-12-03T13:13:13  <ssclift>    run < game_log/0.bot0.input
+2011-12-03T13:13:31  <ssclift> then use valgrind to pick up on where the initialization fails.
+2011-12-03T13:14:43  <ssclift> Sigh... such a long pause between games... :(
+2011-12-03T13:15:22  <Fluxid> yeah, i have input in file, and bot reads input from that file. and valgrind shows me the place
+2011-12-03T13:15:31  <Fluxid> i'll try running it in gdb next
+2011-12-03T13:16:38  <ssclift> Does the competition need people to buy more VPS time? :)
+2011-12-03T13:17:07  <ssclift> I've got a spare box on an ADSL line, you'd be welcome to it.  Nothing big, just an old AMD box.
+2011-12-03T13:17:10  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-12-03T13:17:18  * ssclift has to scoot...
+2011-12-03T13:18:10  <Fluxid> it is required that each machine is identical for game fairness
+2011-12-03T13:18:29  *** Surya <Surya!4ec01c28@gateway/web/freenode/ip.78.192.28.40> has joined #aichallenge
+2011-12-03T13:19:47  <Surya> Hey, do you guys monitor every ant in order to make them follow a "global" path? Or do you reset everything and start from scratch for every turn?
+2011-12-03T13:20:22  <Surya> I'm hesitating between both: The first one seem to not be very dynamic while the second make my ants jitter
+2011-12-03T13:22:05  * antimatroid has no idea what's causing that
+2011-12-03T13:22:08  <antimatroid> must be bed time
+2011-12-03T13:22:25  <Surya> :)
+2011-12-03T13:23:20  <McLeopold> Surya: if your ants jitter, that might be because you don't have consistant ordering or bad heuristics
+2011-12-03T13:24:14  <Surya> I base everything on the visibility state of the map, so yeah, it's not very consistant. I can enter into cycles which make my ants jitter
+2011-12-03T13:24:22  <Surya> I'm gonna keep thinking about it
+2011-12-03T13:26:30  *** xale <xale!57609c3e@gateway/web/freenode/ip.87.96.156.62> has joined #aichallenge
+2011-12-03T13:26:53  <Fluxid> can i setup a breakpoint WITHIN a C code?
+2011-12-03T13:27:18  <Fluxid> i want to conditionally break execution with gdb from the code level
+2011-12-03T13:27:19  <xale> any1 know what test map / bot is running on the server
+2011-12-03T13:28:26  <ikaros> Surya, try to assing each square a value for how long you have not seen this tile
+2011-12-03T13:28:43  <ikaros> and continue from there
+2011-12-03T13:35:24  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 258 seconds)
+2011-12-03T13:36:39  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T13:39:59  *** xale <xale!57609c3e@gateway/web/freenode/ip.87.96.156.62> has quit IRC (Quit: Page closed)
+2011-12-03T13:47:08  <Surya> ikaros: ok, it's an interesting idea
+2011-12-03T13:47:21  <Minthos> Fluxid: what do you mean? you can break on source lines
+2011-12-03T13:48:14  <Fluxid> Minthos: ok, but material so far didn't mention how can i break inside dynamically loaded library....
+2011-12-03T13:48:34  <Fluxid> oh wait
+2011-12-03T13:48:50  <Fluxid> lemme google
+2011-12-03T13:49:40  <Fluxid> anyway, going to drink bear so i'll play later
+2011-12-03T13:50:13  <Minthos> eww
+2011-12-03T13:52:16  *** deltree_ <deltree_!~chatzilla@97.104.16.141> has quit IRC (Quit: ChatZilla 0.9.87-rdmsoft [XULRunner 1.9.0.17/2009122204])
+2011-12-03T13:59:01  <iglo> krass
+2011-12-03T13:59:08  <iglo> VHDL ist uebelst logisch
+2011-12-03T14:02:03  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-12-03T14:04:31  <mleise> iglo: where are your umlauts?
+2011-12-03T14:04:38  *** jacob_strauss <jacob_strauss!bc4ebc51@gateway/web/freenode/ip.188.78.188.81> has joined #aichallenge
+2011-12-03T14:07:09  *** Conorach <Conorach!~cono@90.170.78.100> has joined #aichallenge
+2011-12-03T14:07:45  <iglo> sorry for germanlanguage
+2011-12-03T14:08:47  <iglo> never use umlauts except of formal mails or letters
+2011-12-03T14:10:29  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T14:14:10  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has joined #aichallenge
+2011-12-03T14:14:31  *** jinglebellz <jinglebellz!tdubellz@freenode/staff/tdubellz> has quit IRC (Quit: restarting)
+2011-12-03T14:15:06  *** afw314 <afw314!47bebb38@gateway/web/freenode/ip.71.190.187.56> has quit IRC (Quit: Page closed)
+2011-12-03T14:15:57  *** jinglebellz <jinglebellz!tdubellz@freenode/staff/tdubellz> has joined #aichallenge
+2011-12-03T14:16:46  *** praveen_ <praveen_!7aac1fa3@gateway/web/freenode/ip.122.172.31.163> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T14:16:48  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-03T14:18:57  <CIA-53> aichallenge: McLeopold epsilon * r57c90ae / (website/sql.php website/visualizer.php): add game error messages for admins - http://git.io/MhwWEQ
+2011-12-03T14:30:01  <BenJackson> Fluxid: just make a dummy function and call it when you want to break
+2011-12-03T14:30:06  <BenJackson> set a breakpoint in that function
+2011-12-03T14:31:20  <BenJackson> wow, my bot had several good games in a row on aichallenge
+2011-12-03T14:44:07  <BenJackson> http://aichallenge.org/visualizer.php?game=157419&user=3473&turn=709
+2011-12-03T14:44:12  <BenJackson> looks like ChrisH hit some kind of soft timeout
+2011-12-03T14:44:51  <BenJackson> I guess if he knew he had umpty ants in his hive it couldn't be taken
+2011-12-03T14:46:22  <bugnuts> I talked to him about that - he stops moving ants if the turns to end is < the distance to a hill
+2011-12-03T14:46:55  <bugnuts> less storing up ants in the hill than freeing more cpu time for combat near enemy hills I think
+2011-12-03T14:46:58  <BenJackson> he never saw my hill, though
+2011-12-03T14:47:01  <BenJackson> probably a bug
+2011-12-03T14:47:11  *** choas <choas!~lars@d86-33-20-27.cust.tele2.at> has joined #aichallenge
+2011-12-03T14:47:25  <BenJackson> he could have reached my hill by the end (ignoring combat along the way)
+2011-12-03T14:48:21  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-12-03T14:48:55  <bugnuts> yeah I pointed out the same thing to him on another match but he seemed to think it was working as intended.  I agree he should still be moving off the hive
+2011-12-03T14:49:34  <bugnuts> I think he must use some penalized distance metric which takes into account some delay from combat.
+2011-12-03T14:49:38  *** TwistedLogic <TwistedLogic!70c6400f@gateway/web/freenode/ip.112.198.64.15> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T14:49:41  <BenJackson> he quit fighting the ants at my frontier
+2011-12-03T14:49:45  *** ruuhkis <ruuhkis!~ruuhkis@b469.ip11.netikka.fi> has joined #aichallenge
+2011-12-03T14:49:53  <BenJackson> but I guess that stalemate was goign on from about turn 50-100 anyway
+2011-12-03T14:51:06  <BenJackson> looking at that game I see that ChrisH and I managed to "break out" equally effectively
+2011-12-03T14:51:15  <BenJackson> but when he passed through an area he hilled all the enemies
+2011-12-03T14:51:18  <BenJackson> whereas I was content to slip by
+2011-12-03T14:51:36  <BenJackson> so I achieved my exploration goal but he was picking up territory
+2011-12-03T14:56:08  *** jinglebellz <jinglebellz!tdubellz@freenode/staff/tdubellz> has quit IRC (Quit: brb)
+2011-12-03T14:56:50  *** iglo <iglo!~xy@xdsl-188-118-169-28.dip.osnanet.de> has quit IRC (Remote host closed the connection)
+2011-12-03T14:59:14  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-12-03T14:59:39  *** cbad <cbad!~cbad@fsf/member/cbad> has quit IRC (Ping timeout: 245 seconds)
+2011-12-03T14:59:49  <Anilm3> Hi contestbot_
+2011-12-03T15:00:02  <Anilm3> :(
+2011-12-03T15:00:09  <Anilm3> @tcp
+2011-12-03T15:00:10  <contestbot_> Anilm3: tcp could be http://ants.fluxid.pl/howto.
+2011-12-03T15:00:24  <Anilm3> @udp
+2011-12-03T15:00:25  <contestbot_> Anilm3: Run as fast as you can and don't look back.
+2011-12-03T15:01:07  <BenJackson> haha udp
+2011-12-03T15:01:12  <BenJackson> I should make a udp contest server
+2011-12-03T15:01:27  <Anilm3> :P
+2011-12-03T15:01:48  *** cbad <cbad!~cbad@fsf/member/cbad> has joined #aichallenge
+2011-12-03T15:05:14  <bugnuts> or an rfc 1149 compliant one
+2011-12-03T15:06:58  <BenJackson> it would be fun to take a set of bots that don't assume any of their commands will work
+2011-12-03T15:07:12  <BenJackson> (i.e. they accept ant locations from the server even if they are unexpected)
+2011-12-03T15:07:20  <BenJackson> and tie them all together with a voting program
+2011-12-03T15:09:12  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-12-03T15:09:40  *** jmcarthur <jmcarthur!~jake@pool-72-89-247-53.nycmny.fios.verizon.net> has quit IRC (Read error: Connection reset by peer)
+2011-12-03T15:11:44  *** jmcarthur <jmcarthur!~jake@pool-72-89-247-53.nycmny.fios.verizon.net> has joined #aichallenge
+2011-12-03T15:13:23  <Anilm3> any pointers on how to implement combat?
+2011-12-03T15:18:49  <Anilm3> no pointers at all?
+2011-12-03T15:18:56  <Anilm3> that's tough :(
+2011-12-03T15:23:25  <BenJackson> combat is the differentiator in the 10-99th (approx) place
+2011-12-03T15:24:31  <Minthos> google minimax
+2011-12-03T15:25:16  <Anilm3> don't worry BenJackson I'm not anywhere near
+2011-12-03T15:25:50  <BenJackson> I just watched a game with #95 and #113 and I see them both exhibiting some minor combat awareness
+2011-12-03T15:26:18  <Anilm3> Minthos: thanks
+2011-12-03T15:27:43  <BenJackson> definitely seeing combat skills in the 50s and above
+2011-12-03T15:27:55  <BenJackson> which is a lot more than there was last time I surveyed
+2011-12-03T15:28:22  <BenJackson> Anilm3: I don't know that min-max, etc are really useful tips
+2011-12-03T15:28:39  <BenJackson> they're just going to tell you "try their moves against your moves and pick the good outcomes"
+2011-12-03T15:28:45  <BenJackson> which I think everyone knows
+2011-12-03T15:28:58  <BenJackson> the hard part is representing the battle in a way that lets you do that fast enough
+2011-12-03T15:29:39  <Anilm3> thanks BenJackson
+2011-12-03T15:29:59  <Anilm3> I think I'll work on other stuff for the time being
+2011-12-03T15:32:04  <rmmh> has anyone modified tcpclient.py to have output closer to playgame.py ?
+2011-12-03T15:32:16  <BenJackson> you can't
+2011-12-03T15:32:19  <Minthos> I'm not actually minimaxing, I'm doing blatant formation fighting and I have some fairly sophisticated "prediction" logic
+2011-12-03T15:32:20  <rmmh> you can.
+2011-12-03T15:32:21  <BenJackson> tcpclient doesn't know those things
+2011-12-03T15:32:31  <Minthos> but I'm not in the top 100 either
+2011-12-03T15:32:34  <rmmh> I can modify it, I just don't want to duplicate the effort
+2011-12-03T15:32:35  *** Palmik <Palmik!~palmik@man-208-200.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-12-03T15:32:53  <BenJackson> you can modify it, but you can't print the stats that playgame does because tcpclient doesn't know those stats
+2011-12-03T15:32:59  <rmmh> yes obviously
+2011-12-03T15:33:10  <rmmh> "closer" to playgame.py, not identical ;)
+2011-12-03T15:44:22  *** mleise <mleise!~marco@dslb-178-011-040-082.pools.arcor-ip.net> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T15:48:25  <bugnuts> well I pretty much fully reimplemented the game engine in go.
+2011-12-03T15:50:33  *** bmh <bmh!ada4e181@gateway/web/freenode/ip.173.164.225.129> has joined #aichallenge
+2011-12-03T15:50:39  *** bmh <bmh!ada4e181@fsf/member/bmh> has joined #aichallenge
+2011-12-03T15:52:28  *** keith_ <keith_!43a1fc8b@gateway/web/freenode/ip.67.161.252.139> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T15:57:51  *** delt0r_ <delt0r_!~bob@178-190-205-132.adsl.highway.telekom.at> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T15:59:47  <g0llum> bugnuts, can i l00k at that somewhere ?
+2011-12-03T16:00:39  <g0llum> nvm, more of a joke
+2011-12-03T16:00:44  <bugnuts> heh
+2011-12-03T16:00:55  <bugnuts> on dec 19th you can see it on github
+2011-12-03T16:01:10  <g0llum> ;) of course
+2011-12-03T16:01:34  <BenJackson> I'll probably read any Go entries that are published
+2011-12-03T16:01:50  <BenJackson> I'm curious about Go but nothing I've read made me think it was worth pursuing
+2011-12-03T16:02:04  <bugnuts> it's nice - I parse the json file and run games forward and can test different one step strategies.
+2011-12-03T16:03:22  <rmmh> bugnuts: what rank are you?
+2011-12-03T16:03:36  <bugnuts> 30th iirc
+2011-12-03T16:04:01  <bugnuts> 33rd.  I did not put up a version with combat yet...
+2011-12-03T16:04:03  *** keith_ <keith_!ae179d76@gateway/web/freenode/ip.174.23.157.118> has joined #aichallenge
+2011-12-03T16:04:10  <bugnuts> so hopefully I will improve.
+2011-12-03T16:04:15  <rmmh> 33rd without combat?!
+2011-12-03T16:05:16  <bugnuts> I had avoidance and gathering and then ignore avoidance defending my hill or attacking another
+2011-12-03T16:05:33  <BenJackson> I definitely see awareness of enemies around 100th place and what appears to be intentional ant killing in the 50s
+2011-12-03T16:06:07  <bugnuts> any ants kills by me are purely accidental I can assure you :)
+2011-12-03T16:06:19  *** ruuhkis <ruuhkis!~ruuhkis@b469.ip11.netikka.fi> has quit IRC ()
+2011-12-03T16:07:20  <Anilm3> bugnuts: really?
+2011-12-03T16:07:26  <g0llum> well, that's a bit depressing.
+2011-12-03T16:07:26  <bugnuts> yes.
+2011-12-03T16:07:28  <Anilm3> it doesn't look that way
+2011-12-03T16:08:32  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T16:08:33  <bugnuts> I think the version up now also turns off all avoidance if more than some %age of my ants are static.  Then they step towards whatever goal they had.
+2011-12-03T16:08:55  <BenJackson> everyone seems to get to about there
+2011-12-03T16:08:58  <BenJackson> then implement true combat
+2011-12-03T16:09:01  <BenJackson> then their ant is worse
+2011-12-03T16:09:03  <bugnuts> which makes them look like they are attacking but I pay no attention at all to whether it's good or bad.
+2011-12-03T16:09:04  <BenJackson> ie less aggressive
+2011-12-03T16:09:04  <rmmh> haha
+2011-12-03T16:10:08  <Anilm3> I like how your bot walks
+2011-12-03T16:10:36  <bmh> sweet, my server hasn't caught on fire
+2011-12-03T16:11:06  *** delt0r_ <delt0r_!~bob@194-166-32-239.adsl.highway.telekom.at> has joined #aichallenge
+2011-12-03T16:11:08  <g0llum> bmh, server ?
+2011-12-03T16:11:17  <bmh> g0llum: bhickey.net:2080
+2011-12-03T16:11:27  <bmh> the "n00b server"
+2011-12-03T16:11:39  <g0llum> oh, that's you..
+2011-12-03T16:12:02  <bmh> I don't really live in a virtual machine in Freemont, but yes.
+2011-12-03T16:12:21  <g0llum> why isn't there any ranking ?
+2011-12-03T16:13:13  * bmh coughs...
+2011-12-03T16:13:21  <bmh> because I don't know how to setup trueskill?
+2011-12-03T16:13:35  <rmmh> you could just do elo
+2011-12-03T16:13:40  <g0llum> is it on purpose ?, or did you ver check if php works ?
+2011-12-03T16:13:55  <bmh> php? the server is a bunch of python.
+2011-12-03T16:14:02  <bmh> rmmh: is there a variable I can set to use Elo?
+2011-12-03T16:14:12  <g0llum> the ranking still needs php
+2011-12-03T16:14:42  *** jacob_strauss <jacob_strauss!bc4ebc51@gateway/web/freenode/ip.188.78.188.81> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T16:15:14  <g0llum> nice, fast server, still
+2011-12-03T16:15:40  <BenJackson> bmh: the ranking is done by invoking an external program to calc truskill
+2011-12-03T16:15:47  <BenJackson> you have to drop one of those methods in
+2011-12-03T16:15:48  <BenJackson> java or php
+2011-12-03T16:16:12  <bmh> BenJackson: let's start be seeing if I can remember my root password
+2011-12-03T16:16:14  <g0llum> bmh, please prefer the php one there
+2011-12-03T16:19:43  <bmh> g0llum: ok. how do I drop it in?
+2011-12-03T16:20:09  <g0llum> i think it will just work, if you enable php
+2011-12-03T16:20:13  <g0llum> 5.3
+2011-12-03T16:21:06  <g0llum> if it can be found on the path, it will just start working
+2011-12-03T16:22:54  <bmh> looks like I'll need to bounce the TCP server
+2011-12-03T16:24:40  <g0llum> maybe not even
+2011-12-03T16:25:09  <BenJackson> going to be hard to tell it's working because no games appear to be happening
+2011-12-03T16:25:17  <bmh> ha.
+2011-12-03T16:25:38  <g0llum> easy to change that
+2011-12-03T16:25:48  <bmh> ok, the option is set to php. I just upgraded to 5.3
+2011-12-03T16:27:27  <bmh> perhaps by the magic of computers it will just start working?
+2011-12-03T16:27:28  <Anilm3> bugnuts: how do you make your ants walk like that?
+2011-12-03T16:28:46  <bugnuts> ?
+2011-12-03T16:29:07  <Anilm3> following each other in paths
+2011-12-03T16:30:08  <bugnuts> mostly just happenstance.  if they are going to the same goal they follow the shortest path which makes them line up in places
+2011-12-03T16:30:37  <Anilm3> oh, interesting
+2011-12-03T16:33:03  <BenJackson> http://paste.aichallenge.org/lbvap/
+2011-12-03T16:33:05  <BenJackson> I liked that
+2011-12-03T16:33:12  <g0llum> bmh, that seemed to eork, thanks!
+2011-12-03T16:33:18  <BenJackson> because of how they all took different paths in the middle and then zipped back together
+2011-12-03T16:34:55  <bugnuts> yeah they don't see the opening until turn 26 so before that they are pathing through the unknown spots.
+2011-12-03T16:40:34  <bmh> this thing really chews through bandwidth. I'm seeing about 1mb of traffic per game
+2011-12-03T16:42:10  <bmh> that's like... loading a single image on a website ;)
+2011-12-03T16:49:30  <BenJackson> I was worried about those BFS animatinos
+2011-12-03T16:49:34  <BenJackson> because for gifs they're huge
+2011-12-03T16:49:44  <BenJackson> but they're smallish for a normal digital camera pic
+2011-12-03T16:50:42  <bmh> did you make them by hand?
+2011-12-03T16:50:48  <BenJackson> noooo
+2011-12-03T16:50:52  <BenJackson> I wrote a python program that made them
+2011-12-03T16:51:10  <BenJackson> I haven't even *watched* them all by hand :)
+2011-12-03T16:54:30  *** ssclift <ssclift!4c0ab063@gateway/web/freenode/ip.76.10.176.99> has joined #aichallenge
+2011-12-03T17:05:29  <g0llum> BenJackson, whatever, any time you put into that, it was worth it
+2011-12-03T17:08:34  *** pguillory <pguillory!62f8eec0@gateway/web/freenode/ip.98.248.238.192> has joined #aichallenge
+2011-12-03T17:14:48  *** pguillory <pguillory!62f8eec0@gateway/web/freenode/ip.98.248.238.192> has quit IRC (Quit: Page closed)
+2011-12-03T17:22:14  *** Jsauidhasj <Jsauidhasj!~adam@87.97.39.208.pool.invitel.hu> has joined #aichallenge
+2011-12-03T17:23:41  *** TwistedLogic <TwistedLogic!70c6400f@gateway/web/freenode/ip.112.198.64.15> has joined #aichallenge
+2011-12-03T17:25:25  *** Anilm3 <Anilm3!~anil@92.Red-79-144-123.dynamicIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-12-03T17:27:29  <Kommander> oh snap, my combat code is working now
+2011-12-03T17:31:27  <bmh> Kommander: hooray -- what are you doing for fighting?
+2011-12-03T17:34:01  <Kommander> it's really simple
+2011-12-03T17:34:19  <Kommander> i finally got all the numbers right for my diffusion maps
+2011-12-03T17:34:46  <bmh> diffusion... I tried that. Couldn't get it fast enough
+2011-12-03T17:34:46  <Kommander> my fighting involves throwing as many ants as possible at enemy hills, lol
+2011-12-03T17:35:03  <Kommander> it's working alright for me, even on python
+2011-12-03T17:35:20  <bmh> ha :) good job
+2011-12-03T17:35:31  <bmh> where are you playing, fluxid?
+2011-12-03T17:35:36  <Kommander> yea
+2011-12-03T17:36:04  <BenJackson> the first time my ants intentionally killed 2v1 I was pretty excited
+2011-12-03T17:36:30  <bmh> I'm still looking forward to convincing my bot to do something other than crash.
+2011-12-03T17:36:38  <Kommander> i need to figure out the map gen thing still
+2011-12-03T17:36:46  <TwistedLogic> thestinger: my bot  with a semi-working combat managed to take out 2 of your bots here. a little achievement for me.  http://ants.fluxid.pl/replay.11541
+2011-12-03T17:36:54  <bmh> Kommander: you mean for figuring out where their hills are?
+2011-12-03T17:37:10  <Kommander> yeah
+2011-12-03T17:37:19  <Kommander> and water + food hopefully as well
+2011-12-03T17:37:25  <bmh> can I suggest something simpler?
+2011-12-03T17:37:40  <Kommander> go ahead
+2011-12-03T17:38:02  <bmh> Suppose you see an enemy ant on turn N. You know that their hill must be within N steps of that position.
+2011-12-03T17:38:24  <Kommander> hm, interesting
+2011-12-03T17:38:27  <bmh> So count the number of squares within N steps of that spot that you haven't seen and assume that they're all equally likely
+2011-12-03T17:39:03  <Kommander> that's a really good idea
+2011-12-03T17:39:04  <Kommander> thanks!
+2011-12-03T17:39:14  <bmh> so around that area, each turn you can expand a region of 'non-informative' squares
+2011-12-03T17:39:27  <bmh> but if you see another ant in a region that isn't marked as non-informative, you can do the same thing
+2011-12-03T17:39:51  <bmh> They you can combine the data from your observations to push toward the most probable square
+2011-12-03T17:40:28  <bmh> In the multi-hill case it's a little more complicated, but should be workable. (I haven't implemented this yet because my bot is still exploding)
+2011-12-03T17:41:23  <Kommander> well, my bot is okay for early - mid game, but it's having trouble navigating bigger maze maps due to the way i am setting defusion values
+2011-12-03T17:41:52  <Kommander> so oftentimes, it can't find the hills across the map
+2011-12-03T17:42:07  <Kommander> so i was thinking of doing the map rotation + a bfs
+2011-12-03T17:42:31  <Kommander> but i will see what i can do with your plan, it seems simple to impliment
+2011-12-03T17:43:11  <bmh> I think it's good enough that symmetry detection won't add much.
+2011-12-03T17:43:38  <Kommander> it sounds pretty amazing
+2011-12-03T17:43:50  <Kommander> my other bug right now is my bot is way too suicide happy
+2011-12-03T17:43:57  <Kommander> well, as in even trades
+2011-12-03T17:44:11  <Kommander> so i die in pincer attacks
+2011-12-03T17:45:38  <McLeopold> bmh: you have a tcp server now? http://paste.aichallenge.org/aTASO/
+2011-12-03T17:45:58  <bmh> McLeopold: yes, it's on the forums -- bhickey.net:2080
+2011-12-03T17:46:37  <bmh> McLeopold: can we get a four player map where all the hills are initially visible from eachother but the walking distance between them is far? :)
+2011-12-03T17:46:46  <McLeopold> yes
+2011-12-03T17:47:03  <McLeopold> how many?
+2011-12-03T17:47:14  *** g0llum <g0llum!~g0llum@82.113.121.15> has quit IRC (Read error: Connection reset by peer)
+2011-12-03T17:47:22  <bmh> McLeopold: uh.. a million?
+2011-12-03T17:50:19  <McLeopold> how about 1?
+2011-12-03T17:50:27  <McLeopold> I'll have to edit by hand...
+2011-12-03T17:51:28  <Kommander> make a double spiral
+2011-12-03T17:51:55  *** ztfw <ztfw!~ztfw@219.140.10.93.rev.sfr.net> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T17:53:42  *** analyst74 <analyst74!~analyst74@199.119.234.1> has joined #aichallenge
+2011-12-03T17:57:57  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-12-03T18:05:21  <McLeopold> bmh: start looking at paste.aichallenge.org
+2011-12-03T18:05:23  *** TwistedLogic <TwistedLogic!70c6400f@gateway/web/freenode/ip.112.198.64.15> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T18:06:03  <bmh> McLeopold: sweet!
+2011-12-03T18:06:08  <bmh> I should add those to my server...
+2011-12-03T18:06:24  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T18:09:29  <McLeopold> I like the last one best...
+2011-12-03T18:11:36  *** Fred_ <Fred_!58ac939f@gateway/web/freenode/ip.88.172.147.159> has joined #aichallenge
+2011-12-03T18:12:02  *** Fred_ is now known as Guest2901
+2011-12-03T18:12:12  <bmh> McLeopold: the hills are within fight radius?
+2011-12-03T18:12:53  <olexs1> can one download maps from those replays somehow, as map files? for example the one used here: http://paste.aichallenge.org/n7jEL/
+2011-12-03T18:13:20  *** Jsauidhasj <Jsauidhasj!~adam@87.97.39.208.pool.invitel.hu> has quit IRC (Quit: Leaving)
+2011-12-03T18:14:23  <bmh> http://paste.aichallenge.org/DtzmV/  -- cool
+2011-12-03T18:15:23  <Kommander> wow my 15 ants are holding 3 hills for 500 turns
+2011-12-03T18:16:01  *** Guest2901 <Guest2901!58ac939f@gateway/web/freenode/ip.88.172.147.159> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T18:17:30  <olexs1> McLeopold: is it possible to download map files from game replays on ants paste?
+2011-12-03T18:17:58  <McLeopold> olexs1: I don't think so...
+2011-12-03T18:18:30  <McLeopold> olexs1: yes it is, look at the raw format, the map data is in there
+2011-12-03T18:18:38  <McLeopold> It just needs to be taken out of the json
+2011-12-03T18:18:48  <olexs1> ok, found it in there. thanks
+2011-12-03T18:20:27  *** mj41 <mj41!~mj41_nby@80.82.144.206> has joined #aichallenge
+2011-12-03T18:25:03  *** Conorach <Conorach!~cono@90.170.78.100> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T18:29:38  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-12-03T18:41:09  *** keith_ <keith_!ae179d76@gateway/web/freenode/ip.174.23.157.118> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T18:44:39  *** mj41 <mj41!~mj41_nby@80.82.144.206> has quit IRC (Ping timeout: 245 seconds)
+2011-12-03T18:47:02  *** pguillory <pguillory!32833c0c@gateway/web/freenode/ip.50.131.60.12> has joined #aichallenge
+2011-12-03T18:50:00  <xathis> hey pguillory, just wanted to say that your bot is awesome!
+2011-12-03T18:50:27  <xathis> pguillory: i'm sure you'll kick me from the first place pretty soon if you don't re-upload
+2011-12-03T18:52:02  <ikaros> rankings are not working for me is there a problem with the script?
+2011-12-03T19:07:23  *** kilae <kilae!~chatzilla@catv-161-018.tbwil.ch> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 8.0/20111104165243])
+2011-12-03T19:07:54  *** kire <kire!~kire@78-22-125-201.access.telenet.be> has quit IRC (Quit: Leaving)
+2011-12-03T19:09:05  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has joined #aichallenge
+2011-12-03T19:15:51  <pguillory> xathis: thanks man!
+2011-12-03T19:16:15  <pguillory> i'm pretty curious what you're sitting on though ;)
+2011-12-03T19:16:33  *** marijnfs <marijnfs!~marijn@80-219-197-15.dclient.hispeed.ch> has quit IRC (Quit: Lost terminal)
+2011-12-03T19:17:57  *** xathis_ <xathis_!~xathis@f054013212.adsl.alicedsl.de> has joined #aichallenge
+2011-12-03T19:20:32  *** xathis <xathis!~xathis@f054013202.adsl.alicedsl.de> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T19:24:28  *** choas <choas!~lars@d86-33-20-27.cust.tele2.at> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T19:28:31  <bmh> pguillory: so, tell us about your fight code :)
+2011-12-03T19:36:07  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has joined #aichallenge
+2011-12-03T19:37:59  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: quit)
+2011-12-03T19:39:03  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@201.74.168.93> has joined #aichallenge
+2011-12-03T19:39:12  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@wikipedia/Thiago-R-Ramos> has joined #aichallenge
+2011-12-03T19:39:56  <ThiagoRRamos> Hey
+2011-12-03T19:40:30  <ThiagoRRamos> :D
+2011-12-03T19:41:31  <ThiagoRRamos> When nobody razes a hill
+2011-12-03T19:41:45  <ThiagoRRamos> Who's the winner of the game?
+2011-12-03T19:42:00  <olexs1> nobody...
+2011-12-03T19:42:04  <ikaros> all :)
+2011-12-03T19:42:34  <ThiagoRRamos> Hmm
+2011-12-03T19:43:01  <ThiagoRRamos> So one everybody gets a 1st in the "game result", the order doesn't matter?
+2011-12-03T19:43:05  <ThiagoRRamos> once*
+2011-12-03T19:44:37  <ikaros> same place is same place id guess .. like in sports if there are two second places there is no third
+2011-12-03T19:45:44  <ThiagoRRamos> Hmm
+2011-12-03T19:46:07  *** analyst74 <analyst74!~analyst74@199.119.234.1> has quit IRC (Ping timeout: 248 seconds)
+2011-12-03T19:46:28  *** analyst74 <analyst74!~analyst74@199.119.234.1> has joined #aichallenge
+2011-12-03T19:47:19  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-12-03T19:49:04  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-12-03T19:50:06  <rwest_> bmh: I like your server because nobody has combat code and I can win :)
+2011-12-03T19:55:32  *** b0rder <b0rder!~b0rder@123.123.111.164> has joined #aichallenge
+2011-12-03T19:56:50  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-03T19:57:02  *** bretep_ <bretep_!52a94273@gateway/web/freenode/ip.82.169.66.115> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T19:57:54  <bmh> rwest_: that's the points :-D
+2011-12-03T19:58:12  <bmh> rwest_: want me to run hunterbot on it?
+2011-12-03T19:58:22  <rwest_> bmh: no need, I am number 1 on it
+2011-12-03T19:58:30  <rwest_> I just added my older bots to the mix
+2011-12-03T19:58:36  <olexs1> I just joined, trying to make some competition... lets see how that turns out
+2011-12-03T19:59:09  <bmh> glad it's getting use AND I'm glad the server hasn't melted
+2011-12-03T19:59:23  <rwest_> I have 3 generations of my bot running, if they can beat v1, they are on the right track
+2011-12-03T19:59:58  <rwest_> I need to somehow separate things now
+2011-12-03T20:00:10  <rwest_> influence maps will be very difficult for combat
+2011-12-03T20:00:28  <bmh> CPU usage: http://imgur.com/WPt5i
+2011-12-03T20:00:37  *** analyst74 <analyst74!~analyst74@199.119.234.1> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T20:06:25  <amstan_> bmh: i like how you can go above 100% with that graph
+2011-12-03T20:06:56  <rwest_> cores!
+2011-12-03T20:07:14  <bmh> amstan_: yeah, if other vms on the host are idle, I can use their resources
+2011-12-03T20:07:25  <amstan_> oh, ok
+2011-12-03T20:07:31  <rwest_> or that
+2011-12-03T20:08:11  <amstan_> rwest_: you can have 100% represent all cores active
+2011-12-03T20:16:55  <rwest_> olexs1: you are crushing hunterbot :)
+2011-12-03T20:17:11  <olexs1> rwest_: I sure hope so :)
+2011-12-03T20:18:09  <olexs1> not the worthiest opponent, really...
+2011-12-03T20:18:46  <bmh> I loaded up GreedyBot instead
+2011-12-03T20:19:03  <bmh> I'd run my own -- DiffusionBot -- but it's really worse than either of those
+2011-12-03T20:19:53  <olexs1> right, one more thing that needs fixing, and the current version should be fit for re-upload on aichallenge
+2011-12-03T20:23:27  <bmh> well, off to a christmas party. I've asked GreedyBot to play a thousand rounds :)
+2011-12-03T20:24:25  <olexs1> have fun :)
+2011-12-03T20:40:32  *** pguillory <pguillory!32833c0c@gateway/web/freenode/ip.50.131.60.12> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T20:43:50  <rmmh> hmm, how are people doing patrolling? I tried bfs towards squares that aren't visible, but that doesn't maximize the number of seen squares
+2011-12-03T20:45:04  <olexs1> rmmh: I do pretty much exactly that, works rather well
+2011-12-03T20:47:57  <rmmh> do you assign each ant a role?
+2011-12-03T20:48:26  <olexs1> not directly. I have a prioritized list of things to be done, and final items on the list will always use up all available ants
+2011-12-03T20:49:02  <antimatroid> bah
+2011-12-03T20:49:10  <antimatroid> i don't know what my problem was last night :(
+2011-12-03T20:49:59  <AntDroid> nice game here: http://aichallenge.org/visualizer.php?game=158597&user=589
+2011-12-03T20:50:58  <AntDroid> xathis didn't manage to score as it was under siege at all sides
+2011-12-03T20:53:20  *** spacebat_ <spacebat_!~spacebat@ubermonkey.net> has joined #aichallenge
+2011-12-03T20:54:50  *** artart78_ <artart78_!~artart78@unaffiliated/artart78> has joined #aichallenge
+2011-12-03T20:55:02  *** oele2 <oele2!wapper@eth1.mine.nu> has joined #aichallenge
+2011-12-03T20:55:20  *** ejls_ <ejls_!~Epsilon01@mszy.mhost.fr> has joined #aichallenge
+2011-12-03T20:57:05  *** spacebat <spacebat!~spacebat@ubermonkey.net> has quit IRC (Ping timeout: 245 seconds)
+2011-12-03T20:57:05  *** artart78 <artart78!~artart78@unaffiliated/artart78> has quit IRC (Ping timeout: 245 seconds)
+2011-12-03T20:57:05  *** ejls <ejls!~Epsilon01@mszy.mhost.fr> has quit IRC (Ping timeout: 245 seconds)
+2011-12-03T20:57:05  *** oelewapperke <oelewapperke!wapper@eth1.mine.nu> has quit IRC (Ping timeout: 245 seconds)
+2011-12-03T20:57:19  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-12-03T21:04:30  <bugnuts> man thats a lot of cell maps.
+2011-12-03T21:08:56  <rmmh> I think I need to change my main loop... right now I just try to make each ant do something, I should look at the goals first
+2011-12-03T21:09:27  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-03T21:09:56  <janzert> contestbot_: you've gained an underscore
+2011-12-03T21:09:57  <contestbot_> janzert: Run as fast as you can and don't look back.
+2011-12-03T21:10:23  <a1k0n> an underscore of great power, evidently
+2011-12-03T21:11:09  <janzert> I'd say something, but I'm busy running ;)
+2011-12-03T21:13:01  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-89-21.neo.res.rr.com> has joined #aichallenge
+2011-12-03T21:16:30  <Kommander> contestbot_: are you a bot?
+2011-12-03T21:16:31  <contestbot_> Kommander: No!
+2011-12-03T21:18:47  <Kommander> contestbot_: does this dress make me look fat?
+2011-12-03T21:18:48  <contestbot_> Kommander: No!
+2011-12-03T21:19:03  <Kommander> contestbot_: No?
+2011-12-03T21:19:04  <contestbot_> Kommander: I'm sorry Dave, err Kommander; I cannot 'No?'.
+2011-12-03T21:20:34  *** treeform_ <treeform_!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-03T21:23:27  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 240 seconds)
+2011-12-03T21:24:27  *** pguillory <pguillory!~pguillory@c-98-248-238-192.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-03T21:27:41  *** jstrong <jstrong!~jstrong@189.229.21.108> has joined #aichallenge
+2011-12-03T21:32:19  <Kommander> whose bot spelt out gg again?
+2011-12-03T21:32:33  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0316.bb.online.no> has quit IRC (Quit: Textual IRC Client: http://www.textualapp.com/)
+2011-12-03T21:33:04  <rmmh> hahaha, that sounds like an awesome feature
+2011-12-03T21:33:18  <olexs1> that was a while ago, I don't remember the name
+2011-12-03T21:33:28  <bugnuts> flashm I think
+2011-12-03T21:33:39  <Kommander> ty
+2011-12-03T21:33:55  <rmmh> please link a game with that if you come across one :)
+2011-12-03T21:34:21  <Kommander> i remember seeing one
+2011-12-03T21:34:25  <Kommander> let me try to find it
+2011-12-03T21:37:03  *** Ashoka <Ashoka!70875a92@gateway/web/freenode/ip.112.135.90.146> has joined #aichallenge
+2011-12-03T21:37:19  <olexs1> finally, I think I've got a version worthy of aichallenge reupload
+2011-12-03T21:37:37  <Kommander> well, here's a bot that paints
+2011-12-03T21:37:38  <Kommander> http://aichallenge.org/visualizer.php?game=95642
+2011-12-03T21:37:46  <olexs1> after bloody days of getting nowhere..
+2011-12-03T21:38:40  <jstrong> did you do thta Kommander
+2011-12-03T21:38:48  <jstrong> that's awesome
+2011-12-03T21:38:56  <jstrong> i think everyone has had the idea but seeing someone actually do it
+2011-12-03T21:38:57  <jstrong> awesome
+2011-12-03T21:39:49  <rmmh> Kommander: niiice
+2011-12-03T21:40:01  <Ashoka> Kommander :cool! is that your bot ?
+2011-12-03T21:40:35  <Kommander> no i wish i am that good
+2011-12-03T21:43:57  <olexs1> could it be that aichallenge servers are struggling right now? very slow page loads
+2011-12-03T21:45:29  <rmmh> are hills reported every turn or only the first turn they're seen?
+2011-12-03T21:45:38  <olexs1> rmmh: every turn
+2011-12-03T21:45:52  <olexs1> only water is first time
+2011-12-03T21:45:57  <rmmh> that's what I thought
+2011-12-03T21:46:08  <olexs1> that's what specifications say :)
+2011-12-03T21:46:20  <rmmh> you're faster than the specifications ;)
+2011-12-03T21:46:30  <bugnuts> GG http://aichallenge.org/visualizer.php?game=136374&user=986&turn=239
+2011-12-03T21:46:34  <rmmh> I'm just modifying tcpclient to do some basic parsing
+2011-12-03T21:46:42  <rmmh> so I get one line per turn instead of a bunch of stuff
+2011-12-03T21:47:04  <olexs1> hm... this sucks. I want to upload my new bot and go to sleep, but can't get any aichallenge page to load at all
+2011-12-03T21:47:17  <Ashoka> olexs1 : best wishes for your newer bot!
+2011-12-03T21:47:42  <olexs1> Ashoka: thanks
+2011-12-03T21:48:11  <Ashoka> olexs1: pages do load for me, must be a connection issue from ur end.
+2011-12-03T21:49:15  <Kommander> haha thanks bugnuts
+2011-12-03T21:49:25  <bugnuts> np
+2011-12-03T21:53:05  <Ashoka> bugnuts: you have taken bit of a risk than the earlier game since u painted while the game is long way from finishing.... did u get late by few turns to get the painting on the final hill ?
+2011-12-03T21:54:03  <rmmh> Ashoka: this isn't bugnuts'
+2011-12-03T21:55:06  *** pguillory <pguillory!~pguillory@c-98-248-238-192.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-03T21:55:29  *** olexs <olexs!~Leviathan@drms-590c5463.pool.mediaWays.net> has joined #aichallenge
+2011-12-03T21:56:04  <Ashoka> rmmh: ah yea, it was flash. silly me. interesting and fun to watch cool ideas (and their implementations) ppl come up with :-)
+2011-12-03T21:56:08  *** olexs1 <olexs1!~Leviathan@drms-590ced6b.pool.mediaWays.net> has quit IRC (Ping timeout: 252 seconds)
+2011-12-03T21:57:02  <Kommander> tcp server is crushing my bot :'(
+2011-12-03T21:57:53  <rmmh> yeah...
+2011-12-03T21:58:01  <rmmh> I blame all the top people running multiple instances 24/7
+2011-12-03T21:58:09  <olexs> bots on tcp are hardcore
+2011-12-03T21:58:33  *** jbroman <jbroman!~jbroman@taurine.csclub.uwaterloo.ca> has left #aichallenge
+2011-12-03T21:58:37  <olexs> many top100 players have experimental version running on fluxid
+2011-12-03T21:59:08  <Ashoka> Kommander: I noticed we need to give about 40ms more for the tcp server. (to submit moves I guess) and also, bots with faster CPUs/bandwidth will have4 a bit of a edge.
+2011-12-03T21:59:33  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-12-03T22:00:41  <Kommander> what's the turn limit on fluxid?
+2011-12-03T22:00:52  <Kommander> 1500?
+2011-12-03T22:01:46  <olexs> lol. my desktop cannot load anything from aichallenge, but my mobile can... guess my provider has something messed up
+2011-12-03T22:02:39  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-89-21.neo.res.rr.com> has quit IRC (Ping timeout: 240 seconds)
+2011-12-03T22:07:41  *** b0rder <b0rder!~b0rder@123.123.111.164> has quit IRC (Quit: 离开)
+2011-12-03T22:09:44  <rmmh> hmm... tcpclient.py suffers from quite a bit of fragmentation
+2011-12-03T22:11:00  <Kommander> anyone have any idea as to how the end ranking is going to work?
+2011-12-03T22:14:19  <bugnuts> I think same as the current competition only submissions frozen and I heard more workers
+2011-12-03T22:16:12  <rmmh> probably a new set of maps as well
+2011-12-03T22:18:34  *** olexs <olexs!~Leviathan@drms-590c5463.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-12-03T22:18:34  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Quit: http://www.cyphase.com/)
+2011-12-03T22:18:43  <Kommander> what are workers?
+2011-12-03T22:18:53  <Kommander> also, lol @ http://forums.aichallenge.org/viewtopic.php?f=9&t=168
+2011-12-03T22:18:54  <rmmh> the servers that run the bots against each other
+2011-12-03T22:18:57  <Kommander> ah
+2011-12-03T22:18:59  <Kommander> okay
+2011-12-03T22:19:27  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-12-03T22:21:49  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-12-03T22:27:49  <rmmh> uh, is fluxid.pl screwy for anyone else
+2011-12-03T22:30:24  *** xathis_ <xathis_!~xathis@f054013212.adsl.alicedsl.de> has quit IRC ()
+2011-12-03T22:34:12  *** treeform_ <treeform_!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-03T22:37:30  *** Ashoka <Ashoka!70875a92@gateway/web/freenode/ip.112.135.90.146> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T22:40:42  <Kommander> it works for me most of the times
+2011-12-03T22:40:51  <Kommander> except i time out way too often for no reason
+2011-12-03T22:49:06  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has quit IRC (Ping timeout: 265 seconds)
+2011-12-03T22:51:31  *** AntDroid <AntDroid!70c6400f@gateway/web/freenode/ip.112.198.64.15> has joined #aichallenge
+2011-12-03T22:54:04  <rmmh> welp, I've got a modified tcpclient.py that's got slightly more helpful output
+2011-12-03T22:55:41  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:ccb:8a1d:94b0:4c6> has quit IRC (Ping timeout: 244 seconds)
+2011-12-03T23:00:09  <jstrong> http://touchpractice.com/
+2011-12-03T23:05:45  *** Ashoka <Ashoka!70875382@gateway/web/freenode/ip.112.135.83.130> has joined #aichallenge
+2011-12-03T23:12:43  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-12-03T23:17:53  *** TheLinker <TheLinker!~TheLinker@host16.190-231-108.telecom.net.ar> has quit IRC (Remote host closed the connection)
+2011-12-03T23:27:16  *** ThiagoRRamos <ThiagoRRamos!~chatzilla@wikipedia/Thiago-R-Ramos> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 8.0/20111104165243])
+2011-12-03T23:27:40  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Quit: Leaving.)
+2011-12-03T23:53:55  *** ChrisH_ <ChrisH_!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-12-03T23:57:53  <ChrisH_> BenJackson: ping
+2011-12-03T23:58:12  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-12-03T23:58:24  *** delt0r_ <delt0r_!~bob@194-166-32-239.adsl.highway.telekom.at> has quit IRC (Ping timeout: 248 seconds)

@@ -1,0 +1,576 @@
+2011-07-17T00:00:42  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has joined #aichallenge
+2011-07-17T00:32:38  *** eashoka <eashoka!7087500e@gateway/web/freenode/ip.112.135.80.14> has joined #aichallenge
+2011-07-17T00:56:23  *** rabidus <rabidus!~tan@85-23-148-168.bb.dnainternet.fi> has joined #aichallenge
+2011-07-17T01:16:42  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Ping timeout: 252 seconds)
+2011-07-17T01:51:51  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-07-17T01:55:05  *** eashoka <eashoka!7087500e@gateway/web/freenode/ip.112.135.80.14> has quit IRC (Quit: Page closed)
+2011-07-17T02:23:44  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has joined #aichallenge
+2011-07-17T02:40:08  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-07-17T04:06:23  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has joined #aichallenge
+2011-07-17T04:12:16  *** pvarga_ <pvarga_!~pvarga@pool-71-187-202-33.nwrknj.fios.verizon.net> has joined #aichallenge
+2011-07-17T04:15:21  *** pvarga <pvarga!~pvarga@pool-71-187-202-33.nwrknj.fios.verizon.net> has quit IRC (Ping timeout: 250 seconds)
+2011-07-17T04:15:21  *** pvarga_ is now known as pvarga
+2011-07-17T04:32:02  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Read error: Connection reset by peer)
+2011-07-17T04:42:04  *** mleise <mleise!~Marco@dslb-092-076-168-139.pools.arcor-ip.net> has joined #aichallenge
+2011-07-17T04:42:25  *** mcstar <mcstar!~mcstar@adsl-89-134-11-210.monradsl.monornet.hu> has joined #aichallenge
+2011-07-17T05:59:35  *** amstan <amstan!~amstan@69-196-151-239.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-07-17T06:25:06  *** filter_ <filter_!admin@adsl-70-131-117-2.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-07-17T06:28:22  *** filter <filter!admin@adsl-70-131-115-25.dsl.emhril.sbcglobal.net> has quit IRC (Ping timeout: 258 seconds)
+2011-07-17T06:58:13  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-07-17T07:03:10  <mcstar> janzert: hi, do you know by any chance, exactly what i need to do to completely disable time-checks when i run the games locally?
+2011-07-17T07:03:58  <mcstar> i guess i need to fiddle with engine.py, but id welcome some input
+2011-07-17T07:04:42  *** pvarga <pvarga!~pvarga@pool-71-187-202-33.nwrknj.fios.verizon.net> has quit IRC (Ping timeout: 255 seconds)
+2011-07-17T07:19:29  <sigh> mcstar: I suppose you could set --turntime and --loadtime to really high values?
+2011-07-17T07:20:02  <mcstar> i hoped for a more elegant solution
+2011-07-17T07:20:08  <sigh> patch the engine so that it doesn't check time if they are set to 0 :P
+2011-07-17T07:20:31  <mcstar> the thing is, that im using lisp, and you know, you can debug a running lisp instance, and this is what id like too
+2011-07-17T07:20:49  <mcstar> but i cant debug if the engine kills the bot, which entered into debugging mode
+2011-07-17T07:21:13  <mcstar> and id like to leave my bot in debugging mode as long as id like
+2011-07-17T07:21:26  <mcstar> im looking into sanbox.py right now
+2011-07-17T07:21:33  <sigh> line 331 in worker/engine.py if you want to change the source
+2011-07-17T07:23:00  <mcstar> so the engine loops get_moves all the time, while it gasnt hit the timelimit
+2011-07-17T07:23:07  <mcstar> hasnt
+2011-07-17T07:23:11  <sigh> yup
+2011-07-17T07:23:27  <mcstar> im wondering if this would solve the problem
+2011-07-17T07:23:34  <mcstar> i mean, there can be other time checks too
+2011-07-17T07:23:42  <sigh> there aren't
+2011-07-17T07:23:48  <mcstar> ah ok :)
+2011-07-17T07:23:57  <mcstar> i believe you
+2011-07-17T07:24:04  <mcstar> thx then
+2011-07-17T07:25:09  <mcstar> sigh: so if i have a question regarding the engine, and mcleo isnt here, shall i ask directly you?
+2011-07-17T07:25:55  <sigh> sure, ask me, but I haven't worked on the engine since about april so my knowledge might be out of date
+2011-07-17T07:28:15  <sigh> git blame still blames me for that line I pointed you at so I feel fairly safe telling you that it will fix your problem :P
+2011-07-17T07:28:33  <mcstar> now, i only have to use netcat to glue the running emacs lisp instance to playgame.py :S
+2011-07-17T07:28:48  <mcstar> sigh: i dont know what you mean sorry
+2011-07-17T07:28:55  <mcstar> git blame? what is that?
+2011-07-17T07:29:43  <sigh> git blame is a command which tells you who made the last change to each line in a file
+2011-07-17T07:30:12  <mcstar> ah
+2011-07-17T07:30:19  <mcstar> clear now :)
+2011-07-17T07:30:26  <sigh> :)
+2011-07-17T07:31:45  <mcstar> nice, cat holds the engine from advancing
+2011-07-17T08:03:11  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has joined #aichallenge
+2011-07-17T08:36:23  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Ping timeout: 258 seconds)
+2011-07-17T08:47:03  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has joined #aichallenge
+2011-07-17T08:54:56  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Read error: Operation timed out)
+2011-07-17T08:57:40  *** mleise <mleise!~Marco@dslb-092-076-168-139.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-07-17T09:12:22  *** fbparis <fbparis!~FB@pdpc/supporter/active/fbparis> has left #aichallenge
+2011-07-17T09:19:33  *** jmreardon <jmreardon!~jmreardon@CPE0026f3271b08-CM0026f3271b05.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-07-17T09:23:08  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Read error: Connection reset by peer)
+2011-07-17T09:25:17  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-07-17T09:44:15  <bhasker> morning
+2011-07-17T09:45:43  <sigh> not morning for another 20 min
+2011-07-17T09:45:48  <sigh> :P
+2011-07-17T09:55:03  *** mcstar <mcstar!~mcstar@adsl-89-134-11-210.monradsl.monornet.hu> has left #aichallenge ("WeeChat 0.3.5")
+2011-07-17T09:58:52  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-07-17T10:13:06  *** fbparis <fbparis!~FB@pdpc/supporter/active/fbparis> has joined #aichallenge
+2011-07-17T10:29:08  *** mleise <mleise!~Marco@dslb-092-076-168-139.pools.arcor-ip.net> has joined #aichallenge
+2011-07-17T10:32:39  <bhasker> its morning here!
+2011-07-17T10:32:48  <bhasker> no sighbot this time around?
+2011-07-17T10:33:08  <sigh> it's morning here too now :)
+2011-07-17T10:34:26  <bhasker> heh here being?
+2011-07-17T10:34:41  <bhasker> aren't you in the same place as me now?
+2011-07-17T10:34:41  <sigh> sydney
+2011-07-17T10:34:44  <bhasker> ah
+2011-07-17T10:34:44  <bhasker> nm
+2011-07-17T10:34:48  *** fbparis <fbparis!~FB@pdpc/supporter/active/fbparis> has left #aichallenge
+2011-07-17T10:34:49  <sigh> where are you?
+2011-07-17T10:34:53  <bhasker> you back in australia
+2011-07-17T10:35:00  <bhasker> weren't you visiting mountain view?
+2011-07-17T10:35:03  <bhasker> a few days back
+2011-07-17T10:35:17  <sigh> I was there in the second half of june
+2011-07-17T10:35:19  <bhasker> i am like 10 miles from there
+2011-07-17T10:35:23  <sigh> ahhh
+2011-07-17T10:35:33  <bhasker> in north san jose border of santa clara/san jose
+2011-07-17T10:36:18  <sigh> i see
+2011-07-17T10:37:17  <antimatroid> morning :)
+2011-07-17T10:38:56  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-88-233-197.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-07-17T10:40:54  *** mcstar <mcstar!~mcstar@adsl-89-134-11-210.monradsl.monornet.hu> has joined #aichallenge
+2011-07-17T10:41:20  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-46-246.dsl.hstntx.swbell.net> has quit IRC (Ping timeout: 258 seconds)
+2011-07-17T10:41:33  <bhasker> morning
+2011-07-17T10:42:41  <sigh> bhasker: did you leave an automated greeting script running?
+2011-07-17T10:42:54  <bhasker> :)
+2011-07-17T10:43:08  <bhasker> maybe i should write an irc bot to do that
+2011-07-17T10:43:43  <sigh> you could probably configure contestbot to do something interesting
+2011-07-17T10:44:15  <bhasker> @contestbot
+2011-07-17T10:44:16  <contestbot> bhasker: User error -- Replace user.
+2011-07-17T10:44:23  <bhasker> @contestbot help
+2011-07-17T10:44:29  <bhasker> @help
+2011-07-17T10:44:29  <contestbot> bhasker: (help [<plugin>] [<command>]) -- This command gives a useful description of what <command> does. <plugin> is only necessary if the command is in more than one plugin.
+2011-07-17T10:44:39  <sigh> @commands
+2011-07-17T10:44:39  <contestbot> sigh: action, add, alert, alias, announce, announce add, announce list, announce remove, any, aol, apply, apropos, at, author, azn, ban add, ban list, ban remove, base, binary, bold, cache, calc, call, capabilities, capability add, capability list, capability remove, capability set, capability setdefault, capability unset, capitalize, change, changename, channel, channels, channelstats, chr, cmd, (5 more messages)
+2011-07-17T10:44:39  <bhasker> @help greeting
+2011-07-17T10:44:40  <contestbot> bhasker: Error: There is no command "greeting".
+2011-07-17T10:44:43  <bhasker> ah
+2011-07-17T10:44:44  <sigh> @next
+2011-07-17T10:44:44  <contestbot> sigh: Error: You must be registered to use this command. If you are already registered, you must either identify (using the identify command) or add a hostmask matching your current hostmask (using the "hostmask add" command).
+2011-07-17T10:45:04  <bhasker> @help action
+2011-07-17T10:45:04  <contestbot> bhasker: (action <text>) -- Replies with <text> as an action. use nested commands to your benefit here.
+2011-07-17T10:45:15  <bhasker> @help action morning
+2011-07-17T10:45:15  <contestbot> bhasker: Error: There is no command "action morning".
+2011-07-17T10:45:34  <sigh> @action morning
+2011-07-17T10:45:34  * contestbot morning
+2011-07-17T10:45:43  <bhasker> @action morning
+2011-07-17T10:45:43  * contestbot morning
+2011-07-17T10:45:48  <bhasker> morning
+2011-07-17T10:45:53  <bhasker> @morning
+2011-07-17T10:45:54  <contestbot> bhasker: No!
+2011-07-17T10:46:01  <bhasker> bah
+2011-07-17T10:46:16  <bhasker> @capability add
+2011-07-17T10:46:16  <contestbot> bhasker: Error: The command "capability add" is available in the Admin and Channel plugins.  Please specify the plugin whose command you wish to call by using its name as a command before "capability add".
+2011-07-17T10:46:30  <bhasker> @help cmd
+2011-07-17T10:46:30  <contestbot> bhasker: (cmd takes no arguments) -- Returns some interesting command-related statistics.
+2011-07-17T10:46:35  <bhasker> @help cmd
+2011-07-17T10:46:35  <contestbot> bhasker: (cmd takes no arguments) -- Returns some interesting command-related statistics.
+2011-07-17T10:46:39  <bhasker> @cmd
+2011-07-17T10:46:39  <contestbot> bhasker: I offer a total of 357 commands in 47 command-based plugins.  I have processed 97 commands.
+2011-07-17T10:46:49  <bhasker> hmm 357 commands in 47 plugins
+2011-07-17T10:47:00  <bhasker> @plugins
+2011-07-17T10:47:00  <contestbot> bhasker: (plugins <command>) -- Returns the names of all plugins that contain <command>.
+2011-07-17T10:47:07  <bhasker> @plugins reply
+2011-07-17T10:47:07  <contestbot> bhasker: The "reply" command is available in the Note and Reply plugins.
+2011-07-17T10:47:14  <bhasker> @help reply
+2011-07-17T10:47:14  <contestbot> bhasker: (reply <text>) -- Replies with <text>. Equivalent to the alias, 'echo $nick: $1'.
+2011-07-17T10:47:22  <bhasker> @reply morning
+2011-07-17T10:47:22  <contestbot> bhasker: morning
+2011-07-17T10:47:29  <bhasker> @help note
+2011-07-17T10:47:29  <contestbot> bhasker: (note <id>) -- Retrieves a single note by its unique note id. Use the 'note list' command to see what unread notes you have.
+2011-07-17T10:47:37  <bhasker> @help reply
+2011-07-17T10:47:37  <contestbot> bhasker: (reply <text>) -- Replies with <text>. Equivalent to the alias, 'echo $nick: $1'.
+2011-07-17T10:47:47  *** mleise <mleise!~Marco@dslb-092-076-168-139.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-07-17T10:53:48  <antimatroid> omnomnom, <3 butter chicken
+2011-07-17T10:55:13  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-07-17T10:59:21  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-07-17T11:14:50  *** jmreardon <jmreardon!~jmreardon@CPE0026f3271b08-CM0026f3271b05.cpe.net.cable.rogers.com> has quit IRC (Quit: jmreardon)
+2011-07-17T11:24:17  *** pvarga <pvarga!~pvarga@pool-71-187-202-33.nwrknj.fios.verizon.net> has joined #aichallenge
+2011-07-17T11:42:53  <mcstar> hehe, i have an if* macro
+2011-07-17T12:01:34  *** amstan <amstan!~amstan@69-196-151-239.dsl.teksavvy.com> has joined #aichallenge
+2011-07-17T12:01:34  *** ChanServ sets mode: +o amstan
+2011-07-17T12:05:14  <jmcarthur> what exactly do you mean by an if* macro?
+2011-07-17T12:05:56  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has quit IRC (Read error: Connection reset by peer)
+2011-07-17T12:08:56  <mcstar> jmcarthur: have you ever wanted to test an expression for true-ness, and if it is, use it later, in another expression?
+2011-07-17T12:09:22  <mcstar> this question is pretty dump, surely you had that experience :D
+2011-07-17T12:09:26  <mcstar> dumb
+2011-07-17T12:10:29  <mcstar> the idea, is that i implicitely bind a variable to the return value of the test-expression
+2011-07-17T12:11:38  <mcstar> (if* (return-value (some-function-that-returns-a-valueable-value)) (call-this-if-true) (or-this-of-false))
+2011-07-17T12:12:04  <mcstar> of course return-value can appear in (call-this-if-true)
+2011-07-17T12:12:43  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has quit IRC (Remote host closed the connection)
+2011-07-17T12:20:08  <mcstar> jmcarthur: i guess in haskell it isnt necessary, cause you can use "where" here, pretty nicely
+2011-07-17T12:22:46  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has joined #aichallenge
+2011-07-17T12:26:02  <jmcarthur> so you mean something like  let p = ... in if p then f p else g p  ?
+2011-07-17T12:26:27  <mcstar> exactly
+2011-07-17T12:26:31  <jmcarthur> ah
+2011-07-17T12:26:43  <jmcarthur> let's see...
+2011-07-17T12:26:58  <jmcarthur> liftA3 bool id
+2011-07-17T12:27:53  <jmcarthur> say i define foo to be that, then i can say    foo applyToPWhenTrue applyToPWhenFalse p
+2011-07-17T12:28:06  <jmcarthur> assuming bool is predefined (which it usually is, for me)
+2011-07-17T12:28:31  <jmcarthur> bool being like if but being an actual function instead of stupid syntax sugar and having the conditional as the last argument, which is nice for point free code
+2011-07-17T12:29:10  <jmcarthur> ah poop i did that wrong if bool has p as the last argument
+2011-07-17T12:29:36  <jmcarthur> oh well, that's roughly what i would probably do if i was defining a handy combinator
+2011-07-17T12:29:52  <jmcarthur> although... i'm not sure why i would need p in the branches
+2011-07-17T12:30:11  <jmcarthur> usually when i evaluate a boolean i only need it once
+2011-07-17T12:30:15  <mcstar> hm, i need a moment
+2011-07-17T12:30:38  <mcstar> define foo to be :liftA3 bool id ?
+2011-07-17T12:30:43  <mcstar> what does this mean?
+2011-07-17T12:30:47  <jmcarthur> well, let me be more precise here
+2011-07-17T12:30:56  <mcstar> are those all functions?
+2011-07-17T12:31:00  <jmcarthur> bool :: a -> a -> Bool -> a
+2011-07-17T12:31:05  <mcstar> is it like f o g o h ?
+2011-07-17T12:32:28  <jmcarthur> foo f g = (join . liftA2) (bool f g)
+2011-07-17T12:32:42  <jmcarthur> and then i can say   foo f g p
+2011-07-17T12:33:00  <jmcarthur> foo :: (Bool -> a) -> (Bool -> a) -> Bool -> a
+2011-07-17T12:33:01  <mcstar> so foo returns a function
+2011-07-17T12:33:05  <jmcarthur> yeah
+2011-07-17T12:33:09  <jmcarthur> well
+2011-07-17T12:33:26  <jmcarthur> in haskell, any function of multiple arguments is the same thing as a function that takes one argument and returns a function
+2011-07-17T12:33:42  <jmcarthur> the above definition is also the same as:
+2011-07-17T12:33:49  <jmcarthur> foo f g p = (join . liftA2) (bool f g) p
+2011-07-17T12:34:08  <jmcarthur> of course if i do it that way there is no point in using those combinators
+2011-07-17T12:34:13  <jmcarthur> so it's the same as:
+2011-07-17T12:34:21  <jmcarthur> foo f g p = bool (f p) (g p) p
+2011-07-17T12:34:33  <mcstar> i forgot the precise name of this...
+2011-07-17T12:34:51  <jmcarthur> the conversion from the one without p to the one with p is called eta expansion
+2011-07-17T12:35:33  <jmcarthur> the conversion from the last version to the first version would be called "making it point free"
+2011-07-17T12:35:41  <jmcarthur> well, not completely point free
+2011-07-17T12:35:46  <mcstar> currying
+2011-07-17T12:35:54  <jmcarthur> but point free at least in that we are eliminating the binding to p
+2011-07-17T12:36:43  <jmcarthur> currying is converting a function that take a tuple (all arguments at once) to a function that takes one argument at a time, returning intermediate functions
+2011-07-17T12:36:55  <jmcarthur> the uncurried version of foo might look like this:
+2011-07-17T12:37:03  <jmcarthur> foo (f, g, p) = bool (f p) (g p) p
+2011-07-17T12:37:52  <mcstar> well, these things doesnt really apply to lisp
+2011-07-17T12:37:56  <mcstar> it would be too cumbersome
+2011-07-17T12:37:57  <jmcarthur> sure they do
+2011-07-17T12:38:00  <jmcarthur> well yeah
+2011-07-17T12:38:02  <mcstar> no, let me tell you
+2011-07-17T12:38:04  <jmcarthur> but it's doable in lisp
+2011-07-17T12:38:16  <jmcarthur> not necessarily recommended :)
+2011-07-17T12:38:17  <mcstar> you'd need funcall and all that uglyness
+2011-07-17T12:38:25  <jmcarthur> can just use lambda?
+2011-07-17T12:38:28  <jmcarthur> *can't
+2011-07-17T12:38:36  <jmcarthur> i don't know what funcall is
+2011-07-17T12:39:06  <mcstar> funcall is for calling a function, if it resides in a symbol's function-cell
+2011-07-17T12:39:30  <jmcarthur> that just goes over my head :\
+2011-07-17T12:39:46  <jmcarthur> what is "a symbol's function call"?
+2011-07-17T12:39:51  <mcstar> cell
+2011-07-17T12:39:56  <jmcarthur> cell
+2011-07-17T12:40:35  <mcstar> a symbol can be made bound to a value, and a function value at the same time
+2011-07-17T12:40:44  <jmcarthur> o_O
+2011-07-17T12:40:55  <jmcarthur> so functions are not treated as values?
+2011-07-17T12:41:08  <mcstar> they are function-values
+2011-07-17T12:41:11  <mcstar> :)
+2011-07-17T12:41:16  *** jbrechtel <jbrechtel!~jbrechtel@64.134.184.98> has joined #aichallenge
+2011-07-17T12:41:32  <mcstar> i can say in lisp: (list list), which will print (3)
+2011-07-17T12:41:35  <mcstar> for example
+2011-07-17T12:41:53  <jmcarthur> assuming some definition of list i assume...
+2011-07-17T12:42:17  <mcstar> yes, (symbol-value 'list) => 3
+2011-07-17T12:42:40  <mcstar> (symbol-function 'list) => #built-in function......
+2011-07-17T12:43:32  <mcstar> actually symbols have a property list, they can have many things associated with, like a table
+2011-07-17T12:43:37  <jmcarthur> so a symbol is really some sort of a key-value store then? used one way it gives one thing and used another way it gives another?
+2011-07-17T12:43:41  <jmcarthur> ah
+2011-07-17T12:44:39  <mcstar> but in scheme this isnt so
+2011-07-17T12:44:54  <mcstar> a symbol effectively has 1 thing associated with
+2011-07-17T12:44:58  <jmcarthur> i am more used to the scheme way
+2011-07-17T12:46:51  <mcstar> what my if* actually does, is this: (let ((tempvar (test-function))) (if tempvar (function-to-call-if-true tempvar) (f-to-call-if-false)))
+2011-07-17T12:47:02  <mcstar> its like your first suggestion
+2011-07-17T12:47:09  <mcstar> is that real haskell btw?
+2011-07-17T12:47:21  <jmcarthur> yes
+2011-07-17T12:47:22  <mcstar> let p = ... in if p then f p else g p
+2011-07-17T12:47:44  <mcstar> if p then f p else g p where p = something
+2011-07-17T12:47:48  <mcstar> is this ok?
+2011-07-17T12:47:54  <jmcarthur> yes
+2011-07-17T12:48:12  <mcstar> so what is the difference between let and where?
+2011-07-17T12:48:13  <jmcarthur> where and let have difference scoping rules sometimes
+2011-07-17T12:48:18  <jmcarthur> *different
+2011-07-17T12:49:14  <jmcarthur> let ... in ... forms an expression
+2011-07-17T12:49:32  <jmcarthur> where is attached to a syntactic construct and doesn't create a value itself
+2011-07-17T12:50:01  <mcstar> hm
+2011-07-17T12:50:01  <jmcarthur> http://www.haskell.org/haskellwiki/Let_vs._Where
+2011-07-17T12:50:11  <jmcarthur> heh, even the same wording i just used
+2011-07-17T12:50:17  <mcstar> but the something after where isnt evaluated multiple times, right?
+2011-07-17T12:50:38  <mcstar> so there it must store the value
+2011-07-17T12:50:43  <jmcarthur> no, it's shared if used multiple times in the syntactic construct it is bound to
+2011-07-17T12:50:45  <mcstar> -there
+2011-07-17T12:51:54  <jmcarthur> but the point is that "foo = ... where bar = ..." doesn't have a value. it's just creating a value called foo. however, "let bar = ... in ..." is itself an expression that can be nested inside other expressions
+2011-07-17T12:53:06  <jmcarthur> actually, "... where bar = ..." might be an expression
+2011-07-17T12:53:11  <jmcarthur> i never use where that way though
+2011-07-17T12:53:25  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Read error: No route to host)
+2011-07-17T12:53:55  <mcstar> omg
+2011-07-17T12:54:07  <mcstar> im not capable of parsing haskell today
+2011-07-17T12:54:27  <jmcarthur> heh
+2011-07-17T12:54:38  <mcstar> this will just confuse me, untill i read some tutorials
+2011-07-17T12:54:43  <mcstar> which isnt gonna happen soon
+2011-07-17T12:54:47  <jmcarthur> that code isn't very idiomatic anyway
+2011-07-17T12:54:52  <jmcarthur> on the wiki page
+2011-07-17T12:55:04  <mcstar> im reading the page you linked
+2011-07-17T12:55:06  <jmcarthur> or it's complicated by the elipsis
+2011-07-17T12:55:07  <mcstar> ah ok
+2011-07-17T12:55:57  <mcstar> what i really liked in lisp, is that the code is soo homogene
+2011-07-17T12:55:59  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-07-17T12:56:04  <mcstar> homogenous
+2011-07-17T12:56:07  <mcstar> sry
+2011-07-17T12:56:11  <jmcarthur> homogeneous
+2011-07-17T12:56:16  <mcstar> yep
+2011-07-17T12:56:18  <mcstar> :)
+2011-07-17T12:56:30  <mcstar> we say homogén
+2011-07-17T12:57:08  <jmcarthur> haskell syntax is actually quite homogeneous too, aside from some (stupid) things like if-then-else
+2011-07-17T12:57:19  <jmcarthur> not as homogeneous as lisp by any stretch
+2011-07-17T12:57:49  <jmcarthur> but function application is pretty homogeneous aside from infix functions (which you can use as prefix functions anyway)
+2011-07-17T12:58:08  <jmcarthur> let/where breaks that a bit, but that's just because haskell is not a macro language
+2011-07-17T12:58:38  <jmcarthur> when you write haskell, you're not making an AST. you're making a mathematical expression.
+2011-07-17T12:59:07  <jmcarthur> at least conceptually, that's the way i approach it differently that i would something like lisp
+2011-07-17T12:59:14  <jmcarthur> *than
+2011-07-17T12:59:42  <mcstar> AST?
+2011-07-17T13:00:27  <mcstar> have you used logic programming languages? like prolog? i wonder if somebody will use that
+2011-07-17T13:00:38  <mcstar> id sure take a look at it
+2011-07-17T13:01:19  <mcstar> yesterday i was browsing the wiki looking for those, but there arent many
+2011-07-17T13:02:21  <jmcarthur> i've done a fair bit of research into logic programming languages
+2011-07-17T13:02:40  <jmcarthur> at a high level, logic programming is like a utopia of programming
+2011-07-17T13:03:07  <jmcarthur> in that it's great for making specifications, and it would be great if specifications were enough to make working, efficient code
+2011-07-17T13:03:22  <mcstar> yeah, but you are in the dark as to how much resources your computation will take up
+2011-07-17T13:03:47  <jmcarthur> the problem is mainly that of (either) efficiency or understanding/controlling *whether* your program will be efficient
+2011-07-17T13:04:36  <jmcarthur> IMO, an ideal would be to write your code in a logic programming language (not really like prolog, but maybe something like it), and then *derive* a functional program from it with the assistance of automated tools
+2011-07-17T13:04:58  <jmcarthur> basically deriving a program from a specification, but with predictable and controllable resource usage
+2011-07-17T13:05:12  <jmcarthur> and with a compiler-checked proof that the derivation is correct
+2011-07-17T13:05:44  <mcstar> yeah, you'd be better of inventing human level AI first, and then forgetting about the whole thing :D
+2011-07-17T13:05:50  <mcstar> off*
+2011-07-17T13:05:55  <jmcarthur> hm?
+2011-07-17T13:06:00  <jmcarthur> what i propose is quite doable
+2011-07-17T13:06:16  <mcstar> it is quite hard i imagine
+2011-07-17T13:06:29  <jmcarthur> nah, we have the technology already
+2011-07-17T13:06:44  <jmcarthur> we just don't have the language(s), and the tools aren't very friendly yet
+2011-07-17T13:06:50  <mcstar> there are "proofing" programs that can check other programs, but im not sure if it is applied as an every day practice
+2011-07-17T13:07:09  <jmcarthur> i'm talking about proof checkers, not proof generators
+2011-07-17T13:07:31  <mcstar> yeah, me too
+2011-07-17T13:07:35  <jmcarthur> if you do a program derivation such that each step is trivially provable by your tools, then by the time you are done you have a full proof
+2011-07-17T13:08:31  <jmcarthur> well yeah, it's not the popular thing to do right now. that's why i stated it as a (realistic) ideal rathe than as reality ;)
+2011-07-17T13:08:39  <jmcarthur> *rather than
+2011-07-17T13:09:25  <mcstar> and what i said(AI) means, that basically, we invent these abstractions, because we can no longer can write programs in low level languages
+2011-07-17T13:09:44  <mcstar> we want to write complex software, but we can see them through in low level languages
+2011-07-17T13:09:53  <mcstar> but an AI wouldnt have this kind of restriciton
+2011-07-17T13:10:15  <jmcarthur> i thought you were relating the discussion to AI because you were pointing out some difficulty in what i said
+2011-07-17T13:10:24  <jmcarthur> i see AI as a much much much more difficult goal
+2011-07-17T13:11:02  <mcstar> im not an expert, but my opinion is that ai isnt fundamentally more difficult
+2011-07-17T13:11:39  <mcstar> its just another kind of problem, where combinatoric explosion shows up
+2011-07-17T13:11:50  <jmcarthur> well, we have the technology i'm talking about today, and IMO we won't have the kind of AI i think you are talking about at least several decades
+2011-07-17T13:12:25  <mcstar> why do you think we dont have that ai today?
+2011-07-17T13:12:49  <mcstar> i mean, maybe we only need bigger connectivity in an already existing neural simulation
+2011-07-17T13:14:45  <jmcarthur> it sounds highly speculative
+2011-07-17T13:16:22  <jbrechtel> mcstar: are you including fully general intelligence in your definition of AI?  Just to clarify...
+2011-07-17T13:16:36  <jbrechtel> (Sorry I'm catching up)
+2011-07-17T13:16:43  <mcstar> jmcarthur: do you think we need some kind of fundamental mathematical/computational discovery for AI?
+2011-07-17T13:17:14  <mcstar> jbrechtel: generic, human level ai, not task specific, like in the turing sense
+2011-07-17T13:17:22  <jmcarthur> mcstar: i'm uncomfortable answering that question unless i know more specifically what you are talking about
+2011-07-17T13:17:27  <jmcarthur> okay human level AI
+2011-07-17T13:18:32  <jmcarthur> i suspect that we lack hundreds of fundamental biological, mathematical, computational, and physical discoveries before we have a chance of reaching that point
+2011-07-17T13:19:29  <jmcarthur> also, the very notion is very fuzzy and raises a lot of questions. would such an AI even be subservient?
+2011-07-17T13:19:53  <jmcarthur> it's possible that it could be
+2011-07-17T13:20:24  <jmcarthur> but i doubt that we are smart enough to make an AI that smart that is also going to take orders
+2011-07-17T13:20:32  <mcstar> it all depends on its experience, the way it collects all that knowledge that makes us call it intelligent
+2011-07-17T13:20:33  <jbrechtel> It seems to be like consciousness is required for human level general intelligence.  i.e.  to think "I'm wasting my time on this approach"  (the *I* being the important part).  Consciousness certainly isn't understood enough for us to build it yet.
+2011-07-17T13:20:50  <jbrechtel> Well, I say certainly...I am presuming there...I don't know what the cutting edge research is.
+2011-07-17T13:21:13  <jmcarthur> i think at least 99.9999% of people that have this conversation are being presumptious ;)
+2011-07-17T13:21:27  <jbrechtel> Sure it's possible that consciousness will be an emergent property of a good enough learning engine, but that's just speculation.
+2011-07-17T13:21:37  <jmcarthur> right
+2011-07-17T13:21:47  <jbrechtel> Heh...I should have just dropped 'certainly' off to begin with... :)
+2011-07-17T13:21:57  <jmcarthur> and if it's merely emergent, it's likely that obedience would also have to be emergent (which i find highly unlikely)
+2011-07-17T13:22:07  <mcstar> my view, is that i dont think I am conscious
+2011-07-17T13:22:14  <jbrechtel> Good point
+2011-07-17T13:22:34  <jbrechtel> So now it's a philosphical discussion
+2011-07-17T13:22:47  <mcstar> not really
+2011-07-17T13:22:53  <jmcarthur> i don't think it is yet
+2011-07-17T13:23:10  <mcstar> i mean if it quacks like a duck and look slike a duck its a duck(or similarly)
+2011-07-17T13:23:19  <jbrechtel> Not conscious -> no free will, right?
+2011-07-17T13:23:26  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-07-17T13:23:40  <mcstar> thats a really bad thing, to discuss free will
+2011-07-17T13:23:47  <mcstar> its a marginal question
+2011-07-17T13:23:47  <jbrechtel> Sorry I really don't mean to derail
+2011-07-17T13:23:54  <jbrechtel> Perhaps you could describe what you mean by not conscious
+2011-07-17T13:24:34  <jmcarthur> my opinion on the matter, summarized, is that AI of this sort will probably never be mathematically rigorous, and therefore never understood to a level to be as useful as just applying a human to a project
+2011-07-17T13:24:56  <mcstar> why i say its marginal, is because there can be many deterministic models, arbitrarily complex, that you'd need extremely long time/input/calculations to say with certainty that it is actually deterministic, and you cant have sort of free will
+2011-07-17T13:24:57  <jmcarthur> well
+2011-07-17T13:25:04  <jmcarthur> s/as useful/more useful/
+2011-07-17T13:25:14  <jmcarthur> of course a human-level AI would be as useful as any other human
+2011-07-17T13:25:31  <jmcarthur> i simply doubt that it would be any *more*... reliable
+2011-07-17T13:26:12  <jmcarthur> ah this discussion on free will is certainly philosophical
+2011-07-17T13:26:24  <jbrechtel> sorry... :(
+2011-07-17T13:26:31  <mcstar> its like discussing this problem in physics: determinism/chaod/quantum probabilities
+2011-07-17T13:27:29  <mcstar> what ever the fact is, we arent by any measure restricited by it
+2011-07-17T13:27:33  <mcstar> restricted
+2011-07-17T13:28:07  <mcstar> so, i believe we can make human level ai, without answering the question is the ai/are we conscious?
+2011-07-17T13:29:34  <jmcarthur> i agree that *if* we can make human-level (equivalent or superior in intelligence, not necessary equivalent in behavior) ai, we will not need to answer that question
+2011-07-17T13:30:22  <mcstar> jmcarthur: what do you mean by "mathematically rigorous"?
+2011-07-17T13:30:42  <mcstar> on a fundamental level, everything is
+2011-07-17T13:31:19  <mcstar> you cant come up with an example that isnt correct under some settings
+2011-07-17T13:33:09  <mcstar> let me tell you one story:
+2011-07-17T13:33:34  <mcstar> yesterday, in a version of my bot i introduced an error(involuntarily)
+2011-07-17T13:33:52  <mcstar> the bot supposed to be standing still, if it couldnt see any food
+2011-07-17T13:34:07  <mcstar> but instead, it made some adjustment to its shape(its a snake-bot)
+2011-07-17T13:34:47  <mcstar> until i figured out, what exactly the bug was, can i assume, that the bot simply is intelligent?
+2011-07-17T13:35:15  <mcstar> it does something, that i didnt want it to, and if i look hard enough, maybe i can superficially give some reason for it
+2011-07-17T13:36:01  <mcstar> all in all, im inclined to think, that these "full-brain" simulations will eventually succeed
+2011-07-17T13:36:41  <mcstar> if one can simulate the whole brain on a fine-enough scale, a system capable of showing intelligent behaviour will emerge
+2011-07-17T13:37:10  <mcstar> (given right training is present, and the output is interpreted correctly9
+2011-07-17T13:37:11  <mcstar> )
+2011-07-17T13:37:52  <jmcarthur> by mathematically rigorous i basically mean fully understood and intentional
+2011-07-17T13:38:03  <jbrechtel> I'm inclined to say that since it's fixed behavior, even though not what you expect, that it doesn't sound like it would pass for intelligence.  But your response would be that it's likely all our behavior is really 'fixed', it's just more complicated chains of inputs and outputs
+2011-07-17T13:38:23  <jbrechtel> oops, meant to end that with ?
+2011-07-17T13:39:03  <mcstar> jbrechtel: i think this is like deciding if something is really random
+2011-07-17T13:39:07  <jbrechtel> yes
+2011-07-17T13:39:25  <mcstar> so, youre correct, id say that
+2011-07-17T13:39:54  <mcstar> i mean you correctly assumed that id say what you thought id say :D
+2011-07-17T13:40:56  <mcstar> jmcarthur: the only problem with that, is that even mathematics isnt rigorous by your definition then
+2011-07-17T13:41:28  <mcstar> take the simple axioms of integers
+2011-07-17T13:42:16  <mcstar> im not sure when did they write them down explicitely, but the research it spawned is still growing(fast!), so you cant say, that it was intentional
+2011-07-17T13:42:30  <mcstar> or fully comprehended when the decided on those axioms
+2011-07-17T13:42:34  <mcstar> the->they
+2011-07-17T13:42:37  *** mleise <mleise!~marco@dslb-092-076-168-139.pools.arcor-ip.net> has joined #aichallenge
+2011-07-17T13:43:39  <mcstar> btw, if you look hard enough, you can find all the answers to any intelligent question, encoded in the digits of Pi
+2011-07-17T13:43:52  <mcstar> (in fact, to every question)
+2011-07-17T13:43:56  <mcstar> hehe
+2011-07-17T13:44:00  <mcstar> this sucks
+2011-07-17T13:44:22  <mcstar> i can see why Cantor went whoo-hoo when the contemplated the many infinities
+2011-07-17T13:59:09  <mcstar> oh, and another thing that i'd like to share, since we were talking about these kind of things, is what really sets up apart from algorithms/computers, is our special, and sensory environment we live in
+2011-07-17T13:59:48  <mcstar> we get an immense amount of input every second
+2011-07-17T14:00:13  <mcstar> and we live in a society, and in a universe with physical rules, we need to obey, to keep living
+2011-07-17T14:00:25  <mcstar> keep on*
+2011-07-17T14:01:24  <mcstar> if we really want a kind of AI, that behaves like us, i think it would need to live in a similar environment like us, it wont just float in the void of the computer
+2011-07-17T14:02:00  <mcstar> this is getting very sci-fi like, and since i dont get any response ill stfu
+2011-07-17T14:27:59  *** amstan_ <amstan_!~alex@69-196-151-239.dsl.teksavvy.com> has joined #aichallenge
+2011-07-17T14:27:59  *** ChanServ sets mode: +o amstan_
+2011-07-17T14:32:54  *** amstan_ <amstan_!~alex@69-196-151-239.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-07-17T14:33:09  *** jbrechtel <jbrechtel!~jbrechtel@64.134.184.98> has quit IRC (Ping timeout: 264 seconds)
+2011-07-17T14:50:55  <jmcarthur> mcstar: i disagree. everything we know about the integers was derived from simple axioms that we fully understand. it's only the consequences that we don't understand. however, the nice thing about these unpredictable consequences is that when we think of it it is usually possible to prove or disprove them
+2011-07-17T15:01:08  <jmcarthur> the point is that rigor usually emphasizes simplicity and precision
+2011-07-17T15:01:58  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has quit IRC (Quit: jmreardon)
+2011-07-17T15:02:55  <mcstar> i disagree then on the meaning of "to understand", for me, to understand something, is that i understand the consequence of another thing. i wouldnt say that we usually understand axioms. we have them. we can write them dow. but i dont think we understand all of them(except really simple ones)
+2011-07-17T15:03:43  <jmcarthur> axioms by definition allow you to understand the consequence of combining one thing with another thing
+2011-07-17T15:03:54  <jmcarthur> *consequences
+2011-07-17T15:04:05  <jmcarthur> or to understand the relationship between one thing and another
+2011-07-17T15:04:47  <mcstar> yes, but the meaning of an axiom, is not its written form, or whatever, but the possible forms, that it can lead to
+2011-07-17T15:05:03  <jmcarthur> i agree that an axiomatic understanding is not a full understanding, but that only further drives home my point, since in maths there are other ways to characterize a formal system too, and i don't even know how to apply those semantics to "AI"
+2011-07-17T15:05:12  <mcstar> a system of axioms is like a compression, so to speak
+2011-07-17T15:07:09  <jmcarthur> how about denotational semantics then? how would one denote a "human-level" AI?
+2011-07-17T15:07:26  <jmcarthur> this would be some other form of "understanding"
+2011-07-17T15:07:46  <jmcarthur> in this case, it would be a better understanding of composition than axioms alone
+2011-07-17T15:07:49  <mcstar> first id need to know what "denotational semantics" means
+2011-07-17T15:08:05  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has joined #aichallenge
+2011-07-17T15:08:12  <jmcarthur> a denotation is a meaning, where that meaning is some mathematical object
+2011-07-17T15:08:30  <jmcarthur> and the object is defined by a well-understood formal system
+2011-07-17T15:08:59  <jmcarthur> everything that applies to the denotation must also apply to the AI
+2011-07-17T15:10:31  * mcstar , the AI that you were talking to blowed a fuse, and since then, is no longer operational
+2011-07-17T15:11:00  <jmcarthur> heh, that's makes it even harder because you are trying to mathematically characterize a physical universe that we definitely do not understand
+2011-07-17T15:11:03  <jmcarthur> *that
+2011-07-17T15:11:23  <jmcarthur> i'm fine with making the task "easier" by limiting ourselves to the software only
+2011-07-17T15:11:47  <mcstar> are you reaqding my previous comments?
+2011-07-17T15:13:04  <jmcarthur> sorry i did not notice your comments about physical rules
+2011-07-17T15:13:28  <mcstar> so far, it turned out, that every time our understanding of physics expands, we still can find a mathematical framework that it fits
+2011-07-17T15:13:29  <jmcarthur> i think we are far off the original track here
+2011-07-17T15:13:45  <mcstar> another thing is, that we can compute the exact values of basically anything
+2011-07-17T15:13:56  <mcstar> we cant*
+2011-07-17T15:14:26  <mcstar> jmcarthur: was there an original track? i thought we were just talking ....
+2011-07-17T15:14:28  <jmcarthur> i was under the impression that your suggestion was that we'd have an easier time making an AI that can do certified programming for us than we would creating formally provable software
+2011-07-17T15:14:59  <jmcarthur> so my focus has been on that angle, that because we can't understand the AI itself then we can't declare the program certified in any meaningful way
+2011-07-17T15:17:00  <mcstar> look, i can write up some specifications, if those criteria are met, then we say, the program is certified, i then tell the monkey to change the bits randomly, if i give enough time for the monkey, which effectively behaves unintelligently, he might succeed in making a certified program
+2011-07-17T15:17:34  <jmcarthur> but you can't take a monkey (even a super intelligent one), ask for a certified program, and expect one
+2011-07-17T15:18:40  <jmcarthur> just because a sequence of random bits might contain a program that meets your spec doesn't mean you will ever get the right subsequence of random bits
+2011-07-17T15:19:04  <jmcarthur> and even just pulling some subsequence from it you don't know that that is what you wanted
+2011-07-17T15:19:08  <jmcarthur> you need the proof along with it
+2011-07-17T15:19:15  <jmcarthur> and you need to manually verify it
+2011-07-17T15:19:44  <jmcarthur> anyway, i have to go
+2011-07-17T15:19:47  <mcstar> i guess verifying it can be done more easily than to come up with
+2011-07-17T15:19:51  <mcstar> yeah
+2011-07-17T15:19:51  <jmcarthur> yes
+2011-07-17T15:19:56  <mcstar> bb
+2011-07-17T15:37:48  *** mleise <mleise!~marco@dslb-092-076-168-139.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-07-17T16:00:03  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has quit IRC (Quit: jmreardon)
+2011-07-17T16:02:00  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-07-17T16:26:45  *** HumWum <HumWum!4ff45021@gateway/web/freenode/ip.79.244.80.33> has joined #aichallenge
+2011-07-17T16:27:29  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-07-17T16:39:07  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-07-17T16:47:23  *** Evious <Evious!~n_a@s64-180-62-209.bc.hsia.telus.net> has quit IRC (Disconnected by services)
+2011-07-17T16:47:50  *** Reviou <Reviou!~n_a@s64-180-62-209.bc.hsia.telus.net> has joined #aichallenge
+2011-07-17T16:54:30  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-07-17T16:58:11  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 246 seconds)
+2011-07-17T17:47:37  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has joined #aichallenge
+2011-07-17T17:58:11  *** parsley <parsley!53531bf7@gateway/web/freenode/ip.83.83.27.247> has joined #aichallenge
+2011-07-17T18:18:22  *** parsley <parsley!53531bf7@gateway/web/freenode/ip.83.83.27.247> has quit IRC (Quit: Page closed)
+2011-07-17T18:18:56  *** HumWum <HumWum!4ff45021@gateway/web/freenode/ip.79.244.80.33> has quit IRC (Ping timeout: 252 seconds)
+2011-07-17T18:26:36  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-07-17T19:20:03  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has quit IRC (Read error: Connection reset by peer)
+2011-07-17T19:20:25  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has joined #aichallenge
+2011-07-17T19:56:09  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-07-17T20:16:16  *** DCaminator <DCaminator!6c1b15ca@gateway/web/freenode/ip.108.27.21.202> has quit IRC (Ping timeout: 252 seconds)
+2011-07-17T20:25:08  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has joined #aichallenge
+2011-07-17T20:45:30  *** jmreardon <jmreardon!~jmreardon@129-97-120-191.uwaterloo.ca> has quit IRC (Quit: jmreardon)
+2011-07-17T20:47:05  *** mcstar <mcstar!~mcstar@adsl-89-134-11-210.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-07-17T20:49:12  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 264 seconds)
+2011-07-17T21:06:00  *** computerwiz_222 <computerwiz_222!~andrew@216-58-65-192.cpe.distributel.net> has joined #aichallenge
+2011-07-17T21:07:09  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-07-17T21:18:37  *** jmreardon <jmreardon!~jmreardon@CPE0026f3271b08-CM0026f3271b05.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-07-17T21:54:25  *** ibdknox <ibdknox!~ibdknox@c-98-210-156-61.hsd1.ca.comcast.net> has joined #aichallenge
+2011-07-17T21:59:59  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Ping timeout: 240 seconds)
+2011-07-17T22:16:05  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has quit IRC ()
+2011-07-17T22:17:43  *** Qua <Qua!82e15ffe@gateway/web/freenode/ip.130.225.95.254> has joined #aichallenge
+2011-07-17T22:17:55  <Qua> Hello
+2011-07-17T22:18:34  <Qua> Can anyone give me a quick pointer as to how I can submit a fix to the code base?
+2011-07-17T22:31:37  <jmcarthur> Qua: have you used github before?
+2011-07-17T22:31:46  <jmcarthur> err, i mean contributed to a project on github?
+2011-07-17T22:32:09  <Qua> Nope, but I'm used to the concept of source control
+2011-07-17T22:32:17  <jmcarthur> Qua: the ideal way is to fork the project on github (there's a button for it, make your change and push to the fork, then do a pull request
+2011-07-17T22:32:25  <jmcarthur> *it)
+2011-07-17T22:32:50  <Qua> Alright, so I branch the original project, make changes, comit changes and then request a merge ?
+2011-07-17T22:33:04  <Qua> Sorry about the terminology. Just want to make sure I get it right :)
+2011-07-17T22:33:10  <jmcarthur> well, with git you not only have to commit but you have to push too
+2011-07-17T22:33:25  <jmcarthur> commits are local, then you push the commits to the remote repo on github
+2011-07-17T22:33:30  <Qua> Ahh
+2011-07-17T22:33:49  <Qua> I can get started right away then :)
+2011-07-17T22:34:20  <jmcarthur> so, more explicitly:   fork the repo on github, clone from your fork, make your changes, commit your changes, push to your fork, then do a pull request on github
+2011-07-17T22:35:13  <jmcarthur> and in the pull request you should be able to explain what you did and why it's beneficial
+2011-07-17T22:35:26  <jmcarthur> maybe say it fixes a bug in the issue tracker, if it does
+2011-07-17T22:35:27  <Qua> Thank you
+2011-07-17T22:35:39  <Qua> Indead, hopefully it will
+2011-07-17T22:35:44  <jmcarthur> cool
+2011-07-17T22:41:06  *** confab <confab!180a3cb9@gateway/web/freenode/ip.24.10.60.185> has quit IRC (Ping timeout: 252 seconds)
+2011-07-17T22:46:25  *** confab <confab!180a3cb9@gateway/web/freenode/ip.24.10.60.185> has joined #aichallenge
+2011-07-17T22:51:16  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Ping timeout: 260 seconds)
+2011-07-17T22:55:16  *** computerwiz_222 <computerwiz_222!~andrew@216-58-65-192.cpe.distributel.net> has quit IRC (Remote host closed the connection)
+2011-07-17T23:20:07  *** amstan_ <amstan_!~alex@69-196-151-239.dsl.teksavvy.com> has joined #aichallenge
+2011-07-17T23:20:07  *** ChanServ sets mode: +o amstan_
+2011-07-17T23:20:16  <Qua> hmm
+2011-07-17T23:20:16  <Qua> meh
+2011-07-17T23:20:33  <Qua> seemes like the c# issue is server side, and not caused by any code comit changes
+2011-07-17T23:20:50  <Qua> is there any way to browse server logs / see debug prints ?
+2011-07-17T23:30:28  <amstan_> Qua: we can if we execute your entry manually
+2011-07-17T23:30:58  <amstan_> other logs are not saved for space reasons, security concerns, and no ui for the user to see them anyway
+2011-07-17T23:31:32  <Qua> It's all c# bots that are failing, even those that already had compiled succesfully.
+2011-07-17T23:31:38  <amstan_> yes
+2011-07-17T23:31:43  <amstan_> idk what caused it
+2011-07-17T23:32:14  <amstan_> sigh.. i guess i could do this..
+2011-07-17T23:32:28  <amstan_> Qua: if you wanna do something for me.. find me the issue about this
+2011-07-17T23:32:31  <Qua> I think it's a server issue somehow. The only comit even remotely close to the date where stuff started to crash was this line: 'sed -i 's/dist[/\]//g' tools/util/block_test.cmd tools/util/block_test.sh tools/play_one_game.cmd tools/play_one_game.sh'
+2011-07-17T23:32:32  <amstan_> and link it
+2011-07-17T23:32:40  <Qua> https://github.com/aichallenge/aichallenge/issues/207
+2011-07-17T23:33:06  <amstan_> really? http://aichallengebeta.hypertriangle.com/starter_packages/csharp_starter_package.zip
+2011-07-17T23:33:07  <amstan_> ...
+2011-07-17T23:33:55  <amstan_> there we go
+2011-07-17T23:34:27  <Qua> ohh hey, starter package download link working again :p
+2011-07-17T23:35:19  <amstan_> Qua: yes, someone had to sudo make install the starter packages
+2011-07-17T23:35:21  <amstan_> umm
+2011-07-17T23:35:25  <amstan_> how do i compile this?
+2011-07-17T23:35:37  <amstan_> and please don't say you use an ide
+2011-07-17T23:35:44  <Qua> hehe
+2011-07-17T23:35:50  <Qua> 2 secs
+2011-07-17T23:36:19  <Qua> use gmcs
+2011-07-17T23:36:51  <amstan_> Qua: https://github.com/aichallenge/aichallenge/blob/epsilon/worker/compiler.py
+2011-07-17T23:37:32  <Qua> It is already configured.
+2011-07-17T23:37:43  <Qua> It's the test that c# bots are failing. Timeout in round 0
+2011-07-17T23:37:45  <amstan_> gmcs -warn:0 -out:MyBot.exe *.cs
+2011-07-17T23:37:47  <Qua> same as all the bots already uploaded
+2011-07-17T23:38:54  *** fbparis <fbparis!~FB@pdpc/supporter/active/fbparis> has joined #aichallenge
+2011-07-17T23:39:18  *** fbparis <fbparis!~FB@pdpc/supporter/active/fbparis> has left #aichallenge
+2011-07-17T23:41:09  <amstan_> Qua: https://github.com/aichallenge/aichallenge/issues/207#issuecomment-1592686
+2011-07-17T23:41:11  <amstan_> seems to work
+2011-07-17T23:41:27  <amstan_> wait..
+2011-07-17T23:41:29  <amstan_> no
+2011-07-17T23:41:31  <amstan_> bot 0 is the test bot
+2011-07-17T23:41:35  <amstan_> and he was eliminated
+2011-07-17T23:42:04  <amstan_> antimatroid: you awake?
+2011-07-17T23:42:09  <amstan_> antimatroid: what does this game mean? https://github.com/aichallenge/aichallenge/issues/207#issuecomment-1592686
+2011-07-17T23:42:27  <amstan_> Qua: did you run test_bot locally?
+2011-07-17T23:42:31  <amstan_> do you get the same answer?
+2011-07-17T23:42:38  <amstan_> output*
+2011-07-17T23:42:48  <Qua> Everything works locally, yes.
+2011-07-17T23:43:08  <amstan_> what's the output of test_bot locally?
+2011-07-17T23:43:16  <amstan_> techincally it works here too
+2011-07-17T23:44:00  <Qua> 2 secs
+2011-07-17T23:44:18  <amstan_> switching comps
+2011-07-17T23:46:39  <amstan> k?
+2011-07-17T23:47:40  <Qua> i get an incorrect number of bots locally :p
+2011-07-17T23:47:45  <Qua> if i add the bot twice i get this
+2011-07-17T23:48:00  <amstan> ./testbot.py path/to/MyBot.exe
+2011-07-17T23:48:39  *** amstan_ <amstan_!~alex@69-196-151-239.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-07-17T23:49:29  <Qua> Uploaded the starter package online and still get turn 0 timeout
+2011-07-17T23:49:30  <Qua> 18	2011-07-18 07:42:07	Test Error: compiled, but failed test cases	-			 C# turn    0 bot 0 timed out
+2011-07-17T23:50:01  <amstan> Qua: i got that it doesn't work in the tournament, now what is the output of test_bot.py locally
+2011-07-17T23:50:14  <amstan> of the starter package preferrably
+2011-07-17T23:50:56  <Qua> same as yours
+2011-07-17T23:50:58  <Qua> more or less
+2011-07-17T23:51:11  <amstan> is that a win or a fail?
+2011-07-17T23:51:24  <Qua> no fail
+2011-07-17T23:51:40  <Qua> status eliminated survived
+2011-07-17T23:51:46  <amstan> ok, that's all i wanted
+2011-07-17T23:52:30  <amstan> wait..
+2011-07-17T23:52:32  <amstan> no
+2011-07-17T23:52:41  <amstan> the first player is the bot to be tested
+2011-07-17T23:52:44  <amstan> if it was eliminated
+2011-07-17T23:52:50  <amstan> then it means it failed the test
+2011-07-17T23:52:56  <amstan> ./playgame.py --engine_seed 42 --player_seed 42 --food none --end_wait=0.25 --verbose --log_dir game_logs --turns 30 --map_file submission_test/test.map "$1" "python submission_test/TestBot.py" --nolaunch -e --strict --capture_errors
+2011-07-17T23:53:05  <amstan> notice how $1 is before testbot
+2011-07-17T23:54:12  <amstan> Qua: we did change the game logistics recently, maybe that caused it
+2011-07-17T23:55:01  <Qua> Nope, even a blank bot just replying with 'go' everytime it is supposed to do something fails
+2011-07-17T23:55:24  <amstan> maybe it gets owned by the test bot or something
+2011-07-17T23:55:26  <amstan> look at the game
+2011-07-17T23:55:30  <amstan> replay*
+2011-07-17T23:58:29  <bhasker> evening
+2011-07-17T23:58:30  <Qua> So, to pass the upload test you have to beat the test bot?
+2011-07-17T23:59:21  *** confab_ <confab_!180a3cb9@gateway/web/freenode/ip.24.10.60.185> has joined #aichallenge
+2011-07-17T23:59:51  <Qua> this command 'playgame.py --engine_seed 42 --player_seed 42 --food none --end_wait=0.25 --verbose --log_dir game_logs --turns 30 --map_file submission_test/test.map %1 "MyBot.exe" "python submission_test/TestBot.py" -e --nolaunch --strict --capture_errors'

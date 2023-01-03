@@ -1,0 +1,285 @@
+2011-09-09T00:06:12  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-09-09T00:08:37  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-09-09T01:14:26  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T01:22:35  *** ArchMonkey <ArchMonkey!~ArchMonke@S0106001b63f2b998.ok.shawcable.net> has quit IRC (Quit: ArchMonkey)
+2011-09-09T02:07:37  *** jako <jako!5b2cc8e4@gateway/web/freenode/ip.91.44.200.228> has joined #aichallenge
+2011-09-09T02:37:41  *** delt0r_ <delt0r_!~bob@178-190-72-93.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-09-09T02:39:25  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-09-09T02:39:29  <antimatroid> delt0r: you'll have to talk to McLeopold about food spawn rate, he worked it out a while ago
+2011-09-09T02:39:42  <stocha> now, even if the ant challenge do launch, there will be a problem
+2011-09-09T02:39:57  <stocha> early beta participants had months to debug their stuff.
+2011-09-09T02:40:16  <stocha> if the duration is 3 month, that will be quite unfair for those starting at launch time.
+2011-09-09T02:40:25  <stocha> if it is less, it will be even worst
+2011-09-09T02:41:19  <antimatroid> stocha: there are always disadvantages, this is perhaps undesirable but nothing can be done about it
+2011-09-09T02:41:20  <stocha> so 4 months or 5 month would be more reasonable
+2011-09-09T02:41:26  <antimatroid> that's too long
+2011-09-09T02:41:37  <antimatroid> i do think we should go for 3 rather than 2 given how long beta has been though
+2011-09-09T02:41:47  <stocha> when beta tester had a year to build up their thing, 5 month really is more fair.
+2011-09-09T02:42:22  <stocha> okay 3 still give a bit of room for maneuvre. But i think it has to be more now.
+2011-09-09T02:43:19  <stocha> i didn't get involved much, so the people who have been improving their bot more regularly have more data to judge.
+2011-09-09T02:43:59  <stocha> but the thing is, with more time, even you don't work on it full time, you'll have more ideas. Not mentioning that you do have more time also.
+2011-09-09T02:44:23  <stocha> anyway it's still not clear if the thing will launch eventually.
+2011-09-09T02:50:09  *** delt0r_ <delt0r_!~bob@178-191-251-178.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-09T02:50:36  <antimatroid> delt0r_: i'm trying to work out this spawn formula again, but it's confusing me :P
+2011-09-09T02:51:10  <delt0r_> its not clear from the code... well not after about 10min... i have not looked again
+2011-09-09T02:51:43  <delt0r_> I was going to just do symmetric... bassed on start positions
+2011-09-09T02:51:46  <antimatroid> i think i can explain it, but it'd be worth checking with mcleopold later (i can't explain the implementation, only what it's meant to be doing)
+2011-09-09T02:53:09  <antimatroid> delt0r_: do you understand what I mean when I say take a generating set of locations for the map under symmetry?
+2011-09-09T02:53:54  <antimatroid> it's a set of locations that spans the set of locations when you take all symmetrically equivalent locations and no two locations in the generating set are symmetrically equivalent
+2011-09-09T02:53:56  <delt0r_> not really... if its always folded symmetry yes... but what about point symmetry?
+2011-09-09T02:54:05  <delt0r_> rotational I mean
+2011-09-09T02:54:16  <delt0r_> aka like we had in planet wars
+2011-09-09T02:54:25  <antimatroid> same thing, each square has <= n symmetrically equivalent locations including itself right?
+2011-09-09T02:54:46  <delt0r_> yea
+2011-09-09T02:54:56  <delt0r_> you mean generalized symmetry
+2011-09-09T02:55:43  <antimatroid> yeah might as well go with that, it holds for any, you find a set of squares that aren't symmetrically equivalent to each other but if you include all symmetrically equivalent locations then you get the entire set of locations
+2011-09-09T02:56:54  <antimatroid> then you randomly order your generating set and spawn food in that order for the locations, if you spawn food at a location in the generating set then you also spawn food at every location symmetrically equivalent to it
+2011-09-09T02:57:37  <antimatroid> if a square picked to spawn food on is not free to have food, the engine waits to spawn food there the next turn it's available to
+2011-09-09T02:58:13  <antimatroid> that last bit is the best we've come up with to try and make sure the actions of a bot can't influence food spawning on another part of the map
+2011-09-09T02:58:22  <antimatroid> only hurt themselves by not moving and getting the food earlier
+2011-09-09T02:58:51  <antimatroid> are you with me so far? the last bit to explain is how the spawn rate works, but i'd like to work the formula out again before explaining that :)
+2011-09-09T03:03:27  <antimatroid> delt0r_: using the get_symmetric_loc function it's easy to get the generating set, pick a location add it to the generating set and mark all symmetrically equivalent locations as visited, then bfs outwards finding locations not found yet doing a similar thing
+2011-09-09T03:04:12  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has joined #aichallenge
+2011-09-09T03:05:01  <delt0r_> Yea i follow
+2011-09-09T03:05:03  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-09-09T03:05:26  <delt0r_> what is the food production rate?
+2011-09-09T03:05:37  <delt0r_> numberPlayers*food_rate?
+2011-09-09T03:05:53  <delt0r_> and is food rate fractional... aka .5 per turn
+2011-09-09T03:06:22  <delt0r_> is this interpreted as a probability if it is fractional
+2011-09-09T03:07:00  <delt0r_> Finally with scores they seem to be integers. Yet you can have fractional scores --why not have score as a real?
+2011-09-09T03:09:03  <antimatroid> nah it's a bit more complicated i think
+2011-09-09T03:09:48  <antimatroid> let f be the desired food spawn rate per turn, but that's f food squares for all players and not per player, n the number of players and t the turn, I think foodToSpawn = (f + (t-1)*f%n)%n but i need to check that
+2011-09-09T03:09:49  <antimatroid> hang on
+2011-09-09T03:10:12  <delt0r_> why...why make it so complicated... this is only going to have bugs and require changing to the cries of "i would have won if the rules didn't change"
+2011-09-09T03:10:51  <delt0r_> a simple probabilistic model would have the same average and be simpler...
+2011-09-09T03:11:20  <antimatroid> some locations don't have n symmetrically equivalent locations including itself depending on the symmetry
+2011-09-09T03:11:36  <antimatroid> and now you can have a food spawn rate not as a multiple of the number of players
+2011-09-09T03:11:52  <antimatroid> oh, that's not right either :P
+2011-09-09T03:12:21  <delt0r_> so
+2011-09-09T03:12:36  <delt0r_> the spawn rate is a little different map to map...
+2011-09-09T03:13:08  <delt0r_> also that function has the symmetry specified... ie rotational or tile
+2011-09-09T03:13:34  <antimatroid> how?
+2011-09-09T03:13:44  <antimatroid> oh get_symmetric_locs?
+2011-09-09T03:13:57  <delt0r_> yea
+2011-09-09T03:14:00  <delt0r_> I c
+2011-09-09T03:14:02  <antimatroid> yeah we need to change over to carlop's general symmetry but haven't
+2011-09-09T03:14:09  <delt0r_> get_symmetric_loc
+2011-09-09T03:14:13  <delt0r_> is above it
+2011-09-09T03:14:14  <antimatroid> but it's just a matter of calling the right function for the given symmetry
+2011-09-09T03:14:35  <delt0r_> just assume tile and folded symmetry
+2011-09-09T03:14:53  <delt0r_> assumes
+2011-09-09T03:16:28  <antimatroid> i think it's foodToSpawn = (f + (t-1)*f%n) - (f + (t-1)*f%n)%n
+2011-09-09T03:16:35  <antimatroid> that's gross, i swear there's a simpler way to do it
+2011-09-09T03:17:18  <delt0r_> i think everyone is trying to hard for "perfect"
+2011-09-09T03:17:39  <delt0r_> just have a stochastic rate target...
+2011-09-09T03:17:56  <delt0r_> what is f t and n ?
+2011-09-09T03:18:12  <antimatroid> t is turn, n is number of players and f is the spawn rate
+2011-09-09T03:19:04  <antimatroid> so say you have n = 5 and f = 7
+2011-09-09T03:19:05  <antimatroid> nf = {0, 7, 14, 21, 28, 35, 42, ...}
+2011-09-09T03:19:05  <antimatroid> toSpawn = {0, 5, 5, 10, 5, 10, 5, ...}
+2011-09-09T03:19:20  <antimatroid> that doesn't allow for squares with < n symmetrically equivalent locations aye
+2011-09-09T03:19:21  <antimatroid> hmmmm
+2011-09-09T03:19:54  <antimatroid> errr, that's tf sorry
+2011-09-09T03:20:48  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Get MacIrssi - http://www.sysctl.co.uk/projects/macirssi/)
+2011-09-09T03:21:21  <antimatroid> delt0r_: personally I would like the symmetry to go so far as that a deterministic bot playing itself will always draw
+2011-09-09T03:21:53  *** aerique <aerique!310225@xs8.xs4all.nl> has joined #aichallenge
+2011-09-09T03:22:11  <antimatroid> although it's harder to make a bot play like that than one would probably first think because of the wrapping
+2011-09-09T03:22:42  <delt0r_> I work on stochastic models.. I only need the expectation to be as many wins as losses
+2011-09-09T03:23:03  <delt0r_> in the limit of infinite games played ;)
+2011-09-09T03:23:39  <antimatroid> personally i want to minimise the amount of "noise" for ranking bots because there's already so much
+2011-09-09T03:24:00  <antimatroid> and i've probably had quite a bit of influence on how stuff is done, if it can be done reasonably well easier i'm happy to change
+2011-09-09T03:24:14  <antimatroid> we'd need to get mcleopold to agree as well though
+2011-09-09T03:24:29  <antimatroid> i do like the ordering the generating set for finding locations to spawn on though
+2011-09-09T03:24:54  <delt0r_> yea-- but what does that formular even mean... why not just x number of food per turn
+2011-09-09T03:25:38  <antimatroid> because say you have f = 7 and n=5 with all squares having n symmetrically equivalent locations, you can't spawn 7 food locations fairly each turn
+2011-09-09T03:26:21  <delt0r_> you going to get a lot of question on the why --lots
+2011-09-09T03:26:41  <delt0r_> oh ffs
+2011-09-09T03:27:20  <antimatroid> yeah, but i can write up clearer explanations of things like that once stuff is finalised and we're ready to launch
+2011-09-09T03:27:29  <antimatroid> then just point people to that, the same is going to happen for battle resolution
+2011-09-09T03:27:31  <delt0r_> use the closest value that is a multiple of the number of players...
+2011-09-09T03:27:47  <antimatroid> and i think fewer people will care about the food spawning method other than being generally told it's "fair"
+2011-09-09T03:27:55  <delt0r_> no they won't
+2011-09-09T03:27:58  <antimatroid> yeah, that would work too
+2011-09-09T03:28:10  <delt0r_> they won't believe you unless they understand it
+2011-09-09T03:28:24  <delt0r_> see he who shall not be named
+2011-09-09T03:48:39  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 252 seconds)
+2011-09-09T03:55:11  *** mleise <mleise!~marco@dslb-088-070-130-181.pools.arcor-ip.net> has quit IRC (Ping timeout: 240 seconds)
+2011-09-09T04:12:57  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-09-09T04:14:26  *** berak <berak!~chatzilla@82.113.99.169> has joined #aichallenge
+2011-09-09T04:39:26  *** TTE <TTE!52f70ad6@gateway/web/freenode/ip.82.247.10.214> has joined #aichallenge
+2011-09-09T04:53:03  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-09-09T05:06:23  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-09T05:11:53  *** antimatroid <antimatroid!~nick@70.115-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-09-09T05:20:35  *** antimatroid <antimatroid!~nick@95.122-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-09-09T06:13:21  <delt0r_> hey... cool map... the combat map--each get 10 ants... no food... battle to the death. :D
+2011-09-09T06:13:42  <delt0r_> for the lutz
+2011-09-09T06:26:37  <delt0r_> do the example bots try to move onto water?
+2011-09-09T06:32:53  <delt0r_> And what way is north? col++ or row++
+2011-09-09T06:32:56  <delt0r_> or --
+2011-09-09T06:38:24  <antimatroid> delt0r: row++ is north?
+2011-09-09T06:38:28  <antimatroid> how could it be anything but?
+2011-09-09T06:38:41  <antimatroid> delt0r_*
+2011-09-09T06:38:59  <delt0r_> well I use x and y
+2011-09-09T06:39:10  <delt0r_> rows are for wimps and communists
+2011-09-09T06:39:11  <delt0r_> ;)
+2011-09-09T06:39:15  <antimatroid> hmmm, i still maintain that's inferior :P
+2011-09-09T06:39:27  <antimatroid> it's a pita when formatting input or output
+2011-09-09T06:39:27  <delt0r_> x and y and right dam handed
+2011-09-09T06:39:35  <delt0r_> x goes up and down
+2011-09-09T06:39:46  <antimatroid> ehe :)
+2011-09-09T06:39:51  <delt0r_> no--rows are a pita
+2011-09-09T06:39:54  <delt0r_> and cols
+2011-09-09T06:39:57  <antimatroid> why?
+2011-09-09T06:39:58  <antimatroid> matrices!
+2011-09-09T06:40:05  <delt0r_> are we row major or row minor?
+2011-09-09T06:40:34  <delt0r_> everything has a different convention --with a right handed coordinate system is very convention
+2011-09-09T06:40:45  <delt0r_> anyway
+2011-09-09T06:40:48  <antimatroid> most people treat (x,y) like when drawing graphs
+2011-09-09T06:40:52  <delt0r_> I have a bug i think...
+2011-09-09T06:40:56  <delt0r_> yea
+2011-09-09T06:41:05  <delt0r_> convention that is kept
+2011-09-09T06:41:31  <delt0r_> while R matlab opengl etc all have different row major or col major matrix formats
+2011-09-09T06:42:06  <antimatroid> meh :P
+2011-09-09T06:42:29  <delt0r_> I don't think the random bot would move onto water... but it does in my engine... hence i think i have a bug
+2011-09-09T06:42:48  <antimatroid> i'm not sure whether it does or doesn't
+2011-09-09T06:42:54  <antimatroid> i can tell you if my starter bot does
+2011-09-09T06:43:02  <delt0r_> from the code it looks like no
+2011-09-09T06:43:13  <delt0r_> could be that i give it bogus water data
+2011-09-09T06:43:27  * delt0r_ gets lunch
+2011-09-09T06:44:34  <antimatroid> yeah the c++ starter bot avoids water
+2011-09-09T07:03:16  *** antimatroid <antimatroid!~nick@95.122-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T07:23:08  <delt0r_> I can't get any java bot to run with the playgame.py script
+2011-09-09T07:23:19  <delt0r_> the commant works fine at the shell
+2011-09-09T07:23:36  <delt0r_> but as a bot argument i get nothing
+2011-09-09T07:23:50  <delt0r_> the error message with -E is "the bot crashed"
+2011-09-09T07:24:10  <delt0r_> there is no -O for the bot...
+2011-09-09T07:24:22  <delt0r_> is python mangling the command line or something?
+2011-09-09T07:25:37  <aerique> what does your commandline look like?
+2011-09-09T07:27:38  <aerique> oh wait, java. nevermind.  i've only used the python sample bots
+2011-09-09T07:28:05  <delt0r_> ok --just got some action with a bash shell script
+2011-09-09T07:28:21  <delt0r_> but directly calling java does not seem to work
+2011-09-09T07:48:54  <delt0r_> found my engine bug
+2011-09-09T07:49:03  <delt0r_> was not waiting for go before the first turn
+2011-09-09T07:49:07  <delt0r_> from the bots
+2011-09-09T07:55:38  <delt0r_> The GreedyBot.py times out on big maps with lots of ants
+2011-09-09T07:55:55  <delt0r_> only had 1000 ants
+2011-09-09T08:14:55  <delt0r_> well we are getting there... so there may be a BorgAntManager this weekend yet
+2011-09-09T08:29:42  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-09-09T08:33:04  *** mathis <mathis!55b3ea9e@gateway/web/freenode/ip.85.179.234.158> has joined #aichallenge
+2011-09-09T08:39:31  <aerique> \o/
+2011-09-09T09:06:48  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T09:44:05  <jako> will the focus battle resolution scheme be used for the contest? has this already been decided?
+2011-09-09T10:19:35  <delt0r> jako: judging by how keen some folks are to just start --i would say that its the one that will get picked...
+2011-09-09T10:23:02  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Quit: *poof!*)
+2011-09-09T10:29:51  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Read error: Connection reset by peer)
+2011-09-09T10:34:50  *** jako <jako!5b2cc8e4@gateway/web/freenode/ip.91.44.200.228> has quit IRC (Ping timeout: 252 seconds)
+2011-09-09T10:35:42  *** delt0r_ <delt0r_!~bob@178-191-251-178.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-09-09T10:45:17  *** jako <jako!5b2cc8e4@gateway/web/freenode/ip.91.44.200.228> has joined #aichallenge
+2011-09-09T10:50:37  *** delt0r_ <delt0r_!~bob@178-190-193-1.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-09T10:54:53  *** aerique <aerique!310225@xs8.xs4all.nl> has quit IRC (Quit: ...)
+2011-09-09T10:56:52  *** mcstar <mcstar!~mcstar@szfkipc72.szfki.kfki.hu> has joined #aichallenge
+2011-09-09T10:57:42  <mcstar> fewer people than ever
+2011-09-09T11:06:21  *** ArchMonkey <ArchMonkey!~ArchMonke@S0106001b63f2b998.ok.shawcable.net> has joined #aichallenge
+2011-09-09T11:07:16  *** ArchMonkey <ArchMonkey!~ArchMonke@S0106001b63f2b998.ok.shawcable.net> has quit IRC (Client Quit)
+2011-09-09T11:17:01  *** antimatroid <antimatroid!~nick@253.113-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-09-09T11:19:11  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-09-09T11:28:36  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-09T11:30:11  *** mcstar <mcstar!~mcstar@szfkipc72.szfki.kfki.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-09-09T12:00:46  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has quit IRC (Quit: Page closed)
+2011-09-09T12:18:53  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 276 seconds)
+2011-09-09T12:28:09  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-09T12:39:26  *** Eruonen <Eruonen!~c@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-09-09T12:42:31  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 252 seconds)
+2011-09-09T12:55:08  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-09T12:58:13  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T13:00:00  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-09T13:00:25  *** rabidus <rabidus!~tan@84-231-116-79.elisa-mobile.fi> has quit IRC (Read error: Connection reset by peer)
+2011-09-09T13:01:03  *** rabidus <rabidus!~tan@85-156-4-20.elisa-mobile.fi> has joined #aichallenge
+2011-09-09T13:18:10  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-09T13:26:09  *** sir_macelon <sir_macelon!4e089a19@gateway/web/freenode/ip.78.8.154.25> has joined #aichallenge
+2011-09-09T14:00:12  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Read error: Operation timed out)
+2011-09-09T14:02:04  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-09T14:02:04  *** ChanServ sets mode: +o amstan
+2011-09-09T14:04:20  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-09T14:15:58  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T14:19:14  *** mcstar <mcstar!~mcstar@adsl-89-132-13-242.monradsl.monornet.hu> has joined #aichallenge
+2011-09-09T14:26:58  *** mathis <mathis!55b3ea9e@gateway/web/freenode/ip.85.179.234.158> has quit IRC (Quit: Page closed)
+2011-09-09T14:28:03  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Quit: Leaving)
+2011-09-09T14:28:14  *** mathis <mathis!55b3ea9e@gateway/web/freenode/ip.85.179.234.158> has joined #aichallenge
+2011-09-09T14:37:53  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Read error: Operation timed out)
+2011-09-09T14:38:34  *** rabidus <rabidus!~tan@85-156-4-20.elisa-mobile.fi> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T14:40:11  <McLeopold> janzert: you around?
+2011-09-09T14:40:39  <McLeopold> amstan: you around?
+2011-09-09T14:40:45  <amstan> ya?
+2011-09-09T14:41:09  <McLeopold> I'm going to make some major changes to the data, I wanted somebody on standby to restart workers if there are issues
+2011-09-09T14:41:24  <amstan> ok
+2011-09-09T14:41:27  <McLeopold> since I don't have access...
+2011-09-09T14:42:15  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-09T14:44:10  <amstan> McLeopold: ready
+2011-09-09T14:44:43  <McLeopold> okay, it might take me 30 minutes or so to do the change
+2011-09-09T14:44:47  <amstan> ok
+2011-09-09T14:50:42  *** rabidus <rabidus!~tan@85-156-75-83.elisa-mobile.fi> has joined #aichallenge
+2011-09-09T14:52:04  <McLeopold> amstan: I forgot how to get to the worker screen session :(
+2011-09-09T14:52:24  <amstan> there's no worker on the main server
+2011-09-09T14:52:36  <McLeopold> got it, I wanted to stop the leaderboard updates
+2011-09-09T14:53:06  <amstan> McLeopold: btw, there was an uncommited file
+2011-09-09T14:53:11  <amstan> i had to reset it in order to pull
+2011-09-09T14:53:13  <McLeopold> yea, that was me
+2011-09-09T14:53:21  <McLeopold> it was the missing comma commit
+2011-09-09T14:53:22  <amstan> frontier freaked out when i did it
+2011-09-09T14:53:52  <McLeopold> I just changed it on the server to see if it would work, the made the change locally, pushed, and forgot to clean up the server
+2011-09-09T14:56:15  <McLeopold> amstan: okay, I'm going to delay my changes another hour
+2011-09-09T14:56:21  <amstan> ok
+2011-09-09T14:56:28  <amstan> my terminal will probably stay up for a while
+2011-09-09T14:57:01  <McLeopold> the leaderboard will stay turned off for now
+2011-09-09T15:16:25  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-90-45-128.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-09-09T15:18:29  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-244-158.dsl.hstntx.swbell.net> has quit IRC (Ping timeout: 245 seconds)
+2011-09-09T15:20:11  *** rabidus <rabidus!~tan@85-156-75-83.elisa-mobile.fi> has quit IRC (Ping timeout: 240 seconds)
+2011-09-09T15:22:15  *** rabidus <rabidus!~tan@85-156-75-83.elisa-mobile.fi> has joined #aichallenge
+2011-09-09T15:22:53  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-90-45-128.dsl.hstntx.swbell.net> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T15:30:48  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-09-09T15:34:57  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-90-239-230.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-09-09T15:35:03  *** sir_macelon <sir_macelon!4e089a19@gateway/web/freenode/ip.78.8.154.25> has quit IRC (Quit: Page closed)
+2011-09-09T15:44:12  *** mathis <mathis!55b3ea9e@gateway/web/freenode/ip.85.179.234.158> has quit IRC (Disconnected by services)
+2011-09-09T15:46:48  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-09T15:51:43  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-90-239-230.dsl.hstntx.swbell.net> has quit IRC (Ping timeout: 252 seconds)
+2011-09-09T16:04:35  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-89-175-153.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-09-09T16:20:44  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T16:22:11  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-09T16:28:28  *** berak <berak!~chatzilla@82.113.99.169> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-09-09T16:59:19  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has quit IRC (Read error: Connection reset by peer)
+2011-09-09T17:03:44  *** mcstar <mcstar!~mcstar@adsl-89-132-13-242.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-09-09T17:03:53  *** Daniela06 <Daniela06!~daniela.k@190.220.18.252> has joined #aichallenge
+2011-09-09T17:36:23  *** McLeopold1 <McLeopold1!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-09T17:38:30  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T17:40:56  *** McLeopold1 is now known as McLeopold
+2011-09-09T17:58:07  <CIA-24> aichallenge: McLeopold epsilon * r4b72ff9 / (19 files in 3 dirs): (log message trimmed)
+2011-09-09T17:58:07  <CIA-24> aichallenge: remove leaderboard table
+2011-09-09T17:58:07  <CIA-24> aichallenge: Previously rankings were generated once every 60 seconds and the results
+2011-09-09T17:58:07  <CIA-24> aichallenge: stored in a table. Now the most recent ranking will be stored in the
+2011-09-09T17:58:07  <CIA-24> aichallenge: submission table and the history will be stored in the game_player
+2011-09-09T17:58:08  <CIA-24> aichallenge: table. Rank movements for a bot due to other bots changing rank will
+2011-09-09T17:58:09  <CIA-24> aichallenge: not be captured. The change in ranks between games due to the results
+2011-09-09T18:00:43  *** jako <jako!5b2cc8e4@gateway/web/freenode/ip.91.44.200.228> has quit IRC (Ping timeout: 252 seconds)
+2011-09-09T18:22:54  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-09-09T18:38:18  *** delt0r_ <delt0r_!~bob@178-190-193-1.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T18:50:34  *** delt0r_ <delt0r_!~bob@213-33-9-41.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-09T19:10:43  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: FireFly)
+2011-09-09T19:15:57  *** mleise <mleise!~marco@dslb-088-070-130-181.pools.arcor-ip.net> has joined #aichallenge
+2011-09-09T19:23:03  <CIA-24> aichallenge: McLeopold epsilon * rd4dc481 / (3 files in 2 dirs):
+2011-09-09T19:23:03  <CIA-24> aichallenge: tweeks to leaderboard table removal
+2011-09-09T19:23:03  <CIA-24> aichallenge: fix missing comma in sql.php
+2011-09-09T19:23:03  <CIA-24> aichallenge: fix improper usage of stored proc param
+2011-09-09T19:23:03  <CIA-24> aichallenge: fix field name in profile.php - http://git.io/cUwbmg
+2011-09-09T19:35:43  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-09-09T19:41:26  <CIA-24> aichallenge: McLeopold epsilon * rbcabafd / website/profile.php : unicode/bio fix issue #250 - http://git.io/y3ZdPg
+2011-09-09T19:50:27  <CIA-24> aichallenge: McLeopold epsilon * r66a21a3 / (website/profile.php website/sql.php): fix sql field name mismatches with profile.php - http://git.io/v2UiJA
+2011-09-09T20:01:59  *** McLeopold1 <McLeopold1!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-09T20:04:04  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 260 seconds)
+2011-09-09T20:06:28  <CIA-24> aichallenge: McLeopold epsilon * r2f2d702 / (9 files): more unicode utf-8 support - http://git.io/8k2Qlw
+2011-09-09T20:09:15  *** McLeopold1 is now known as McLeopold
+2011-09-09T20:09:33  <CIA-24> aichallenge: McLeopold epsilon * r519f817 / website/sql.php : extra char in sql - http://git.io/ceeGTQ
+2011-09-09T20:10:49  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-09-09T20:18:36  <CIA-24> aichallenge: McLeopold epsilon * r764ef74 / website/map.php : fix map.php link, closes #249 - http://git.io/euMs6Q
+2011-09-09T20:25:59  <McLeopold> amstan, janzert: the leaderboard table is now obsolete, watch for stupid errors in what I did today.
+2011-09-09T20:26:05  *** McLeopold <McLeopold!~Scott@c-71-231-166-135.hsd1.wa.comcast.net> has quit IRC (Read error: Connection reset by peer)

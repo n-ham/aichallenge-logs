@@ -1,0 +1,1116 @@
+2011-02-12T00:00:11  <janzert> I only wonder if it's not too generous, but overall yeah it seems a rather nice solution
+2011-02-12T00:00:39  <antimatroid> oh wait, i was thinking we can turn into them
+2011-02-12T00:00:43  <antimatroid> what if they all became food :P
+2011-02-12T00:00:56  <antimatroid> i'd probably go with removing them and setting their score to 0?
+2011-02-12T00:01:16  <jmcarthur> yeah
+2011-02-12T00:01:24  <jmcarthur> i think it should just be an instant lose
+2011-02-12T00:01:45  <janzert> the worry is how much it ends up disrupting the balance of the game for the rest of the players
+2011-02-12T00:02:02  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T00:02:52  <janzert> e.g. if 4 players in a grid and 1,2;3,4 and 4 crashes out, 2 and 3 seem inordinately benefited by it. so by just freezing 4's ants instead of killing them off it is less of an advantage to 2 and 3
+2011-02-12T00:03:13  <janzert> but yeah, I wouldn't mind if 4 still didn't receive any score
+2011-02-12T00:03:23  <janzert> would seem better actually
+2011-02-12T00:04:21  <jmcarthur> well, just freezing them makes sense, too
+2011-02-12T00:04:47  <jmcarthur> so how about freezing and setting their score to zero?
+2011-02-12T00:04:52  <antimatroid> yep
+2011-02-12T00:04:55  <antimatroid> that would seem ideal to me
+2011-02-12T00:05:03  <antimatroid> i'll throw that into the spec for the moment
+2011-02-12T00:07:22  <jmcarthur> what's interesting is that you could try to detect when an opponent has died and act differently if so
+2011-02-12T00:07:38  <jmcarthur> which leads to the counter strategy of pretending you are dead...
+2011-02-12T00:08:46  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T00:08:49  <jmcarthur> the latter doesn't stand a good chance of working out very well i guess
+2011-02-12T00:08:57  <antimatroid> what's mcleopolds current scoring system?
+2011-02-12T00:09:29  <antimatroid> jmcarthur: that's a good point
+2011-02-12T00:09:33  <antimatroid> it adds more strategy to it
+2011-02-12T00:09:38  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T00:09:40  *** Prillicy_ is now known as Prillicy
+2011-02-12T00:23:00  *** tapwater <tapwater!~tapwater@pool-173-74-225-160.dllstx.fios.verizon.net> has quit IRC (Quit: tapwater)
+2011-02-12T00:26:37  <amstan> this is what i was envisioning when i was thinking about a mmorts for aichallenge: http://www.goblincamp.com/2011/02/version-v0-14-release/
+2011-02-12T00:28:32  <McLeopold> if a bot crashes, it will stop accumulating points
+2011-02-12T00:28:53  <McLeopold> but, it could still beat a bot that was eliminated before the crash
+2011-02-12T00:30:36  <antimatroid> McLeopold: i'd set it's score to 0?
+2011-02-12T00:30:39  <antimatroid> what about a timeout?
+2011-02-12T00:30:43  <antimatroid> its*
+2011-02-12T00:30:51  <McLeopold> a timeout is pretty much the same as a crash
+2011-02-12T00:30:58  <antimatroid> McLeopold: i'm currently doing up a game spec on the wiki
+2011-02-12T00:31:07  <antimatroid> that;s my point, shouldn't that be considered a loss
+2011-02-12T00:31:33  <McLeopold> no
+2011-02-12T00:32:09  <McLeopold> there's no reason to punish a bot that crashes anymore than it not being in the match
+2011-02-12T00:32:29  <antimatroid> are you removing all their ants?
+2011-02-12T00:32:35  <antimatroid> or leaving them as "non-moving" enemies?
+2011-02-12T00:32:40  <McLeopold> no, that would unbalance the game for the others
+2011-02-12T00:32:47  <McLeopold> non-moving enemies
+2011-02-12T00:32:57  <McLeopold> they can still claim new ants as well
+2011-02-12T00:32:59  <antimatroid> sure, but jmcarthur makes a good point that you then want to predict whether an ant is dead
+2011-02-12T00:33:36  <antimatroid> i think it's the better solution overall though
+2011-02-12T00:34:00  <antimatroid> what's the current scoring system?
+2011-02-12T00:34:20  <McLeopold> kills
+2011-02-12T00:34:31  <McLeopold> plus food bonus at end
+2011-02-12T00:35:04  <McLeopold> what is jmcarthur's point?
+2011-02-12T00:35:48  <antimatroid> you want to see if an enemies ants aren't "moving"
+2011-02-12T00:36:00  <antimatroid> and you might then want to "play dead"
+2011-02-12T00:36:41  <antimatroid> a kill == having an ant in range of an ant dying from battle yes? and what's the food bonus?
+2011-02-12T00:37:32  <McLeopold> the food bonus is extra points to the last bot standing, based on the amount of food that would have been spawned
+2011-02-12T00:37:57  <antimatroid> do they get points for all the food currently on the map as well?
+2011-02-12T00:38:02  <McLeopold> it is to take away incentive for dragging out the game, and to ensure the last bot wins the score
+2011-02-12T00:38:18  <McLeopold> I hadn't thought of that
+2011-02-12T00:38:20  <McLeopold> probably
+2011-02-12T00:38:21  <McLeopold> yes
+2011-02-12T00:38:35  <antimatroid> okay, i think i'm good to do the spec
+2011-02-12T00:38:45  <McLeopold> so, with the input
+2011-02-12T00:38:49  <McLeopold> we have 2 options
+2011-02-12T00:38:58  <McLeopold> I don't think the options will change at this point
+2011-02-12T00:39:07  <antimatroid> i am putting both battle resolutions in there so there's a place with both clearly defined
+2011-02-12T00:39:08  <McLeopold> we will just pick the best one
+2011-02-12T00:39:16  <McLeopold> ok
+2011-02-12T00:39:33  <antimatroid> oh, did you see my comment about attack and birth radius?
+2011-02-12T00:39:46  <antimatroid> i think attack = 5 and birth = 1
+2011-02-12T00:39:56  <McLeopold> yeah, those are still up for debate
+2011-02-12T00:40:03  <antimatroid> so attack is with knight moves
+2011-02-12T00:40:23  <antimatroid> that gives a nice circle for attack and ensures food squares never actually die
+2011-02-12T00:45:08  <McLeopold> I like food squares dying
+2011-02-12T00:47:27  <antimatroid> i don't think it really matters or changes anything
+2011-02-12T00:54:33  <pyro-> :O
+2011-02-12T00:54:37  <pyro-> food is alive?
+2011-02-12T00:54:45  <pyro-> i don't want my ants to eat any now
+2011-02-12T00:54:48  <pyro-> that is mean
+2011-02-12T00:55:17  <antimatroid> :P
+2011-02-12T00:55:46  <pyro-> on the other hand i don't care about eating enemy ants nom nom
+2011-02-12T00:57:14  <antimatroid> McLeopold: what if battle resolution also treated a dying ant like food :\
+2011-02-12T00:57:22  <antimatroid> then we really could call it zombie ants
+2011-02-12T00:57:54  <McLeopold> that would be worse than option 2
+2011-02-12T00:58:11  <antimatroid> :P
+2011-02-12T00:58:26  <antimatroid> i don't really want to change anything at this point
+2011-02-12T00:58:28  <antimatroid> it was more an insight
+2011-02-12T00:58:48  <antimatroid> other than choosing things, i think the game is pretty well defined
+2011-02-12T00:59:05  <pyro-> is it fun and balanced and fair?
+2011-02-12T00:59:26  <antimatroid> yes, depends on battle option if you ask me :P, yes
+2011-02-12T00:59:32  <pyro-> :D
+2011-02-12T00:59:40  <pyro-> battle option?
+2011-02-12T00:59:45  <antimatroid> don't ask :P
+2011-02-12T00:59:54  <pyro-> i choose howitzers
+2011-02-12T00:59:58  <pyro-> or h bombs :-)
+2011-02-12T01:01:14  <antimatroid> battle option 1: an ant with more enemy ants in it's fight radius than any of those ants enemies in range dies
+2011-02-12T01:01:14  <antimatroid> battle option 2: iteratively remove closest enemy ants in fighting range
+2011-02-12T01:01:26  *** delt0r_ <delt0r_!~delt0r@188-22-168-111.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-12T01:02:27  *** delt0r___ <delt0r___!~delt0r@188-22-170-201.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T01:03:29  <pyro-> what about more enemies than friendlys in range. then you can send in the cavalry to support places that are going to be lost :D
+2011-02-12T01:03:54  <antimatroid> i'm pretty sure that has issues
+2011-02-12T01:04:02  <antimatroid> i can't remember what they are off the top of my head
+2011-02-12T01:04:14  <antimatroid> we've pretty much ruled out everything but the above two options
+2011-02-12T01:05:45  <janzert> didn't that one lead to blocking?
+2011-02-12T01:07:40  *** Chris_0076 <Chris_0076!~Chris_007@adsl-190-49-144.asm.bellsouth.net> has quit IRC (Ping timeout: 250 seconds)
+2011-02-12T01:08:04  <pyro-> hmm i can see how that would happen
+2011-02-12T01:09:00  <pyro-> i don't think your battle option 2 makes any sense antimatroid :D
+2011-02-12T01:09:22  <pyro-> very random rule :D
+2011-02-12T01:09:30  <antimatroid> McLeopold: are you taking the last issued command for each ant? or first? or..
+2011-02-12T01:09:48  <McLeopold> first
+2011-02-12T01:09:54  <antimatroid> pyro-: neither do i :P
+2011-02-12T01:10:04  <antimatroid> McLeopold: i think he's talking about dimkadimons option
+2011-02-12T01:10:12  <janzert> pyro-: I think about the only person that does like option 2 is Jeff
+2011-02-12T01:10:14  <antimatroid> which led to blocking of arbitrary widths
+2011-02-12T01:10:19  <pyro-> if i were making such a game i would have health :-)
+2011-02-12T01:10:44  <antimatroid> pyro-: i did that, people didn't like it
+2011-02-12T01:10:57  <McLeopold> health would be nice
+2011-02-12T01:11:00  <antimatroid> it had home bases too, which you had to try and invade, and take food back there to spawn more ants
+2011-02-12T01:11:02  <McLeopold> but may be too complicated
+2011-02-12T01:11:12  <pyro-> collision = attack. remove one with smaller health. subtract smaller health from bigger health
+2011-02-12T01:11:16  <antimatroid> you could see it in action, but frontiers laptop is off
+2011-02-12T01:11:20  <pyro-> collison with food = more health
+2011-02-12T01:11:38  <pyro-> or smt ;)
+2011-02-12T01:11:42  <McLeopold> every ant can deal 1 damage per turn
+2011-02-12T01:12:03  <McLeopold> so, it will spread it's damage to all enemies in range
+2011-02-12T01:12:12  <antimatroid> pyro-: play around with resolution method 1, it's so awesome
+2011-02-12T01:12:18  <pyro-> oh that sounds fun too :D
+2011-02-12T01:12:25  <pyro-> but your not having health?
+2011-02-12T01:12:27  <pyro-> :(
+2011-02-12T01:12:29  <McLeopold> so, if a single ant comes in, then several ants can take the hit, and save each other
+2011-02-12T01:12:50  <pyro-> attack diffusion :D
+2011-02-12T01:12:54  <antimatroid> it doesn't need it
+2011-02-12T01:13:01  <McLeopold> but, you'd have to track all your ant's current health
+2011-02-12T01:13:24  <pyro-> also you could do spawn new ant = divide up ants health :D
+2011-02-12T01:13:42  <antimatroid> pyro-: the game is good already
+2011-02-12T01:13:46  <pyro-> then you get a choice between mighty single ant or spread out weak ants :D
+2011-02-12T01:13:51  <antimatroid> people are generally happy with it, and it's well defined
+2011-02-12T01:13:55  <pyro-> :D
+2011-02-12T01:14:13  <pyro-> if only one person does like your option 2 why not you using option 1? :D
+2011-02-12T01:14:22  <antimatroid> they're the person with the decision
+2011-02-12T01:14:36  <pyro-> and they made the decision already?
+2011-02-12T01:14:40  <antimatroid> no
+2011-02-12T01:14:45  <antimatroid> they aren't unreasonable
+2011-02-12T01:14:50  <antimatroid> he*
+2011-02-12T01:15:15  <pyro-> i will start being unreasonable
+2011-02-12T01:15:29  <pyro-> that will be fun :D
+2011-02-12T01:16:05  <pyro-> antimatroid you said its well defined. may i read about it somehwere?
+2011-02-12T01:17:50  <antimatroid> i'm writing a spec atm
+2011-02-12T01:17:58  <pyro-> oh :D
+2011-02-12T01:18:09  <pyro-> then i can already nearly make a starter pack :D
+2011-02-12T01:18:29  <antimatroid> you will probably want to wait for more decisions to be made
+2011-02-12T01:18:33  <antimatroid> particularly about input
+2011-02-12T01:18:56  <McLeopold> input is pretty well defined
+2011-02-12T01:19:12  <antimatroid> depending on the option?
+2011-02-12T01:19:24  <antimatroid> with the current option, is that moving to outputting info for all currently seeable squares?
+2011-02-12T01:21:14  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-197-162.asm.bellsouth.net> has joined #aichallenge
+2011-02-12T01:21:34  <McLeopold> output all food and ant
+2011-02-12T01:21:40  <McLeopold> output land and wall only once
+2011-02-12T01:21:47  <McLeopold> output all dead ants each turn
+2011-02-12T01:22:01  <McLeopold> so, you must clear your list of food
+2011-02-12T01:22:34  <McLeopold> if you want to remember, it is up to your bot to calc the view distance
+2011-02-12T01:23:29  <antimatroid> i'm fairly strongly opposed to that :P
+2011-02-12T01:23:38  <McLeopold> I know
+2011-02-12T01:23:59  <antimatroid> the specs will have that at least for now
+2011-02-12T01:24:12  * janzert doesn't understand why not just outputting one line per map row with non-visible squares just say X'ed out
+2011-02-12T01:24:31  <McLeopold> janzert: that's the other option
+2011-02-12T01:24:32  <janzert> especially if the bots are already being given the map dimensions
+2011-02-12T01:24:59  <janzert> it seems a lot easier to debug and look at
+2011-02-12T01:25:24  <janzert> and probably easier for the bot to use too
+2011-02-12T01:25:25  <McLeopold> it would be, but the starter pack would have the ability to turn the input into ascii art if needed
+2011-02-12T01:26:17  <janzert> being able to look at the IO in a text editor and have it make intuitive sense is quite nice
+2011-02-12T01:27:20  <McLeopold> okay, let's take a vote
+2011-02-12T01:27:33  <McLeopold> option 1, changes only, option 2, map in ascii
+2011-02-12T01:28:46  <McLeopold> for a 128x128 map, that's 16,512 bytes per turn
+2011-02-12T01:28:52  <janzert> clearly I'd go for two
+2011-02-12T01:29:42  <antimatroid> i'm with 2
+2011-02-12T01:30:04  <janzert> even though I think raw data sent is a low priority concern, how many ants/food/etc. is the crossover for option 1
+2011-02-12T01:30:34  <antimatroid> you can give players the char map of the smallest rectangle containing all visible squares
+2011-02-12T01:30:44  <antimatroid> and pass the top left and bottom right coords before sending it
+2011-02-12T01:31:13  <janzert> if you're giving them the full dimensions anyway, it seems like extra work that isn't worth it
+2011-02-12T01:31:14  <McLeopold> 2064 changes in state
+2011-02-12T01:31:48  <antimatroid> janzert: assuming you treat the whole map as unseen at the start of each turn, the difference is reading values to set iterators to and filling in based on that
+2011-02-12T01:31:53  <McLeopold> antimatroid: if they have ants all over the map, not connected, that is harder than it sounds
+2011-02-12T01:32:12  <antimatroid> McLeopole: store max/min row/col
+2011-02-12T01:32:20  <janzert> antimatroid: I meant more from the engine perspective
+2011-02-12T01:32:26  <antimatroid> ah yeah, sure
+2011-02-12T01:32:32  <janzert> but yes, it's minimal extra work either way
+2011-02-12T01:32:38  <McLeopold> yeah, but vision may wrap
+2011-02-12T01:33:00  <antimatroid> oh, you're right
+2011-02-12T01:33:03  * pyro- just saw the phrase "visible squares"
+2011-02-12T01:33:07  <pyro-> there ist fog? :D
+2011-02-12T01:33:13  <antimatroid> it'd still work, just show too much sometimes
+2011-02-12T01:33:18  <McLeopold> yes, I posted a movie in the forum
+2011-02-12T01:33:30  <antimatroid> pyro-: yeah :P
+2011-02-12T01:33:46  <antimatroid> and it's n-player not 2 player
+2011-02-12T01:35:53  <antimatroid> i almost think the game could be more interesting without the fog of war with the n-players
+2011-02-12T01:36:30  <pyro-> how far can you see?
+2011-02-12T01:37:03  * pyro- thinks every game in the competition to date has had perfect information
+2011-02-12T01:37:30  <antimatroid> i would be very surprised if it changes from sqrt(96)
+2011-02-12T01:37:58  <antimatroid> that's using the euclidean metric too
+2011-02-12T01:38:32  <McLeopold> it might
+2011-02-12T01:38:39  <McLeopold> if we go with a smaller attack radius
+2011-02-12T01:39:03  <antimatroid> maybe, i still think it's a good view radius
+2011-02-12T01:39:11  <pyro-> fog does make it much harder :-)
+2011-02-12T01:39:36  <antimatroid> i think fog discourages the whole see what everyone else is doing and coopeate etc.
+2011-02-12T01:39:41  <antimatroid> but that's alright, it's still awesome
+2011-02-12T01:40:18  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-02-12T01:40:52  <pyro-> im assming that bots will clump there ants in an area that is there controlled territory
+2011-02-12T01:41:05  <pyro-> its a bit useless to only know where your own ants are :D
+2011-02-12T01:41:12  <antimatroid> with option 2, you want to fight single ant battles
+2011-02-12T01:41:17  <antimatroid> and kamakazee them into the enemy
+2011-02-12T01:41:29  <antimatroid> which also means there is no balance with also wanting to spread out for finding food
+2011-02-12T01:41:43  <antimatroid> option 1 gives incentive to clump up, which gives balance to wanting to spread for food
+2011-02-12T01:43:13  <pyro-> how will you detirmine whether you want to defend your area or crush a player if you can't see how many ants has that player?
+2011-02-12T01:44:31  <pyro-> yes i am asking you to design my bot for me :D
+2011-02-12T01:44:46  <antimatroid> that's part of the appeal fog does offer
+2011-02-12T01:44:54  <antimatroid> there is balance from that
+2011-02-12T01:44:59  <pyro-> apeal? no it make me sad
+2011-02-12T01:45:02  <pyro-> start to cry
+2011-02-12T01:45:24  <pyro-> i can only luanch test attacks and see if they die or not. i cant actually make any stratagy :'(
+2011-02-12T01:46:46  <antimatroid> the rules are set that i think you want to at least fight what you can see
+2011-02-12T01:46:52  <antimatroid> you wont know how much back up to send
+2011-02-12T01:47:05  <antimatroid> part of why i like the larger vision radius is because you still get a decent amount of visibility
+2011-02-12T01:47:10  <antimatroid> particularly once you get more ants
+2011-02-12T01:47:49  <pyro-> yes. i can charge at 1 ant becuase i have near him 3 and then find out he has 20 ants just behind one ant and i loose
+2011-02-12T01:48:04  <pyro-> then all my ants cry very much
+2011-02-12T01:50:03  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T01:50:23  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-02-12T01:50:28  <antimatroid> then you run backwards
+2011-02-12T01:50:34  <antimatroid> until your backup arrives
+2011-02-12T01:50:46  <antimatroid> and hope they can't get you dodging through walls
+2011-02-12T01:51:27  <antimatroid> the good thing about a smaller attack radius is you don't need as many ants about to still get at least a kill in
+2011-02-12T01:51:39  <pyro-> so then stratagy is don't send out single ant ?
+2011-02-12T01:51:47  <pyro-> everyone grow out slowly like a mushroom ?
+2011-02-12T01:52:17  <pyro-> and you dont know how strong is your neibhour so you must simply keep trying to mushroom out even when you hit him
+2011-02-12T01:52:31  <pyro-> becuase if you divert too many forces you may find yourself dead
+2011-02-12T01:52:48  <pyro-> if he is stronger
+2011-02-12T01:52:54  <antimatroid> but you want to spread out so you can see more and get food as it replenishes
+2011-02-12T01:52:56  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Read error: Connection reset by peer)
+2011-02-12T01:53:05  <antimatroid> (oh yeah, there's replenishing food popping up)
+2011-02-12T01:53:12  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-02-12T01:53:15  <pyro-> yes
+2011-02-12T01:53:40  <pyro-> but i have no way to estimate if i get enough food to compensate for attacking him
+2011-02-12T01:54:20  <pyro-> i know not what area i can control once he is dead
+2011-02-12T01:54:31  <pyro-> nor how much he is capable of defending
+2011-02-12T01:54:50  <pyro-> i dont like your fog at all :D
+2011-02-12T01:58:20  <antimatroid> that is part of the point of fog of war
+2011-02-12T01:58:24  <antimatroid> you don't have perfect information
+2011-02-12T02:00:40  <pyro-> yes
+2011-02-12T02:00:48  <pyro-> guessing at things is no fun :'(
+2011-02-12T02:04:48  *** Frontier <Frontier!~marco@dslb-088-071-226-146.pools.arcor-ip.net> has joined #aichallenge
+2011-02-12T02:05:48  <antimatroid> pyro-: http://marco-leise.homedns.org/antgui/v3/
+2011-02-12T02:05:56  <antimatroid> that was the ant game i made with hp
+2011-02-12T02:06:33  <antimatroid> Frontier ^^ there did the visualiser
+2011-02-12T02:07:29  <Frontier> :)
+2011-02-12T02:07:32  <pyro-> no idea what is going on
+2011-02-12T02:07:44  <pyro-> hard to follow. but i think it look more fun than the game you have here currently
+2011-02-12T02:08:09  <antimatroid> if you have food deposited on your home base at the start of a turn, an ant spawns, then you have to go out and harvest, attack and invade their base
+2011-02-12T02:08:22  <antimatroid> if you invade their base, you win, and there is fog of war
+2011-02-12T02:08:24  <Frontier> ok the numbers above the ants are "hp | harvest"
+2011-02-12T02:08:30  <antimatroid> i don't know, i think the current game will be quite cool
+2011-02-12T02:08:55  <pyro-> pff fog is lame ;)
+2011-02-12T02:09:05  <antimatroid> it means you don't know where their base is
+2011-02-12T02:09:09  <antimatroid> you have to go and find it
+2011-02-12T02:09:32  <pyro-> oh
+2011-02-12T02:09:36  <antimatroid> the maps are symmertic, but the start base could be anywhere
+2011-02-12T02:09:38  <pyro-> at least you have an excuse for it
+2011-02-12T02:09:41  <antimatroid> :p
+2011-02-12T02:09:55  <Frontier> the ants can pass on their harvest to other ants closer to the ant hill
+2011-02-12T02:10:03  <pyro-> i dont know what fog supposed to be adding to the game here
+2011-02-12T02:10:07  <antimatroid> and colliding ants fight to the death
+2011-02-12T02:10:14  <antimatroid> friend ants colliding fuse and hp just sums
+2011-02-12T02:10:21  <pyro-> to your game at least it add "searching" component :D
+2011-02-12T02:10:27  <antimatroid> pyro-: you don't get told the number of players
+2011-02-12T02:10:44  <antimatroid> and you have to search out to see what the map looks like
+2011-02-12T02:10:45  <pyro-> so its even worse ;)
+2011-02-12T02:10:53  <antimatroid> that's not worse
+2011-02-12T02:10:58  <antimatroid> imagine real life colony wars
+2011-02-12T02:11:04  <antimatroid> they don't know how many other colonies there are
+2011-02-12T02:11:06  <pyro-> you have no information to make a global stratagy
+2011-02-12T02:11:24  <antimatroid> you have a global strategy to maximise vision to have a global strategy
+2011-02-12T02:11:26  <antimatroid> yo dog
+2011-02-12T02:12:27  <pyro-> and the only way to acomplish that stratgy apart froming owning the map by which time you've won anyway, is to send out scouts and weaken your force and die
+2011-02-12T02:12:36  <pyro-> so you must be content with looking only at your own ants ;)
+2011-02-12T02:13:39  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification
+2011-02-12T02:13:45  <antimatroid> that's still very much a work in progress
+2011-02-12T02:14:24  <antimatroid> the bottom is wrong too, i haven't changed it fully from planet wars rules
+2011-02-12T02:15:04  <antimatroid> the objective is wrong too
+2011-02-12T02:15:41  <pyro-> yes
+2011-02-12T02:15:53  <pyro-> you talk of killing enemies and then later talk of scoring
+2011-02-12T02:16:05  <antimatroid> McLeopold:  The objective is to have the highest score at the end of the game, which consists of killing the most ants and trying to be the last remaining colony.
+2011-02-12T02:16:14  <antimatroid> is that sufficient for the very introductory explanation of the game?
+2011-02-12T02:16:15  <McLeopold> yup
+2011-02-12T02:16:24  <McLeopold> yup
+2011-02-12T02:16:27  <pyro-> "and"
+2011-02-12T02:16:34  <McLeopold> you must favor fighting
+2011-02-12T02:16:41  <McLeopold> and being the last bot left
+2011-02-12T02:16:47  <pyro-> what happen if a kill the most ants but b is the last one standing?
+2011-02-12T02:16:47  <antimatroid> being the last remaining colony doesn't ensure you win
+2011-02-12T02:17:00  <antimatroid> depends on how much the difference is and the food bonus
+2011-02-12T02:17:01  <McLeopold> surviving longer than someone else by hiding will not get you a good score
+2011-02-12T02:17:03  <antimatroid> read the scoring part
+2011-02-12T02:17:24  <McLeopold> pyro-: hopefully you got second place
+2011-02-12T02:17:27  <antimatroid> McLeopold: it may cause the end to be a cat and mouse game
+2011-02-12T02:17:41  <McLeopold> or, if he doesn't take over until the very end, you may still win
+2011-02-12T02:17:55  <McLeopold> antimatroid: how so?
+2011-02-12T02:18:10  <antimatroid> you want to run around and minimise the food bonus they'll get
+2011-02-12T02:18:23  <antimatroid> i guess you want to do that for survival anyway
+2011-02-12T02:18:25  <antimatroid> nevermind
+2011-02-12T02:18:34  <pyro-> also. ant from a and b in range of ant from c. c die and both a and b gain one point?
+2011-02-12T02:18:52  <McLeopold> if a and b are in range of c, they all die
+2011-02-12T02:18:58  <McLeopold> and 3 points are handed out
+2011-02-12T02:20:24  <pyro-> "A bot gets a point for every enemy ant they kill." i cant work out how its decided who was the murderer
+2011-02-12T02:20:39  <McLeopold> we have a formula
+2011-02-12T02:21:21  <McLeopold> every ant that dies spreads it's 1 point out to all enemies in range
+2011-02-12T02:21:45  <McLeopold> normally there will only be 2 ants that fight, so it will be 1 point each
+2011-02-12T02:21:54  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T02:21:55  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T02:22:01  *** Prillicy_ is now known as Prillicy
+2011-02-12T02:22:08  <McLeopold> if you get lucky and kill 2 ants with 1, you get 2 points, they get 1
+2011-02-12T02:22:20  <pyro-> then in my situation above
+2011-02-12T02:22:29  <McLeopold> 1 point each
+2011-02-12T02:22:40  <McLeopold> each ant give 1/2 point to the other 2
+2011-02-12T02:22:44  <pyro-> but i killed 2 ants!
+2011-02-12T02:22:53  <McLeopold> no, 3 ants died
+2011-02-12T02:22:57  <pyro-> when one died i was in rnage. when other died i was in range
+2011-02-12T02:23:03  <McLeopold> you killed half of each ant
+2011-02-12T02:23:49  <pyro-> XD
+2011-02-12T02:24:03  <pyro-> the half of ant i didnt kill can still run around :D
+2011-02-12T02:24:04  <antimatroid> McLeopold: i would have expected 2 points for that
+2011-02-12T02:24:20  <McLeopold> 3 different ants all in range?
+2011-02-12T02:24:25  <antimatroid> yeah
+2011-02-12T02:24:29  <antimatroid> each player gets 2 points
+2011-02-12T02:24:31  <McLeopold> no, only 3 point
+2011-02-12T02:24:41  <McLeopold> it wouldn't be fair to bots not in the battle
+2011-02-12T02:24:41  <pyro-> thats different to your own rule
+2011-02-12T02:24:50  <antimatroid> so if 2 people kill 1 player, each gets half a point?
+2011-02-12T02:24:59  <Frontier> each bot gets 2*1/2 i think
+2011-02-12T02:25:03  <pyro-> it say if an ant die all enemies in range get a point
+2011-02-12T02:25:09  <pyro-> but thats not what you describe :D
+2011-02-12T02:25:16  <antimatroid> pyro-: i wrote what that says
+2011-02-12T02:25:20  <McLeopold> if 2 people kill 1 ant, then there are 3 ants all dying together
+2011-02-12T02:25:25  <antimatroid> but i only wrote that trying to interpret mcleopolds rule
+2011-02-12T02:25:27  <antimatroid> atm he is right
+2011-02-12T02:25:37  <antimatroid> not necessarily
+2011-02-12T02:25:42  <antimatroid> a..b..c
+2011-02-12T02:25:54  <antimatroid> oh, you're still with option 2
+2011-02-12T02:25:58  <McLeopold> yeah
+2011-02-12T02:25:58  <antimatroid> i'm thinking option 1 always :P
+2011-02-12T02:26:01  <McLeopold> ok
+2011-02-12T02:26:10  <pyro-> such a complecated game
+2011-02-12T02:26:20  <antimatroid> it's cool complicated
+2011-02-12T02:26:31  <pyro-> i do not agree :D
+2011-02-12T02:26:39  <McLeopold> with that, we can still determine which ants did the kill, and the 1 point will be spread between them
+2011-02-12T02:26:43  <pyro-> but i can still try and win it ;D
+2011-02-12T02:27:14  <antimatroid> McLeopold, if 2 a ants and 1 b ant kill a c ant
+2011-02-12T02:27:18  <antimatroid> does a get 2/3 points?
+2011-02-12T02:27:24  <McLeopold> yes
+2011-02-12T02:27:34  <McLeopold> the 1 point is spread per ant, not per player
+2011-02-12T02:27:37  <pyro-> floating point scores :|
+2011-02-12T02:28:14  <pyro-> or exact fractions used?
+2011-02-12T02:28:15  <McLeopold> depending on the attack range, we can just multiply the per ant score to avoid floating point
+2011-02-12T02:28:21  <antimatroid> hmmm, i prefer my one again :P
+2011-02-12T02:29:06  <antimatroid> i'll put yet another option split in the spec :P
+2011-02-12T02:30:29  <pyro-> i know you wont consider it since your gamnes already made. but its why i suggested health earlier. its more easy to see who attack who else and who is just standing nearby :D
+2011-02-12T02:30:30  <McLeopold> each ant is worth 840 point
+2011-02-12T02:31:10  <Frontier> that is not divisible by 7 is it ^^
+2011-02-12T02:31:14  <McLeopold> it is
+2011-02-12T02:31:21  <Frontier> wow
+2011-02-12T02:31:48  <pyro-> but its not divisible by 9 :D
+2011-02-12T02:32:02  <pyro-> or 865 :D
+2011-02-12T02:32:04  <Frontier> make that number as large as the max amount of ants in attack range
+2011-02-12T02:32:11  <McLeopold> no
+2011-02-12T02:32:31  <McLeopold> yes, that would be for option 1
+2011-02-12T02:32:32  <antimatroid> you can't get that many ants in the attack range i don't tihnk
+2011-02-12T02:32:48  <McLeopold> just the perimeter
+2011-02-12T02:33:10  <antimatroid> not just the preimeter
+2011-02-12T02:33:15  <antimatroid> the 2 edge perimeter?
+2011-02-12T02:33:15  <Frontier> that's what I meant anyway
+2011-02-12T02:33:42  <antimatroid> :P
+2011-02-12T02:33:45  <antimatroid> so it was
+2011-02-12T02:36:04  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-02-12T02:36:07  <antimatroid> scoring would be less intuitive if it's going up 840 at a time
+2011-02-12T02:37:03  <McLeopold> the visualizer can divide it back out
+2011-02-12T02:38:17  <antimatroid> and food bonus is *840?
+2011-02-12T02:38:25  <McLeopold> per food
+2011-02-12T02:38:30  <Frontier> McLeopold: About that scoring. Should I do my own calculations or will the replay string include scores for each player?
+2011-02-12T02:38:47  <antimatroid> Frontier: the go message is followed by scores
+2011-02-12T02:38:48  <McLeopold> you'll get and end score
+2011-02-12T02:38:50  <antimatroid> same as end
+2011-02-12T02:39:02  <McLeopold> no scores during the game
+2011-02-12T02:39:17  <Frontier> yes? no?
+2011-02-12T02:39:29  <antimatroid> McLeopold; he;s talking about the visualiser
+2011-02-12T02:39:42  <McLeopold> oh
+2011-02-12T02:40:01  <McLeopold> yeah, whatever you need for the visualizer, we'll give you
+2011-02-12T02:40:51  <Frontier> Ok, I guess with a scoring like that it should be in the replay string. Planet Wars was more straight forward there
+2011-02-12T02:42:13  <McLeopold> since the replay string can see everything, you'll be given the wall info once, then nothing but ant, food and dead ant locations
+2011-02-12T02:42:16  <McLeopold> along with score
+2011-02-12T02:42:17  <antimatroid> McLeopold: i'm adding a visualiser input parameter for that 840 thing
+2011-02-12T02:42:28  <McLeopold> 840 is not set in stone
+2011-02-12T02:42:43  <antimatroid> exactly
+2011-02-12T02:42:43  <Frontier> therefor it is a parameter :)
+2011-02-12T02:42:50  <McLeopold> it's just the lcm of 1-8
+2011-02-12T02:42:56  <antimatroid> yeah
+2011-02-12T02:43:08  <antimatroid> that's why i'm making it a parameter :P
+2011-02-12T02:43:13  <McLeopold> ok
+2011-02-12T02:43:47  <McLeopold> javascript doesn't have integers anyway...
+2011-02-12T02:44:03  <Frontier> well, I thought it has
+2011-02-12T02:44:14  <McLeopold> only floating point
+2011-02-12T02:47:30  <antimatroid> McLeopold: does the engine send the bots "go" almost at the same time, or at the end of sending each bot input? and does the timer start after sending go or when sending input starts?
+2011-02-12T02:48:00  <McLeopold> at the end of each input, but I like your idea
+2011-02-12T02:48:17  <McLeopold> I'm writing the game class, that should plug into an engine
+2011-02-12T02:48:23  <McLeopold> so my engine may not be used
+2011-02-12T02:48:32  <antimatroid> yeah that's fine
+2011-02-12T02:48:46  <antimatroid> hopefully otherwise the engine will at least be made to the specs
+2011-02-12T02:49:32  <Frontier> McLeopold: I found a website mentioning an internal ToInt32 function. And I use to write "number | 0" to trigger that and cast a number to an int
+2011-02-12T02:51:10  <McLeopold> do you have a link?
+2011-02-12T02:51:36  <McLeopold> in javascript, number | 0 would just be a way to default to 0 if number was falsy
+2011-02-12T02:51:48  <pyro-> is the non existance of a legal move for either player possible?
+2011-02-12T02:51:57  <Frontier> http://www.jibbering.com/faq/notes/type-conversion/
+2011-02-12T02:52:09  <McLeopold> not really
+2011-02-12T02:52:42  <McLeopold> you'd have to have all ants in a 1x1 space surrounded by wall
+2011-02-12T02:53:04  <Frontier> "number | 0" works very well to trunc() floating point numbers in my visualizer
+2011-02-12T02:53:12  <pyro-> what happens if you move an ant into an ant?
+2011-02-12T02:53:17  <McLeopold> they die
+2011-02-12T02:54:26  <antimatroid> enemy ants can't land in the same square if the attack radius is >=2
+2011-02-12T02:55:06  <McLeopold> ok, for a game of 200 turns, sending full map is 485,627 bytes, changes only is 42,295
+2011-02-12T02:55:44  <antimatroid> so.. char maps?
+2011-02-12T02:55:52  <McLeopold> yeah
+2011-02-12T02:56:11  <McLeopold> so, do we want to store 1 meg per game for the replays?
+2011-02-12T02:56:34  <McLeopold> do we want to have that much bandwidth taken on the web server?
+2011-02-12T02:56:40  <antimatroid> don't you only need the visualiser stuff?
+2011-02-12T02:56:40  <McLeopold> janzert: ^^
+2011-02-12T02:56:41  <Frontier> I only need the bare bone version
+2011-02-12T02:56:45  <pyro-> why would you not delta encode?
+2011-02-12T02:57:12  <janzert> so they're within about 10x of each other, sounds fine
+2011-02-12T02:57:14  <McLeopold> some think it is easier to debug and code for if you send the whole map
+2011-02-12T02:57:19  <Frontier> encode it whatever way you see fit, but i thought the current format was ok
+2011-02-12T02:57:34  <McLeopold> janzert: you know the web server better than me
+2011-02-12T02:57:37  <antimatroid> Frontier: it's the bot input i want to be a char map
+2011-02-12T02:57:38  <McLeopold> are you sure about that?
+2011-02-12T02:57:51  <antimatroid> McLeopold: I don't want to change the input for the visualiser
+2011-02-12T02:58:02  <antimatroid> that is good, and will decrease the size of game strings
+2011-02-12T02:58:26  <janzert> for the replay data, I don't care as much
+2011-02-12T02:59:05  <janzert> in either case it really needs to not be stored in the database like the last contest did
+2011-02-12T02:59:05  <antimatroid> McLeopold: give me a minute to update that specs page, then see if we all agree
+2011-02-12T03:00:03  <janzert> and it would be best if it can be stored in such a way that it can be served as a static file directly by the webserver
+2011-02-12T03:00:04  <Frontier> janzert: So replays would be stored as files?
+2011-02-12T03:00:45  <McLeopold> janzert: the full map compresses much better, only 2x the size
+2011-02-12T03:00:46  <janzert> Frontier: yeah, I think so although someone had mentioned just storing them in amazon storage
+2011-02-12T03:00:52  <Frontier> I currently use a http request in the visualizer to download the replays. the web server is 100% static
+2011-02-12T03:01:11  <McLeopold> if most everyone uses a browser that requests gzip, we are only going to double bandwidth
+2011-02-12T03:01:46  <Frontier> but replays can be cached when there is no parameters involved in the requests
+2011-02-12T03:01:47  <janzert> McLeopold: I rather thought that might indeed be the case, and I do expect most browsers will be accepting gz compressed responses
+2011-02-12T03:02:31  <janzert> Frontier: yep, although the current webserver setup is messed up in that it sends no cache headers for all requests
+2011-02-12T03:02:42  <McLeopold> okay, I'll look into a modified input scheme where we attempt to send only the visible part to bots
+2011-02-12T03:02:43  <janzert> that should really be changed too :)
+2011-02-12T03:03:23  <janzert> lots of stuff that should get changed :/
+2011-02-12T03:03:29  <McLeopold> Frontier: try and get the visualizer to use localStorage
+2011-02-12T03:03:42  <janzert> why?
+2011-02-12T03:03:46  <janzert> or rather what for?
+2011-02-12T03:03:52  <Frontier> have a link with information, im not really a web developer?
+2011-02-12T03:03:58  <McLeopold> so a person can store replays locally if they want
+2011-02-12T03:04:24  <McLeopold> well, check out dive into html5
+2011-02-12T03:04:37  <janzert> hmm, seems like pretty limited use. Just get the cache headers set right
+2011-02-12T03:04:57  <Frontier> McLeopold: what would the use case be?
+2011-02-12T03:05:45  <janzert> if there were different options to set for the visualizer then it seems like localstorage might be handy for that
+2011-02-12T03:06:13  <janzert> but really I think the browser compatibility is still too thin to rely on it
+2011-02-12T03:06:20  <Frontier> hmm, yes we talked about zoom levels for that matter
+2011-02-12T03:06:41  *** j3camero <j3camero!~jeff@207.219.39.71> has quit IRC (Ping timeout: 255 seconds)
+2011-02-12T03:10:09  <Frontier> janzert: I don't know if JavaScript is allowed to download from different servers now that I think about it.
+2011-02-12T03:10:11  <janzert> hmm, only about 5% of visitors to the site are using IE, with only about 1% using older than version 8, so maybe you could get away with it
+2011-02-12T03:10:41  <janzert> Frontier: not in general no
+2011-02-12T03:11:33  <Frontier> So the replays must be served by the main web server ?
+2011-02-12T03:12:49  <janzert> pretty much, possibly a subdomain works too I'd have to look
+2011-02-12T03:12:59  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has quit IRC (Ping timeout: 276 seconds)
+2011-02-12T03:13:21  <janzert> but I would expect just to have it come from the main server
+2011-02-12T03:14:02  <Frontier> alright
+2011-02-12T03:16:00  <antimatroid> i need to add something to input
+2011-02-12T03:16:17  <antimatroid> atm it's hard to tell whether you're inputing a char map or the end line
+2011-02-12T03:16:43  <McLeopold> if we had 14 players, yes it would be
+2011-02-12T03:17:28  <janzert> don't all lines start with a type identifier?
+2011-02-12T03:17:49  <antimatroid> not for input
+2011-02-12T03:18:26  <McLeopold> we did have 'M'
+2011-02-12T03:18:28  <janzert> ouch
+2011-02-12T03:18:43  <antimatroid> i don't like M at the start of every char line
+2011-02-12T03:19:04  <antimatroid> could I add a T/E line at hte start of each turn
+2011-02-12T03:19:40  <janzert> I think it's really worth it to make each line unambiguously identified by its first word
+2011-02-12T03:19:56  <antimatroid> okay, i'll do that
+2011-02-12T03:20:44  <janzert> lets people do really easy parsing
+2011-02-12T03:21:57  <McLeopold> plus, if every line starts 1 char and 1 space, you can make assumptions
+2011-02-12T03:22:06  <McLeopold> just chop the first 2 chars off each line
+2011-02-12T03:22:15  <janzert> I'd try not to make it 1 char and a space
+2011-02-12T03:22:21  <janzert> we might run out of chars :)
+2011-02-12T03:22:37  <McLeopold> >:(
+2011-02-12T03:22:45  <janzert> but <type> always followed by a space is certainly good
+2011-02-12T03:22:52  <McLeopold> antimatroid: how about for bot output 'O' for order
+2011-02-12T03:23:37  <janzert> is the game length given in the pregame setup phase?
+2011-02-12T03:23:51  <McLeopold> P turns 1000
+2011-02-12T03:23:59  <McLeopold> yes
+2011-02-12T03:24:55  <antimatroid> McLeopold: done
+2011-02-12T03:25:08  <antimatroid> actually, looks a lot like 0
+2011-02-12T03:25:14  <janzert> ok, although I'm not sure why to use <type> <subtype> <value> instead of just <type> <value>
+2011-02-12T03:25:20  <antimatroid> W?
+2011-02-12T03:25:21  <antimatroid> walk
+2011-02-12T03:25:31  <McLeopold> w = wall
+2011-02-12T03:25:36  <antimatroid> hmmm
+2011-02-12T03:25:37  <McLeopold> let's keep em unique
+2011-02-12T03:25:41  <antimatroid> yeah
+2011-02-12T03:25:56  <antimatroid> well that's a single char in the spec, so work one out, i've almost finished updating
+2011-02-12T03:26:31  <janzert> that what I'm pushing for, dropping the single char types :P
+2011-02-12T03:27:00  <janzert> just go for the full monte and only use the single char types for things that are used a lot and a natural fit
+2011-02-12T03:27:22  <janzert> like M for map line
+2011-02-12T03:27:38  <McLeopold> too late, the bike shed is built
+2011-02-12T03:27:52  <janzert> you're using go and ready anyway right?
+2011-02-12T03:27:59  <McLeopold> dammit
+2011-02-12T03:28:26  <janzert> so not all types are a single char already
+2011-02-12T03:28:48  <McLeopold> json?
+2011-02-12T03:28:57  <McLeopold> yaml?
+2011-02-12T03:29:04  <McLeopold> xml?
+2011-02-12T03:29:04  <janzert> no, just plain <type> <value> :P
+2011-02-12T03:29:22  <antimatroid> ergh, i need to do formatting hold up
+2011-02-12T03:29:56  <antimatroid> we could make them strings
+2011-02-12T03:30:04  <McLeopold> what about bot output, should we bother with the 'O', or just have value value value
+2011-02-12T03:30:22  <janzert> does a bot send anything other than ant moves?
+2011-02-12T03:30:26  <antimatroid> no
+2011-02-12T03:30:29  <antimatroid> "go"
+2011-02-12T03:30:36  <antimatroid> yes :P
+2011-02-12T03:30:41  <janzert> or better is there any possible future change where it would want to?
+2011-02-12T03:30:49  <McLeopold> maybe
+2011-02-12T03:30:58  <McLeopold> so stick with 'O'
+2011-02-12T03:31:05  <janzert> if yes, then stick with a type identifier for bot output too
+2011-02-12T03:31:07  <McLeopold> let's drop the 'P'
+2011-02-12T03:32:10  <McLeopold> also, the engine sends 'ready' on turn 0 and 'go' for all others with an 'end' after the game is over
+2011-02-12T03:32:38  <janzert> you could specify that the engine ignores unrecognized types, then people can use it to output debug info mixed in with their orders if they want
+2011-02-12T03:32:45  <janzert> not positive if that's a good idea or not
+2011-02-12T03:32:54  <McLeopold> no, it's not
+2011-02-12T03:33:01  <janzert> definitely specify that bots should ignore the unrecognized types
+2011-02-12T03:33:11  <janzert> so you can add new types without breaking old bots
+2011-02-12T03:33:23  <McLeopold> the starter packs should help with that
+2011-02-12T03:34:36  <janzert> be sure to spec it in anyway so no one can cry about it
+2011-02-12T03:34:44  <janzert> even thought they still will...
+2011-02-12T03:34:48  <janzert> though
+2011-02-12T03:35:09  <antimatroid> janzert: i'm quite happy i get to throw it together just so i can make note of such things
+2011-02-12T03:36:45  <McLeopold> antimatroid: so, you agree we can drop the 'P'
+2011-02-12T03:37:14  <McLeopold> wait...
+2011-02-12T03:37:23  * janzert knows the last contest made him evil because he'd be tempted to have the engine randomly add invalid types to be sure the bots were correctly rejecting them :P
+2011-02-12T03:37:27  <McLeopold> I'd kinda like the first char to be a good indicator
+2011-02-12T03:37:38  <antimatroid> McLeopold: we could drop it
+2011-02-12T03:37:50  <antimatroid> we can drop the go's but not the ready
+2011-02-12T03:37:58  <antimatroid> because you ened to give people time to set up etc.
+2011-02-12T03:38:12  <McLeopold> ened?
+2011-02-12T03:38:16  <antimatroid> need*
+2011-02-12T03:38:28  <McLeopold> how could we drop 'go'?
+2011-02-12T03:38:36  <antimatroid> you know the dimensions
+2011-02-12T03:38:36  <McLeopold> that's after every turn
+2011-02-12T03:38:45  <antimatroid> if you read M, get height lines of them
+2011-02-12T03:38:56  <antimatroid> i'll leave go in, probably makes life easier
+2011-02-12T03:38:59  <McLeopold> yeah
+2011-02-12T03:39:17  <McLeopold> because I may only send visible lines
+2011-02-12T03:39:31  <antimatroid> how do you explain the input in words?
+2011-02-12T03:39:55  <antimatroid> check what it has now
+2011-02-12T03:40:29  <antimatroid> ergh, formatting is still hating on me
+2011-02-12T03:41:20  <janzert> each line of type 'M' represents one row of the maps with the (cells/squares) being represented as follows
+2011-02-12T03:41:59  <janzert> something like that anyway is what I would start working from
+2011-02-12T03:43:00  <janzert> I also don't really understand you're radius value definitions
+2011-02-12T03:43:57  <antimatroid> the value passed is vision^2
+2011-02-12T03:44:04  <janzert> and be sure to send loadtime as the first thing since it is really already in progress when they receive it
+2011-02-12T03:44:05  <antimatroid> so it can be passed as an int
+2011-02-12T03:44:43  <janzert> say the value passed is the square of the radius then?
+2011-02-12T03:44:58  <janzert> or the actual value sent
+2011-02-12T03:45:17  <janzert> and maybe call the type e.g. viewradius2
+2011-02-12T03:45:46  <antimatroid> done
+2011-02-12T03:45:54  <antimatroid> not saved, but it's changed in the edit page
+2011-02-12T03:46:06  <antimatroid> i'm stripping out sample inputs for the moment
+2011-02-12T03:46:19  <antimatroid> i can't work out how to do text over multiple lines without paragraph gaps
+2011-02-12T03:47:25  <antimatroid> oh, now i have i think
+2011-02-12T03:47:34  <janzert> it's markdown right?
+2011-02-12T03:47:54  <janzert> if so leave two trailing spaces on the line
+2011-02-12T03:49:05  <janzert> also need to specify how your location indexing works for ant orders
+2011-02-12T03:49:20  <janzert> e.g. is it zero or one based?
+2011-02-12T03:51:03  *** choas <choas!~lars@p578F6E35.dip.t-dialin.net> has joined #aichallenge
+2011-02-12T03:53:20  <antimatroid> should we send go after the end E line?
+2011-02-12T03:59:28  <janzert> it might be best to be consistent there
+2011-02-12T03:59:54  <janzert> although I would still just kill the bot when it loses :P
+2011-02-12T04:00:43  <antimatroid> actually, i think with M, you can just send end info as though it was go
+2011-02-12T04:00:47  <antimatroid> and process end differently
+2011-02-12T04:02:01  <janzert> probably doesn't make a big difference either way, bots aren't supposed to be doing anything other than shutting down after receiving it anyway
+2011-02-12T04:02:26  <antimatroid> janzert: the point is to send them information about winners/scores so if people want to train with that information locally, they can
+2011-02-12T04:03:03  <janzert> for training you'll want to get that information to your bot runner though not the bot itself
+2011-02-12T04:04:02  <janzert> but if you want it go for it
+2011-02-12T04:06:21  <antimatroid> i don't really want it personally
+2011-02-12T04:06:35  <antimatroid> i figure it's better to give people too much info than not enough
+2011-02-12T04:07:23  <antimatroid> janzert: can you check the sample input
+2011-02-12T04:07:30  <antimatroid> does that look good?
+2011-02-12T04:07:43  <antimatroid> other than the fact that it formatted horribly
+2011-02-12T04:08:04  <antimatroid> i still need to clean, just trying to get the structure right first
+2011-02-12T04:08:49  <janzert> I still think you should drop P also your example loadtime and turntime look wrong
+2011-02-12T04:09:05  <antimatroid> ah, they are, so is birth radius for attack
+2011-02-12T04:09:56  <antimatroid> McLeopold: I am happy to drop P if you are happy for me to?
+2011-02-12T04:10:42  <janzert> if you indent the examples by 4 spaces I think they will be monospaced font so they'll look better
+2011-02-12T04:10:51  <janzert> not positive github does that though
+2011-02-12T04:11:13  <antimatroid> i committed a their crime
+2011-02-12T04:12:11  <antimatroid> janzert: that worked a treat thanks
+2011-02-12T04:18:19  <antimatroid> it's a lot neater now, still needs to be cleaned, but it's readable
+2011-02-12T04:22:04  <antimatroid> i haven't fixed the examples, they are broken
+2011-02-12T04:23:09  <janzert> are locations using a zero based index?
+2011-02-12T04:24:58  <janzert> I made a little more reasonable anyway
+2011-02-12T04:25:05  <janzert> the example input that is
+2011-02-12T04:26:09  <antimatroid> yeah locations are zero index based
+2011-02-12T04:26:22  <antimatroid> i'll put that in at some point, although a programmer shouldn't even need to ask :P
+2011-02-12T04:26:45  <janzert> remember some languages use 1 based indexes for their arrays
+2011-02-12T04:27:05  <antimatroid> learn*
+2011-02-12T04:47:10  <pyro-> antimatroid in your sample input how may i discover from what team is a given ant?
+2011-02-12T04:49:41  <janzert> by the letter given for it
+2011-02-12T04:50:05  <janzert> I believe 'a' is always your own and the other teams start at 'b', 'c', etc.
+2011-02-12T04:50:24  <pyro-> ty
+2011-02-12T04:50:40  <antimatroid> yes, the first enemy you come across will be b for the rest of the game, etc. etc.
+2011-02-12T04:50:43  <antimatroid> i will put that in after
+2011-02-12T04:50:52  <pyro-> what is the significance of a dead ant?
+2011-02-12T04:51:04  <pyro-> can i walk into it or eat it or die from it?
+2011-02-12T04:51:09  <antimatroid> so you can do some scoring internally
+2011-02-12T04:51:13  <antimatroid> it's equivalent to land
+2011-02-12T04:51:16  <antimatroid> it's just giving you information
+2011-02-12T04:51:58  <pyro-> and if two ants have died in the same spot the information given does not change?
+2011-02-12T04:53:13  <antimatroid> i don't think you see ants that died from collision
+2011-02-12T04:53:20  <antimatroid> McLeopold: do you see ants that died from collisions?
+2011-02-12T04:53:43  <pyro-> its not important how they died. if its equivilent to land another ant may walk over a dead ant
+2011-02-12T04:53:49  <pyro-> and subsequently perish
+2011-02-12T04:53:59  <antimatroid> pyro-: i expect the attack radius to be large enough that enemy ants can't land on each other
+2011-02-12T04:54:08  <antimatroid> you can walk onto any dead ant square
+2011-02-12T04:54:17  <pyro-> yes
+2011-02-12T04:54:22  <pyro-> and some time in the future
+2011-02-12T04:54:26  <pyro-> die on the square
+2011-02-12T04:54:34  <pyro-> now will i see the old dead ant or the new dead ant?
+2011-02-12T04:54:48  <pyro-> if they are from different teams
+2011-02-12T04:55:22  <antimatroid> pyro-: with a "starter bot" just take a dead ant square to mean it is land
+2011-02-12T04:55:24  <antimatroid> and leave it at that
+2011-02-12T04:55:32  <janzert> I think you only see a dead ant for the turn after they die, it's basically just to let you know the ant died rather than simple disapeared
+2011-02-12T04:55:38  <antimatroid> you only see the dead ant the turn after it died
+2011-02-12T04:55:43  <pyro-> ah
+2011-02-12T04:55:49  <pyro-> ty
+2011-02-12T04:55:57  <antimatroid> as you don't know where your enemies moved, it'd be hard to work out otherwise
+2011-02-12T04:56:07  <antimatroid> you don't get information if one of your ants died and it's out of view of ants now
+2011-02-12T04:56:12  <antimatroid> you need to work that out yourself
+2011-02-12T04:56:17  <antimatroid> and try to work out who died in the conflict
+2011-02-12T04:56:28  <pyro-> clear
+2011-02-12T04:56:41  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T04:56:51  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T05:00:06  <pyro-> is it safe to ignore the parameter of a P and use the knowledge that the first line is loadtime and the second line is turntime or are the other of parameters subject to change on a game by game basis?
+2011-02-12T05:00:17  <pyro-> are the order*
+2011-02-12T05:01:01  <janzert> order should be undefined
+2011-02-12T05:01:31  <janzert> although it's pretty safe that the first one will always be loadtime, still don't assume that
+2011-02-12T05:01:56  <janzert> also the P may go away if I can get that :)
+2011-02-12T05:02:08  <janzert> just <optiontype> <value> then
+2011-02-12T05:02:38  <pyro-> there is so much redundancy. P, M, optiontype could all be implicit
+2011-02-12T05:03:23  <antimatroid> the M is needed
+2011-02-12T05:03:33  <pyro-> end 2 0 0
+2011-02-12T05:03:34  <antimatroid> otherwise it's hard to see if you're getting map data or end of turn info
+2011-02-12T05:03:36  <janzert> there needs to be a type identifier since currently unknown types of lines may be passed in the future
+2011-02-12T05:03:38  <pyro-> is not a valid map
+2011-02-12T05:03:53  <antimatroid> no, the example is broken
+2011-02-12T05:03:57  <antimatroid> i'll fix that now
+2011-02-12T05:04:01  <antimatroid> been playing galcon sorry
+2011-02-12T05:04:16  <pyro-> janzert: the protocal should be frozen before the competition starts
+2011-02-12T05:04:35  <janzert> that was the problem last time, this time the protocol will be frozen
+2011-02-12T05:04:49  <janzert> it will be all lines are passed as <type> <value>
+2011-02-12T05:05:07  <janzert> you should ignore all types you don't recognize
+2011-02-12T05:05:32  <pyro-> if its frozen then im correct in saying that type is redundant :-)
+2011-02-12T05:05:47  <janzert> nope the type of types aren't frozen
+2011-02-12T05:05:54  <janzert> just <type> <value> is frozen
+2011-02-12T05:06:22  * janzert is being a bit sarcastic above
+2011-02-12T05:06:43  <pyro-> to change the messages that may be sent to a bot after the competition has started is very bad :)
+2011-02-12T05:06:48  * janzert really wants to thrown invalid types at bots to make sure the conform now :)
+2011-02-12T05:07:02  <janzert> they
+2011-02-12T05:08:33  <Frontier> the message isn't changed as long as you keep ignoring the types you don't know
+2011-02-12T05:09:30  <Frontier> on the otherhand... bots that do understand the new types may perform better :p
+2011-02-12T05:10:11  <pyro-> sure as long as you can garentee that a bot written with the rules as stated at competition opening are not disadvantaged there is no problem. but if you do so we arrive at the same conclusion that extensibility is not required.
+2011-02-12T05:10:57  <Frontier> say there is some problem we discover later on that could be fixed by an extension, what would you do?
+2011-02-12T05:11:03  <antimatroid> i am going to remove the P's if mcleopold is okay with it
+2011-02-12T05:11:16  <Frontier> The turn limit in PlanetWars was such a candidate
+2011-02-12T05:11:53  <antimatroid> or number of planets
+2011-02-12T05:12:20  <janzert> yeah, too bad if they're disadvantaged but if we're at the point where we need to change we're probably at the point where that is exactly all they get "too bad" and so long as they follow the spec for input at least they'll probably still run
+2011-02-12T05:13:15  <pyro-> Frontier: if i have not built the engine and protocol correctly from the start i am an idiot and will cease attempting to organise competitions that i am clearly unable to. i will not modify the rules ad hoc as the competition progresses.
+2011-02-12T05:13:48  <Frontier> but to be fair i must say that i would like such changes to happen at least two to four weeks before the deadline
+2011-02-12T05:13:58  <antimatroid> pyro-: you clearly weren't about at the start of the last contest :P
+2011-02-12T05:14:15  <antimatroid> what we're doing now was basically done after the contest starte
+2011-02-12T05:14:18  <pyro-> wasn't i
+2011-02-12T05:14:35  <janzert> there is always a risk that a problem will crop up with the current game, at least we can try and have the foresight to minimize the impact of any change we have to make
+2011-02-12T05:15:46  *** Frontier <Frontier!~marco@dslb-088-071-226-146.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-02-12T05:33:13  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-02-12T05:44:17  *** j3camero <j3camero!~jeff@207.219.39.71> has joined #aichallenge
+2011-02-12T05:47:32  *** boegel <boegel!~boegel@91.182.220.19> has joined #aichallenge
+2011-02-12T05:47:50  <antimatroid> i need to say something about distances too
+2011-02-12T05:48:18  <antimatroid> j3camero: a specification is slowly taking shape on the wiki
+2011-02-12T05:48:29  *** boegel <boegel!~boegel@91.182.220.19> has quit IRC (Client Quit)
+2011-02-12T05:55:12  <antimatroid> i prefer mcleopolds scoring option on kills
+2011-02-12T05:55:17  <antimatroid> but it's more complicated
+2011-02-12T06:29:57  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Read error: Connection reset by peer)
+2011-02-12T06:30:40  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T06:52:27  <antimatroid> i want a different work for food
+2011-02-12T06:52:42  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T06:52:45  <antimatroid> i have the ants being able to attack each other over water
+2011-02-12T06:53:00  <antimatroid> but you can't really say they can consume food from across water but not walk over it
+2011-02-12T06:53:10  <antimatroid> word*
+2011-02-12T06:53:39  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T06:53:50  *** Prillicy_ is now known as Prillicy
+2011-02-12T07:05:49  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2011-02-12T07:09:56  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T07:10:16  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 276 seconds)
+2011-02-12T07:10:22  *** Prillicy_ is now known as Prillicy
+2011-02-12T07:15:06  <antimatroid> McLeopold: can a "dead" bot from crashing/timing out still accumulate points?
+2011-02-12T07:19:32  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-02-12T07:27:50  *** Blkt <Blkt!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has joined #aichallenge
+2011-02-12T07:37:55  <Blkt> good day everyone
+2011-02-12T07:41:43  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T07:42:45  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T07:42:52  *** Prillicy_ is now known as Prillicy
+2011-02-12T07:50:14  <antimatroid> glorius bacon
+2011-02-12T08:30:29  <pyro-> what will i do if an M line is shorter than the specified width
+2011-02-12T08:31:51  <antimatroid> cry
+2011-02-12T08:32:14  <antimatroid> assume that will never happen :P
+2011-02-12T08:32:27  <antimatroid> or you could assume the rest was all unseeable
+2011-02-12T08:32:46  <pyro-> if i can assume it will never happen i will just ignore the width paramter
+2011-02-12T08:40:40  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T08:41:21  <antimatroid> you will need that to make a grid
+2011-02-12T08:42:11  <pyro-> i already have the width of the grid from the grid
+2011-02-12T08:42:33  <antimatroid> sure, but i read chars individually
+2011-02-12T08:42:39  <antimatroid> so it's easier for me to know the width
+2011-02-12T08:42:43  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 276 seconds)
+2011-02-12T08:42:48  <antimatroid> you don't need to make use of every piece of information you're given
+2011-02-12T08:42:49  *** Prillicy_ is now known as Prillicy
+2011-02-12T08:43:18  <pyro-> of course i won't
+2011-02-12T08:43:44  <pyro-> i just always notice the places that i'm making an assumption
+2011-02-12T08:44:05  <pyro-> a habbit since thats where i find bugs :)
+2011-02-12T08:44:43  <pyro-> if i assume the given width is correct for every M line and it isn't
+2011-02-12T08:44:48  <pyro-> things will break :)
+2011-02-12T08:45:12  <pyro-> so its not clear what i should do if i detect that
+2011-02-12T08:45:22  <pyro-> i will follow your advice and print "cry" :P
+2011-02-12T08:52:41  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T08:53:50  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-02-12T08:54:02  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 246 seconds)
+2011-02-12T08:54:06  *** Prillicy_ is now known as Prillicy
+2011-02-12T08:57:48  <antimatroid> :p
+2011-02-12T08:58:22  <antimatroid> were you pyronaught in pw?
+2011-02-12T08:58:26  <antimatroid> it claims nz though
+2011-02-12T09:01:56  *** delt0r___ <delt0r___!~delt0r@188-22-168-111.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-12T09:02:36  <pyro-> no
+2011-02-12T09:02:46  <pyro-> i gave up on that very early
+2011-02-12T09:03:07  <pyro-> but this time i will definitly win!!!!!! ;)
+2011-02-12T09:03:10  <antimatroid> :p
+2011-02-12T09:03:20  *** delt0r_ <delt0r_!~delt0r@188-22-168-111.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-12T09:04:49  <pyro-> what character(s) indicate end of line under your input protocol?
+2011-02-12T09:05:18  <antimatroid> hmmm, don't ask me :P
+2011-02-12T09:05:22  <antimatroid> i don't write the engine
+2011-02-12T09:05:29  <antimatroid> i would imagine '\n'
+2011-02-12T09:05:43  <antimatroid> i've never had issues in c++ with input
+2011-02-12T09:06:02  <pyro-> have you ever supported unicode?
+2011-02-12T09:06:22  <antimatroid> me or the contest?
+2011-02-12T09:06:25  <pyro-> you
+2011-02-12T09:06:34  <antimatroid> i don't even really know what unicode is :P
+2011-02-12T09:06:47  <antimatroid> i'm more a maths/economics student than programmer
+2011-02-12T09:06:50  <pyro-> that explains that then
+2011-02-12T09:07:07  <pyro-> fair enough
+2011-02-12T09:07:29  <pyro-> i better bloody beat you then
+2011-02-12T09:07:35  <antimatroid> bring it :P
+2011-02-12T09:07:44  <antimatroid> you're not taking first in australia away from me
+2011-02-12T09:09:00  <pyro-> the indignity of being beaten by an economics student would be more than i could stand
+2011-02-12T09:09:11  <antimatroid> hehe
+2011-02-12T09:09:27  <antimatroid> a utas student at that :P
+2011-02-12T09:09:36  <antimatroid> although i'm just doing maths honours this year
+2011-02-12T09:13:25  <antimatroid> pyro-: the "starter strategy" is going to be as simple as:
+2011-02-12T09:13:25  <antimatroid> for each ant: try to move north, then east, then south then west
+2011-02-12T09:13:38  <antimatroid> that way people can download it and make noticable improvements almost straight away
+2011-02-12T09:13:51  <antimatroid> even beginners to programming
+2011-02-12T09:15:23  <pyro-> kk
+2011-02-12T09:16:34  <pyro-> im going to sleep now. then i get back from stuff tomorow at early afternoon prolly. then i'll write it. so an ikarus scheme client as per current wiki and above stratagy will exist by this time tomorow
+2011-02-12T09:16:38  <antimatroid> McLeopold: what happens when there is only one active bot left but ants from more players? do they have to round up all the other ants before they get the food bonus?
+2011-02-12T09:17:32  * janzert thinks they should
+2011-02-12T09:18:17  <antimatroid> if we're also adding to the scores of "dead" bots
+2011-02-12T09:18:28  <antimatroid> we should probably finish a game where all bots are inactive
+2011-02-12T09:18:30  <janzert> also was going to mention the "food" bonus should include all future food, food currently on the map *and* the players own ants
+2011-02-12T09:19:07  <janzert> is McLeopold zeroing the score of dead ants or just letting it stand where it is?
+2011-02-12T09:19:15  <antimatroid> stand i think
+2011-02-12T09:19:23  <antimatroid> although i'm unsure whether the score even freezes
+2011-02-12T09:19:39  <janzert> hmm, I wonder what to do when all the bots have crashed then?
+2011-02-12T09:19:53  <antimatroid> ^^ that's what i said above, should the game continue running
+2011-02-12T09:20:09  <antimatroid> it would be fairly fast anyway, as the bots don't need to be given anything, particularly time to think
+2011-02-12T09:20:53  <janzert> seems like a waste of resources to play it out, but it should play out very fast as long as the engine is smart enough not to wait on bots after the first move they timeout on.
+2011-02-12T09:21:02  <janzert> so yeah ;)
+2011-02-12T09:21:34  <antimatroid> i would be in favour of just zeroing any "crashed" bots score
+2011-02-12T09:21:41  <janzert> the engine should record and give the visualizer some indication on what move a bit crashes on
+2011-02-12T09:21:45  <antimatroid> then calling the game off and drawing everyone, but i don't really care
+2011-02-12T09:22:10  <janzert> yeah, I think zeroing the score is slightly better but I don't have a strong preference
+2011-02-12T09:22:13  <antimatroid> I'll add a command for noting the "crash" of a bot
+2011-02-12T09:22:36  <antimatroid> McLeopold is just making sure he doesn't get hurt as bad as in pw from crashes :P
+2011-02-12T09:22:37  <antimatroid> jk
+2011-02-12T09:22:50  <janzert> heh
+2011-02-12T09:25:59  <antimatroid> i think that will do me for tonight with the spec
+2011-02-12T09:26:18  <antimatroid> the maths doesn't show very nicely for distances
+2011-02-12T09:26:33  <antimatroid> it wouldn't let me use the align* function with the tex stuff :(
+2011-02-12T09:28:59  <antimatroid> i think the last unclear thing is battle resolution and then playing around with radius parameters/maps
+2011-02-12T09:29:10  <antimatroid> and these "end of game" conditions
+2011-02-12T09:30:11  <janzert> yeah, it seems to be basically to the point of needing something running to see how or if things really work out as an interesting game
+2011-02-12T09:31:10  <antimatroid> even that's unclear till people really get going, but yeah some testing will be good
+2011-02-12T09:31:59  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Ping timeout: 276 seconds)
+2011-02-12T09:35:45  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T09:37:27  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-12T09:37:50  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 276 seconds)
+2011-02-12T09:37:54  *** Prillicy_ is now known as Prillicy
+2011-02-12T10:25:19  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Remote host closed the connection)
+2011-02-12T11:16:58  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has joined #aichallenge
+2011-02-12T11:16:58  *** ChanServ sets mode: +o amstan
+2011-02-12T11:19:15  <antimatroid> amstan: ask and you shall receive
+2011-02-12T11:19:20  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification
+2011-02-12T11:20:18  <amstan> antimatroid: decent
+2011-02-12T11:20:45  <amstan> i should probably make an announcement about it
+2011-02-12T11:20:47  <antimatroid> it's still in need of a clean and revise etc. but it's a start
+2011-02-12T11:21:03  <antimatroid> we still need engines/visualisers/etc.
+2011-02-12T11:21:36  <antimatroid> and we still need to convince jeff battle option 1 is superior
+2011-02-12T11:22:10  <amstan> well, make a proposal, have it all written down
+2011-02-12T11:22:23  <amstan> irc is kinda overwhelming if someone is trying to convince you something
+2011-02-12T11:22:39  <antimatroid> hmm, i might do advantages disadvantages tomorrow
+2011-02-12T11:22:42  <antimatroid> but i'm going to bed now
+2011-02-12T11:22:56  <antimatroid> there's also a page for starter bot strategy stuff with possible improvement hints
+2011-02-12T12:14:37  <McLeopold> antimatroid: you still here?
+2011-02-12T12:15:45  <McLeopold> so, my thoughts on bot crashes and scores...
+2011-02-12T12:16:15  <McLeopold> a bot that crashes or times out will stop accumulating points
+2011-02-12T12:16:27  <McLeopold> the ants will always stay put
+2011-02-12T12:16:41  <McLeopold> food can still be turned into new ants
+2011-02-12T12:17:09  <McLeopold> this is too keep the balance of the game, to not give an advantage to one of the other bots still in the game
+2011-02-12T12:17:35  <McLeopold> the food turning into ants is so that a bot can't tell when another bot has crashed by the game mechanics
+2011-02-12T12:18:18  <McLeopold> if all but 1 bot crashes, the game ends and the last ant gets the food bonus, plus a bonus for all leftover food and enemy ants
+2011-02-12T12:18:42  <McLeopold> this would be the same score if we let them clean up the map, so we don't need to drag out the game
+2011-02-12T12:19:20  <McLeopold> if the last 2 bots crash, the split the bonus, and neither of their ants are included in it
+2011-02-12T12:19:38  <McLeopold> the score is not zeroed out for a crashed bot
+2011-02-12T12:20:24  <McLeopold> which means a crashed or timed out bot may still get any ranking in the game
+2011-02-12T12:20:53  <McLeopold> The reason for this is because I want to emphasize that this is an "AI" contest and not a coding contest.
+2011-02-12T12:21:20  <McLeopold> Also, there will be no invalid moves, the engine will ignore them.
+2011-02-12T12:21:47  <McLeopold> We could probably make an engine that would report invalid moves, for testing.
+2011-02-12T12:22:06  <jbroman> McLeopold: At a minimum, you probably also want to log timeouts so that people know why the bots didn't do anything.
+2011-02-12T12:22:21  <McLeopold> yes, timeouts and crashes will be logged
+2011-02-12T12:22:35  <McLeopold> hopefully on crashes we can capture 1024 bytes of stderr
+2011-02-12T12:22:49  <jbroman> McLeopold: Not sure about that one.
+2011-02-12T12:23:17  <jbroman> McLeopold: From a security perspective, it's nice for the bots to have no outbound communication channels other than the moves to the engine.
+2011-02-12T12:24:01  <McLeopold> it would be very useful, there were a lot of forum posts of people confused about why their bot crashed.  This would help with that, and hopefully make for less forum maintenance.
+2011-02-12T12:24:19  <McLeopold> It's not a security issue.
+2011-02-12T12:24:48  <McLeopold> It's captured as part of the game replay and made available to the owner only.
+2011-02-12T12:24:59  <jbroman> McLeopold: Well, it's nice that if bots were to gain access to secret information (other bots' source code, etc) somehow, they would not be able to transmit it.
+2011-02-12T12:25:23  <McLeopold> Yeah, so, bot owner only.
+2011-02-12T12:25:34  <jbroman> McLeopold: I think you're missing my point.
+2011-02-12T12:25:37  <McLeopold> Plus, bots control what is extracted
+2011-02-12T12:25:56  <McLeopold> I must be
+2011-02-12T12:26:10  <jbroman> If Bot A is able to (by some other security flaw) gain access to Bot B's source code (or our API keys or something), it is nice if we can prevent Bot A from sending that to Bot A's owner.
+2011-02-12T12:26:21  <jbroman> The debugging advantage may trump this, though.
+2011-02-12T12:26:31  <McLeopold> it would
+2011-02-12T12:44:06  <amstan> jbroman: perhaps we should allow bots to read eachother's sources, but block all communications
+2011-02-12T12:44:24  <amstan> jbroman: if they're smart enough to find the best bot and use stuff from its code, so be it, lol
+2011-02-12T12:57:14  <jmcarthur> the visualizer could show "dead" ants differently, maybe
+2011-02-12T12:57:24  <jmcarthur> make their colors more pale maybe
+2011-02-12T13:00:59  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-02-12T13:06:55  <McLeopold> jmcarthur: that's what I was thinking
+2011-02-12T13:07:07  <McLeopold> or just darken the dirt every time an ant dies on a spot
+2011-02-12T13:07:19  <McLeopold> then the visualizer could show high conflict areas
+2011-02-12T13:09:39  <jmcarthur> heh that'd be neat
+2011-02-12T13:09:50  <jmcarthur> turn it a bit more red, like blood :P
+2011-02-12T13:10:24  <jmcarthur> by "dead" i actually meant when the bot crashes or something
+2011-02-12T13:10:29  <jmcarthur> so the ants are technically still alive
+2011-02-12T13:10:36  <jmcarthur> "frozen" would have been more accurate
+2011-02-12T13:12:23  <McLeopold> I don't want other bots to be able to determine crashed bots
+2011-02-12T13:13:58  <McLeopold> What would you think about having warrior ants and gatherer ants?
+2011-02-12T13:14:17  <McLeopold> It would turn the game into more of an economic challenge
+2011-02-12T13:14:24  <McLeopold> similar to an rts
+2011-02-12T13:15:11  <jbroman> McLeopold: slippery slope
+2011-02-12T13:16:09  <McLeopold> it's not going to happen, but it would make for a fun game
+2011-02-12T13:16:22  <McLeopold> you have to balance gather and attack strength
+2011-02-12T13:16:48  <McLeopold> then we can really call it antz and steal the disney theme
+2011-02-12T13:41:32  *** boegel <boegel!~boegel@91.182.19.114> has joined #aichallenge
+2011-02-12T14:25:55  <jmcarthur> i was only talking about the visualizer, not what we send as bot input
+2011-02-12T14:27:14  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-12T14:57:36  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 245 seconds)
+2011-02-12T14:59:04  <Zannick> i don't think saving stderr is very feasible in the long run
+2011-02-12T14:59:36  *** boegel <boegel!~boegel@91.182.19.114> has quit IRC (Quit: Leaving)
+2011-02-12T14:59:48  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-02-12T15:01:55  <Zannick> i'm not sure how i feel about "no invalid moves"
+2011-02-12T15:02:25  <Zannick> but we can catch a lot of problems by having a few simple test cases to be sure the bot receives input and gives output
+2011-02-12T15:05:30  *** delt0r_ <delt0r_!~delt0r@188-22-168-111.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-12T15:07:09  *** delt0r___ <delt0r___!~delt0r@188-22-168-111.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-02-12T15:07:30  *** flag <flag!~root@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-02-12T15:14:47  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-02-12T15:17:29  *** delt0r___ <delt0r___!~delt0r@188-22-168-111.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-12T15:17:44  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-12T15:18:43  *** delt0r_ <delt0r_!~delt0r@188-22-168-111.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-02-12T15:25:50  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-12T15:27:37  <McLeopold> our x,y coordinates are in quadrant 4.  should it be quadrant 1?
+2011-02-12T16:11:28  <flag> What's the status on the next contest?
+2011-02-12T16:24:39  <McLeopold> in progress, very close
+2011-02-12T16:26:57  <flag> Sounds good :)
+2011-02-12T16:27:02  <flag> Ants right?
+2011-02-12T16:27:38  <McLeopold> yep
+2011-02-12T16:27:47  <McLeopold> antimatroid is working on the wiki
+2011-02-12T16:27:53  *** j3camero <j3camero!~jeff@207.219.39.71> has quit IRC (Read error: Network is unreachable)
+2011-02-12T16:28:06  <McLeopold> https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification
+2011-02-12T16:28:20  *** j3camero <j3camero!~jeff@207.219.39.71> has joined #aichallenge
+2011-02-12T16:28:27  <McLeopold> hi j3camero
+2011-02-12T16:36:27  *** Guest61834 <Guest61834!8e9d4024@gateway/web/freenode/ip.142.157.64.36> has joined #aichallenge
+2011-02-12T16:36:52  *** Guest61834 <Guest61834!8e9d4024@gateway/web/freenode/ip.142.157.64.36> has quit IRC (Client Quit)
+2011-02-12T17:02:03  *** delt0r_ <delt0r_!~delt0r@188-22-167-110.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-12T17:03:18  *** delt0r___ <delt0r___!~delt0r@188-22-168-111.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-02-12T17:13:34  <jmcarthur> McLeopold: i like quadrant 1, but i don't think it's that important
+2011-02-12T17:14:47  <McLeopold> I never worried about it with planet wars
+2011-02-12T17:14:56  <McLeopold> I just created a distance table and forgot about
+2011-02-12T17:14:58  <McLeopold> it
+2011-02-12T17:15:45  <McLeopold> if we go from n,e,s,w to 2 cords for a movement, their might be less confusion?
+2011-02-12T17:15:56  <McLeopold> or at least people can make consistent mistakes
+2011-02-12T17:17:10  <jmcarthur> honestly, even if you're sending NSEW, internally you are probably using coords anyway
+2011-02-12T17:17:16  <McLeopold> and for the record, yes, I misspelled 'there'
+2011-02-12T17:17:31  <jmcarthur> and coords, but who cares? ;)
+2011-02-12T17:17:48  <McLeopold> we will just have to be really clear about the coord system
+2011-02-12T17:18:02  <McLeopold> 0,-1 is north
+2011-02-12T17:18:13  <jmcarthur> yeah, sending coords won't help anyway
+2011-02-12T17:18:17  <jmcarthur> to be more clear i mean
+2011-02-12T17:18:33  <McLeopold> it would
+2011-02-12T17:18:43  <McLeopold> if someone got their x and y backwards
+2011-02-12T17:18:51  <jbroman> McLeopold: Then it's a trivial fix to their bot.
+2011-02-12T17:18:54  <jmcarthur> you still have to know what coordinates your ants are at, and if it's a map input...
+2011-02-12T17:19:06  <McLeopold> yes, you're right
+2011-02-12T17:19:50  <McLeopold> j3camero: ping
+2011-02-12T18:11:21  <antimatroid> i'm about now..
+2011-02-12T18:12:20  <antimatroid> McLeopold: the point of al inactive ants remaining is they may cause food squares to "disappear" and i was curious whether a non-participlating bot can still accumulate points? if not, do all active ants get the whole weight of killing the ants in the future?
+2011-02-12T18:23:17  <antimatroid> McLeopold: I don't get what you mean about the coordinates being in the fourth quadrant?
+2011-02-12T18:23:43  <antimatroid> i also changed attack and birth radius to battle and spawn radius
+2011-02-12T18:24:03  <McLeopold> crashed and timed out bots do not get more points, but they keep the points the earned
+2011-02-12T18:24:04  <antimatroid> because battle resolution sounds better than attack resolution, then i couldn't use birth
+2011-02-12T18:24:31  <McLeopold> sounds good
+2011-02-12T18:24:35  <antimatroid> McLeopold: so what happens to the points of a dying live ant when both active and inactive ants contributed to killing it?
+2011-02-12T18:24:54  <antimatroid> do the active ants if any exist get to split the winnings between them, or do some of the points go to no one?
+2011-02-12T18:25:13  <antimatroid> btw i got rid of my second scoring option, i prefer yours anyway
+2011-02-12T18:25:17  <McLeopold> the points are spread as normal, the inactive ants get the claim some points, but they don't get added to the bot's score
+2011-02-12T18:25:41  <antimatroid> sure, i'll make the specs reflect that
+2011-02-12T18:26:08  <McLeopold> so, some of the points go to noone
+2011-02-12T18:26:52  <McLeopold> the point of inactive bots staying is to keep the game balanced for the others
+2011-02-12T18:27:16  <antimatroid> McLeopold: i get that, just trying to work out the mechanics of how it will work
+2011-02-12T18:27:18  <McLeopold> the point of the inactive bot still getting to spawn ants is so that a bot can't detect inactive bots easily
+2011-02-12T18:27:21  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Strategy-Guide
+2011-02-12T18:27:34  <antimatroid> does that look like a reasonably way for people to be able to get started improving strategy wise?
+2011-02-12T18:27:40  <McLeopold> it's as if the ants all hold, or the bot is still in the game, but doesn't send order
+2011-02-12T18:28:01  <McLeopold> no one knows the score until the end
+2011-02-12T18:28:59  <McLeopold> I think the improvements are too detailed
+2011-02-12T18:29:04  <McLeopold> But it's a good start
+2011-02-12T18:29:15  <McLeopold> Here's what I would go with for strategy...
+2011-02-12T18:30:00  <McLeopold> 1) know your coordinate system.  (detailed explanation)
+2011-02-12T18:30:15  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-02-12T18:30:29  <McLeopold> 2) the map wraps, know how to deal with this, (same distance and direction algos)
+2011-02-12T18:31:18  <McLeopold> 3) path finding, attempt to calculate the shortest distance between 2 points and find your way around walls
+2011-02-12T18:31:56  <antimatroid> hmmm yeah okay
+2011-02-12T18:31:58  <McLeopold> 4) balance, find a good mix of ants that will gather food and ants that will attack
+2011-02-12T18:32:24  <McLeopold> anything talking about specific algos, besides the distance and direction ones, is too detailed
+2011-02-12T18:32:24  <antimatroid> so focus souly on strategy and let them work out the implementation of it?
+2011-02-12T18:32:34  <McLeopold> we might point them to common path finding articles though
+2011-02-12T18:32:40  <McLeopold> yes
+2011-02-12T18:32:48  <McLeopold> the forums will be filled with implementations
+2011-02-12T18:33:04  <antimatroid> consider it done
+2011-02-12T18:33:08  <McLeopold> sweet
+2011-02-12T18:33:31  <antimatroid> i think the game is pretty much "worked out" other than battle resolution and parameter values
+2011-02-12T18:33:44  <antimatroid> less unforseen problems
+2011-02-12T18:33:52  <McLeopold> yeah
+2011-02-12T18:34:27  <McLeopold> so, if the game is "broken" as it stands, (with option 2) then we either switch to option 1, or do something else
+2011-02-12T18:34:42  <antimatroid> hmmm, i don't want to have to break option 2 to go with 1
+2011-02-12T18:34:59  <antimatroid> i am still banking on option 1, surely jeff is willing to at least compromise if everyone else wants 1
+2011-02-12T18:35:38  <McLeopold> I agree with him that it makes it a much more complicated game.  It would be fun, but a little to advanced.
+2011-02-12T18:35:59  <McLeopold> I think the solution might be to allow full vision and have bots communicate alliances.
+2011-02-12T18:36:04  <antimatroid> i agree with you borth there, just not about it being too advanced
+2011-02-12T18:36:25  <antimatroid> i think for either game people are going to be attempting similar things to be near the top, why not pick the more interesting game, even if it's harder
+2011-02-12T18:37:36  <McLeopold> he's worried about a huge gap in abilities.  I think option 1 give a larger spread, but it would still be linear.
+2011-02-12T18:37:51  <McLeopold> so, I don't think I agree totally with his concerns.
+2011-02-12T18:37:56  <McLeopold> but I share the vision
+2011-02-12T18:38:12  <antimatroid> i think he underestimates how hard it will be to "exploit" option 1 too
+2011-02-12T18:38:42  <McLeopold> He also thinks option 2 doesn't have the possibility of being trivially solved, but I think it might be.
+2011-02-12T18:38:50  <antimatroid> if anyone uses a tree, i can't see them getting passed using it for any enemy ants at close range 1 turn ahead
+2011-02-12T18:39:17  <McLeopold> I couldn't see anyone making a useful alpha beta for planet wars, but I was wrong. :)
+2011-02-12T18:39:22  <antimatroid> i don't think option 2 will be "trivially solved", but there's certainly way less balance making it easier to know what you ought to be doing
+2011-02-12T18:39:33  <McLeopold> yeah,
+2011-02-12T18:39:35  <antimatroid> who made a useful alpha beta for pw?
+2011-02-12T18:39:41  <McLeopold> mega1
+2011-02-12T18:39:43  <McLeopold> the winner
+2011-02-12T18:39:48  <antimatroid> only on the first turn
+2011-02-12T18:39:56  <McLeopold> it worked
+2011-02-12T18:40:00  <antimatroid> yeah :P
+2011-02-12T18:40:12  <McLeopold> I thought about maybe splitting the ants into workers and fighters
+2011-02-12T18:40:30  <McLeopold> that would give you a decision to make on how many you spawn of each
+2011-02-12T18:40:53  <McLeopold> That would be another change I'd be willing to code if we needed it
+2011-02-12T18:40:55  <antimatroid> what would the difference be? workers can only be killed not kill? and fighters can't spawn?
+2011-02-12T18:41:09  <McLeopold> workers can't attack, fighters can't spawn
+2011-02-12T18:41:23  <McLeopold> so, you need to find the proper mix given your neighbors
+2011-02-12T18:41:32  <McLeopold> no workers, no growth
+2011-02-12T18:41:32  <antimatroid> hmmm i like that
+2011-02-12T18:41:39  <McLeopold> no fighters, no security
+2011-02-12T18:41:41  <McLeopold> So do i
+2011-02-12T18:41:42  <antimatroid> but it makes things more complicated
+2011-02-12T18:41:43  <McLeopold> :)
+2011-02-12T18:41:52  <McLeopold> so, you would need a spawn command
+2011-02-12T18:42:09  <McLeopold> you are told you have an "egg" and you choose which to spawn
+2011-02-12T18:42:32  <McLeopold> then instead of just ant corrds, you get fighter/worker coords
+2011-02-12T18:42:48  <McLeopold> so, an ant has an owner, now it has an owner and type
+2011-02-12T18:43:04  <McLeopold> all orders are still the same, except for the spawn order
+2011-02-12T18:43:17  <antimatroid> can't really display that on a char map?
+2011-02-12T18:43:32  <McLeopold> lower, upper case
+2011-02-12T18:43:42  <McLeopold> special symbol for eggs?
+2011-02-12T18:43:43  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 260 seconds)
+2011-02-12T18:43:44  <antimatroid> that's for dead ants?
+2011-02-12T18:44:49  <McLeopold> I think it could still be simple enough to understand the rules by watching the game.
+2011-02-12T18:46:11  <antimatroid> hmmm maybe, i think i'd personally go with with what we have already
+2011-02-12T18:46:17  <antimatroid> i like just how simple it is
+2011-02-12T19:11:46  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-12T19:47:33  *** choas <choas!~lars@p578F6E35.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-02-12T20:31:17  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Connection reset by peer)
+2011-02-12T20:35:47  <antimatroid> TIL parts of america have curfew laws for teenagers
+2011-02-12T20:35:48  <antimatroid> that's insane
+2011-02-12T20:41:56  <jmcarthur> those curfew laws usually are just for driving
+2011-02-12T20:42:14  <jmcarthur> i've never heard of one that says you must be *at home* by a certain time or anything like that
+2011-02-12T20:46:14  <antimatroid> the comments on reddit were very much indicative that there are places where teenagers aren't allowed out past liek 11pm
+2011-02-12T20:48:21  <antimatroid> while i agree some age discrimination isn't necessarily bad (driving, drinking etc.), that is insane
+2011-02-12T21:00:05  <jmcarthur> well, i was unaware of it. that's kind of weird
+2011-02-12T21:00:15  <jmcarthur> my area has a driving curfew for teenagers
+2011-02-12T21:00:20  <jmcarthur> it's like 2am or 3am or something
+2011-02-12T21:00:31  <jmcarthur> i don't know what time the curfew is over though
+2011-02-12T21:01:53  <jmcarthur> ah, no it's midnight
+2011-02-12T21:01:59  <jmcarthur> 12am-6am
+2011-02-12T21:02:07  <jmcarthur> if you are under 18
+2011-02-12T21:02:11  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-02-12T21:02:17  <jmcarthur> unless with a parent
+2011-02-12T21:02:36  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Connection reset by peer)
+2011-02-12T21:06:37  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-02-12T21:26:22  <antimatroid> jmcarthur:  how are people meant to get home from work?
+2011-02-12T21:28:37  <sigh> antimatroid: in victoria you can't get a licence at all until you are 18
+2011-02-12T21:28:59  <sigh> other states it is 17, i think
+2011-02-12T21:29:50  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-02-12T21:29:56  <jmcarthur> antimatroid: if you're under 18 you're just not working that late
+2011-02-12T21:30:34  <jmcarthur> or a parent has to take you home, but that basically just means you aren't working that late ;)
+2011-02-12T21:31:08  <amstan> jmcarthur: canada has a license requirement for this
+2011-02-12T21:31:09  <jmcarthur> sigh: here it's 16, but in some other states it's 18
+2011-02-12T21:31:31  <amstan> with the learners license, one can't drive between midnight-6am
+2011-02-12T21:31:57  *** Blkt <Blkt!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has quit IRC (Quit: ERC Version 5.3 (IRC client for Emacs))
+2011-02-12T21:31:58  <jmcarthur> amstan: i think here in alabama there are laws about how late minors can work and stuff, too, even apart from driving
+2011-02-12T21:32:05  <sigh> here learners requires a fully-licenced supervisor, is it different over there?
+2011-02-12T21:32:12  <amstan> sigh: that too
+2011-02-12T21:32:54  *** Blkt <Blkt!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has joined #aichallenge
+2011-02-12T21:33:27  <jmcarthur> sigh: yeah learners requires at least 15 years of age and a parent or licensed driver over 18, and when you turn 16 if you don't upgrade to a license you can drive with any supervisor with a license
+2011-02-12T21:33:41  <jmcarthur> i think i mixed something up there
+2011-02-12T21:33:51  <jmcarthur> but you get the gist
+2011-02-12T21:34:16  <sigh> yeah, similar here
+2011-02-12T21:35:01  <sigh> supervisor just needs to have a full licence (and not be over blood alcohol limit :P)
+2011-02-12T21:36:16  <pyro-> why are all the radii named radius2? is there a viewradius1?
+2011-02-12T21:37:45  <sigh> oh that's sneaky... it's like that prank where you release pigs numbered 1,2 and 4
+2011-02-12T21:37:58  * sigh makes a note in case I want to troll a code base sometime
+2011-02-12T21:39:28  <jmcarthur> pyro-: maybe it's meant to be "radius squared"
+2011-02-12T21:40:13  <pyro-> oh right
+2011-02-12T21:40:15  <pyro-> makes sense
+2011-02-12T21:40:18  <pyro-> thx
+2011-02-12T21:40:45  * jmcarthur is tempted to make a bot in Agda, for kicks
+2011-02-12T21:41:03  *** Blkt` <Blkt`!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has joined #aichallenge
+2011-02-12T21:41:18  <pyro-> the same naming scheme isn't used in the visualiser input
+2011-02-12T21:41:21  <antimatroid> sigh: i didn't know p's was 18 in victoria
+2011-02-12T21:41:40  <antimatroid> my p's just ran out yesterday, i need to go renew my license then i'll be fully licensed finally
+2011-02-12T21:41:46  <antimatroid> i was lazy with getting my license
+2011-02-12T21:41:46  <pyro-> antimatroid: good afternoon
+2011-02-12T21:41:47  <jmcarthur> i thought of that because agda allows unicode characters and allows arbitrary characters to be used in identifiers (only whitespace matters for seperating identifiers)
+2011-02-12T21:42:07  <jmcarthur> so you could have r² for radius squared
+2011-02-12T21:42:18  *** Blkt` <Blkt`!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has quit IRC (Remote host closed the connection)
+2011-02-12T21:42:19  *** Blkt <Blkt!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has quit IRC (Remote host closed the connection)
+2011-02-12T21:42:33  <antimatroid> pyro-: it is the radius's squared
+2011-02-12T21:42:43  <antimatroid> i
+2011-02-12T21:42:50  <antimatroid> i'll fix the visualiser stuff in a bit
+2011-02-12T21:44:25  <antimatroid> McLeopold: we need to decide whether blockages are walls or water
+2011-02-12T21:44:32  <antimatroid> i think water makes more sense with fighting going over it
+2011-02-12T21:45:12  <antimatroid> if anyone has a strong preference I'm fairly indifferent, so I'm happy to go with what other people want
+2011-02-12T21:45:22  <flag> why water?
+2011-02-12T21:45:40  <antimatroid> dunno, fighting and spawning aren't blocked by it
+2011-02-12T21:45:42  <antimatroid> but walking is
+2011-02-12T21:45:54  <antimatroid> what's an intuitively reasonable thing to call them?
+2011-02-12T21:46:29  <antimatroid> apparently the game making sense to a real world situation is important
+2011-02-12T21:46:29  <flag> tall grass? I dunno, somehow I can't really see ants being surrounded by water
+2011-02-12T21:46:45  <antimatroid> it rains in a forest doesn't it?
+2011-02-12T21:47:01  <flag> i suppose
+2011-02-12T21:47:02  <antimatroid> i imagine there are times where their movement is contrained by small water regions
+2011-02-12T21:47:24  <antimatroid> but it doesn't really make much more sense for them to fight/spawn over those regions than to walk
+2011-02-12T21:47:29  <flag> Why not have the ants going through tunnels and the rest be the walls?
+2011-02-12T21:47:38  <antimatroid> what?
+2011-02-12T21:47:59  <flag> As in, the moveable area is a tunnel, the non-moveable/spawnable area is the wall of the tunnel
+2011-02-12T21:48:04  <flag> such as in an anthill
+2011-02-12T21:49:12  <antimatroid> the point is people can fight an ant that is on the other side of a wall
+2011-02-12T21:49:25  <flag> is that a requirement?
+2011-02-12T21:49:31  <antimatroid> that's how the game currently works
+2011-02-12T21:49:39  <antimatroid> and i think it'd be easier to block regions off otherwise
+2011-02-12T21:49:48  <antimatroid> which people seem to think is unideal
+2011-02-12T21:49:48  <flag> quicksand then maybe?
+2011-02-12T21:50:30  <antimatroid> maybe if spawning was blocked by walls we could argue the walls aren't so high they can't fight
+2011-02-12T21:50:58  <antimatroid> in fact, it would probably be better if spawning was blocked by walls
+2011-02-12T21:51:20  <antimatroid> or if spawn radius < 2 then you can't get a food square in range through a wall
+2011-02-12T21:51:35  <antimatroid> i think that's ideal for spawn radius anyway
+2011-02-12T22:06:37  <antimatroid> McLeopold: give me a yell when you're about, i want to talk food bonus conditions again
+2011-02-12T22:39:12  <antimatroid> we could get beginners to try and gang up on the best player
+2011-02-12T22:39:57  <pyro-> i can't decide if i want to represent the map as a group of linked cells or an array
+2011-02-12T22:40:59  <pyro-> how will you know who the best player is?
+2011-02-12T22:41:08  <antimatroid> go for the player with the most ants you can see
+2011-02-12T22:41:11  <antimatroid> and only them
+2011-02-12T22:41:21  <pyro-> you can't see shit about who has how many ants with the fog
+2011-02-12T22:41:21  <antimatroid> or most ants you've seen
+2011-02-12T22:41:40  <antimatroid> you can with the radius being sqrt(96) and a few ants
+2011-02-12T22:46:13  <pyro-> i think i'll go with an array
+2011-02-12T22:46:59  <antimatroid> oh man, i almost want to not do an actual bot and make my bot the ultimate troll
+2011-02-12T22:47:29  <antimatroid> i'm at least making one for tcp
+2011-02-12T22:56:10  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-02-12T23:01:04  *** jmcarthur <jmcarthur!~jake@76.73.220.99> has quit IRC (Quit: WeeChat 0.3.2)
+2011-02-12T23:12:10  *** jmcarthur <jmcarthur!~jake@76.73.220.99> has joined #aichallenge
+2011-02-12T23:29:25  *** j3camero <j3camero!~jeff@207.219.39.71> has quit IRC (Quit: leaving)
+2011-02-12T23:44:04  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-12T23:44:39  <Prillicy> finally added a signature
+2011-02-12T23:51:06  <antimatroid> i guess i should yet again change how my bot takes input

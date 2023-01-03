@@ -1,0 +1,1127 @@
+2010-10-23T00:09:34  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has joined #aichallenge
+2010-10-23T00:11:17  <contestbot> Top 10 players: Hazard(4119), asavis(4098), rsergio(4081), felixcoto(4037), cfaftw(4011), bocsimacko(3957), dmj111(3943), sin_sun(3936), MariusCG(3910), RebelXT(3885)
+2010-10-23T00:16:39  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-23T00:18:29  <janzert> Zannick: if you're around; your compile_cleanup branch is fully merged now right?
+2010-10-23T00:19:01  <Zannick> yep
+2010-10-23T00:19:33  <janzert> ok, I'll probably get rid of it unless you need for some more changes then
+2010-10-23T00:21:10  <Zannick> i doubt there's anything left to do for it
+2010-10-23T00:21:38  <janzert> yeah, just thought I'd double check with you
+2010-10-23T00:26:43  *** seisatsu <seisatsu!~seisatsu@adsl-99-173-27-12.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-23T00:27:49  <janzert> anyone know a better way than trial and error to find out what the maximum arguments length sudo will allow for a command? apparently the maximum length xargs calculates is longer than sudo allows
+2010-10-23T00:28:23  <Mathnerd314> janzert: can you sudo xargs?
+2010-10-23T00:28:40  <foucist> janzert: if it's so long, why not encapsulate it in a script file and then sudo run that script
+2010-10-23T00:29:10  <foucist> i imagine the limit is somewehre around 513 characters
+2010-10-23T00:29:52  <janzert> foucist: we could but it's a command run pretty frequently by the tournament
+2010-10-23T00:30:17  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2010-10-23T00:30:19  <janzert> hoping to avoid the overhead of a script, but maybe I'm worried for nothing
+2010-10-23T00:30:37  <foucist> janzert: all the more reason to encapsulate it ? what overhead of a script?
+2010-10-23T00:30:46  <foucist> janzert: you running the comman within your code?
+2010-10-23T00:31:28  <janzert> yes, it is to clean up after a bot runs a game basically
+2010-10-23T00:32:14  <janzert> it is doing a straight sudo -u botuser rm -rf /botdirectory/* basically
+2010-10-23T00:32:41  <janzert> but if the bot has too many files sudo errors out
+2010-10-23T00:33:14  <foucist> try sudo -u botuser rm -rf /botdirectory/\*
+2010-10-23T00:33:44  <foucist> \* stops bash/etc from loading all the files into the args
+2010-10-23T00:33:56  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T00:34:04  <foucist> but it will still behave the same
+2010-10-23T00:34:13  <janzert> hmm, yeah I assume something will still do the expansion after the sudo
+2010-10-23T00:34:28  <janzert> sounds like a much better fix
+2010-10-23T00:35:53  <janzert> bah, nope doesn't look like anything expands the glob then
+2010-10-23T00:36:26  <Mathnerd314> put an sh in? sudo -u botuser "sh rm -rf /botdirectory/\*"
+2010-10-23T00:36:59  <amstan> #repo
+2010-10-23T00:37:09  <amstan> contestbot: reoi
+2010-10-23T00:37:10  <contestbot> amstan: I do not know about 'reoi', but I do know about these similar topics: 'repo'
+2010-10-23T00:37:11  <amstan> contestbot: repo
+2010-10-23T00:37:12  <contestbot> amstan: repo = http://code.google.com/p/ai-contest/
+2010-10-23T00:40:39  *** Mjothvitnir <Mjothvitnir!432ace74@gateway/web/freenode/ip.67.42.206.116> has joined #aichallenge
+2010-10-23T00:40:47  <janzert> found it sudo sh -c "rm -rf botdirectory/*" :)
+2010-10-23T00:41:15  <amstan> janzert: what is that?
+2010-10-23T00:41:56  <janzert> a paraphrased fix for line 112 of user_sadbox.py in the cloud branch
+2010-10-23T00:42:28  <amstan> janzert: i assume this is for you: http://ai-contest.com/forum/viewtopic.php?f=18&t=877&start=30
+2010-10-23T00:42:32  <janzert> some bots leave enough files around that the current command has an error instead of cleaning up
+2010-10-23T00:42:56  <janzert> :) thanks
+2010-10-23T00:43:09  <amstan> yeah, they seem all happy
+2010-10-23T00:43:11  <janzert> I'm trying to keep at least two running
+2010-10-23T00:43:15  <amstan> it was all dark and gloomy for a while
+2010-10-23T00:44:01  <janzert> running my own when Jeff's go down, which unfortunately is about 6 hours after they get started lately
+2010-10-23T00:44:48  <amstan> janzert: so.. why do they go down?
+2010-10-23T00:45:21  <janzert> instability of ubuntu 8.04 on ec2 :(
+2010-10-23T00:45:50  <amstan> can't a script be done that does this?
+2010-10-23T00:45:51  <janzert> unfortunately I don't think he can give me access to restart them properly without completely opening his AWS account to me
+2010-10-23T00:46:14  <janzert> yes, but jeff will have to run it somewhere that he is comfortable putting his credentials
+2010-10-23T00:46:32  <amstan> for i in $(cat serverlist); do ssh $i hostname; done
+2010-10-23T00:47:01  <amstan> i can probably do it on hypertriangle
+2010-10-23T00:47:02  <janzert> when they crash the only way to get them back is a reboot from amazon interface itself
+2010-10-23T00:47:06  <amstan> he can kill me if i take them away
+2010-10-23T00:47:12  <janzert> there is no ssh or anything
+2010-10-23T00:47:20  <amstan> yeah, but at least you know they crashed..
+2010-10-23T00:47:23  <amstan> or..
+2010-10-23T00:47:25  <amstan> do we already know that?
+2010-10-23T00:47:53  <janzert> well, a glance at game_stats.php shows what is up
+2010-10-23T00:47:59  <amstan> i see
+2010-10-23T00:48:13  <amstan> well, you have to communicate with jeff, see what can happen
+2010-10-23T00:48:30  *** rwa <rwa!~rwa@99-178-115-235.lightspeed.frokca.sbcglobal.net> has joined #aichallenge
+2010-10-23T00:48:31  <amstan> i can potentially be a trustworthy source that can handle those details
+2010-10-23T00:48:38  <amstan> and i'm online most of the time
+2010-10-23T00:48:57  <janzert> yeah. I am hoping to create a script that will do it so it can watch my instances
+2010-10-23T00:49:03  <janzert> then he could use it as well
+2010-10-23T00:49:14  <amstan> yeah
+2010-10-23T00:49:23  <amstan> there's a few people that want golang support
+2010-10-23T00:49:31  <janzert> got a bit distracted fixing other bugs in our code
+2010-10-23T00:49:32  <amstan> as far as I saw, compile anything already has it
+2010-10-23T00:49:35  <rwa> man this competition is getting fierce
+2010-10-23T00:49:49  <amstan> janzert: all that's left to do is actually install golang
+2010-10-23T00:50:12  <janzert> install it on main server and add it to the instance setup script
+2010-10-23T00:50:23  <janzert> just trying to get instances sort of stable first
+2010-10-23T00:50:42  <janzert> well and actually I should probably try and sort out c# as well
+2010-10-23T00:50:57  <janzert> since it's suppose to be one of our primary languages
+2010-10-23T00:51:02  <amstan> yeah
+2010-10-23T00:53:08  <janzert> if jeff will give you access to his AWS account so you could reboot instances that would be great
+2010-10-23T00:53:27  <amstan> yeah, that might be possible
+2010-10-23T00:53:46  <janzert> one of the things that I feel bad about it is that since they are still running he is still getting charged even though they're doing nothing usefull
+2010-10-23T00:55:37  <amstan> i still don't get why we picked amazon clouds
+2010-10-23T00:55:45  <amstan> we have perfectly good comps in so many other places
+2010-10-23T00:55:53  <amstan> that really are spinning uselessly
+2010-10-23T00:55:55  <amstan> and they're free
+2010-10-23T00:56:32  <janzert> if we can get clean installs of ubuntu 8.04 and root access it would be easy to set them up now
+2010-10-23T00:57:01  <janzert> it's not completely automatic but I've done locally
+2010-10-23T00:57:29  <amstan> we just need a virtualbox image
+2010-10-23T00:57:48  <amstan> and we can deploy it on as many comps as possible
+2010-10-23T00:57:52  <amstan> @repo
+2010-10-23T00:57:53  <contestbot> amstan: repo = http://code.google.com/p/ai-contest/
+2010-10-23T00:58:10  <amstan> here were my ideas: http://code.google.com/p/ai-contest/wiki/Decentralization
+2010-10-23T00:58:58  <janzert> yeah, running just the bots remotely runs into lag issues though
+2010-10-23T00:59:21  <amstan> well.. w/e, how it's done now is fine too
+2010-10-23T00:59:34  <amstan> i just think it should be more modular
+2010-10-23T00:59:57  <janzert> there's not really anything in the current set up tied to amazon
+2010-10-23T01:00:18  <amstan> so why can't we do this on more servers?
+2010-10-23T01:00:33  <amstan> i have 3 comps doing nothing
+2010-10-23T01:01:00  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Read error: Connection reset by peer)
+2010-10-23T01:01:03  <janzert> we can :) with the above restrictions at least and assuming enough power
+2010-10-23T01:01:26  <amstan> i just need an ubuntu image to deploy, and instructions on how to do stuff
+2010-10-23T01:02:07  <janzert> ok, I'll try write up step by step instructions from a fresh 8.04 install tomorrow
+2010-10-23T01:02:50  <amstan> janzert: while you do those, can you actually do them in a virtualbox vm?
+2010-10-23T01:02:59  <amstan> it would be much easier to deploy
+2010-10-23T01:03:44  <amstan> janzert: also.. what happens when a cloud server goes down?
+2010-10-23T01:03:49  <amstan> janzert: score wise
+2010-10-23T01:03:57  <amstan> do the bots loose? or is the match just ignored?
+2010-10-23T01:04:01  <janzert> it won't report any game result
+2010-10-23T01:04:04  <amstan> good
+2010-10-23T01:04:10  <janzert> so yes ignored basically
+2010-10-23T01:04:17  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-23T01:04:23  <amstan> and i assume they're plug and play, right, as in you can go online and offline with the servers as much as you want
+2010-10-23T01:04:44  <janzert> yeah, should be able to
+2010-10-23T01:04:48  <amstan> great
+2010-10-23T01:05:02  <amstan> so..
+2010-10-23T01:05:17  <amstan> please do that, we have so many sources of comps, and we're not using them
+2010-10-23T01:05:49  <janzert> something we will need soon is a way to update cloud servers rather than just set them up from scratch
+2010-10-23T01:05:54  <amstan> we got donations from portland, at greghaynes' university
+2010-10-23T01:06:05  <amstan> janzert: update?
+2010-10-23T01:06:07  <janzert> if this takes off with many sources running them
+2010-10-23T01:06:08  <amstan> what do you mean?
+2010-10-23T01:06:16  <amstan> oh.. well
+2010-10-23T01:06:18  <janzert> update to the latest code
+2010-10-23T01:06:34  <janzert> you'll notice the code base isn't really static :)
+2010-10-23T01:06:36  <amstan> those ubuntu vms, get them setup so you can ssh into them as soon as they're deployed
+2010-10-23T01:06:51  <amstan> isn't that enough?
+2010-10-23T01:06:58  <janzert> one other problem I noticed this morning
+2010-10-23T01:07:18  <janzert> yeah, technically at least. doing manual updates over many servers will be painful
+2010-10-23T01:07:44  <janzert> the main server was getting overloaded with 5 instances requesting games
+2010-10-23T01:08:06  <janzert> of course once we have stable instances we can shut the games on the main server off
+2010-10-23T01:08:15  <janzert> which should help a lot
+2010-10-23T01:08:15  <amstan> yeah
+2010-10-23T01:08:47  <amstan> janzert: tell me if you need help with anything, i can do stuff, as long as i know what's going on
+2010-10-23T01:09:14  <amstan> janzert: also.. another thing.. will you support rewriting the codebase from scratch for the next contest?
+2010-10-23T01:10:20  <janzert> yeah, although I don't know how I'll feel at the end of this one about diving into another right away :}
+2010-10-23T01:10:38  <amstan> probably not right away
+2010-10-23T01:11:08  *** delt0r <delt0r!~delt0r@188-22-18-56.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-23T01:11:18  <contestbot> Top 10 players: Hazard(4112), rsergio(4095), asavis(4074), cfaftw(4051), felixcoto(4036), sin_sun(3964), bocsimacko(3962), MariusCG(3947), dmj111(3935), davidjliu(3900)
+2010-10-23T01:11:47  *** delt0r___ <delt0r___!~delt0r@188-22-26-236.adsl.highway.telekom.at> has quit IRC (Ping timeout: 245 seconds)
+2010-10-23T01:14:06  <amstan> janzert: but at least a very long period for planning
+2010-10-23T01:15:43  <janzert> yeah, I probably will want to wait 4-6 months before doing another. which means you almost have to wait till next fall to do another
+2010-10-23T01:20:00  <Zannick> i support a full rewriter :)
+2010-10-23T01:20:05  <Zannick> rewrite *
+2010-10-23T01:31:21  <Mjothvitnir> By support are you referring to $/hr or lip service??
+2010-10-23T01:31:31  <Mjothvitnir> 'cause if you are talking about lipservice then I'm right there with you. :)
+2010-10-23T01:33:31  *** Mjothvitnir <Mjothvitnir!432ace74@gateway/web/freenode/ip.67.42.206.116> has left #aichallenge
+2010-10-23T01:37:00  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-23T01:42:43  <Zannick> well, i plan to work on it
+2010-10-23T01:42:52  <Zannick> not that you can see this message since you're quit
+2010-10-23T01:44:47  <antimatroid> nor could he see that :P
+2010-10-23T01:52:44  <Zannick> yes
+2010-10-23T01:52:46  * Zannick shrug
+2010-10-23T02:01:30  *** seisatsu <seisatsu!~seisatsu@adsl-99-173-27-12.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2010-10-23T02:11:08  <janzert> sometimes I get surprised by my recursive screen levels :/
+2010-10-23T02:11:19  <contestbot> Top 10 players: Hazard(4106), rsergio(4067), cfaftw(4054), felixcoto(4045), asavis(3986), bocsimacko(3981), sin_sun(3980), MariusCG(3944), dmj111(3932), davidjliu(3902)
+2010-10-23T02:12:13  <amstan> Zannick: there's logs
+2010-10-23T02:12:19  <Zannick> true
+2010-10-23T02:17:16  *** hornairs <hornairs!~hornairs@dsl-67-55-16-144.acanac.net> has joined #aichallenge
+2010-10-23T02:23:22  <bhasker> wassup
+2010-10-23T02:25:43  <Mathnerd314> @rankings
+2010-10-23T02:25:44  <contestbot> Mathnerd314: Top 10 players: Hazard(4118), rsergio(4081), cfaftw(4070), felixcoto(4060), asavis(4024), bocsimacko(3999), sin_sun(3996), MariusCG(3964), dmj111(3929), Killer(3927)
+2010-10-23T02:25:52  <Mathnerd314> Hazard is up
+2010-10-23T02:25:53  *** Rommel <Rommel!7cb48a3b@gateway/web/freenode/ip.124.180.138.59> has joined #aichallenge
+2010-10-23T02:27:15  <Mathnerd314> also, some of the game-playing servers are up
+2010-10-23T02:32:11  <Mathnerd314> ^ bhasker
+2010-10-23T02:32:15  *** Sarin <Sarin!~hallo@p5B0EEAC0.dip.t-dialin.net> has joined #aichallenge
+2010-10-23T02:32:28  <bhasker> nice
+2010-10-23T02:33:02  <Mathnerd314> I, however, should not be up, as it is past midnight, so good night.
+2010-10-23T02:33:25  <bhasker> west coast?
+2010-10-23T02:33:57  <Mathnerd314> mountains
+2010-10-23T02:34:21  <bhasker> ah k
+2010-10-23T02:47:33  *** nann <nann!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2010-10-23T02:51:04  *** Apophis <Apophis!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (Ping timeout: 250 seconds)
+2010-10-23T02:51:58  *** Sarin <Sarin!~hallo@p5B0EEAC0.dip.t-dialin.net> has quit IRC (Remote host closed the connection)
+2010-10-23T02:55:52  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 255 seconds)
+2010-10-23T02:56:26  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has quit IRC (Ping timeout: 264 seconds)
+2010-10-23T02:57:09  <rwa> bhasker, what's your latest bot's name?
+2010-10-23T02:58:11  *** seisatsu <seisatsu!~seisatsu@adsl-99-30-224-80.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-23T02:59:18  *** Sarin <Sarin!~hallo@p5B0EEAC0.dip.t-dialin.net> has joined #aichallenge
+2010-10-23T03:07:13  *** george_ <george_!6d56c6d8@gateway/web/freenode/ip.109.86.198.216> has joined #aichallenge
+2010-10-23T03:07:48  *** ryxy <ryxy!43b7f07e@gateway/web/freenode/ip.67.183.240.126> has joined #aichallenge
+2010-10-23T03:11:19  <contestbot> Top 10 players: felixcoto(4097), Hazard(4092), rsergio(4051), cfaftw(4043), asavis(3988), bocsimacko(3987), sin_sun(3982), MariusCG(3965), davidjliu(3916), Killer(3915)
+2010-10-23T03:15:09  <rwa> never die: http://72.44.46.68/canvas?game_id=643551
+2010-10-23T03:15:13  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-10-23T03:19:05  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-23T03:21:47  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Read error: Connection reset by peer)
+2010-10-23T03:23:59  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T03:24:18  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T03:24:35  <Accoun> baggy g++ optimizer
+2010-10-23T03:25:41  <Accoun> sigsetjmp(timer_halt::programState,1); optimised to unworket condition
+2010-10-23T03:28:27  *** McLeopold <McLeopold!~scott@c-76-121-152-123.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 245 seconds)
+2010-10-23T03:38:45  <Accoun> no idia how avoid it
+2010-10-23T03:39:43  <rabidus_> oh, hi Accoun
+2010-10-23T03:41:02  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-23T03:41:20  *** tapwater <tapwater!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has quit IRC (Quit: tapwater)
+2010-10-23T03:43:52  <amstan> Accoun: it's because setjmp is usually avoided by most applications
+2010-10-23T04:11:20  <contestbot> Top 10 players: felixcoto(4081), Hazard(4077), rsergio(4032), cfaftw(4022), asavis(3970), bocsimacko(3966), sin_sun(3953), MariusCG(3948), davidjliu(3912), dmj111(3901)
+2010-10-23T04:17:15  *** mega1_ <mega1_!~quassel@pool-0371a.externet.hu> has joined #aichallenge
+2010-10-23T04:17:35  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T04:27:46  *** mega1_ <mega1_!~quassel@pool-0371a.externet.hu> has quit IRC (Quit: http://quassel-irc.org - Chat comfortably. Anywhere.)
+2010-10-23T04:27:52  *** mega1 <mega1!~quassel@pool-0371a.externet.hu> has joined #aichallenge
+2010-10-23T04:36:42  *** Rommel <Rommel!7cb48a3b@gateway/web/freenode/ip.124.180.138.59> has quit IRC (Quit: Page closed)
+2010-10-23T04:36:52  *** lavalamp_ <lavalamp_!180dae74@gateway/web/freenode/ip.24.13.174.116> has joined #aichallenge
+2010-10-23T04:37:20  <lavalamp_> amstan, if you're awake-- I just sent you a PM on the forum
+2010-10-23T04:37:46  <lavalamp_> I sent you one if you aren't awake, too...
+2010-10-23T04:38:41  <amstan> hmm
+2010-10-23T04:38:44  <amstan> so..
+2010-10-23T04:39:07  <amstan> i think we're getting golang tomorrow, janzert said he'll look into it
+2010-10-23T04:39:13  <amstan> same with C#
+2010-10-23T04:40:22  <amstan> lavalamp_: 2010-10-23T00:49:23 @ http://contestbot.hypertriangle.com/channellogs/%23aichallenge/%23aichallenge.2010-10-23.log
+2010-10-23T04:41:00  <lavalamp_> oh, awesome!
+2010-10-23T04:41:02  <amstan> lavalamp_: i'm not exactly sure what andrew could do for us, he should contact Jeff about participating in administration
+2010-10-23T04:42:09  <lavalamp_> amstan, I don't know if you could use money for more servers or anything... it might not hurt to ask if so. I don't know what resources he has.
+2010-10-23T04:42:31  <amstan> lavalamp_: what we lack is organization, and time
+2010-10-23T04:42:43  <lavalamp_> And I'm still not convinced Jeff actually exists :)
+2010-10-23T04:42:57  <amstan> we have lots of problems with the design, we should of planned this much better before launching
+2010-10-23T04:42:59  <amstan> and yeah..
+2010-10-23T04:43:08  <amstan> jeff didn't show signs of survivol in..
+2010-10-23T04:43:12  <amstan> @seen j3camero
+2010-10-23T04:43:12  <contestbot> amstan: j3camero was last seen in #aichallenge 2 weeks, 4 days, 6 hours, 23 minutes, and 26 seconds ago: <j3camero> amstan: yes, but no names, haha.
+2010-10-23T04:43:20  <lavalamp_> yeah...
+2010-10-23T04:43:40  <amstan> @seen dstuff
+2010-10-23T04:43:40  <contestbot> amstan: I have not seen dstuff.
+2010-10-23T04:43:49  <amstan> hmm
+2010-10-23T04:44:03  <amstan> @seen dstufft
+2010-10-23T04:44:03  <contestbot> amstan: dstufft was last seen in #aichallenge 4 weeks, 2 days, 13 hours, 49 minutes, and 46 seconds ago: <dstufft> there's nothing random in your bots is there?
+2010-10-23T04:44:07  <amstan> another one..
+2010-10-23T04:44:17  <amstan> @seen danielvf
+2010-10-23T04:44:17  <contestbot> amstan: danielvf was last seen in #aichallenge 2 weeks, 4 days, 7 hours, 3 minutes, and 16 seconds ago: * DanielVF out. :(
+2010-10-23T04:44:23  <lavalamp_> OK I will respond to him then. I guess if janzert needs any assitance setting golang up I can put them in touch.
+2010-10-23T04:44:31  <amstan> it's me and janzert
+2010-10-23T04:44:46  <amstan> it's not hard... it's just installing it
+2010-10-23T04:44:53  <lavalamp_> it's so odd that they seem to have skipped out on you like that
+2010-10-23T04:45:03  <amstan> for not the cloud servers are going down for no reason at all
+2010-10-23T04:45:33  <amstan> i would like to help, but i really don't like the organization, how it's svn, how i can't communicate to jeff and all that
+2010-10-23T04:45:52  <lavalamp_> ah
+2010-10-23T04:46:08  <amstan> for this reason i don't feel like actually coding and stuff, since what i'll do will probably be useless
+2010-10-23T04:46:29  <lavalamp_> Yeah I think I understand
+2010-10-23T04:47:13  <amstan> like it's an awesome contest.. but..
+2010-10-23T04:47:16  <amstan> it's jeff's thing
+2010-10-23T04:47:25  <lavalamp_> ...and he vanished
+2010-10-23T04:47:53  <amstan> we need a good talk to him
+2010-10-23T04:48:14  <amstan> but yeah, it's not about cpu time, or resources, or people to help
+2010-10-23T04:48:25  <lavalamp_> ok, makes sense
+2010-10-23T04:49:15  <amstan> aw, come on!
+2010-10-23T04:49:17  <amstan> 5 pm
+2010-10-23T04:49:19  <amstan> am*
+2010-10-23T04:49:27  <amstan> i should go zed, lol
+2010-10-23T04:49:31  <lavalamp_> hahaha
+2010-10-23T04:49:40  <amstan> how the hell did the night go?
+2010-10-23T04:49:46  *** Utkarsh <Utkarsh!~admin@117.201.80.31> has quit IRC (Read error: Connection reset by peer)
+2010-10-23T04:49:57  *** Utkarsh <Utkarsh!~admin@117.201.80.31> has joined #aichallenge
+2010-10-23T04:50:00  <lavalamp_> I've been to bed and up already
+2010-10-23T04:50:14  <amstan> you wake up at 5am?
+2010-10-23T04:50:51  <lavalamp_> earlier, I sleep only a few hours at night and take a few naps during the day.
+2010-10-23T04:51:01  <amstan> lavalamp_: polyphasic?
+2010-10-23T04:51:05  <amstan> lavalamp_: how is that?
+2010-10-23T04:51:38  <lavalamp_> amstan, yeah, it's interesting. Not easy to maintain a napping schedule, unfortunately.
+2010-10-23T04:52:05  <amstan> i'm not a schedule kinda guy, i don't think i could do it
+2010-10-23T04:52:26  <amstan> also, i'm not confident that it'll work during school and work
+2010-10-23T04:52:33  <lavalamp_> neither was I, but the extra time is worth a lot of inconvienience to me...
+2010-10-23T04:53:02  <amstan> but most work places have this 8 hour block of working
+2010-10-23T04:53:17  <amstan> and polyphasic will require you to have a nap in the middle of that somewhere
+2010-10-23T04:53:18  <lavalamp_> Yeah, I take a nap instead of lunch, it works for me but not everyone could pull that off, I'm sure...
+2010-10-23T04:53:30  <amstan> where do you nap?
+2010-10-23T04:53:37  <lavalamp_> A supply closet :)
+2010-10-23T04:54:16  <amstan> what about physical rest?
+2010-10-23T04:54:30  <amstan> well, nvm, i guess this is not an issue with us computer types
+2010-10-23T04:54:55  <lavalamp_> lol
+2010-10-23T04:55:05  <amstan> idk, i'm just scared
+2010-10-23T04:55:40  <lavalamp_> I am still not convinced the more extreme schedules are actually doable, I certainly couldn't do them.
+2010-10-23T04:56:27  <lavalamp_> Or actually, my current theory is that they are doable only by those who naturally have low SWS requirements.
+2010-10-23T04:56:35  *** Utkarsh <Utkarsh!~admin@117.201.80.31> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T04:56:39  <lavalamp_> Anyway, go to bed :0
+2010-10-23T04:56:45  <amstan> SWS?
+2010-10-23T04:56:52  <lavalamp_> slow-wave-sleep
+2010-10-23T04:56:56  <amstan> oh
+2010-10-23T04:57:09  <lavalamp_> stage 3 (used to be stage 4) sleep
+2010-10-23T04:58:09  <amstan> cool
+2010-10-23T04:58:14  <amstan> well, i'm going to zed now
+2010-10-23T04:59:16  <Error323> zed's dead
+2010-10-23T05:11:21  <contestbot> Top 10 players: felixcoto(4068), Hazard(4047), rsergio(4018), cfaftw(3994), MariusCG(3954), asavis(3947), bocsimacko(3911), davidjliu(3909), dmj111(3908), sin_sun(3895)
+2010-10-23T05:11:57  *** fio175 <fio175!558f0e0a@gateway/web/freenode/ip.85.143.14.10> has joined #aichallenge
+2010-10-23T05:12:13  *** Apophis <Apophis!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2010-10-23T05:13:01  *** nann <nann!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T05:33:11  <antimatroid> i'm curious as to whether anyone is correctly doing future states with future moves from both players
+2010-10-23T05:33:16  <antimatroid> i have no idea how the fuck to do it
+2010-10-23T05:33:36  <Error323> its impossible
+2010-10-23T05:33:52  <raedwulf> antimatroid: thats the idea of minimax
+2010-10-23T05:34:01  <Error323> yup
+2010-10-23T05:34:08  <raedwulf> but the branching factor is massive
+2010-10-23T05:34:12  <raedwulf> which causes loads of problems
+2010-10-23T05:34:14  <antimatroid> yes, but i need it to do minimax :P
+2010-10-23T05:34:20  <raedwulf> it makes Go look simpler
+2010-10-23T05:34:42  <raedwulf> minimax on Go has been pretty much dismissed
+2010-10-23T05:35:06  *** wvdschel <wvdschel!~wim@78-20-14-180.access.telenet.be> has joined #aichallenge
+2010-10-23T05:35:06  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has joined #aichallenge
+2010-10-23T05:35:14  <raedwulf> the only way minimax could work is if you prune the search tree early enough and not lose the benefits of minimax
+2010-10-23T05:35:46  <raedwulf> and its *very easy to lose* the benefits if you do prune early
+2010-10-23T05:35:48  <Error323> the pruning is the problem
+2010-10-23T05:35:58  <raedwulf> because you need to prune correctly
+2010-10-23T05:36:00  <raedwulf> hehe
+2010-10-23T05:36:08  <Error323> =]
+2010-10-23T05:36:52  <raedwulf> no doubt ill try a minimax approach after this one
+2010-10-23T05:36:56  <raedwulf> which im still doing ugh
+2010-10-23T05:37:01  <raedwulf> wish i could code fast
+2010-10-23T05:37:03  <raedwulf> faster*
+2010-10-23T05:37:06  <raedwulf> i need louder music
+2010-10-23T05:37:23  <raedwulf> thats better
+2010-10-23T05:37:34  <Error323> mmm coding with music is distracting
+2010-10-23T05:37:35  <Error323> =)
+2010-10-23T05:37:39  <raedwulf> nein
+2010-10-23T05:37:53  <raedwulf> helps me focus
+2010-10-23T05:38:04  <antimatroid> even if you want to do coordinated attacks on minimax
+2010-10-23T05:38:12  <antimatroid> it breaks unless you can do future moves in your data
+2010-10-23T05:38:24  <antimatroid> is it actually not possible? or just really fucking hard
+2010-10-23T05:38:37  <raedwulf> what do you mean *future moves in your data*
+2010-10-23T05:38:44  <raedwulf> im not entirely sure whats the problem
+2010-10-23T05:38:56  <antimatroid> say i want to send fleets from 5 planets to planet j, not all the same distance and arrive at the same time
+2010-10-23T05:39:01  <antimatroid> i have to make some of those moves in the future
+2010-10-23T05:39:22  <antimatroid> but then dependent on future moves that get made, that planet may not have that many ships or even be owned by the player
+2010-10-23T05:39:34  <raedwulf> oh
+2010-10-23T05:39:36  <antimatroid> one can try and add outgoing fleet information all over the place, but it still breaks down i think
+2010-10-23T05:39:59  <raedwulf> im not going to do that, i recalculate every move
+2010-10-23T05:40:04  <raedwulf> i move and *forget*
+2010-10-23T05:40:08  <raedwulf> when i get a new state
+2010-10-23T05:40:10  <antimatroid> yeah so do i
+2010-10-23T05:40:24  <raedwulf> IMO, keeping ideas what you're going to do in the future is wrong
+2010-10-23T05:40:34  <antimatroid> i don't want to keep them
+2010-10-23T05:40:40  <raedwulf> this is not chess
+2010-10-23T05:40:40  <antimatroid> but i want to make a tree, with players alternating turns
+2010-10-23T05:40:50  <antimatroid> if i make a future turn, that can be rendered useless, it causes issues
+2010-10-23T05:41:01  <antimatroid> each turn i recreate my information
+2010-10-23T05:41:01  <raedwulf> yea, don't create future moves
+2010-10-23T05:41:16  <antimatroid> how else do you make sure it works?
+2010-10-23T05:41:43  <antimatroid> say you need to send ships to the planet, but they can't arrive any time but the same time
+2010-10-23T05:42:04  <antimatroid> then you must send some in the future at a point in time
+2010-10-23T05:42:08  <antimatroid> it's unavoidable
+2010-10-23T05:42:20  <raedwulf> oh easy, basically you see where your other fleets are heading and see if they need help
+2010-10-23T05:42:39  <raedwulf> and send them off in that turn if you exactly that distance away
+2010-10-23T05:42:48  <raedwulf> you=that planet
+2010-10-23T05:43:39  <antimatroid> that doesn't make any sense
+2010-10-23T05:43:45  <raedwulf> it doesn't?
+2010-10-23T05:44:16  <antimatroid> an example that makes sense, you want to take a neutral just after the opponent, you can't send some of the ships to arrive early, otherwise you just make it cheaper for the opponent to take the planet
+2010-10-23T05:44:37  <antimatroid> but if you add those moves into the future to information, you run into the problems i mention above and it all falls to pieces
+2010-10-23T05:44:37  <raedwulf> yes
+2010-10-23T05:45:13  <raedwulf> well it really depends on your implementation
+2010-10-23T05:45:21  <raedwulf> but one way is to store future moves
+2010-10-23T05:45:26  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2010-10-23T05:45:37  <antimatroid> yeah, but then finding out when to delete them is just messy
+2010-10-23T05:45:39  <raedwulf> and add constraints that if planet sends x ships away, do not violate future move
+2010-10-23T05:45:43  <antimatroid> and i'm not sure how i'd do it even works well
+2010-10-23T05:45:50  <raedwulf> if future move is violated, remove future move
+2010-10-23T05:46:17  <raedwulf> i.e. if the enemy attacks your planets and you don't have enough resources for that future move
+2010-10-23T05:46:33  <raedwulf> but there's better ways of doing this
+2010-10-23T05:46:58  <antimatroid> have you actually implemented something like this yet?
+2010-10-23T05:47:05  <antimatroid> it seemed easier to me before i tried doing it
+2010-10-23T05:48:07  <lavalamp_> antimatroid: I'm solving this by considering future moves but not actually adding them to my state
+2010-10-23T05:48:33  <antimatroid> i've considered that, but then how do you evaluate your final state?
+2010-10-23T05:48:39  <raedwulf> antimatroid: im implementing it differently
+2010-10-23T05:48:45  <raedwulf> so that situation would not crop up
+2010-10-23T05:48:56  <raedwulf> i only consider what i see now, and not what i don't need to see :P
+2010-10-23T05:49:16  <lavalamp_> yeah, well, my bot is terrible currently XP
+2010-10-23T05:49:34  <raedwulf> at least mine is theoretical
+2010-10-23T05:49:38  <raedwulf> nothing has beaten it yet
+2010-10-23T05:49:40  <raedwulf> :D
+2010-10-23T05:50:01  <raedwulf> undefeated... theoretical
+2010-10-23T05:50:05  <lavalamp_> just about nothing hasn't beaten mine... http://72.44.46.68/getplayer?player=lavalamp.forfun.1
+2010-10-23T05:50:26  *** fio175 <fio175!558f0e0a@gateway/web/freenode/ip.85.143.14.10> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T05:50:50  <raedwulf> hehe
+2010-10-23T05:51:00  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T05:51:25  <raedwulf> lavalamp_: interesting game.. http://72.44.46.68/canvas?game_id=645550
+2010-10-23T05:52:18  <raedwulf> :P
+2010-10-23T05:52:22  <lavalamp_> raedwulf, sniping obviously is not working, haha
+2010-10-23T05:52:57  <raedwulf> well no doubt my first bot version is going to fail ^^
+2010-10-23T05:55:36  <raedwulf> at least i've written lots of debugging code
+2010-10-23T05:55:58  <raedwulf> so i can list *why* exactly my bot choses the move it chose
+2010-10-23T05:56:04  <raedwulf> chooses*
+2010-10-23T06:00:10  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T06:00:22  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2010-10-23T06:04:34  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-176-190.pools.arcor-ip.net> has joined #aichallenge
+2010-10-23T06:08:27  *** Bobng <Bobng!~T@78.148.48.91> has joined #aichallenge
+2010-10-23T06:11:22  <contestbot> Top 10 players: felixcoto(4060), rsergio(4022), Hazard(3999), cfaftw(3968), bocsimacko(3938), MariusCG(3919), asavis(3913), dmj111(3905), Killer(3900), davidjliu(3898)
+2010-10-23T06:14:18  *** hornairs <hornairs!~hornairs@dsl-67-55-16-144.acanac.net> has quit IRC (Ping timeout: 250 seconds)
+2010-10-23T06:20:32  *** mega1 <mega1!~quassel@pool-0371a.externet.hu> has quit IRC (Ping timeout: 245 seconds)
+2010-10-23T06:30:28  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-176-190.pools.arcor-ip.net> has quit IRC (Ping timeout: 276 seconds)
+2010-10-23T06:40:09  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T06:46:54  *** ryxy <ryxy!43b7f07e@gateway/web/freenode/ip.67.183.240.126> has left #aichallenge
+2010-10-23T06:54:09  *** JensT1 <JensT1!~jens@91.182.135.81> has joined #aichallenge
+2010-10-23T07:11:16  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 276 seconds)
+2010-10-23T07:11:21  <contestbot> Top 10 players: felixcoto(4067), rsergio(4017), Hazard(4012), cfaftw(3963), sin_sun(3906), bocsimacko(3901), dmj111(3896), davidjliu(3892), MariusCG(3885), Killer(3852)
+2010-10-23T07:13:45  <antimatroid> people have become a lot more competiitive in the last week
+2010-10-23T07:17:05  *** abcd123 <abcd123!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T07:21:35  *** yasith <yasith!~yasith@112.135.86.11> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T07:21:54  *** area <area!~area@adr34.clare.cam.ac.uk> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T07:24:06  *** abcd123 <abcd123!~titankill@111.92.7.71> has quit IRC (Read error: Connection reset by peer)
+2010-10-23T07:29:54  *** Utkarsh <Utkarsh!~admin@117.201.88.232> has joined #aichallenge
+2010-10-23T07:31:17  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-10-23T07:35:03  *** yasith <yasith!~yasith@112.135.85.169> has joined #aichallenge
+2010-10-23T07:36:50  *** mceier <mceier!~mceier@chello089077208118.chello.pl> has joined #aichallenge
+2010-10-23T07:38:31  *** JensT1 <JensT1!~jens@91.182.135.81> has left #aichallenge
+2010-10-23T07:49:24  <raedwulf> morning mega1
+2010-10-23T07:49:31  <mega1> good afternoon
+2010-10-23T07:49:35  <raedwulf> afternoon here, but anyways :P
+2010-10-23T07:49:41  <raedwulf> oh ok, where do you hail from?
+2010-10-23T07:50:20  <mega1> hungary
+2010-10-23T07:50:39  <raedwulf> oh right ^^
+2010-10-23T07:50:45  <raedwulf> << UK
+2010-10-23T07:52:22  <raedwulf> the bots are weird, its like they have a massive winning streak then suddenly fail with a losing streak
+2010-10-23T07:52:54  <raedwulf> well not exactly a losing *streak* but enough loses to shift the ranking again
+2010-10-23T07:54:17  <raedwulf> interesting, a miscalculation?: http://www.ai-contest.com/visualizer.php?game_id=6068264
+2010-10-23T07:56:08  <javagamer> I think that's how the rankings work, you'll face people worse than you until you move up and start facing people better than you
+2010-10-23T07:57:18  <raedwulf> oh ok
+2010-10-23T07:58:42  <javagamer> Just a guess though, I haven't read up much on how ELO works, spending all my free time trying to get something worth submitting
+2010-10-23T07:59:27  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-23T08:00:20  *** edcba <edcba!~edcba@82.67.199.204> has joined #aichallenge
+2010-10-23T08:01:57  <mega1> accoun is the bane of my existence
+2010-10-23T08:02:38  <raedwulf> hehe
+2010-10-23T08:05:26  <mega1> on the tcp server 100 elo point advantage translates to 75% chance to win, right?
+2010-10-23T08:08:06  * raedwulf has no idea
+2010-10-23T08:10:05  <mega1> I have about 200 points on him but lose more often than not, or maybe even.
+2010-10-23T08:10:48  <mega1> crap, just lost to an opponent with -288 elo :-o
+2010-10-23T08:11:00  <raedwulf> lol
+2010-10-23T08:11:22  <contestbot> Top 10 players: felixcoto(4036), Hazard(4009), rsergio(4008), cfaftw(3928), bocsimacko(3906), sin_sun(3904), dmj111(3893), davidjliu(3863), Killer(3823), MariusCG(3821)
+2010-10-23T08:25:20  *** Mekanik <Mekanik!~vov@ppp85-141-249-115.pppoe.mtu-net.ru> has joined #aichallenge
+2010-10-23T08:33:21  *** iNtERrUpT <iNtERrUpT!~interrupt@119.192.12.119> has joined #aichallenge
+2010-10-23T08:41:46  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has quit IRC (Quit: Leaving)
+2010-10-23T08:42:45  *** wvdschel <wvdschel!~wim@78-20-14-180.access.telenet.be> has joined #aichallenge
+2010-10-23T08:42:46  *** wvdschel <wvdschel!~wim@unaffiliated/yukito> has joined #aichallenge
+2010-10-23T08:44:14  *** krokkrok <krokkrok!4c58a69c@gateway/web/freenode/ip.76.88.166.156> has joined #aichallenge
+2010-10-23T08:58:14  *** p4p4 <p4p4!~chatzilla@82.113.106.29> has joined #aichallenge
+2010-10-23T08:58:21  <Error323> wrahh cloud offline again >_>
+2010-10-23T09:02:06  *** Meatkat <Meatkat!~bovard@217.113.66.228> has joined #aichallenge
+2010-10-23T09:02:55  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-23T09:05:34  <Meatkat> anyone know who bocsimacko-b0.22 is on tcp?
+2010-10-23T09:06:20  <Meatkat> ah, it's probably bocsimacko
+2010-10-23T09:06:29  <Meatkat> ... >.<
+2010-10-23T09:06:34  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-10-23T09:06:48  <raedwulf> Meatkat: he uses a different name on irc
+2010-10-23T09:06:51  <raedwulf> i forget who
+2010-10-23T09:06:53  <raedwulf> but he's here
+2010-10-23T09:09:23  <Meatkat> right-o, thanks
+2010-10-23T09:09:26  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has joined #aichallenge
+2010-10-23T09:09:57  <raedwulf> check the irc logs for yesterday
+2010-10-23T09:10:15  <raedwulf> do a search for bocksimacko
+2010-10-23T09:10:20  <dmj111> mega1
+2010-10-23T09:10:27  <mega1> dmj111: hello
+2010-10-23T09:10:30  *** delt0r___ <delt0r___!~delt0r@188-22-171-121.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-23T09:10:30  <raedwulf> ah it is mega1 :P, if forgot lol xD
+2010-10-23T09:10:40  *** JensT1 <JensT1!~jens@91.182.169.245> has joined #aichallenge
+2010-10-23T09:10:43  <dmj111> hello.  sorry mega1, just speaking up.
+2010-10-23T09:10:47  <mega1> ah, I see
+2010-10-23T09:11:17  <dmj111> good to see your bot working well on the official server :)
+2010-10-23T09:11:23  <contestbot> Top 10 players: felixcoto(4005), rsergio(3983), Hazard(3980), cfaftw(3904), bocsimacko(3888), sin_sun(3882), dmj111(3864), davidjliu(3834), Killer(3816), evja08(3804)
+2010-10-23T09:11:35  *** delt0r <delt0r!~delt0r@188-22-18-56.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T09:14:24  <mega1> it's hard to tell at this rate
+2010-10-23T09:16:41  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T09:24:09  *** krokkrok <krokkrok!4c58a69c@gateway/web/freenode/ip.76.88.166.156> has quit IRC (Quit: Page closed)
+2010-10-23T09:27:36  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-23T09:30:16  <dmj111> mega1:  you have a point there... the ratings are not all the meaningful yet.  Better than win/loss.   At least you have worked around the lisp issues.
+2010-10-23T09:30:17  <dmj111> later.
+2010-10-23T09:32:41  *** seisatsu <seisatsu!~seisatsu@adsl-99-30-224-80.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2010-10-23T09:43:11  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-23T10:02:35  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-23T10:04:59  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-23T10:05:52  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2010-10-23T10:06:02  *** yasith_ <yasith_!~yasith@112.135.107.71> has joined #aichallenge
+2010-10-23T10:07:18  *** AJC <AJC!~AJC@chello213047059068.25.11.vie.surfer.at> has joined #aichallenge
+2010-10-23T10:08:52  *** yasith <yasith!~yasith@112.135.85.169> has quit IRC (Ping timeout: 276 seconds)
+2010-10-23T10:11:23  <contestbot> Top 10 players: felixcoto(3992), rsergio(3970), Hazard(3967), cfaftw(3892), bocsimacko(3875), sin_sun(3869), dmj111(3851), davidjliu(3822), Killer(3803), evja08(3790)
+2010-10-23T10:19:21  *** Bobng <Bobng!~T@78.148.48.91> has quit IRC (Remote host closed the connection)
+2010-10-23T10:19:46  *** Bobng <Bobng!~T@78.148.48.91> has joined #aichallenge
+2010-10-23T10:23:12  *** Bobng <Bobng!~T@78.148.48.91> has quit IRC (Read error: Connection reset by peer)
+2010-10-23T10:25:00  *** Bobng <Bobng!~T@78.148.48.91> has joined #aichallenge
+2010-10-23T10:26:51  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2010-10-23T10:33:26  *** abcd123 <abcd123!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T10:34:23  *** abcd123 is now known as Titankiller
+2010-10-23T10:34:53  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T10:36:24  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T10:37:37  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-176-190.pools.arcor-ip.net> has joined #aichallenge
+2010-10-23T10:40:17  *** BtbN <BtbN!~btbn@h1815571.stratoserver.net> has quit IRC (Quit: leaving)
+2010-10-23T10:42:06  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 250 seconds)
+2010-10-23T10:44:56  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T10:46:07  *** iNtERrUpT <iNtERrUpT!~interrupt@119.192.12.119> has quit IRC (Remote host closed the connection)
+2010-10-23T10:51:10  *** Meatkat <Meatkat!~bovard@217.113.66.228> has quit IRC (Quit: Leaving)
+2010-10-23T11:03:54  <bhasker> morning
+2010-10-23T11:05:11  *** Bobng <Bobng!~T@78.148.48.91> has quit IRC (Quit: Leaving)
+2010-10-23T11:11:24  <contestbot> Top 10 players: felixcoto(3999), Hazard(3981), rsergio(3972), bocsimacko(3889), cfaftw(3880), dmj111(3864), sin_sun(3863), davidjliu(3804), evja08(3800), Killer(3788)
+2010-10-23T11:18:02  *** BtbN <BtbN!~BtbN@p54BB6B4E.dip.t-dialin.net> has joined #aichallenge
+2010-10-23T11:20:55  *** Zalma <Zalma!50dd5eb7@gateway/web/freenode/ip.80.221.94.183> has joined #aichallenge
+2010-10-23T11:23:08  *** Florian95 <Florian95!~Florian@per92-9-88-160-132-90.fbx.proxad.net> has joined #aichallenge
+2010-10-23T11:24:10  <Zalma> Hi. I'm really noob on coding but how do I compile my bot done with c++? =)
+2010-10-23T11:25:12  <Zalma> I'm currenly using visual studio 2010 pro...
+2010-10-23T11:30:04  <lavalamp_> Zalma, look for the build command
+2010-10-23T11:30:30  <lavalamp_> I'm on an older version at work so I can't say exactly where it is
+2010-10-23T11:31:26  <Zalma> well I cant even debug.. even that is gray
+2010-10-23T11:33:20  <lavalamp_> you may need to set up a project
+2010-10-23T11:33:45  <lavalamp_> try making a new command line app and adding your files
+2010-10-23T11:34:00  <lavalamp_> ...if you already did that, ignore me
+2010-10-23T11:34:41  <Naktibalda> use gcc instead :)
+2010-10-23T11:35:55  <Zalma> no I haven't done that..
+2010-10-23T11:36:05  <Zalma> how do I actually add the files to project? =)
+2010-10-23T11:37:19  <Zalma> I have used c++ last time in dos age ;)
+2010-10-23T11:37:54  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2010-10-23T11:39:25  <raedwulf> Zalma: mingw gcc is another compiler - thats similar to the one used on the server. Of course, it might take some familiarity to set up.
+2010-10-23T11:39:38  <raedwulf> have you any experience with unix?
+2010-10-23T11:39:45  <Zalma> nope =)
+2010-10-23T11:39:54  <raedwulf> ok
+2010-10-23T11:40:12  <Zalma> I've been banging my head today for 10 hours already
+2010-10-23T11:40:45  <raedwulf> technically you can use any C compiler (although the msvc c compiler doesn't support modern standards of C as well)
+2010-10-23T11:40:52  <Zalma> I wish visual basic would work.. :P
+2010-10-23T11:40:56  <raedwulf> hehe
+2010-10-23T11:41:04  <raedwulf> you could put in a request
+2010-10-23T11:41:08  <raedwulf> they have c#
+2010-10-23T11:41:13  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has left #aichallenge
+2010-10-23T11:41:21  <raedwulf> if you ask nicely, they could add visual basic .net
+2010-10-23T11:41:58  <Zalma> Thou visual basic .net would be quite similar.. I'm more familiar on old visual basic (without .net) =P
+2010-10-23T11:41:59  <raedwulf> note they use the mono version of .net, which is compatible with an older version of .net
+2010-10-23T11:42:05  <raedwulf> oh ok
+2010-10-23T11:42:24  <Zalma> atleast I did read doing C# isn't worth doing.. compiling is hard or something
+2010-10-23T11:42:43  <raedwulf> yes, its because the age of the version of mono being used
+2010-10-23T11:42:58  <raedwulf> if you're  using msvs.net its a bitch to get it to work with the server
+2010-10-23T11:43:31  <raedwulf> a lot of people are using python and java
+2010-10-23T11:43:59  <raedwulf> lua works too, but no one has written a starter package for that
+2010-10-23T11:44:26  <Zalma> I'm just trying to get even some language to work
+2010-10-23T11:44:28  <raedwulf> i stand corrected, http://ai-contest.com/forum/viewtopic.php?f=18&t=615
+2010-10-23T11:44:49  <Zalma> got like 50x error while compiling submission today already
+2010-10-23T11:44:59  <Zalma> only ones that really work were started packets..
+2010-10-23T11:45:18  <Zalma> I have already tried java, C# and C++
+2010-10-23T11:45:27  <Zalma> getting pretty much frustrated
+2010-10-23T11:45:41  <Zalma> especially java versions work well locally
+2010-10-23T11:45:49  <Zalma> and compile without errors
+2010-10-23T11:46:21  <raedwulf> sorry you're using C++ (msvc 2010 support for c++ is excellent) heh
+2010-10-23T11:46:31  <Zalma> and finally when I got it to compile it crashed at first turn.. (even thou it did work well at locally)
+2010-10-23T11:46:48  <raedwulf> im not very familiar with java
+2010-10-23T11:46:55  <raedwulf> i am quite familiar with C# though
+2010-10-23T11:47:19  <raedwulf> but i prefer C... i like being close to metal :P
+2010-10-23T11:47:20  <Zalma> Well it doesn't matter what I get working easiest... I
+2010-10-23T11:47:24  <Zalma> I'm bad in them all
+2010-10-23T11:47:25  <foucist> Zalma: can't you get someone else's java/c++ program that doesn't crash
+2010-10-23T11:47:27  <foucist> and modify?
+2010-10-23T11:47:51  <Zalma> well as soon as I start to modify something it doesn't work anymore in server ;)
+2010-10-23T11:47:58  <raedwulf> well he's on windows and unfamiliar with C++, so it doesn't plug and play
+2010-10-23T11:49:07  <Zalma> raed: ehm?
+2010-10-23T11:49:51  <raedwulf> well, the start package is only useful if you can compile it on a unix environment; you can compile it on msvc 2010 as well, but you need to create the project files yourself
+2010-10-23T11:49:55  <raedwulf> and a solution file
+2010-10-23T11:50:20  <raedwulf> on unix, its extract, and run "make"
+2010-10-23T11:50:22  <raedwulf> and it works
+2010-10-23T11:50:24  <raedwulf> :P
+2010-10-23T11:50:54  <Zalma> Well I do have ubuntu on my virtual box..
+2010-10-23T11:51:02  <Zalma> if compiling with that is easier
+2010-10-23T11:51:08  <raedwulf> in that case, yep it would
+2010-10-23T11:51:19  <raedwulf> basically you can extract it on there
+2010-10-23T11:51:23  <raedwulf> open a terminal
+2010-10-23T11:51:32  <raedwulf> into that directory - then run "make"
+2010-10-23T11:51:42  <raedwulf> it should compile to give you "MyBot"
+2010-10-23T11:51:45  <raedwulf> which you can then run
+2010-10-23T11:51:58  <raedwulf> well using the java tool
+2010-10-23T11:54:00  <Zalma> need to learn using that virtual box first :P
+2010-10-23T11:54:15  <Zalma> well atleast that I can access to my files
+2010-10-23T11:54:47  *** tapwater <tapwater!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has joined #aichallenge
+2010-10-23T11:54:55  *** AJC <AJC!~AJC@chello213047059068.25.11.vie.surfer.at> has left #aichallenge ("Leaving")
+2010-10-23T11:59:49  *** JensT1 <JensT1!~jens@91.182.169.245> has left #aichallenge
+2010-10-23T12:00:43  <raedwulf> hehe
+2010-10-23T12:06:14  <bhasker> meatkat around?
+2010-10-23T12:06:54  <bhasker> his bot is quite interesting
+2010-10-23T12:07:01  <bhasker> if it can't hold a planet it runs with the ships on it
+2010-10-23T12:07:01  <bhasker> http://72.44.46.68/canvas?game_id=650096
+2010-10-23T12:07:09  <bhasker> pretty interesting to watch
+2010-10-23T12:08:02  <a1k0n> sorta
+2010-10-23T12:08:21  <a1k0n> oh the 72 was already on the way
+2010-10-23T12:08:34  <a1k0n> my bot will abandon planets now and then too
+2010-10-23T12:10:08  *** Florian95 <Florian95!~Florian@per92-9-88-160-132-90.fbx.proxad.net> has quit IRC (Quit: Leaving...)
+2010-10-23T12:11:24  <contestbot> Top 10 players: felixcoto(3999), rsergio(3965), Hazard(3949), cfaftw(3887), sin_sun(3866), bocsimacko(3863), dmj111(3851), davidjliu(3826), evja08(3796), Killer(3783)
+2010-10-23T12:20:57  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-176-190.pools.arcor-ip.net> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T12:28:26  *** narnach <narnach!~Narnach@195-241-27-75.ip.telfort.nl> has quit IRC (Quit: Leaving.)
+2010-10-23T12:46:07  *** Mjothvitnir <Mjothvitnir!432ace74@gateway/web/freenode/ip.67.42.206.116> has joined #aichallenge
+2010-10-23T12:51:17  *** BtbN <BtbN!~BtbN@p54BB6B4E.dip.t-dialin.net> has quit IRC (Quit: Verlassend)
+2010-10-23T12:51:24  *** BtbN <BtbN!~btbn@btbn.de> has joined #aichallenge
+2010-10-23T12:58:41  <mega1> 32 game winning streak on tcp :-)
+2010-10-23T12:58:57  <javagamer> Against the same person? :p
+2010-10-23T12:59:10  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-23T12:59:52  *** Mjothvitnir <Mjothvitnir!432ace74@gateway/web/freenode/ip.67.42.206.116> has quit IRC (Quit: Page closed)
+2010-10-23T13:01:49  <raedwulf> mega1: awesome
+2010-10-23T13:02:00  <mega1> timed out :-(
+2010-10-23T13:02:04  <raedwulf> :S
+2010-10-23T13:02:11  <raedwulf> you spoke too soon!
+2010-10-23T13:03:42  * raedwulf is close to getting a bot to test
+2010-10-23T13:05:26  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-23T13:11:25  <contestbot> Top 10 players: felixcoto(3993), rsergio(3991), Hazard(3973), cfaftw(3920), bocsimacko(3891), sin_sun(3876), dmj111(3874), davidjliu(3831), MariusCG(3788), evja08(3781)
+2010-10-23T13:21:30  *** Mekanik <Mekanik!~vov@ppp85-141-249-115.pppoe.mtu-net.ru> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T13:36:08  *** Mekanik <Mekanik!~vov@ppp85-140-232-214.pppoe.mtu-net.ru> has joined #aichallenge
+2010-10-23T14:00:39  * raedwulf finds a bug in his code
+2010-10-23T14:00:42  <raedwulf> brilliant >.<
+2010-10-23T14:01:48  <raedwulf> fixed it... bugs BEGONE
+2010-10-23T14:09:02  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 264 seconds)
+2010-10-23T14:11:24  <contestbot> Top 10 players: rsergio(3992), felixcoto(3990), Hazard(3970), cfaftw(3915), bocsimacko(3903), sin_sun(3870), dmj111(3869), davidjliu(3827), MariusCG(3783), jambachili(3777)
+2010-10-23T14:14:14  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2010-10-23T14:21:40  *** Mekanik <Mekanik!~vov@ppp85-140-232-214.pppoe.mtu-net.ru> has quit IRC (Quit: WeeChat 0.3.3)
+2010-10-23T14:30:31  <mega1> wow, lost to JamesMG.old at -171 elo
+2010-10-23T14:30:41  <mega1> http://72.44.46.68/canvas?game_id=651867
+2010-10-23T14:30:55  <mega1> he seems to wait it out well
+2010-10-23T14:32:01  *** choas <choas!~lars@p5792CE9D.dip.t-dialin.net> has joined #aichallenge
+2010-10-23T14:32:46  *** fawek <fawek!~faw@chello089079023212.chello.pl> has joined #aichallenge
+2010-10-23T14:33:11  *** mrflippy <mrflippy!180c8cf2@gateway/web/freenode/ip.24.12.140.242> has joined #aichallenge
+2010-10-23T14:45:05  *** askinAround <askinAround!5c52334b@gateway/web/freenode/ip.92.82.51.75> has joined #aichallenge
+2010-10-23T14:45:59  <askinAround> can I still register for this challenge?
+2010-10-23T14:46:39  <askinAround> ok bye
+2010-10-23T14:46:41  <foucist> askinAround: yes,
+2010-10-23T14:46:50  <foucist> askinAround: it's not over until nov 21 or something like that
+2010-10-23T14:47:01  <askinAround> sorry I thought no one was here
+2010-10-23T14:47:08  <askinAround> thank you
+2010-10-23T14:47:22  <foucist> askinAround: there's 83 ppl in here, there's definitely ppl around..  :P
+2010-10-23T14:47:33  <askinAround> are you a contestant or an admin?
+2010-10-23T14:47:34  <foucist> minus a few bots
+2010-10-23T14:47:38  <foucist> neither
+2010-10-23T14:47:43  <askinAround> ?
+2010-10-23T14:47:57  <foucist> i might be a contestant if i got off my butt and did something
+2010-10-23T14:48:04  <foucist> but ive been busy with other stuff heh
+2010-10-23T14:48:37  <a1k0n> is registration broken again?
+2010-10-23T14:48:43  <askinAround> haha I think I'll give it a try - I hope I could make a basic thing quick
+2010-10-23T14:49:01  <askinAround> I need to register too
+2010-10-23T14:49:04  <askinAround> let's see
+2010-10-23T14:50:06  <raedwulf> mega1: how long have you worked on your bot?
+2010-10-23T14:50:46  <mega1> a month now
+2010-10-23T14:50:57  <raedwulf> askinAround: you waited a total between 39 seconds between your first and second message... we don't respond immediate :P
+2010-10-23T14:51:00  <raedwulf> mega1: nice
+2010-10-23T14:51:01  <mega1> but I'm working full time
+2010-10-23T14:51:14  <askinAround> a1k0n: I succeeded registering
+2010-10-23T14:51:21  <raedwulf> im a full-time student :P but it is start of term
+2010-10-23T14:51:22  <raedwulf> hehe
+2010-10-23T14:51:52  <askinAround> lol :P I guess I was trying to find a quick way out
+2010-10-23T14:51:57  <raedwulf> lol
+2010-10-23T14:53:16  <askinAround> Now I need to wait for my email
+2010-10-23T14:54:40  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T14:55:09  *** george_ <george_!6d56c6d8@gateway/web/freenode/ip.109.86.198.216> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T14:56:25  <janzert> any c++ boost programmers around
+2010-10-23T15:01:50  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Ping timeout: 264 seconds)
+2010-10-23T15:03:39  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-23T15:10:20  <lavalamp_> janzert, I've used it a bit
+2010-10-23T15:11:25  <contestbot> Top 10 players: rsergio(3957), Hazard(3951), felixcoto(3950), bocsimacko(3914), cfaftw(3899), sin_sun(3856), dmj111(3854), davidjliu(3799), jambachili(3768), evja08(3761)
+2010-10-23T15:17:55  <askinAround> I sent the package as downloade and it said that my bot did not start
+2010-10-23T15:18:06  <askinAround> shoud it do that?
+2010-10-23T15:29:18  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC ()
+2010-10-23T15:32:21  *** gerald512kk <gerald512kk!~jamenbhal@mou34-1-82-240-240-188.fbx.proxad.net> has joined #aichallenge
+2010-10-23T15:32:24  <gerald512kk> hi all :)
+2010-10-23T15:33:49  <janzert> askinAround: it /should/ work but there seems to be some errors around, try resubmitting and it will probably work that time
+2010-10-23T15:34:55  <janzert> lavalamp_: it seems boost is already installed on the servers so it seems like the only thing stopping it from being used is that it's not getting linked in
+2010-10-23T15:35:32  <lavalamp_> janzert: good luck with that, I have only ever set it up on a windows machine
+2010-10-23T15:35:34  <janzert> lavalamp_: my question is what is the correct command line for linking with boost
+2010-10-23T15:35:41  <janzert> ok
+2010-10-23T15:35:53  <lavalamp_> yeah sorry I don't know that :(
+2010-10-23T15:36:33  <lavalamp_> my guess would be you just have to get the include paths right but boost is friggin' complicated so there might be something special you need to do...
+2010-10-23T15:36:58  <janzert> yeah, I was hoping it was as simple as adding -lboost or some such :)
+2010-10-23T15:37:13  <a1k0n> it's probably -lboost1.36.53.2358
+2010-10-23T15:37:24  <janzert> ahh, well I've got more pressing things anyway :/
+2010-10-23T15:37:25  <a1k0n> depending on which of the many mutually-incompatible versions out in the wild you have installed
+2010-10-23T15:37:54  <janzert> it's the ubuntu hardy libboost-dev package if someone wants to investigate
+2010-10-23T15:40:42  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-10-23T15:45:30  <lavalamp_> yay my bot compiles again
+2010-10-23T15:47:08  <p4p4> janzert, i think they're generating a makefile (prbly from python) based on the files you submit, so if it's that header-only part of boost, it might work with just adding them to your zip
+2010-10-23T15:47:41  <janzert> no makefile is generated in the compilation of your bots :)
+2010-10-23T15:48:09  <janzert> see compile_anything.py if you really want to see how it's done
+2010-10-23T15:48:13  <janzert> :)
+2010-10-23T15:48:15  <p4p4> ;)
+2010-10-23T15:48:40  <p4p4> where's it ?
+2010-10-23T15:48:47  <janzert> #repo
+2010-10-23T15:48:53  <janzert> @rep
+2010-10-23T15:48:53  <contestbot> janzert: I do not know about 'rep', but I do know about these similar topics: 'repo', 'botrepo', 'repository'
+2010-10-23T15:48:57  <janzert> @repo
+2010-10-23T15:48:58  <contestbot> janzert: repo = http://code.google.com/p/ai-contest/
+2010-10-23T15:49:05  <janzert> I'll get there :P
+2010-10-23T15:49:18  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has joined #aichallenge
+2010-10-23T15:49:26  <janzert> http://code.google.com/p/ai-contest/source/browse/trunk/planet_wars/backend/compile_anything.py
+2010-10-23T15:50:15  <janzert> for c++ basically each file is compiled separately then one command to link
+2010-10-23T15:50:15  *** mrflippy <mrflippy!180c8cf2@gateway/web/freenode/ip.24.12.140.242> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T15:50:17  *** Naktibalda_ <Naktibalda_!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has joined #aichallenge
+2010-10-23T15:50:37  <janzert> see line 157 and 158 for the commands used
+2010-10-23T15:50:44  <p4p4> ahh.
+2010-10-23T15:51:04  <lavalamp_> is there a reason it doesn't use a makefile?
+2010-10-23T15:51:10  <janzert> security
+2010-10-23T15:51:18  <lavalamp_> ok
+2010-10-23T15:51:22  <p4p4> so, it's just an implicit rule ?
+2010-10-23T15:51:22  <janzert> at least so I've been told :)
+2010-10-23T15:51:25  *** Naktibalda <Naktibalda!~quassel@cpc5-heme9-2-0-cust144.9-1.cable.virginmedia.com> has quit IRC (Ping timeout: 272 seconds)
+2010-10-23T15:51:42  <janzert> p4p4: not sure what you mean
+2010-10-23T15:51:43  <lavalamp_> you could probably do some pretty wacky stuff with a makefile I guess
+2010-10-23T15:52:10  <janzert> yes, a makefile is basically turing complete and can run anything
+2010-10-23T15:52:25  <p4p4> line 193 look like: take any cpp,cc,c file and make an o of it
+2010-10-23T15:52:49  <janzert> p4p4: yep
+2010-10-23T15:53:33  <janzert> then they are all linked with g++ -O2 -lm -o MyBot <each> <file> <name>
+2010-10-23T15:54:23  <lavalamp_> I think the go compiling code there should work fine, just needs to be installed...
+2010-10-23T15:54:44  <janzert> lavalamp_: yeah :/
+2010-10-23T15:55:13  <lavalamp_> earlier amstan said you might be able to do that, you'll be my best friend if you do :)
+2010-10-23T15:55:22  <askinAround> when I run the bots on my computer the program says that the bots timed out - I follow the site - what should I do?
+2010-10-23T15:56:13  <lavalamp_> askinAround: it probably crashed. feed it some test data over stdin and see what it does
+2010-10-23T15:56:46  <janzert> well, I let myself get distracted again with the boost thing. was hoping it would be a simple one line fix to enable it
+2010-10-23T15:56:56  <askinAround> but why does it crash? it's the one I downloaded from the site and I didn't modify it at all
+2010-10-23T15:57:17  <janzert> hopefully soon though I can work on adding a few more languages, but I hate to promise anything right now
+2010-10-23T15:57:23  <lavalamp_> askinAround, oh then I don't know. maybe it couldn't find the exe?
+2010-10-23T15:57:24  <askinAround> shouldn't the site have a version that doesn't crash?
+2010-10-23T15:57:40  <lavalamp_> janzert anything you can do is greatly appreciated :))
+2010-10-23T15:57:52  <janzert> askinAround: if you run the bot directly does it start up
+2010-10-23T15:57:59  <lavalamp_> askinAround, they don't, there's something wrong with your setup
+2010-10-23T15:58:01  <janzert> the starter packages are not compiled btw
+2010-10-23T15:58:16  <askinAround> I compiled :D
+2010-10-23T15:58:47  <askinAround> javac *.java like it says on the site
+2010-10-23T15:59:02  <askinAround> and I have a .class file now
+2010-10-23T15:59:16  *** rebelxt <rebelxt!~apinkin@24-155-144-5.static.grandenetworks.net> has left #aichallenge
+2010-10-23T15:59:55  <askinAround> and I have this
+2010-10-23T15:59:57  <askinAround> java -jar tools/PlayGame.jar maps/map7.txt 1000 1000 log.txt "java MyBot" "java MyBot" | java -jar tools/ShowGame.jar
+2010-10-23T16:00:14  <askinAround> sorry it's not all
+2010-10-23T16:00:34  <askinAround>  C:\PlanetWars\java_starter_package>java -jar tools/PlayGame.jar maps/map7.txt 10 00 1000 log.txt "java MyBot" "java MyBot" | java -jar tools/ShowGame.jar WARNING: player 1 timed out. WARNING: player 2 timed out. Turn 1 Draw!
+2010-10-23T16:01:29  *** JensT1 <JensT1!~jens@91.182.169.245> has joined #aichallenge
+2010-10-23T16:01:46  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T16:02:21  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-23T16:03:26  <askinAround> but it runs fine when I send it on their website
+2010-10-23T16:03:49  <lavalamp_> askinAround, ifyou just type "myBot" what happens?
+2010-10-23T16:03:57  <lavalamp_> *MyBot
+2010-10-23T16:04:27  <askinAround> where? what do you mean?
+2010-10-23T16:04:31  <lavalamp_> wait actually
+2010-10-23T16:04:38  <lavalamp_> 10 00
+2010-10-23T16:04:41  <lavalamp_> that's your problem
+2010-10-23T16:04:44  <lavalamp_> lose the space
+2010-10-23T16:04:51  <askinAround> oh
+2010-10-23T16:05:23  <askinAround> there's no space in the cmd - just copy/paste problem
+2010-10-23T16:05:40  <janzert> what does java MyBot do?
+2010-10-23T16:05:50  <janzert> it should start and do nothing basically
+2010-10-23T16:06:16  *** bhasker <bhasker!~bhasker@adsl-76-254-13-0.dsl.pltn13.sbcglobal.net> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T16:06:17  <askinAround> if I send it on ai-challenge site it does this:http://ai-contest.com/visualizer.php?game_id=6088990
+2010-10-23T16:07:00  <janzert> so the code is fine, just something with your local setup needs tweaking
+2010-10-23T16:08:07  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Remote host closed the connection)
+2010-10-23T16:08:24  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-23T16:08:39  <p4p4> had the same problem on windows, that is, could not start java MyBot, python MyBot.py, etc
+2010-10-23T16:09:02  <askinAround> What does provide the go message to the bot on my machine when I run it as I said before?
+2010-10-23T16:09:40  <askinAround> PlayGame.jar?
+2010-10-23T16:11:26  <contestbot> Top 10 players: rsergio(3982), Hazard(3977), felixcoto(3971), bocsimacko(3934), cfaftw(3908), dmj111(3888), sin_sun(3863), davidjliu(3825), jambachili(3789), MariusCG(3770)
+2010-10-23T16:12:43  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-23T16:13:01  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wjrgnyvrujeibnsh> has joined #aichallenge
+2010-10-23T16:13:20  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T16:14:28  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-23T16:14:49  <lavalamp_> askinAround, yeah
+2010-10-23T16:20:55  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wjrgnyvrujeibnsh> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T16:25:27  *** wh1teside <wh1teside!~admin@adsl-75-49-222-56.dsl.emhril.sbcglobal.net> has quit IRC (Quit: leaving)
+2010-10-23T16:25:56  <askinAround> thanks I'm leaving now - I'll try to play with it tomorow
+2010-10-23T16:26:12  *** askinAround <askinAround!5c52334b@gateway/web/freenode/ip.92.82.51.75> has quit IRC (Quit: Page closed)
+2010-10-23T16:28:08  *** bhasker <bhasker!~bhasker@adsl-76-254-13-0.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-23T16:29:20  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T16:41:03  *** jorge_ <jorge_!~quassel@112.Red-88-23-18.staticIP.rima-tde.net> has joined #aichallenge
+2010-10-23T16:46:05  *** cfaftw <cfaftw!~cfaftw@pool-72-66-69-151.washdc.fios.verizon.net> has joined #aichallenge
+2010-10-23T16:46:27  <cfaftw> hey
+2010-10-23T16:52:33  <jorge_> hi
+2010-10-23T16:52:51  <jorge_> anyone knows if "pacotabaco" has change his nick?
+2010-10-23T16:53:16  <jorge_> I don't see him here since many days now...
+2010-10-23T16:53:42  <jorge_> emm... are you there? :)
+2010-10-23T16:55:35  *** yasith_ <yasith_!~yasith@112.135.107.71> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T16:56:12  <rabidus_> @last pacotabaco
+2010-10-23T16:56:12  <contestbot> rabidus_: (last [--{from,in,on,with,without,regexp} <value>] [--nolimit]) -- Returns the last message matching the given criteria. --from requires a nick from whom the message came; --in requires a channel the message was sent to; --on requires a network the message was sent on; --with requires some string that had to be in the message; --regexp requires a regular expression the message must (1 more message)
+2010-10-23T16:56:40  <rabidus_> !seen pacotabaco
+2010-10-23T16:56:46  <rabidus_> @seen pacotabaco
+2010-10-23T16:56:46  <contestbot> rabidus_: pacotabaco was last seen in #aichallenge 4 weeks, 3 days, 21 hours, 28 minutes, and 36 seconds ago: <pacotabaco> ok, tnks :)
+2010-10-23T17:00:50  <p4p4> wow, that means this channel existed way before anyone could submit something ;)
+2010-10-23T17:01:31  <cfaftw> no, my first submission was sept 16
+2010-10-23T17:02:03  <p4p4> k, read i wrong.
+2010-10-23T17:02:16  <cfaftw> oh
+2010-10-23T17:02:19  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2010-10-23T17:04:36  <jorge_> rabidus_: ok thanks :)
+2010-10-23T17:05:55  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T17:08:04  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T17:08:12  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T17:09:38  *** yasith <yasith!~yasith@112.135.66.251> has joined #aichallenge
+2010-10-23T17:10:41  *** jorge_ <jorge_!~quassel@112.Red-88-23-18.staticIP.rima-tde.net> has quit IRC (Remote host closed the connection)
+2010-10-23T17:11:27  <contestbot> Top 10 players: rsergio(3977), Hazard(3975), felixcoto(3965), bocsimacko(3919), cfaftw(3889), sin_sun(3849), dmj111(3836), davidjliu(3815), jambachili(3789), evja08(3776)
+2010-10-23T17:12:12  *** delt0r___ <delt0r___!~delt0r@188-22-171-121.adsl.highway.telekom.at> has quit IRC (Ping timeout: 245 seconds)
+2010-10-23T17:12:20  *** delt0r <delt0r!~delt0r@188-22-169-46.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-23T17:12:38  *** p4p4 <p4p4!~chatzilla@82.113.106.29> has quit IRC (Ping timeout: 245 seconds)
+2010-10-23T17:13:55  <Zannick> wheee
+2010-10-23T17:13:57  <Zannick> my bot is defending!
+2010-10-23T17:14:03  <cfaftw> :o
+2010-10-23T17:14:34  <Zannick> yay i have a partially working bot now
+2010-10-23T17:15:00  <cfaftw> playing on TCP?
+2010-10-23T17:15:09  <Zannick> no, on my own box.
+2010-10-23T17:15:24  <Zannick> it has no attack code yet, it will perish pretty fast on tcp
+2010-10-23T17:16:56  <cfaftw> oh, yeah that's pretty important :P
+2010-10-23T17:17:28  <Zannick> well, i deserve another break
+2010-10-23T17:21:20  *** jkl__ <jkl__!43aa4da1@gateway/web/freenode/ip.67.170.77.161> has joined #aichallenge
+2010-10-23T17:23:00  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-10-23T17:24:54  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-23T17:28:34  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 255 seconds)
+2010-10-23T17:30:41  <rwa> mega1: bocsimacko is your bot?
+2010-10-23T17:34:44  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has joined #aichallenge
+2010-10-23T17:35:07  <FlagCapper> Is anyone not able to upload their code to the official server because the upload button is missing?
+2010-10-23T17:39:08  <jkl__> Regarding tracking future states with future moves for both players, there is simple equation based on the battle rules that tells you how many ships you must have on-planet on turn t - 1 if you want to have s free ships on turn t.
+2010-10-23T17:40:58  <jkl__> s(t) = s(t-1) + g + f(t-1) + maxE(t-1)
+2010-10-23T17:41:29  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T17:42:02  <jkl__> where f(t) is your arriving fleets, and maxE(t) is the largest enemy fleet
+2010-10-23T17:42:21  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-23T17:43:03  <jkl__> that should be - maxE(t-1) not +
+2010-10-23T17:44:01  <jkl__> you use that equation to keep track of how many free and how many reserved ships you have on each planet on each future turn
+2010-10-23T17:44:19  *** Zalma <Zalma!50dd5eb7@gateway/web/freenode/ip.80.221.94.183> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T17:45:00  <jkl__> So if on turn 3 you send 100 ships from planet 1, you will have 10 free and 90 reserved ships on turn 1, 10 free and 95 reserved ships on turn 2, and 0 free and 0 reserved ships on turn 3.
+2010-10-23T17:47:32  <jkl__> That should be 10 free and 0 reserved on 3.
+2010-10-23T17:48:10  <jkl__> The problem is what happens when you make a future plan at this stage of the analysis, and then you consider an enemy counter-move that invalidates the plan.
+2010-10-23T17:49:43  <jkl__> What you have to do is separate the planning from execution.
+2010-10-23T17:50:10  <jkl__> So you have your current plan, and you want to add some more moves to it.
+2010-10-23T17:50:22  <jkl__> Execute the plan, and examine the resulting game state.
+2010-10-23T17:51:05  <jkl__> Now look for new opportunities, taking into account ships that ended up getting reserved when your plan was executed.
+2010-10-23T17:52:28  <jkl__> Now take the enemy's side, and build a response.
+2010-10-23T17:53:01  <jkl__> However, when you evaluate the game result, you have to start with a fresh game state
+2010-10-23T17:53:36  <jkl__> So you have to sort all the moves by turn, and execute those which actually happen first, first
+2010-10-23T17:54:13  <jkl__> If a move is invalid because it assumes a game state that does not hold, it cannot be executed
+2010-10-23T17:57:13  <jkl__> I have found that minimax works well for actual combat but not so well for maintaining field position
+2010-10-23T17:58:56  <jkl__> In other words, it finds good short-term tactical moves but does poorly with long-term strategy
+2010-10-23T18:00:48  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-23T18:01:16  <jkl__> It's hard to model the effect of reinforcements in your game state evaluator
+2010-10-23T18:01:39  <jkl__> It's much easier to evaluate combat
+2010-10-23T18:04:14  <jkl__> So what I've tried is running minimax to find tactical moves, and then running a separate reinforcements heuristic to handle the leftover ships.
+2010-10-23T18:04:40  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has quit IRC (Client Quit)
+2010-10-23T18:06:28  <janzert> FlagCapper: did you have/read a message where the upload button normally is?
+2010-10-23T18:06:50  <janzert> there's a new 10 minute delay after a successful upload now
+2010-10-23T18:08:05  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has joined #aichallenge
+2010-10-23T18:08:58  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T18:11:27  <contestbot> Top 10 players: rsergio(3974), Hazard(3971), felixcoto(3944), bocsimacko(3915), cfaftw(3874), dmj111(3822), davidjliu(3818), sin_sun(3818), jambachili(3796), evja08(3755)
+2010-10-23T18:14:26  *** narnach <narnach!~Narnach@195-241-27-75.ip.telfort.nl> has joined #aichallenge
+2010-10-23T18:14:56  *** TK_ <TK_!803d79cb@gateway/web/freenode/ip.128.61.121.203> has joined #aichallenge
+2010-10-23T18:16:45  *** TK_ <TK_!803d79cb@gateway/web/freenode/ip.128.61.121.203> has left #aichallenge
+2010-10-23T18:17:52  *** TK_ <TK_!803d79cb@gateway/web/freenode/ip.128.61.121.203> has joined #aichallenge
+2010-10-23T18:19:39  *** TK_ <TK_!803d79cb@gateway/web/freenode/ip.128.61.121.203> has quit IRC (Client Quit)
+2010-10-23T18:24:49  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has quit IRC (Ping timeout: 276 seconds)
+2010-10-23T18:25:15  *** cfaftw <cfaftw!~cfaftw@pool-72-66-69-151.washdc.fios.verizon.net> has quit IRC (Quit: Leaving)
+2010-10-23T18:26:34  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has joined #aichallenge
+2010-10-23T18:31:27  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-23T18:33:12  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (Quit: ERC Version 5.3 (IRC client for Emacs))
+2010-10-23T18:37:05  *** amriedle <amriedle!~amriedle@CPE0013f7f2be12-CM0013f7f2be0e.cpe.net.cable.rogers.com> has joined #aichallenge
+2010-10-23T18:42:54  *** fawek <fawek!~faw@chello089079023212.chello.pl> has quit IRC (Remote host closed the connection)
+2010-10-23T18:44:09  *** olwe <olwe!~olwe@chello087206103220.chello.pl> has joined #aichallenge
+2010-10-23T18:45:15  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2010-10-23T18:45:39  <olwe> how to run c++ MyBot with ShowGame.jar?
+2010-10-23T18:45:58  *** yasith <yasith!~yasith@112.135.66.251> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T18:47:44  *** choas <choas!~lars@p5792CE9D.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2010-10-23T18:48:10  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T18:50:29  <olwe> should i write "cpp MyBoy" instead of "java MyBot" or what?
+2010-10-23T18:51:42  <BtbN> the cmdline has to execute your code.
+2010-10-23T18:52:32  <olwe> so just type path to afile?
+2010-10-23T18:54:53  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has joined #aichallenge
+2010-10-23T18:57:40  *** olwe <olwe!~olwe@chello087206103220.chello.pl> has quit IRC (Quit: Leaving)
+2010-10-23T18:58:03  *** yasith <yasith!~yasith@112.135.85.117> has joined #aichallenge
+2010-10-23T19:06:15  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-23T19:07:18  *** jesionaj` <jesionaj`!~dongs@174-18-2-151.tcso.qwest.net> has joined #aichallenge
+2010-10-23T19:07:26  *** jesionaj <jesionaj!~dongs@174-18-2-151.tcso.qwest.net> has quit IRC (Read error: Connection reset by peer)
+2010-10-23T19:11:26  <contestbot> Top 10 players: Hazard(3956), rsergio(3953), bocsimacko(3932), felixcoto(3918), cfaftw(3846), dmj111(3816), davidjliu(3813), jambachili(3797), sin_sun(3789), savchenko(3736)
+2010-10-23T19:13:34  <Accoun> http://ai-contest.com/visualizer.php?game_id=6098593  <= andy17682 crashed / did not start / timeout and WIN
+2010-10-23T19:17:43  *** hornairs <hornairs!~hornairs@dsl-67-55-16-144.acanac.net> has joined #aichallenge
+2010-10-23T19:22:38  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Excess Flood)
+2010-10-23T19:23:07  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-23T19:27:45  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T19:35:16  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Remote host closed the connection)
+2010-10-23T19:42:04  *** mceier <mceier!~mceier@chello089077208118.chello.pl> has quit IRC (Quit: leaving)
+2010-10-23T19:44:26  *** seisatsu <seisatsu!~seisatsu@adsl-99-25-116-55.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-23T19:44:50  <Zannick> Accoun: that is a bug, it always shows the first player's name, but the win/loss record is correct
+2010-10-23T19:50:37  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T19:56:19  *** yasith <yasith!~yasith@112.135.85.117> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T20:01:08  *** wh1teside <wh1teside!~admin@adsl-75-49-222-56.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2010-10-23T20:11:11  *** yasith <yasith!~yasith@112.135.95.253> has joined #aichallenge
+2010-10-23T20:11:27  <contestbot> Top 10 players: Hazard(3969), bocsimacko(3946), rsergio(3938), felixcoto(3930), cfaftw(3869), davidjliu(3831), dmj111(3812), jambachili(3797), sin_sun(3787), savchenko(3748)
+2010-10-23T20:13:18  *** Sarin <Sarin!~hallo@p5B0EEAC0.dip.t-dialin.net> has quit IRC (Remote host closed the connection)
+2010-10-23T20:17:16  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T20:17:50  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-10-23T20:18:23  <rwa> janzert?
+2010-10-23T20:19:49  <rwa> jkl_?
+2010-10-23T20:21:41  <janzert> yes?
+2010-10-23T20:23:10  <rwa> the 10 minute delay - what's the purpose of that?
+2010-10-23T20:23:33  <janzert> in order to stop constant resubmition
+2010-10-23T20:23:47  <rwa> makes sense
+2010-10-23T20:24:47  <janzert> and if the submission fails there is no delay so on a compilation error you can fix and resubmit right away
+2010-10-23T20:25:33  <rwa> before it was rational to keep resubmitting until your first game was against a decent bot if you expected a high rank
+2010-10-23T20:26:26  <janzert> actually even that probably wouldn't have triggered putting in the delay
+2010-10-23T20:26:48  <janzert> someone was just constantly resubmitting sometimes multiple times per minute
+2010-10-23T20:27:12  <antimatroid> me? :P
+2010-10-23T20:27:24  <janzert> hehe, don't think so
+2010-10-23T20:27:30  <antimatroid> i'm not quite that bad
+2010-10-23T20:28:55  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2010-10-23T20:29:10  <amstan> antimatroid: was this guy: http://ai-contest.com/profile_submissions.php?user_id=10464&page=1
+2010-10-23T20:29:28  <amstan> janzert: seems like your stuff is working
+2010-10-23T20:29:45  <janzert> sorta
+2010-10-23T20:29:48  <amstan> janzert: can you make it per user? so we can throttle him even more, lol
+2010-10-23T20:29:50  <amstan> jk
+2010-10-23T20:29:55  <janzert> hehe
+2010-10-23T20:30:01  <amstan> it does work though..
+2010-10-23T20:30:02  <janzert> ahh, you meant the delay stuff
+2010-10-23T20:30:07  <amstan> yeah
+2010-10-23T20:30:15  <amstan> it's either the email or your limit
+2010-10-23T20:30:16  <janzert> my mind is on the worker instances again/still
+2010-10-23T20:30:50  <janzert> I've got the build script about generalized so it should work on any bare ubuntu 8.04 install
+2010-10-23T20:31:44  <janzert> but it lead to seeing another error with the worker tournament manager and I need to track that down
+2010-10-23T20:32:16  <janzert> s/lead/led
+2010-10-23T20:32:30  <amstan> janzert: neat
+2010-10-23T20:32:58  <janzert> bah, trying to fix one bug I keep running into more
+2010-10-23T20:34:32  *** rommel <rommel!7cb48a3b@gateway/web/freenode/ip.124.180.138.59> has joined #aichallenge
+2010-10-23T20:36:40  <rommel> Hey fellas, if anyones interested : https://wave.google.com/wave/waveref/googlewave.com/w+NkB4ALvPA    -- Could be a better way to share ideas :)
+2010-10-23T20:36:51  <rommel> not in the stone age anymore lol
+2010-10-23T20:37:22  <jkl__> I want to help with issue 189, which addresses the problem of incorrect error messages.  Can anyone explain how the error table gets populated?  I see api_record_game.php, but what uses it?
+2010-10-23T20:37:36  <janzert> hmm, I thought wave was shutting down end of september. guess I got the wrong date
+2010-10-23T20:37:59  <janzert> the cloud tournament_manager.py
+2010-10-23T20:38:13  <janzert> found in the 2010....cloud... branch :)
+2010-10-23T20:38:30  <janzert> games_in_the_cloud
+2010-10-23T20:38:38  <rommel> bbs .. stupid work haha
+2010-10-23T20:39:50  <jkl__> OK, I see 20100929-games-in-the-cloud
+2010-10-23T20:40:03  <jkl__> in the Web interface
+2010-10-23T20:40:04  <janzert> yep look in the backend code in there
+2010-10-23T20:40:13  <jkl__> thanks
+2010-10-23T20:40:18  <janzert> that is the code running on the worker instances
+2010-10-23T20:40:28  <janzert> trunk is running on the main server
+2010-10-23T20:41:00  <janzert> it really should be merged back together, but that's something to do later :/
+2010-10-23T20:43:09  *** rommel <rommel!7cb48a3b@gateway/web/freenode/ip.124.180.138.59> has quit IRC (Ping timeout: 265 seconds)
+2010-10-23T20:56:32  <jkl__> OK, so you have a try/except pair around engine.play_game, but all the except code does is some logging, it sleeps (?), and then it falls through to the code that handles the game result.  Shouldn't the game result be abandoned?
+2010-10-23T20:58:19  <janzert> not super familiar with that code, let me look at it and see if anything different jumps out to me
+2010-10-23T20:59:12  <janzert> hmm, that does look pretty suspicious
+2010-10-23T21:00:12  <jkl__> I don't think that is what is causing 189, but it may cause the tournament manager to crash
+2010-10-23T21:00:30  <janzert> yeah, I was just going to say it should cause the manager to crash
+2010-10-23T21:00:32  <jkl__> outcome will be None
+2010-10-23T21:00:51  <janzert> actually worse than that
+2010-10-23T21:00:58  <janzert> read before assignment isn't it?
+2010-10-23T21:01:07  <janzert> either way crash
+2010-10-23T21:01:25  <jkl__> You're probably right
+2010-10-23T21:01:29  <jkl__> outcome will just be undefined
+2010-10-23T21:01:37  <janzert> an explicit sys.exit would be better though
+2010-10-23T21:01:52  <janzert> or probably can even just continue
+2010-10-23T21:02:16  <jkl__> I'll submit a patch
+2010-10-23T21:02:22  <jkl__> after I figure out 189
+2010-10-23T21:02:46  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2010-10-23T21:02:56  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has joined #aichallenge
+2010-10-23T21:03:01  <janzert> I'll change the sleep to sys.exit unless you see something that is definitely better
+2010-10-23T21:05:57  <jkl__> I don't know right now.  I'm still trying to understand what is going on.
+2010-10-23T21:06:28  <rebelxt_> mega1 is just killing us on the tcp server. 94% win 469 games wow
+2010-10-23T21:06:50  <janzert> ok, in all my test running I've never seen the tournament_manager crash with outcome undefined so if that code is getting triggered it's very rare
+2010-10-23T21:07:27  <jkl__> why catch an error condition you can't handle?
+2010-10-23T21:07:52  <jkl__> If the program is just going to fail, let it fail
+2010-10-23T21:08:07  <janzert> yeah, I was just wondering that as well unless he was logging sys.stdout at the time or something and wanted the traceback
+2010-10-23T21:08:24  <jkl__> But wouldn't you get that anyway?
+2010-10-23T21:08:25  <janzert> but it does look almost like debugging code that got left
+2010-10-23T21:08:36  <janzert> not if he was throwing away stderr
+2010-10-23T21:08:58  <janzert> since many of the bots print tons of trash to stderr
+2010-10-23T21:09:18  <jkl__> OK, that makes sense
+2010-10-23T21:09:23  <janzert> at this point though the way it is set up both stdout and stderr are just fed to /dev/null
+2010-10-23T21:10:05  <janzert> tournament_manager_runner.sh is used to run tournament_manager.py in a loop
+2010-10-23T21:11:27  <contestbot> Top 10 players: Hazard(3933), bocsimacko(3930), rsergio(3913), felixcoto(3912), cfaftw(3861), davidjliu(3829), dmj111(3796), sin_sun(3777), jambachili(3772), luksian(3737)
+2010-10-23T21:11:31  <janzert> but yeah I think just getting rid of the whole try except clause at this point is probably best
+2010-10-23T21:16:07  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T21:17:44  <Zannick> er, that still needs to be fixed
+2010-10-23T21:18:00  <janzert> Zannick: what's that?
+2010-10-23T21:18:07  <Zannick> the user_sadbox is where stdout and stderr are read, but stderr is not actually read
+2010-10-23T21:18:42  *** JensT1 <JensT1!~jens@91.182.169.245> has quit IRC (Quit: Leaving.)
+2010-10-23T21:19:02  <janzert> hmm, when I'm running tournament_manager.py directly on worker instances I'm definitely seeing the bot stderr output on the console
+2010-10-23T21:19:14  <janzert> haven't actually looked at what the code is doing
+2010-10-23T21:20:33  <janzert> At one point I saw one go by where somebody apparently was a bit frustrated and printed an endless loop of swear words until they timed out. :P
+2010-10-23T21:20:46  <jkl__> Unrelated to 189, but related to 202: how many virtual CPUs do the cloud instances have?
+2010-10-23T21:21:06  <janzert> 2 for the amazon ec2 instances
+2010-10-23T21:21:12  <janzert> that are being used
+2010-10-23T21:21:29  <janzert> and I've yet to see the load average over 1.5
+2010-10-23T21:22:50  <janzert> currently server #56 is 0.64
+2010-10-23T21:23:05  <Zannick> heh
+2010-10-23T21:23:15  <Zannick> i guess something is reading it then
+2010-10-23T21:26:20  <janzert> afk for a while
+2010-10-23T21:35:33  <jkl__> It's obvious
+2010-10-23T21:35:53  <jkl__> trunk/planet_wars/www/game_info.php
+2010-10-23T21:36:01  <jkl__> get_error_message()
+2010-10-23T21:36:13  <jkl__> you are supposed to be reading all errors into $out
+2010-10-23T21:36:23  <jkl__> there could be multiple errors in one game
+2010-10-23T21:36:29  <jkl__> but what happens is
+2010-10-23T21:36:38  <jkl__> $out[]=$result['username'].' '.$nice_error.".";
+2010-10-23T21:37:25  <jkl__> never mind
+2010-10-23T21:38:05  <jkl__> I misunderstood the PHP syntax
+2010-10-23T21:41:20  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-23T21:43:15  <Titankiller> how does my program work in the server ?
+2010-10-23T21:43:35  *** adg <adg!~nf@210-84-53-30.dyn.iinet.net.au> has left #aichallenge
+2010-10-23T21:43:39  <Titankiller> is it like it's called after each move ?
+2010-10-23T21:44:01  <Titankiller> or does it stay in memory till the game's over ?
+2010-10-23T21:45:08  <jkl__> Your bot and the server exchange data over your bot's stdin and stdout
+2010-10-23T21:46:03  <jkl__> Your bot runs until the game ends.
+2010-10-23T21:46:41  <Titankiller> hmmmm
+2010-10-23T21:46:56  <Titankiller> so in java my constructor only runs once
+2010-10-23T21:47:50  <jkl__> If you want to understand what the bot does, read PlanetWars.java.
+2010-10-23T21:48:28  <jkl__> That's what handles I/O
+2010-10-23T21:48:59  <jkl__> It contains the main method
+2010-10-23T21:53:48  <rebelxt_> janzert: thanks a lot for your work getting EC2 servers going!
+2010-10-23T22:00:42  *** Azrathud <Azrathud!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T22:00:43  *** Azrathud| <Azrathud|!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has joined #aichallenge
+2010-10-23T22:02:37  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T22:07:16  *** yasith <yasith!~yasith@112.135.95.253> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T22:11:28  <contestbot> Top 10 players: Hazard(3935), bocsimacko(3933), rsergio(3915), felixcoto(3914), cfaftw(3864), davidjliu(3831), dmj111(3800), sin_sun(3780), jambachili(3773), savchenko(3737)
+2010-10-23T22:12:29  <janzert> I wish I could just make them stable
+2010-10-23T22:12:31  <rabidus_> fu
+2010-10-23T22:15:08  <jkl__> Someone on the forums noticed that worker=55 is associated with game crashes.  Is it possible there is something different about it?
+2010-10-23T22:15:37  <janzert> hmm, no there shouldn't be
+2010-10-23T22:16:24  <janzert> it just locked up and is in the process of rebooting now so I'll double check that it's running the svn code after it comes back up
+2010-10-23T22:16:48  <jkl__> It locked up?
+2010-10-23T22:17:07  <janzert> they all do, that's the problem with keeping them up :/
+2010-10-23T22:17:22  <janzert> they only stay up for about 6 hours at most
+2010-10-23T22:17:37  <janzert> it's a known bug with ubuntu hardy on ec2 :(
+2010-10-23T22:17:52  <jkl__> What about Sarge?
+2010-10-23T22:18:00  <jkl__> Oh I mean Lenny
+2010-10-23T22:18:13  <janzert> we're pretty much stuck with hardy for the moment
+2010-10-23T22:18:20  <janzert> 10.04 does fix it yeah
+2010-10-23T22:18:50  <janzert> problem is that we need the same version running on the main server and the workers so the same language packages are being used
+2010-10-23T22:18:56  <lavalamp_> why on earth do some maps have +0 planets on them??
+2010-10-23T22:19:05  <janzert> just to bug you :)
+2010-10-23T22:19:18  <janzert> to make sure bots handle it correctly?
+2010-10-23T22:19:28  <lavalamp_> I think I might write code to completely ignore them
+2010-10-23T22:20:25  <janzert> just make sure you take it over at the end of the game if it's the only one your opponent has left
+2010-10-23T22:20:39  <janzert> I remember others had that problem before
+2010-10-23T22:21:07  <janzert> I think some maps it works as a good staging planet as well
+2010-10-23T22:22:43  *** yasith <yasith!~yasith@112.135.80.212> has joined #aichallenge
+2010-10-23T22:25:14  <lavalamp_> I'm trying to see if my efforts raised my bot's -4xx Elo... first game it matches me with bocsimacko >.<
+2010-10-23T22:27:26  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T22:40:34  <jkl__> Oh shit
+2010-10-23T22:40:40  <jkl__>   players = [     {"path" : player_one_path, "command" : player_one["command"], "submission_id": player_one["submission_id"]},     {"path" : player_two_path, "command" : player_two["command"], "submission_id": player_one["submission_id"]}   ]
+2010-10-23T22:40:52  <jkl__> player 2 gets player 1's submission id
+2010-10-23T22:40:55  <jkl__> it's right there
+2010-10-23T22:41:09  <jkl__> copy n paste error
+2010-10-23T22:41:18  <jkl__> there's your bug 189
+2010-10-23T22:41:21  <janzert> where?
+2010-10-23T22:41:38  <jkl__> line 121
+2010-10-23T22:41:46  <jkl__> look at the players array
+2010-10-23T22:41:49  <janzert> tournament_manager?
+2010-10-23T22:41:53  <jkl__> yes
+2010-10-23T22:41:56  <jkl__> on the cloud branch
+2010-10-23T22:42:10  <jkl__> {"path" : player_two_path, "command" : player_two["command"], "submission_id": player_one["submission_id"]}
+2010-10-23T22:42:15  <janzert> ouch
+2010-10-23T22:42:19  <jkl__> player two's path, player 1's id
+2010-10-23T22:42:38  <jkl__> serious bummer
+2010-10-23T22:42:54  <jkl__> checking trunk
+2010-10-23T22:42:57  <janzert> so is it used for anything other than error reporting?
+2010-10-23T22:43:06  <jkl__> I don't know
+2010-10-23T22:43:16  <jkl__> there are i's and i+1's in a lot of places
+2010-10-23T22:43:17  <janzert> ok, looking now
+2010-10-23T22:43:30  <jkl__> and you also have player_one and player_two
+2010-10-23T22:43:38  <jkl__> lots of different ways to refer to the players
+2010-10-23T22:43:54  *** narnach <narnach!~Narnach@195-241-27-75.ip.telfort.nl> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T22:44:46  <jkl__> trunk doesn't have that code
+2010-10-23T22:44:59  <jkl__> it doesn't do any error reporting to the DB
+2010-10-23T22:45:19  <janzert> luckily the submission id there seems to only be used for the error reporting
+2010-10-23T22:45:35  <janzert> yeah, that's why worker 0 never has a error shown in the visualizer
+2010-10-23T22:45:55  <janzert> yay, thanks for finding it
+2010-10-23T22:48:24  <jkl__> One down, two to go.
+2010-10-23T22:48:57  <janzert> you're jklandis on the tracker I take it?
+2010-10-23T22:49:17  *** yasith <yasith!~yasith@112.135.80.212> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T22:49:32  *** narnach <narnach!~Narnach@195-241-27-75.ip.telfort.nl> has joined #aichallenge
+2010-10-23T22:50:11  <janzert> hope so since that's who I attributed it to in the commit message :)
+2010-10-23T22:50:49  <jkl__> Yes
+2010-10-23T22:51:05  <jkl__> I wrote a note about the fix on the bug tracker.
+2010-10-23T22:51:30  <jkl__> Can you close it?
+2010-10-23T22:51:50  <janzert> yes, I will just getting the server updated
+2010-10-23T22:53:17  <jkl__> Great.  I wrote a note on 199 about what you just said about reporting.  That explains why some games just end.
+2010-10-23T22:55:49  <janzert> yep
+2010-10-23T22:56:06  <janzert> I didn't realize 199 was specifically about worker 0 before
+2010-10-23T22:56:31  <jkl__> I just noticed that myself.
+2010-10-23T22:56:56  <jkl__> I'm satisfied at least knowing that it is expected behavior
+2010-10-23T22:57:12  <jkl__> Even if it isn't perfect behavior
+2010-10-23T22:57:25  <janzert> yeah, it really does need to get fixed soon
+2010-10-23T22:57:43  <janzert> just wish there were a few more people active in the code :)
+2010-10-23T22:57:49  <janzert> thanks for taking a look at it
+2010-10-23T22:58:12  <jkl__> So let's see
+2010-10-23T22:58:18  <jkl__> how hard it would be
+2010-10-23T22:58:28  *** Titankiller <Titankiller!~titankill@111.92.7.71> has quit IRC (Ping timeout: 276 seconds)
+2010-10-23T22:58:54  <jkl__> I guess you would have to merge engine.py, since that is what actually tracks the errors
+2010-10-23T22:59:04  <jkl__> Then you have to get the data into the db
+2010-10-23T22:59:25  <janzert> right and the main server tournament manager deals directly with the db of course
+2010-10-23T23:00:16  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Ping timeout: 240 seconds)
+2010-10-23T23:00:27  <jkl__> So it's some Python and SQL work
+2010-10-23T23:02:10  <janzert> right
+2010-10-23T23:04:56  *** yasith <yasith!~yasith@112.135.94.245> has joined #aichallenge
+2010-10-23T23:04:56  <jkl__> I'm on it
+2010-10-23T23:05:12  <janzert> great
+2010-10-23T23:06:07  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2010-10-23T23:06:31  <jkl__> The plan is to port just the error stuff from the cloud engine, and then copy the error-reporting SQL from the PHP submission relay into the trunk tournament manager.
+2010-10-23T23:07:31  <janzert> I haven't looked at the changes made to the cloud engine, but can it be brought back over whole?
+2010-10-23T23:07:59  <janzert> i.e. so trunk and the cloud branch will be back to the same engine.py?
+2010-10-23T23:08:31  <jkl__> Maybe.  Trunk is doing something with selectable I/O
+2010-10-23T23:08:44  <janzert> oh, yeah I remember that now.
+2010-10-23T23:09:05  <janzert> I saw that when I was bringing svn back into sync with the server
+2010-10-23T23:09:10  <jkl__> I don't understand what is going on.  There are threads, non-blocking reads, and now select
+2010-10-23T23:09:38  <janzert> I really think that is just a failed experiment actually but it is what was in use so I decided just to stick it into svn for now at least
+2010-10-23T23:09:54  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-10-23T23:10:00  <janzert> argh argh argh
+2010-10-23T23:10:11  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has quit IRC (Quit: Page closed)
+2010-10-23T23:10:22  <jkl__> I'm still convinced that a scheduling issue is at the heart of 202, and overzealous polling may be part of the problem.  But one bug at a time...
+2010-10-23T23:11:14  <janzert> I really want to rewrite it leave the threads and blocking reads in place and just have the i/o threads signal the main thread with an event
+2010-10-23T23:11:28  <janzert> seems like the easiest way to clean it up from where we are now
+2010-10-23T23:11:29  <contestbot> Top 10 players: Hazard(3949), rsergio(3932), felixcoto(3927), bocsimacko(3916), cfaftw(3883), davidjliu(3858), dmj111(3811), sin_sun(3802), jambachili(3775), savchenko(3745)
+2010-10-23T23:11:51  <janzert> but yeah for now probably best just to merge the error reporting back in
+2010-10-23T23:12:05  <jkl__> I was just about to change my mind.
+2010-10-23T23:12:10  <janzert> another case of trying to fix one bug and butting into another
+2010-10-23T23:12:26  <jkl__> If the cloud and trunk run exactly the same code, it will be much easier to track down problems
+2010-10-23T23:12:35  <jkl__> In the diff I see the error code and the selector code
+2010-10-23T23:12:36  <janzert> whichever you feel up to then
+2010-10-23T23:12:59  <jkl__> also, outcome["engine_stats
+2010-10-23T23:13:02  <jkl__> "]
+2010-10-23T23:13:05  <janzert> I'm going to try and finish up a fix in the worker submission download code
+2010-10-23T23:13:39  <jkl__> OK
+2010-10-23T23:14:00  <janzert> then go back to figuring out why workers are sometimes requesting submissions that no longer exist :P
+2010-10-23T23:14:26  <janzert> I'm not sure how many layers of bugs deep I'm working on any more :(
+2010-10-23T23:14:46  <jkl__> You're 3 levels deep.  You could spend your whole life down there.
+2010-10-23T23:14:57  <jkl__> Here's the kick
+2010-10-23T23:24:17  *** rebelxt_ <rebelxt_!181c0b18@gateway/web/freenode/ip.24.28.11.24> has joined #aichallenge
+2010-10-23T23:25:18  <raedwulf> threads? i thought threads weren't allowed?
+2010-10-23T23:25:25  *** Azrathud| <Azrathud|!~azrathud@c-67-166-43-227.hsd1.co.comcast.net> has quit IRC (Quit: Meh)
+2010-10-23T23:32:56  <jkl__> Threads in the game server engine
+2010-10-23T23:33:11  <jkl__> You have two bots running at the same time, and you have to multiplex I/O somehow
+2010-10-23T23:33:24  <jkl__> one approach is to use blocking I/O in threads
+2010-10-23T23:33:43  <jkl__> Another approach is to poll using non-blocking reads
+2010-10-23T23:34:37  <jkl__> Right now the code does... both.
+2010-10-23T23:36:14  <janzert> ok, one more pain point in setting up test servers assuaged. the countries and user_status_code database info is now in svn
+2010-10-23T23:36:40  <jkl__> I have the engine patch ready
+2010-10-23T23:36:53  <jkl__> still working on the SQL / tournament manager
+2010-10-23T23:38:10  *** Titankiller <Titankiller!~titankill@111.92.7.71> has joined #aichallenge
+2010-10-23T23:38:43  <janzert> ok
+2010-10-23T23:39:20  *** amstan_ <amstan_!~amstan@206-248-129-106.dsl.teksavvy.com> has joined #aichallenge
+2010-10-23T23:39:20  *** ChanServ sets mode: +o amstan_
+2010-10-23T23:40:36  *** amstan__ <amstan__!~amstan@206-248-129-106.dsl.teksavvy.com> has joined #aichallenge
+2010-10-23T23:40:36  *** ChanServ sets mode: +o amstan__
+2010-10-23T23:43:02  *** amstan <amstan!~amstan@206-248-183-144.dsl.teksavvy.com> has quit IRC (Ping timeout: 245 seconds)
+2010-10-23T23:44:03  *** amstan_ <amstan_!~amstan@206-248-129-106.dsl.teksavvy.com> has quit IRC (Ping timeout: 252 seconds)
+2010-10-23T23:46:59  *** amstan__ is now known as amstan
+2010-10-23T23:48:13  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has quit IRC (Remote host closed the connection)
+2010-10-23T23:51:40  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-23T23:55:49  *** McLeopold <McLeopold!~scott@c-76-121-152-123.hsd1.wa.comcast.net> has joined #aichallenge
+2010-10-23T23:59:37  *** yasith <yasith!~yasith@112.135.94.245> has quit IRC (Ping timeout: 255 seconds)

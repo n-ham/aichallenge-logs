@@ -1,0 +1,994 @@
+2011-02-13T00:12:15  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T00:15:14  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 272 seconds)
+2011-02-13T00:21:53  <antimatroid> hmmm map files are going to be the transpose of what is passed to bots
+2011-02-13T00:22:00  <antimatroid> that is going to confuse a lot of people
+2011-02-13T00:22:06  <antimatroid> or just me?
+2011-02-13T00:22:30  <antimatroid> it's not very intuitive for debugging
+2011-02-13T00:23:03  <antimatroid> well sure you can transpose what you print, but bleh, i stand by my original argument, row,col is superior
+2011-02-13T00:38:55  <McLeopold> hi
+2011-02-13T00:39:09  <antimatroid> hey
+2011-02-13T00:39:22  <antimatroid> can i run my thoughts on food bonus by you?
+2011-02-13T00:40:06  <antimatroid> for each example suppose the game ends before the turn limit and with no participating players left in the game
+2011-02-13T00:40:07  <McLeopold> yeah
+2011-02-13T00:40:56  <antimatroid> each bots score freezes when they die right? I don't think the bonus should be shared if it's 2 or more bots finishing because they crashed or timed out, as non could have continued on to round up the food bonus
+2011-02-13T00:41:24  <antimatroid> and then if that's fine, what about a bot that died because it collided the last of its ants?
+2011-02-13T00:42:03  <McLeopold> my thought is to reward good ai, not good programming
+2011-02-13T00:42:21  <antimatroid> i agree with that
+2011-02-13T00:42:33  <McLeopold> this shouldn't be a coding contest, I think jeff might agree, since he is targeting new players
+2011-02-13T00:42:45  <flag> git newbie here, is there any way I can download just the ants directory?
+2011-02-13T00:42:53  <McLeopold> no?
+2011-02-13T00:43:02  <flag> thought so
+2011-02-13T00:43:14  <antimatroid> i swear you can
+2011-02-13T00:43:22  <antimatroid> what's the link?
+2011-02-13T00:43:35  <flag> https://github.com/aichallenge/aichallenge/tree/epsilon/ants
+2011-02-13T00:44:05  <McLeopold> http://stackoverflow.com/questions/1298332/is-it-possible-to-do-a-partial-clone-branch-with-either-bazaar-mercurial-or-git
+2011-02-13T00:44:17  <antimatroid> McLeopold: what if an ant times out while their non-move takes out the last remaining player (almost never going to happen, but just trying to check edge cases)
+2011-02-13T00:44:21  <McLeopold> flag: it doesn't look like you can
+2011-02-13T00:44:33  <antimatroid> downloads top right?
+2011-02-13T00:44:34  <flag> okay, I'll just grab the whole thing then
+2011-02-13T00:44:38  <antimatroid> .zip
+2011-02-13T00:44:51  <flag> I think that downloads the whole aichallenge branch
+2011-02-13T00:45:04  <McLeopold> a git clone is going to get all, plus the history
+2011-02-13T00:45:05  <antimatroid> hmmm okay
+2011-02-13T00:45:19  <McLeopold> I don't think you'll  need to worry about space, it's all text.
+2011-02-13T00:45:35  <McLeopold> antimatroid: I'm thinking there should be no special cases
+2011-02-13T00:45:54  <McLeopold> if your bot is in the game, you can gain points, if it is not in the game, you can't
+2011-02-13T00:46:45  <McLeopold> We could say that the food bonus can only be given to bots that don't crash or time out
+2011-02-13T00:46:46  <antimatroid> so does battle get resolved and they draw? or does the timeout ant die then the other player wins before the battle gets resolved?
+2011-02-13T00:47:09  <antimatroid> ^^ if that was easy i think that might be the fairest
+2011-02-13T00:47:20  <McLeopold> the timeout would take the bot out of the game before move resolution
+2011-02-13T00:47:20  <antimatroid> i agree with not punishing people too  much though
+2011-02-13T00:47:29  <McLeopold> so, the move wouldn't get resolved
+2011-02-13T00:47:38  <antimatroid> i'm happy with that
+2011-02-13T00:47:40  <McLeopold> the last bot didn't time out, so they get the food bonus
+2011-02-13T00:47:50  <antimatroid> feel free to leave it as is
+2011-02-13T00:47:52  <McLeopold> let me check if the engine does that
+2011-02-13T00:47:55  <antimatroid> :p
+2011-02-13T00:48:29  <antimatroid> i've been updating the spec for a while with small things, i just did a save of it if anyone cares :)
+2011-02-13T00:48:37  <McLeopold> nope, i need to put in an extra game over check
+2011-02-13T00:48:50  <McLeopold> I've been reading it.
+2011-02-13T00:48:56  <McLeopold> I might do some editing later
+2011-02-13T00:49:08  <antimatroid> i have one last example for you :P
+2011-02-13T00:49:27  <antimatroid> 2 ants draw normally through battle, but a third died from colliding itself to death
+2011-02-13T00:49:48  <antimatroid> i think that should be a 3 way draw for the bonus
+2011-02-13T00:49:54  <McLeopold> so, I saw the remark about map input being different from move input, I agree, it may not be consistent enough
+2011-02-13T00:50:11  <antimatroid> map file to move input?
+2011-02-13T00:50:19  <McLeopold> it doesn't matter how you die
+2011-02-13T00:50:26  <McLeopold> no special cases
+2011-02-13T00:50:39  <antimatroid> yep, just making sure it's like that, i did say my preference is as such :P
+2011-02-13T00:52:22  *** contestbot_ <contestbot_!~supybot@206-248-130-164.dsl.teksavvy.com> has joined #aichallenge
+2011-02-13T00:52:22  *** contestbot <contestbot!~supybot@206-248-153-79.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2011-02-13T00:52:47  <antimatroid> McLeopold: is the food bonus there for existing food if the game reaches max turns?
+2011-02-13T00:53:17  <McLeopold> yes, all food on the map, including all ants of crashed players count
+2011-02-13T00:53:43  <antimatroid> cool
+2011-02-13T00:53:43  *** contestbot_ is now known as contestbot
+2011-02-13T00:53:44  *** ChanServ sets mode: +o contestbot
+2011-02-13T00:53:53  <McLeopold> basically, anything you would have gotten if the game continued until the max turns and you used all your ants for kills
+2011-02-13T00:54:11  <antimatroid> yep
+2011-02-13T00:54:35  <McLeopold> I hate do switch the code to row, col now...
+2011-02-13T00:54:50  <antimatroid> that's why i said so early :P
+2011-02-13T00:55:02  <antimatroid> do i get to say i told you so :P
+2011-02-13T00:55:03  *** amstan <amstan!~amstan@206-248-153-79.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T00:55:06  <McLeopold> no
+2011-02-13T00:55:19  <antimatroid> i think i just did
+2011-02-13T00:55:28  <McLeopold> because if we don't send the map picture, it still makes sense
+2011-02-13T00:55:42  <McLeopold> I'm still on the fence about it.
+2011-02-13T00:55:56  <antimatroid> oh? i thought you agreed on char maps
+2011-02-13T00:55:59  <McLeopold> My data size tests weren't that robust.
+2011-02-13T00:56:28  <McLeopold> I think I may have underestimated the amount of data needed for map data.
+2011-02-13T00:56:48  <antimatroid> if we didn't have fog of war we'd be doing it all anyway
+2011-02-13T00:57:04  <antimatroid> i don't think it will be too expensive, and the visualiser string can still be the original format
+2011-02-13T00:57:20  <McLeopold> we'd be sending the map picture once, and the changes only each turn
+2011-02-13T00:58:19  <McLeopold> do you code in C much?
+2011-02-13T00:58:32  <antimatroid> only c++ why?
+2011-02-13T00:58:52  <antimatroid> i treat c++ like it's c with classes most of the time
+2011-02-13T00:59:15  <McLeopold> is it a big deal to check a string for a variable length token delimited by a space?
+2011-02-13T00:59:27  <McLeopold> I'm thinking about the 'P' designator for parameters
+2011-02-13T00:59:38  <antimatroid> hmmm not sure
+2011-02-13T00:59:57  <McLeopold> I'm wondering if it would be faster and easier for all languages if they could just check the first char for a 'P'
+2011-02-13T01:00:07  <McLeopold> python doesn't matter
+2011-02-13T01:00:17  <antimatroid> they already need to find ready and go right?
+2011-02-13T01:00:21  <McLeopold> but other people might rather have the single char designators
+2011-02-13T01:00:24  <antimatroid> about that, ready could really just be go :P
+2011-02-13T01:00:35  <McLeopold> yep
+2011-02-13T01:00:54  <McLeopold> it made the starter bot look nicer
+2011-02-13T01:01:10  <antimatroid> i also noticed visualiser input is using W for walk, i think that and bot output should just be consistent, bu ti don't like O either
+2011-02-13T01:01:28  <McLeopold> what's wrong with O
+2011-02-13T01:01:34  <antimatroid> it looks a lot like zero
+2011-02-13T01:02:00  <McLeopold> but it's position is only taken by letters so far
+2011-02-13T01:02:18  <antimatroid> ?
+2011-02-13T01:02:36  *** delt0r___ <delt0r___!~delt0r@188-22-161-250.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T01:03:30  <McLeopold> it would be nice if a parser could look at the first character of the line only and know what to do with it
+2011-02-13T01:03:55  <McLeopold> some languages, that's not a benefit, but in others it may be
+2011-02-13T01:04:19  <antimatroid> it is useful for me
+2011-02-13T01:04:33  <antimatroid> but i was told one character things are bad if anything needs changing later
+2011-02-13T01:04:38  *** delt0r_ <delt0r_!~delt0r@188-22-167-110.adsl.highway.telekom.at> has quit IRC (Ping timeout: 272 seconds)
+2011-02-13T01:04:47  <antimatroid> i was with you, but janzert seemed to disagree
+2011-02-13T01:05:12  <McLeopold> well, you pidgin hole yourself into only a few possibilities
+2011-02-13T01:06:02  <antimatroid> we could really make go and end G and E then
+2011-02-13T01:06:41  <McLeopold> if we thought about this in terms of future contests, it would be nice to keep the "game" data to the set of letters, and other data to symbols maybe
+2011-02-13T01:07:01  <McLeopold> # is comment
+2011-02-13T01:07:23  <McLeopold> = is parameter?
+2011-02-13T01:07:39  <McLeopold> . is go?
+2011-02-13T01:08:01  <McLeopold> i never liked go
+2011-02-13T01:08:14  <McLeopold> it was 2 characters and everything else was 1
+2011-02-13T01:08:44  <McLeopold> it is still dead simple to parse
+2011-02-13T01:08:58  <antimatroid> i don't know about that
+2011-02-13T01:09:12  <antimatroid> it'd be very unintuitive and a pain to write examples for
+2011-02-13T01:09:29  <McLeopold> because a period is small?
+2011-02-13T01:09:57  <antimatroid> you can usually work out one letter ones by the first letter
+2011-02-13T01:10:07  <antimatroid> for that you need to memorise a bunch of links
+2011-02-13T01:10:27  <McLeopold> links?
+2011-02-13T01:10:40  <antimatroid> go == ., parameter == = etc.
+2011-02-13T01:11:05  <McLeopold> yeah, but 'go' has no more meaning that '.'
+2011-02-13T01:11:18  <McLeopold> what was tron like?
+2011-02-13T01:11:52  <McLeopold> how about 'end transmission'
+2011-02-13T01:11:59  <McLeopold> or 'engage'
+2011-02-13T01:12:05  <McLeopold> or 'over and out'
+2011-02-13T01:14:57  <McLeopold> so, let's keep it the same.  ready can be go
+2011-02-13T01:15:48  <McLeopold> I'm also going to do more work on the bot protocol, cause I'm thinking changes only is still better.
+2011-02-13T01:16:11  <McLeopold> We are sending a lot of data, I'd hate for a bot to use all it's time just updating the state.
+2011-02-13T01:17:46  <antimatroid> tron just required you output N, E, S or W
+2011-02-13T01:17:53  <antimatroid> as you had to move and had onto one moving part
+2011-02-13T01:18:56  <antimatroid> a bot would have to be pretty stupid to spend the whole turn updating the state at the start of the turn
+2011-02-13T01:19:17  <antimatroid> and you don't have the same information issues with simulating turns, as you don't get more information, only get to change how much you think you can se
+2011-02-13T01:19:43  <antimatroid> i wouldn't be worried about that causing performance issues, i'm more worried about it being unecessarily complicated
+2011-02-13T01:22:35  <McLeopold> what do you think our max map size will be
+2011-02-13T01:22:56  <McLeopold> if we have 200 turns, over 200 in size doesn't make a lot of sense
+2011-02-13T01:23:14  <McLeopold> how many time should an ant be able to cross the map?
+2011-02-13T01:23:51  <antimatroid> that's why i've suggested a starting turn limit of 1000
+2011-02-13T01:24:08  <antimatroid> i think we could get away with a time limit of 2-3 seconds, if some games have 8 players so be it
+2011-02-13T01:24:30  <antimatroid> this coming from someone almost certain to want as much time as possible
+2011-02-13T01:25:25  <antimatroid> i think 4, 6, 8 and 9 (maybe not even 8?) would be good numbers of players to pick between
+2011-02-13T01:25:34  <antimatroid> although some larger games on tcp would be cool
+2011-02-13T01:26:09  <antimatroid> McLeopolds famous crazy maps server with a known increased turn limit? :P
+2011-02-13T01:26:21  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-13T01:26:22  <McLeopold> damn straight
+2011-02-13T01:26:36  <antimatroid> if we go with battle option 2, i expect a tcp server with 1 as a consolation prize
+2011-02-13T01:27:13  <Prillicy> so um, anyone like my sig?
+2011-02-13T01:27:15  <McLeopold> after the deadline, I wouldn't want to take away from the real competition
+2011-02-13T01:27:19  <antimatroid> what sig?
+2011-02-13T01:27:34  <Prillicy> added a signature on the forums finally
+2011-02-13T01:27:35  <antimatroid> i would be more interested in the tcp server with option 1 :P
+2011-02-13T01:27:42  <antimatroid> signatures are horrible :P
+2011-02-13T01:27:53  <McLeopold> Okay, antimatroid, just make your sig: "option 1"
+2011-02-13T01:28:00  <Prillicy> :)
+2011-02-13T01:28:09  <Prillicy> but option one is not horrible
+2011-02-13T01:28:19  <antimatroid> McLeopold: i'm going to make a "trollbot" for tcp
+2011-02-13T01:28:21  <McLeopold> I want a nickle every time you say "option 1"
+2011-02-13T01:28:24  <McLeopold> :)
+2011-02-13T01:28:29  <Prillicy> option nickel
+2011-02-13T01:28:32  <antimatroid> who actively tries to grow then kamakazee the "best" other player
+2011-02-13T01:28:37  <antimatroid> best by what it can work out
+2011-02-13T01:28:40  <McLeopold> you ants will get into formation and spell out "option 1"
+2011-02-13T01:29:05  <Prillicy> I should so do that
+2011-02-13T01:29:05  <antimatroid> i should make an irc sig with option 1
+2011-02-13T01:29:21  <McLeopold> okay, seriously, about map size
+2011-02-13T01:29:25  <Prillicy> 1
+2011-02-13T01:29:30  <McLeopold> somewhat tied to turn limit
+2011-02-13T01:29:35  <antimatroid> start too big
+2011-02-13T01:29:43  <antimatroid> 100 turns and 200x200?
+2011-02-13T01:29:43  <Prillicy> I was thinking that you really only have 1 option here
+2011-02-13T01:29:45  <Prillicy> ;)
+2011-02-13T01:29:52  <antimatroid> 1000*
+2011-02-13T01:29:53  <McLeopold> must have enough turns to cross the map twice?
+2011-02-13T01:30:16  <antimatroid> i think you want even more than that if you want people to finish the game
+2011-02-13T01:30:26  <antimatroid> and it's boring if most games don't
+2011-02-13T01:30:26  <McLeopold> thrice?
+2011-02-13T01:30:28  <Prillicy> I thought you weren't going to have a turn limit....at least, a noticeable one
+2011-02-13T01:30:44  <antimatroid> McLeopold: start too big with what we can realistically handle, then find the magic number later
+2011-02-13T01:30:46  <Prillicy> so your turn limit should be like 1e12
+2011-02-13T01:30:57  <McLeopold> if I have a map of 256x256, then the turn limit should be at least...
+2011-02-13T01:30:59  <antimatroid> Prillicy: we have finite computing power
+2011-02-13T01:31:00  <McLeopold> 1024?
+2011-02-13T01:31:15  <antimatroid> McLeopold: it also needs to fit on a screen
+2011-02-13T01:31:28  <McLeopold> people can scroll
+2011-02-13T01:31:32  <Prillicy> can any bots here do math?
+2011-02-13T01:31:39  <antimatroid> bots?
+2011-02-13T01:31:43  <Prillicy> like contest
+2011-02-13T01:31:45  <Prillicy> over there
+2011-02-13T01:31:51  <McLeopold> contestbot 2 + 2
+2011-02-13T01:31:52  <contestbot> McLeopold: No!
+2011-02-13T01:31:58  <McLeopold> there you go...
+2011-02-13T01:32:01  <antimatroid> haha
+2011-02-13T01:32:04  <Prillicy> I can bring one in that can
+2011-02-13T01:32:11  <Prillicy> my old bot
+2011-02-13T01:32:13  <antimatroid> not needed :P
+2011-02-13T01:32:16  <antimatroid> please no more bots
+2011-02-13T01:32:19  <Prillicy> but I need to do some math
+2011-02-13T01:32:27  <antimatroid> google is your friend
+2011-02-13T01:32:29  <McLeopold> not publicly you don't
+2011-02-13T01:32:37  <antimatroid> or wolfram
+2011-02-13T01:32:39  <Prillicy> but then I have to flip over to the browser
+2011-02-13T01:32:44  <antimatroid> alt tab
+2011-02-13T01:32:47  <Prillicy> and I was trying to do the math you guys were doing
+2011-02-13T01:32:49  <antimatroid> it's like you're still typing
+2011-02-13T01:32:50  <Prillicy> it was related
+2011-02-13T01:33:01  <Prillicy> alt tab doesn't work as well on a netbook
+2011-02-13T01:33:10  <antimatroid> don't use a netbook :P
+2011-02-13T01:33:16  <antimatroid> desktops <3
+2011-02-13T01:33:20  <flag> install a tiling window manager
+2011-02-13T01:33:22  <flag> :)
+2011-02-13T01:33:22  <McLeopold> okay bring it in, if it's annoying you both get kicked
+2011-02-13T01:33:23  * Prillicy kicks antimatroid for being gay.
+2011-02-13T01:33:31  <Prillicy> good enough
+2011-02-13T01:33:36  <antimatroid> @click
+2011-02-13T01:33:37  <contestbot> antimatroid: I have no idea what you mean.
+2011-02-13T01:33:48  <antimatroid> !click
+2011-02-13T01:33:51  <antimatroid> bleh
+2011-02-13T01:33:55  <McLeopold> I think you mean @roulette
+2011-02-13T01:34:00  <antimatroid> @roulette
+2011-02-13T01:34:00  *** antimatroid was kicked by contestbot (BANG!)
+2011-02-13T01:34:01  * contestbot reloads and spins the chambers.
+2011-02-13T01:34:06  *** antimatroid <antimatroid!~Nick@239.109-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-13T01:34:12  <antimatroid> one shot wonder
+2011-02-13T01:34:21  <McLeopold> haha
+2011-02-13T01:34:51  <antimatroid> I wish I could write McLeopold: @roulette and confuse it aha
+2011-02-13T01:35:30  <Prillicy> have to d/l her
+2011-02-13T01:35:30  <antimatroid> it would make for a cool mod warning tool
+2011-02-13T01:35:34  <Prillicy> haven't installed her in a while
+2011-02-13T01:39:14  *** ChanServ sets mode: +o McLeopold
+2011-02-13T01:39:29  <McLeopold> there we go
+2011-02-13T01:39:35  <McLeopold> ban hammer ready...
+2011-02-13T01:41:14  <Prillicy> I am still trying to remember how I used to set her up
+2011-02-13T01:41:25  <Prillicy> there were a few tricks and it's been a long time since I ran her
+2011-02-13T01:41:45  <antimatroid> i changed the description for option 1 :P
+2011-02-13T01:41:46  <Prillicy> she's my bot btw, so if there's anything you don't like, let me know
+2011-02-13T01:46:31  <antimatroid> i think that max is meant to be a min oops
+2011-02-13T01:54:05  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Quit: I be bangin')
+2011-02-13T01:55:13  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-13T01:59:20  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-13T02:06:22  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.10/20100914130356])
+2011-02-13T02:15:30  <Prillicy> alright
+2011-02-13T02:15:48  <Prillicy> please welcome, The Bot Who's Hawt: SheV0
+2011-02-13T02:16:17  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-13T02:16:22  * SheV0 dances
+2011-02-13T02:16:33  <Prillicy> now, where was I
+2011-02-13T02:16:38  <Prillicy> ;math 256*256
+2011-02-13T02:16:38  <SheV0> 256*256=65536
+2011-02-13T02:16:46  <Prillicy> that many turns mcleopold
+2011-02-13T02:18:01  <Prillicy> enough for each bot to travel each square once
+2011-02-13T02:18:03  <pyro-> i think it would have been faster without the fetch the bot step
+2011-02-13T02:18:05  <Prillicy> it ensures enough time
+2011-02-13T02:19:10  <Prillicy> but not as cool
+2011-02-13T02:21:21  <McLeopold> I suppose I meant have the potential to travel to each square, not actually travel to each square.
+2011-02-13T02:22:20  <McLeopold> ;math e^i*pi
+2011-02-13T02:22:22  <Prillicy> I was just telling you what I wanted
+2011-02-13T02:22:36  <McLeopold> ;math sin(1)
+2011-02-13T02:22:38  <Prillicy> ;math 2+2
+2011-02-13T02:22:38  <SheV0> 2+2=4
+2011-02-13T02:22:46  <McLeopold> ;math pi
+2011-02-13T02:22:47  <Prillicy> it's evaling Javascript
+2011-02-13T02:22:55  <Prillicy> so it would be Math.pi
+2011-02-13T02:22:57  <McLeopold> ;math Math.pi
+2011-02-13T02:22:58  <SheV0> Math.PI=3.141592653589793
+2011-02-13T02:23:20  <McLeopold> ;math Math.pow(Math.e, Math.i*Math.pi)
+2011-02-13T02:23:21  <SheV0> Math.pow(Math.e, Math.i*Math.PI)=NaN
+2011-02-13T02:23:26  <Prillicy> it's sandboxed, and some restrictions are built in
+2011-02-13T02:23:32  <Prillicy> but it is a flat eval
+2011-02-13T02:23:41  <McLeopold> ;math 3.302|0
+2011-02-13T02:23:41  <SheV0> 3.302|0=3
+2011-02-13T02:23:52  <Prillicy> ;help
+2011-02-13T02:24:01  <Prillicy> gosh it's been a while since I've looked at her commands
+2011-02-13T02:24:07  <Prillicy> that's some old stupid stuff in there too
+2011-02-13T02:24:07  <McLeopold> ;math help
+2011-02-13T02:24:13  <Prillicy> ;timer 5
+2011-02-13T02:24:13  <SheV0> Timer started Prillicy
+2011-02-13T02:24:19  <Prillicy> ;help timer
+2011-02-13T02:24:35  <Prillicy> ;age shev0
+2011-02-13T02:24:35  <SheV0> I am: 3 years, 230.25 days, 06 hours, 44 minutes, and 59 seconds old, but always sweet as sugar.
+2011-02-13T02:24:41  <Prillicy> wow that was a long time ago
+2011-02-13T02:24:55  <McLeopold> ;timer
+2011-02-13T02:24:56  <SheV0> Error! Try ;help
+2011-02-13T02:24:59  <McLeopold> ;help
+2011-02-13T02:25:07  <McLeopold> ;help timer
+2011-02-13T02:25:15  <Prillicy> ;roll 2d8
+2011-02-13T02:25:16  * SheV0 rolls 2d8: 6, 7 Total: 13
+2011-02-13T02:25:31  <Prillicy> anyway, that's enough spam out of me
+2011-02-13T02:25:33  <McLeopold> ;roll 100d200
+2011-02-13T02:25:34  * SheV0 rolls 100d200: 114, 1, 4, 119, 35, 58, 69, 38, 52, 34, 32, 105, 199, 79, 79, 54, 26, 184, 73, 2, 111, 195, 172, 184, 108, 78, 117, 35, 138, 24, 147, 25, 29, 55, 25, 149, 174, 148, 164, 191, 76, 47, 90, 57, 45, 140, 199, 126, 199, 196, 130, 22, 54, 10, 164, 139, 57, 122, 27, 119, 115, 61, 80, 142, 168, 142, 17, 168, 177, 24, 191, 193, 191, 37, 141, 179, 85, 162, 103, 15, 10, 185, 69, 5, 67,...
+2011-02-13T02:25:34  * SheV0 ...103, 128, 110, 148, 146, 7, 138, 112, 7, 23, 138, 71, 23, 3, 35 Total: 9564
+2011-02-13T02:25:47  <Prillicy> there's a limit on that too
+2011-02-13T02:25:50  <Prillicy> so don't worry about floods
+2011-02-13T02:25:51  <McLeopold> :)
+2011-02-13T02:25:55  <Prillicy> ;roll 999999d9999999
+2011-02-13T02:25:55  <SheV0> Cute, but no.
+2011-02-13T02:26:00  * Prillicy points.
+2011-02-13T02:26:21  <McLeopold> ;liberalfight
+2011-02-13T02:26:34  <Prillicy> we don't have any implemented liberals
+2011-02-13T02:26:39  <McLeopold> ;help liberalfight
+2011-02-13T02:26:43  <Prillicy> ;authoritarian mcleopold
+2011-02-13T02:26:49  <Prillicy> ;help authoritarian
+2011-02-13T02:26:55  <pyro-> can i make it hang with an infinite javascript loop?
+2011-02-13T02:26:55  <McLeopold> ;help authoritarian
+2011-02-13T02:27:03  <Prillicy> ;authoritarian +mcleopold for being an op
+2011-02-13T02:27:44  <Prillicy> ;liberal -prillicy for not liking obama
+2011-02-13T02:27:50  <Prillicy> ;help liberalfight
+2011-02-13T02:28:00  <Prillicy> ;liberalfight mcleopold v prillicy
+2011-02-13T02:28:04  <Prillicy> hmph
+2011-02-13T02:28:09  <antimatroid> pyro-: i added a few more things to the spec before but not much
+2011-02-13T02:28:10  <Prillicy> don't think I ever finished that
+2011-02-13T02:28:28  <Prillicy> pyro-: you can try, but I doubt it, most of the js commands are blocked manually
+2011-02-13T02:28:36  <Prillicy> the liberal thing was me being stupid
+2011-02-13T02:28:39  <McLeopold> ;authoritarian +prillicy for writing a bot
+2011-02-13T02:28:40  <Prillicy> I should rip out that code
+2011-02-13T02:28:48  <Prillicy> ;bar jedi cocktail
+2011-02-13T02:28:48  * SheV0 mixes 1 ounce Blue Curacao Liqueur, 1/3 ounce creme de cacao, and 2 1/2 ounces milk in a glass.
+2011-02-13T02:28:48  * SheV0 serves Prillicy a Jedi Cocktail.
+2011-02-13T02:28:53  <McLeopold> ;authfight mcleopold vs prillicy
+2011-02-13T02:29:00  <McLeopold> ;authfight mcleopold v prillicy
+2011-02-13T02:29:01  <Prillicy> I did that in my alcoholic days
+2011-02-13T02:29:04  <pyro-> i onyl wrote enough to parse P lines so far antimatroid
+2011-02-13T02:29:13  <Prillicy> ;authfight mcleopold v prillicy
+2011-02-13T02:29:13  <SheV0> Timer up Prillicy
+2011-02-13T02:29:18  <Prillicy> hmph
+2011-02-13T02:29:32  <pyro-> i dont like choosing between represntations for maps :D
+2011-02-13T02:29:37  <Prillicy> anyway
+2011-02-13T02:29:45  <Prillicy> I'm going to finish my laundry and go to bed
+2011-02-13T02:29:49  <Prillicy> got game day in the morning
+2011-02-13T02:29:50  <pyro-> good night
+2011-02-13T02:30:34  <McLeopold> who's up for a game of craps?
+2011-02-13T02:30:41  <McLeopold> ;roll 2d6
+2011-02-13T02:30:41  * SheV0 rolls 2d6: 4, 4 Total: 8
+2011-02-13T02:30:48  <McLeopold> on the line...
+2011-02-13T02:31:05  <McLeopold> ;roll 2d6
+2011-02-13T02:31:06  * SheV0 rolls 2d6: 1, 2 Total: 3
+2011-02-13T02:31:13  <McLeopold> ;roll 2d6
+2011-02-13T02:31:14  * SheV0 rolls 2d6: 1, 6 Total: 7
+2011-02-13T02:31:19  <McLeopold> and I bust
+2011-02-13T02:31:37  <McLeopold> antimatroid: have you written a voronoi algo before?
+2011-02-13T02:31:51  <pyro-> +1 for weechat /filter add SheV0
+2011-02-13T02:33:16  <antimatroid> McLeopold: yeah, it's just that paint algorithm pretty much
+2011-02-13T02:33:41  <antimatroid> McLeopold: I think spawn radius should be capped at 3
+2011-02-13T02:33:54  <antimatroid> because otherwise it happens through walls, which makes no sense
+2011-02-13T02:34:06  <antimatroid> it kind of makes sense for walls to not be so high that you can see and battle over them
+2011-02-13T02:34:30  <McLeopold> it's water
+2011-02-13T02:34:34  <antimatroid> oh, are you talking about on a discrete grid?
+2011-02-13T02:34:45  <antimatroid> even then it doesn't make sense for food to be consumer from the other side if you can't walk over
+2011-02-13T02:34:50  <McLeopold> what do you mean by discrete?
+2011-02-13T02:35:09  <antimatroid> well you can do voronoi diagrams in continous space
+2011-02-13T02:35:13  <antimatroid> like R^2
+2011-02-13T02:35:15  <pyro-> your trying to make it make sense? it doesn't make sense at all for food to turn into ants when you get near it in the first place :D
+2011-02-13T02:35:44  <McLeopold> R^2?
+2011-02-13T02:36:01  <antimatroid> cartesian product of the real numbers
+2011-02-13T02:36:06  <antimatroid> (x,y) where they are real numbers
+2011-02-13T02:36:07  <antimatroid> 2d plan
+2011-02-13T02:36:08  <antimatroid> e
+2011-02-13T02:36:37  <antimatroid> you can even do it in R^n if you want
+2011-02-13T02:37:10  <McLeopold> discrete grid means we don't do floating point?
+2011-02-13T02:37:43  <antimatroid> i was asking what you were asking about voronoi diagrams for?
+2011-02-13T02:37:57  <McLeopold> I know, but I need to learn some lingo
+2011-02-13T02:38:15  <antimatroid> were you curious for finding shortest paths in this?
+2011-02-13T02:39:38  <antimatroid> there are 2 algorithms i will be using that paint for this, one to be used to find a players shortest path somewhere and another to find which squares which people can get to first
+2011-02-13T02:39:43  <McLeopold> I'm sure voronoi, and delaunay triangulation will both come in handy.
+2011-02-13T02:40:10  <McLeopold> I'm thinking more about map gen right now, and analyzing fairness.
+2011-02-13T02:40:36  <McLeopold> I'm wondering how to change the algorithm now that we are on a torus
+2011-02-13T02:40:41  <pyro-> writing a map generator sounds fun
+2011-02-13T02:40:45  <antimatroid> from starting positions? do you want fairness to be the number of squares each ant can get to first, including ties?
+2011-02-13T02:40:56  <McLeopold> I don't know yet.
+2011-02-13T02:41:02  <antimatroid> and possibly resources
+2011-02-13T02:41:05  <antimatroid> that is fairly easy to do
+2011-02-13T02:41:29  <McLeopold> voronoi to calc starting territory.
+2011-02-13T02:41:37  <antimatroid> yeah
+2011-02-13T02:41:55  <McLeopold> maybe some shortest path to see if they have the same type of starting distance from opponents
+2011-02-13T02:41:57  <antimatroid> you do what you did for visibility, but block movement by walls and store more info for each found square, like current distance
+2011-02-13T02:42:17  <pyro-> is there a set number of players per game?
+2011-02-13T02:42:18  <McLeopold> that's pretty much A*?
+2011-02-13T02:42:32  <antimatroid> i'd start them all on a rectangular lattice then add stuff in non-symmetrically from there personally
+2011-02-13T02:42:47  <antimatroid> i've never looked at A*
+2011-02-13T02:43:03  <antimatroid> pyro-: it will be random and not told to you
+2011-02-13T02:43:11  <antimatroid> well, picked from a known possible set
+2011-02-13T02:43:14  <antimatroid> but random from that
+2011-02-13T02:43:23  <pyro-> oh
+2011-02-13T02:43:34  <pyro-> i am also going to write a map generator becuase it sounds awesome
+2011-02-13T02:43:39  <antimatroid> please do
+2011-02-13T02:43:54  <antimatroid> we want to find whatever maps are most interesting while fair
+2011-02-13T02:44:11  <antimatroid> you want every ant to be able to access every non-wall square on the map
+2011-02-13T02:44:31  <pyro-> i can already see that making it precisly fair is very complecated
+2011-02-13T02:44:32  <antimatroid> don't forget the wrapping when you do that
+2011-02-13T02:44:47  <antimatroid> that map gen i linked you yesterday is completely fair
+2011-02-13T02:44:58  <antimatroid> yet if you come across an enemy at the start, it wont be on symmetric terms
+2011-02-13T02:45:11  <pyro-> and interesting maps** :P
+2011-02-13T02:45:20  <McLeopold> antimatroid: a small correction, you want every bot to be able to access the same set of land squares
+2011-02-13T02:45:41  <antimatroid> McLeopold: you want people to go around and find closed off regions to fill it with walls?
+2011-02-13T02:45:48  <McLeopold> if a map gen creates land that is not accessible, i'm fine with that
+2011-02-13T02:45:57  <antimatroid> it wastes space
+2011-02-13T02:46:11  <McLeopold> it makes it harder >:)
+2011-02-13T02:46:30  <antimatroid> not really, if area enclosed fill with walls
+2011-02-13T02:46:52  <McLeopold> if it's not filled with wall, the food gen will place food inside
+2011-02-13T02:47:08  <McLeopold> if the walls are thin enough, you can cross the boundary
+2011-02-13T02:47:09  <antimatroid> yeah i do kind of like it
+2011-02-13T02:47:29  <antimatroid> i prefer walls blocking food spawning
+2011-02-13T02:47:44  <antimatroid> actually, no, that's awesome
+2011-02-13T02:47:46  <McLeopold> if we do distance 1, it will
+2011-02-13T02:47:52  <antimatroid> you will get your own region to yourself
+2011-02-13T02:47:58  <antimatroid> i don't think jeff would like that
+2011-02-13T02:48:06  <McLeopold> unless someone else get's the other half
+2011-02-13T02:48:27  <McLeopold> then there is a separate battle for the region
+2011-02-13T02:48:39  <antimatroid> i think the starting accessible region should still be something like at least 80% of land squares
+2011-02-13T02:48:44  <McLeopold> maybe then the map is divided such that 2 bots can't kill each other
+2011-02-13T02:49:19  <McLeopold> I really just want to crash bots with bad path finding. :)
+2011-02-13T02:49:25  <antimatroid> yeah, it'd be fun but have issues
+2011-02-13T02:50:17  <McLeopold> it would be a cool strategy, to find the spaces, and attempt to get in
+2011-02-13T02:50:32  <pyro-> does the task of map generation include spawning food?
+2011-02-13T02:50:54  <McLeopold> you can kinda guarantee survival to the end if you get it
+2011-02-13T02:51:07  <McLeopold> maybe
+2011-02-13T02:51:10  <McLeopold> it's in the spec
+2011-02-13T02:51:19  <McLeopold> the first turn will also spawn food
+2011-02-13T02:51:29  <antimatroid> pyro-: you have to place starting food, the engine deals with replenishment
+2011-02-13T02:51:43  <McLeopold> I can see having a few starting configurations for food, to ensure more fairness
+2011-02-13T02:52:07  <McLeopold> antimatroid: you can make a blank map, and the engine will place for you
+2011-02-13T02:52:35  <McLeopold> I'm thinking that the starting ant will always have 4 food squares in a plus pattern around it
+2011-02-13T02:52:48  <McLeopold> so bots can have some type of starting plan
+2011-02-13T02:53:06  <McLeopold> the beginning of the game will decide so much, it makes sense
+2011-02-13T02:53:11  <antimatroid> why not just start people with a square block or line of ants?
+2011-02-13T02:53:26  <McLeopold> that works too
+2011-02-13T02:53:38  <antimatroid> otherwise you have to worry about food blocking movement
+2011-02-13T02:53:42  <McLeopold> but then with the food, you can see if someone has a better starting schedule
+2011-02-13T02:54:09  <antimatroid> there isn't one, do nothing, spawn ants
+2011-02-13T02:54:35  <pyro-> when you think about it in 3D space
+2011-02-13T02:54:35  <antimatroid> if it's just out of range, walk up one then in a square
+2011-02-13T02:54:40  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T02:54:42  <McLeopold> if you had F 0 0, F 0 4, F 4 0, F 4 4, A 2 2 0, what is your opening move?
+2011-02-13T02:54:45  <antimatroid> think about what in 3d space?
+2011-02-13T02:54:54  <pyro-> you get a very irregular looking shape from a wraped up rectangle
+2011-02-13T02:55:03  <pyro-> i cant fold my piece of paper into anything nice
+2011-02-13T02:55:04  <antimatroid> a torus
+2011-02-13T02:55:12  <antimatroid> it's a donut
+2011-02-13T02:55:17  <pyro-> and have it join at the edges
+2011-02-13T02:55:29  <McLeopold> I'm thinking we could have maybe 20 starting configurations, so every bot knows it will have 4 - 8 food squares nearby
+2011-02-13T02:55:31  <antimatroid> it's topologically equivalent to a coffee mug
+2011-02-13T02:55:35  <McLeopold> the starts will be more even
+2011-02-13T02:55:52  <antimatroid> McLeopold: just say you will have 4 resource squares in your field of vision or something?
+2011-02-13T02:56:14  <McLeopold> yea
+2011-02-13T02:56:15  <antimatroid> i don't like having stuff not randomly generated
+2011-02-13T02:56:22  <McLeopold> it will be
+2011-02-13T02:56:30  <pyro-> its toroidal but, take the corners of a a4 together and you see its nothing like a donut
+2011-02-13T02:56:32  <McLeopold> but the same starting config will be used for each bot
+2011-02-13T02:56:49  <antimatroid> pyro-: it is
+2011-02-13T02:57:01  <antimatroid> you just can't stretch the paper
+2011-02-13T02:57:29  <antimatroid> take a polygonial torus, imagine walking around each iner ring or the ring around the whole thing
+2011-02-13T02:57:33  <pyro-> oh i see it
+2011-02-13T02:57:34  <McLeopold> fold the paper in half, once vert, once horz, tape the edges
+2011-02-13T02:57:35  <antimatroid> that's like walking along your rows and columns
+2011-02-13T02:57:54  *** SheV0_ <SheV0_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-13T02:58:02  <McLeopold> or, make the paper a cylinder
+2011-02-13T02:58:12  <antimatroid> that's the first step
+2011-02-13T02:58:14  <pyro-> yeah i thought of the cylinder :)
+2011-02-13T02:58:14  <McLeopold> you can cross from the outside to the inside
+2011-02-13T02:58:16  <antimatroid> then stretch it around
+2011-02-13T02:58:18  <pyro-> but streched
+2011-02-13T02:58:22  <pyro-> on once side :)
+2011-02-13T02:58:25  <pyro-> one
+2011-02-13T02:58:31  <McLeopold> just do 2 sides
+2011-02-13T02:58:44  <antimatroid> a 3d visualiser with the ability to change the angle would be awesome
+2011-02-13T02:58:49  *** Prillicy_ <Prillicy_!~chatzilla@97.104.19.221> has joined #aichallenge
+2011-02-13T02:59:14  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 255 seconds)
+2011-02-13T02:59:15  *** Prillicy_ is now known as Prillicy
+2011-02-13T02:59:41  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 255 seconds)
+2011-02-13T02:59:52  *** SheV0_ is now known as SheV0
+2011-02-13T03:00:28  <pyro-> in the case of 2 bots cutting it into two annuli is fair
+2011-02-13T03:00:45  <pyro-> but in any other case i think the only way is cutting it into sections?
+2011-02-13T03:00:54  <antimatroid> what do you mean?
+2011-02-13T03:01:03  <antimatroid> you can't have players symmetrical to each other if n>3
+2011-02-13T03:01:08  <pyro-> talking to myself more than the channel :P
+2011-02-13T03:01:11  <pyro-> sorry :P
+2011-02-13T03:02:03  <antimatroid> you will be :P
+2011-02-13T03:04:29  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 276 seconds)
+2011-02-13T03:07:00  <antimatroid> McLeopold: I think your fog of war is broken
+2011-02-13T03:07:11  <antimatroid> at least it is in the gif image on the forums i think
+2011-02-13T03:07:15  <pyro-> i think i've possibly worked out a good algorithm for fair map generation. yey. too complicated to be done by tonight tho
+2011-02-13T03:07:38  <McLeopold> what do you see?
+2011-02-13T03:08:06  <antimatroid> when an ant walks off the bottom to the top near the start, you don't start seeing anything untill it walks over the screen
+2011-02-13T03:08:18  <antimatroid> i suspect you're not calculating euclidean distances properly with wrapped edges
+2011-02-13T03:08:52  <antimatroid> the spec page has what i'm using
+2011-02-13T03:09:41  <McLeopold> dang
+2011-02-13T03:09:45  <antimatroid> :P
+2011-02-13T03:10:07  <McLeopold> i bet if i used my first method, it would :P
+2011-02-13T03:10:21  <antimatroid> yeah but mines faster no? :P
+2011-02-13T03:10:32  <McLeopold> maybe
+2011-02-13T03:10:55  <antimatroid> another good test on view radius is a.a
+2011-02-13T03:11:03  <antimatroid> when i first wrote my algorithm that was broken
+2011-02-13T03:11:27  <antimatroid> it would paint around the second a, then not find anything that could move to when i got to it, so it wouldn't reach it's visibility area
+2011-02-13T03:11:28  <McLeopold> I know I did have movies where there was wrapping, so I think I just messed up your algo
+2011-02-13T03:11:56  <antimatroid> just check your euclidean distance function
+2011-02-13T03:12:07  <antimatroid> i have a feeling you just need to change how you get dx and dy
+2011-02-13T03:12:43  <McLeopold> yeah, it's naive
+2011-02-13T03:12:47  <McLeopold> I'll fix it
+2011-02-13T03:13:04  <antimatroid> dx=min(abs(a.x−b.x), width−abs(a.x−b.x))
+2011-02-13T03:13:04  <antimatroid> dy=min(abs(a.y−b.y), height−abs(a.y−b.y))
+2011-02-13T03:13:47  <antimatroid> i think the starter packages should come with that function and "get location" from a starting location and direction
+2011-02-13T03:13:56  <antimatroid> so beginners don't really need to think about the mechanics of wrapping
+2011-02-13T03:14:09  <McLeopold> yep, I've got that in my starter package
+2011-02-13T03:14:32  <McLeopold> my starter has the distance and a get direction function
+2011-02-13T03:14:56  <McLeopold> direction will return the direction of the shortest distance with wrapped edges, so n e s w ne nw se sw
+2011-02-13T03:15:15  <antimatroid> say what?>
+2011-02-13T03:15:35  <McLeopold> so, you know the shortest distance, but what direction is it?
+2011-02-13T03:16:26  <McLeopold> get location is pretty easy, (x + dx) % width
+2011-02-13T03:17:58  <antimatroid> my get location uses a constant array to just add stuff depending on the integer direction passed
+2011-02-13T03:18:08  <antimatroid> and mods as needed etc.
+2011-02-13T03:18:35  <antimatroid> i have enough directions to cover every square in an ants fight radius
+2011-02-13T03:19:13  <antimatroid> that way i'm not checking squares for each ant multiple times as to whether i've already looked there
+2011-02-13T03:19:23  <antimatroid> or needing to keep track of where i already looked
+2011-02-13T03:19:39  <flag> ls
+2011-02-13T03:19:44  <flag> damn it, wrong window
+2011-02-13T03:19:48  <McLeopold> dir
+2011-02-13T03:19:53  <McLeopold> damn it, wrong os
+2011-02-13T03:20:46  <antimatroid> j3camero is missing in action
+2011-02-13T03:20:57  <antimatroid> @lastseen j3camero
+2011-02-13T03:20:58  <contestbot> antimatroid: User error, it's not my fault.
+2011-02-13T03:21:02  <antimatroid> yes it is
+2011-02-13T03:21:13  <flag> is the game finalized enough to begin writing entries?
+2011-02-13T03:21:29  <antimatroid> i wouldn't advise it unless you're happy changing it if anything changes
+2011-02-13T03:21:47  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-02-13T03:22:15  <antimatroid> having said that i have a bot set up
+2011-02-13T03:22:25  <antimatroid> but that has an old input format that i haven't changed yet
+2011-02-13T03:22:48  <antimatroid> and the actual strategy function is bare, i've been using it to test game mechanics
+2011-02-13T03:23:15  <McLeopold> flag, if it is stupid enough, we can include it in the starter pack
+2011-02-13T03:23:27  <McLeopold> you should check out LeftyBot :)
+2011-02-13T03:23:44  <flag> I'm sure I'll find a way to make a stupid one :)
+2011-02-13T03:23:51  <McLeopold> it finds a wall and follows it to the left
+2011-02-13T03:24:15  <flag> is the protocol decided on at least?
+2011-02-13T03:24:25  <McLeopold> no
+2011-02-13T03:24:49  <antimatroid> the game is mostly formed, but there are decisions to be made that still make quite a few differences
+2011-02-13T03:24:50  <McLeopold> just write 2 functions
+2011-02-13T03:24:57  <antimatroid> hence why i would advise against it :P
+2011-02-13T03:26:52  <antimatroid> hmmm fuck
+2011-02-13T03:27:23  <antimatroid> can we print moves as
+2011-02-13T03:27:24  <antimatroid> O source.x source.y dest.x dest.y?
+2011-02-13T03:27:46  <antimatroid> i'm going to be looking at my map transposed to what the engine expects back
+2011-02-13T03:28:35  <antimatroid> McLeopold: can we please go to [row][col] with the bot input :(
+2011-02-13T03:29:26  <McLeopold> why not a direction?
+2011-02-13T03:32:30  <antimatroid> because then i need to work out what the translated direction is
+2011-02-13T03:32:35  <antimatroid> rather than print the numbers around the other way
+2011-02-13T03:32:45  <antimatroid> transposed*
+2011-02-13T03:32:48  <antimatroid> damn i mix that up a lot
+2011-02-13T03:33:28  <McLeopold> so, if we go all row/col, you're okay with a direction?
+2011-02-13T03:33:32  <antimatroid> yes
+2011-02-13T03:33:35  <antimatroid> LO
+2011-02-13T03:33:37  <antimatroid> :P*
+2011-02-13T03:33:40  <McLeopold> okay
+2011-02-13T03:33:49  <McLeopold> change the damn spec
+2011-02-13T03:33:54  <antimatroid> you don't need to change it right now :P but yeah
+2011-02-13T03:34:15  <antimatroid> you wont even need to think about these things changing ever again once it's all consistent, i promise
+2011-02-13T03:34:24  <McLeopold> I know
+2011-02-13T03:34:41  <McLeopold> I hope you're writing a c++ engine
+2011-02-13T03:34:47  <McLeopold> cause we may need the speed
+2011-02-13T03:35:09  <antimatroid> i could, but i never got io working without it being horribly slow
+2011-02-13T03:35:12  <McLeopold> you just need to turn it into a python extension :)
+2011-02-13T03:35:15  <antimatroid> i'll play around with that tonight if you want?
+2011-02-13T03:35:57  <McLeopold> actually, I think someone proposed that the game engine should just be another process that communicates like the bots
+2011-02-13T03:36:06  <McLeopold> so, we could write a game in any language
+2011-02-13T03:36:40  <antimatroid> will a compiled c++ program run on any machine? or does it need to be compiled locally for different things/
+2011-02-13T03:36:46  <antimatroid> i have no idea about that kind of thing
+2011-02-13T03:37:24  <flag> depends on the architecture/libraries of the target machine
+2011-02-13T03:37:35  <antimatroid> flag: we want it to work on the most possible
+2011-02-13T03:37:59  <flag> then it needs to be compiled locally
+2011-02-13T03:38:12  <antimatroid> i'm not sure if that's a good idea
+2011-02-13T03:38:18  <flag> a linux execuatable won't work on windows, etc.
+2011-02-13T03:39:07  <antimatroid> we could give people a python engine then run a c++ on the servers if necessary
+2011-02-13T03:39:12  <antimatroid> and have both be open source
+2011-02-13T03:40:01  <antimatroid> in fact haven't the previous engines been java that were given to people
+2011-02-13T03:40:03  <flag> do you think the game engine will be slow enough to need c++?
+2011-02-13T03:40:14  <antimatroid> presumably under the assumption that everyone has jre?
+2011-02-13T03:40:22  <flag> yeah, all the previous ones were written in java, which is a decent middle ground
+2011-02-13T03:40:25  <antimatroid> i don't think so, we'll see
+2011-02-13T03:40:38  * antimatroid has forgotten everything except how awful java was
+2011-02-13T03:40:58  <flag> what was wrong with the java engine?
+2011-02-13T03:41:50  <antimatroid> no, i mean me and the language
+2011-02-13T03:42:04  <antimatroid> i refuse to use java  :P
+2011-02-13T03:42:04  <flag> ah
+2011-02-13T03:47:48  <antimatroid> McLeopold: specs updated, i changed parameters to rows and cols instead of width and height too
+2011-02-13T03:49:08  <McLeopold> yeah, that makes sense
+2011-02-13T03:49:17  <McLeopold> were are going to piss off the math nerd
+2011-02-13T03:49:18  <McLeopold> s
+2011-02-13T03:50:33  <McLeopold> the last contest engine was python, but it didn't need to do much
+2011-02-13T03:50:45  <McLeopold> this engine is more complicated, with the fog of war stuff
+2011-02-13T03:51:08  <antimatroid> how are we going to piss off the math nerds?
+2011-02-13T03:51:12  <McLeopold> I'd rather give every spare cycle to the bots that I can.
+2011-02-13T03:51:13  <antimatroid> i am one of the maths nerds:P
+2011-02-13T03:51:26  <McLeopold> not using cartesian coordinates
+2011-02-13T03:51:45  <antimatroid> lol, they'll prefer [row][col]
+2011-02-13T03:51:54  <antimatroid> you treat the map like a matrix
+2011-02-13T03:51:58  <McLeopold> except for those that program in D
+2011-02-13T03:52:13  <McLeopold> or those that have matrix libraries
+2011-02-13T03:52:29  <antimatroid> i'm surprised people don't say in the first week of a cs course, never use [x][y]
+2011-02-13T03:53:07  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 272 seconds)
+2011-02-13T03:54:44  *** flag <flag!~root@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-02-13T03:56:47  *** Cyndre <Cyndre!~Cyndre@2002:41ff:b54b::41ff:b54b> has joined #aichallenge
+2011-02-13T04:18:58  *** antimatroid <antimatroid!~Nick@239.109-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 250 seconds)
+2011-02-13T04:24:09  *** antimatroid <antimatroid!~Nick@100.129-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-13T04:27:06  *** delt0r_ <delt0r_!~delt0r@188-22-161-250.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T04:28:34  *** delt0r___ <delt0r___!~delt0r@188-22-161-250.adsl.highway.telekom.at> has quit IRC (Ping timeout: 245 seconds)
+2011-02-13T04:40:26  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-13T04:44:17  *** delt0r_ <delt0r_!~delt0r@188-22-161-250.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T04:55:11  *** delt0r_ <delt0r_!~delt0r@188-22-17-165.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T05:04:43  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-13T05:10:54  <antimatroid> jmcarthur: what do you think is better?
+2011-02-13T05:10:55  <antimatroid> ant a lives if:
+2011-02-13T05:10:55  <antimatroid> enemies(a).size < min_{b \in enemies(a)} (enemies(b).size)
+2011-02-13T05:10:55  <antimatroid> or enemies(a).size < enemies(b).size \forall b \in enemies(a)
+2011-02-13T05:11:22  <antimatroid> is it reasonably assume a beginner would understand the first?
+2011-02-13T05:11:50  <antimatroid> reasonable* damnit!
+2011-02-13T05:38:26  *** Blkt <Blkt!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has joined #aichallenge
+2011-02-13T05:41:53  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2011-02-13T05:43:14  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-02-13T05:46:58  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-02-13T05:49:27  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2011-02-13T06:18:03  *** nullkuhl_ <nullkuhl_!~nullkuhl@196.221.100.22> has quit IRC (Read error: Connection reset by peer)
+2011-02-13T06:18:45  *** nullkuhl <nullkuhl!~nullkuhl@196.221.100.22> has joined #aichallenge
+2011-02-13T06:24:54  <Blkt> good day everyone
+2011-02-13T06:29:23  <antimatroid> evening
+2011-02-13T06:34:17  <Blkt> hi
+2011-02-13T06:57:51  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2011-02-13T07:06:43  *** choas <choas!~lars@p578F6D19.dip.t-dialin.net> has joined #aichallenge
+2011-02-13T07:17:06  *** amstan_ <amstan_!~amstan@206-248-130-164.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T07:21:47  *** Apophis_ <Apophis_!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (Quit: Verlassend)
+2011-02-13T07:29:29  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-13T07:39:36  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-02-13T08:47:40  *** boegel <boegel!~boegel@91.182.19.114> has joined #aichallenge
+2011-02-13T08:52:30  *** boegel <boegel!~boegel@91.182.19.114> has quit IRC (Client Quit)
+2011-02-13T09:55:17  <jmcarthur> antimatroid: why the inconsistency? why make enemies an external function but make size a method?
+2011-02-13T09:56:02  <jmcarthur> antimatroid: the latter probably makes more intuitive sense, i think
+2011-02-13T09:56:22  <jmcarthur> at least it does to me
+2011-02-13T10:22:05  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-02-13T10:32:58  *** temp01_ <temp01_!56b20874@gateway/web/freenode/ip.86.178.8.116> has joined #aichallenge
+2011-02-13T10:33:43  *** Prillicy <Prillicy!~chatzilla@97.104.19.221> has quit IRC (Quit: I be bangin')
+2011-02-13T11:00:29  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-02-13T11:31:23  <McLeopold> ;math Math.sqrt(833)
+2011-02-13T11:31:23  <SheV0> Math.sqrt(833)=28.861739379323623
+2011-02-13T12:05:07  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Ping timeout: 260 seconds)
+2011-02-13T12:25:51  <antimatroid> jmcarthur: what inconsistency?
+2011-02-13T12:32:00  <antimatroid> oh i see, i wasn't making enemies a function, that's just meant to be a set
+2011-02-13T12:37:09  *** flag <flag!~root@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-02-13T12:48:14  *** delt0r___ <delt0r___!~delt0r@188-22-165-214.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T12:49:30  *** delt0r_ <delt0r_!~delt0r@188-22-17-165.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T12:51:33  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-02-13T12:53:41  *** delt0r_ <delt0r_!~delt0r@188-22-165-214.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T12:54:45  *** delt0r___ <delt0r___!~delt0r@188-22-165-214.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T12:55:25  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 276 seconds)
+2011-02-13T13:21:33  *** Migi32 <Migi32!~migi@178-118-146-250.access.telenet.be> has joined #aichallenge
+2011-02-13T13:22:14  *** delt0r___ <delt0r___!~delt0r@188-22-165-214.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T13:23:55  *** delt0r_ <delt0r_!~delt0r@188-22-165-214.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-02-13T13:25:13  *** delt0r_ <delt0r_!~delt0r@188-22-165-214.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T13:25:16  *** delt0r___ <delt0r___!~delt0r@188-22-165-214.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-02-13T13:46:04  *** Meatkat <Meatkat!~bovard@41.203.227.63> has joined #aichallenge
+2011-02-13T13:57:40  *** delt0r___ <delt0r___!~delt0r@188-22-165-214.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T13:59:55  *** delt0r_ <delt0r_!~delt0r@188-22-165-214.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-02-13T14:10:43  *** delt0r_ <delt0r_!~delt0r@188-22-165-214.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T14:11:55  *** delt0r___ <delt0r___!~delt0r@188-22-165-214.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T14:47:55  *** Meatkat <Meatkat!~bovard@41.203.227.63> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T15:19:16  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2011-02-13T15:25:59  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-02-13T15:37:06  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-13T15:41:41  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-02-13T15:46:56  *** UncleVasya <UncleVasya!kvirc@46.133.210.198> has joined #aichallenge
+2011-02-13T15:54:20  *** Migi32 <Migi32!~migi@178-118-146-250.access.telenet.be> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T15:56:26  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-02-13T16:06:01  *** Migi32 <Migi32!~migi@178-118-146-250.access.telenet.be> has joined #aichallenge
+2011-02-13T16:07:20  *** UncleVasya <UncleVasya!kvirc@46.133.210.198> has quit IRC (Ping timeout: 276 seconds)
+2011-02-13T16:08:58  *** sigh <sigh!~sigh@245.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-02-13T16:10:56  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Ping timeout: 255 seconds)
+2011-02-13T16:27:44  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-13T16:37:27  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-02-13T16:52:51  <flag> I need some slight clarification on bot input because either the wiki's wrong or I can't read
+2011-02-13T16:53:21  <flag> is the bot passed only updates to the map or the entire map on each consecutive turn?
+2011-02-13T16:55:40  *** Meatkat <Meatkat!~bovard@41.203.227.63> has joined #aichallenge
+2011-02-13T16:56:59  *** amstan_ <amstan_!~amstan@206-248-130-164.dsl.teksavvy.com> has joined #aichallenge
+2011-02-13T16:56:59  *** ChanServ sets mode: +o amstan_
+2011-02-13T17:03:45  *** mega1 <mega1!~user@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 276 seconds)
+2011-02-13T17:05:30  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-02-13T17:29:29  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-02-13T17:36:34  *** Meatkat <Meatkat!~bovard@41.203.227.63> has quit IRC (Ping timeout: 272 seconds)
+2011-02-13T17:37:52  *** choas <choas!~lars@p578F6D19.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-02-13T18:05:10  *** Migi32 <Migi32!~migi@178-118-146-250.access.telenet.be> has quit IRC (Quit: boinc)
+2011-02-13T18:09:25  <McLeopold> flag: we are still deciding
+2011-02-13T18:11:55  <flag> okay, thanks, because I started writing a bot based on the wiki spec and I noticed that the input from the engine was completely different
+2011-02-13T18:18:41  <McLeopold> flag: what language?
+2011-02-13T18:23:43  <flag> C
+2011-02-13T18:25:04  <McLeopold> so, you might start with the map syntax
+2011-02-13T18:25:11  <McLeopold> the engine can output both
+2011-02-13T18:26:59  <flag> I'm not sure I know what you're saying. I have it configured to accept the map in the form of:
+2011-02-13T18:27:19  <flag> M [?.%*?abcABC]
+2011-02-13T18:27:57  <flag> and I just realized I'm getting: W 16 17, L 16 19, etc.
+2011-02-13T18:27:57  <McLeopold> yeah, go with that
+2011-02-13T18:28:10  <McLeopold> do you see the render_text function?
+2011-02-13T18:28:54  <flag> in ants.py?
+2011-02-13T18:28:58  <amstan_> antimatroid: ^^
+2011-02-13T18:29:07  <McLeopold> yes
+2011-02-13T18:29:14  <McLeopold> there is a function called get_player_state
+2011-02-13T18:29:34  <McLeopold> just switch the function in there to use output format you want
+2011-02-13T18:30:00  <McLeopold> also, there is a bug in get_vision
+2011-02-13T18:30:31  <McLeopold> I'll update in a minute
+2011-02-13T18:32:16  <antimatroid> amstan_: ?
+2011-02-13T18:32:23  <antimatroid> amstan_: *
+2011-02-13T18:32:26  <amstan_> antimatroid: see what flag said
+2011-02-13T18:33:08  <flag> does get_vision return the map in the wiki format or a different one?
+2011-02-13T18:33:12  <antimatroid> ah, so he can be our designated c writer
+2011-02-13T18:33:23  <McLeopold> neither
+2011-02-13T18:33:32  <McLeopold> render_text and render_changes
+2011-02-13T18:33:39  <McLeopold> changes is what you were seeing
+2011-02-13T18:33:44  <McLeopold> text is the map format
+2011-02-13T18:33:51  <antimatroid> flag: i'm now confused
+2011-02-13T18:34:08  <antimatroid> are you asking about input or visibility counts?
+2011-02-13T18:34:22  <antimatroid> (sorry, i literally just woke up :P)
+2011-02-13T18:35:20  <flag> well first I was asking whether or not the engine returns the map in the wiki format because it didn't appear to, and now I'm trying to change it
+2011-02-13T18:35:52  <antimatroid> are you using mcleopolds engine?
+2011-02-13T18:36:00  <antimatroid> input isn't finalised yet i don't think
+2011-02-13T18:36:04  <flag> yes
+2011-02-13T18:36:49  <antimatroid> i personally expect we'll be using the char maps
+2011-02-13T18:37:09  <antimatroid> as we're going to want to send all currently visible squares otherwise which may even be more costly than just char maps
+2011-02-13T18:38:16  <McLeopold> they aren't more costly, remember it was a 10x increase for maps
+2011-02-13T18:39:27  <flag> if there are two giant armys of ants it might be more costly, no?
+2011-02-13T18:41:33  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Ping timeout: 240 seconds)
+2011-02-13T18:41:40  <antimatroid> McLeopold: if you are passing info for every currently visible square, it might get more costly pretty fast
+2011-02-13T18:42:01  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-02-13T18:43:32  <McLeopold> it's not, I tested
+2011-02-13T18:43:40  <McLeopold> maps are way more data
+2011-02-13T18:45:42  <antimatroid> is that for printing all currently visible square info or just the old format?
+2011-02-13T18:45:51  <flag> maps are more data, but updates are more instrutions
+2011-02-13T18:46:24  <McLeopold> we'll get the right mix, just code a map bot for now
+2011-02-13T19:04:21  <antimatroid> amstan_: where the hell is jeff
+2011-02-13T19:04:35  <antimatroid> he hasn't been here in like 2 days :P
+2011-02-13T19:04:50  <flag> McLeopold: where is the function that outputs the number of rows and cols?
+2011-02-13T19:04:55  <amstan_> antimatroid: so? lol
+2011-02-13T19:05:10  <janzert> McLeopold: from your test before I thought you said the crossover on size was when you could see ~1/8th of the map
+2011-02-13T19:05:36  <janzert> or at least had to send changes on 1/8th of the squares
+2011-02-13T19:06:07  <janzert> so if you're sending all visible squares not just changes it would then be when seeing 1/8th
+2011-02-13T19:07:58  <McLeopold> flag: get_player_start
+2011-02-13T19:08:15  <McLeopold> janzert: I need to do more testing
+2011-02-13T19:08:38  <McLeopold> I want to run a tcp server, but I am seriously concerned about bandwidth
+2011-02-13T19:09:32  <McLeopold> if the average update line is 'W 80 100' then that is 8 characters, when it would only be 1 character in the map format
+2011-02-13T19:09:43  <McLeopold> +1 for the new line
+2011-02-13T19:09:50  *** SheV0 <SheV0!~chatzilla@97.104.19.221> has quit IRC (Ping timeout: 260 seconds)
+2011-02-13T19:09:55  <janzert> It should be about the same as running a tron tcp server was, although I don't know how intensive that was either
+2011-02-13T19:10:12  <antimatroid> janzert: most tron maps were 15x15 no?
+2011-02-13T19:10:15  <antimatroid> not 200x200+
+2011-02-13T19:10:18  <McLeopold> but, if we only send differences, it makes a huge difference, because your sending 100x less information
+2011-02-13T19:10:19  <janzert> no
+2011-02-13T19:10:28  <antimatroid> 25* maybe?
+2011-02-13T19:10:32  <antimatroid> there was something around there
+2011-02-13T19:10:47  <janzert> I thought 50x50 was more common on the tcp server
+2011-02-13T19:10:47  <antimatroid> although i never used tcp for tron, so they may have been different
+2011-02-13T19:11:02  <janzert> I guess I don't remember for sure
+2011-02-13T19:11:07  <McLeopold> did tron send the entire map each turn?
+2011-02-13T19:11:08  <antimatroid> still a pretty big difference
+2011-02-13T19:11:15  <janzert> McLeopold: yes
+2011-02-13T19:11:20  <antimatroid> yes, pretty silly in hindsight
+2011-02-13T19:11:25  <McLeopold> very
+2011-02-13T19:11:45  <janzert> I don't think bandwidth was ever a concern for it :)
+2011-02-13T19:11:55  <McLeopold> it is for my conneciton
+2011-02-13T19:12:00  <antimatroid> but mcleopold is running his server from home
+2011-02-13T19:12:05  <McLeopold> yeah
+2011-02-13T19:12:11  <janzert> yeah, that makes a big difference of course
+2011-02-13T19:12:34  <antimatroid> if an official tcp server is done, will that run off an official server?
+2011-02-13T19:12:41  <McLeopold> yes
+2011-02-13T19:12:45  <antimatroid> is it possible to set that up?
+2011-02-13T19:12:47  <McLeopold> I may be doing the official one
+2011-02-13T19:13:09  <McLeopold> I could get one going in a day, without the ranking
+2011-02-13T19:13:18  <McLeopold> if I had a visualizer...
+2011-02-13T19:13:29  <antimatroid> we need frontier for that
+2011-02-13T19:13:37  <McLeopold> right now I'd have to make the animated gifs
+2011-02-13T19:13:51  <McLeopold> actually, I could whip up a pixel one in a day
+2011-02-13T19:13:58  <McLeopold> it wouldn't be good
+2011-02-13T19:14:01  <janzert> tcp for ants is also going to be more complex since you need to schedule more than 2 players at once
+2011-02-13T19:14:15  <McLeopold> yeah, my tcp framework already handles that
+2011-02-13T19:14:16  <antimatroid> janzert: pick a map, wait for enough players?
+2011-02-13T19:14:44  <McLeopold> I've got it to a working state 2 month ago, it just doesn't look pretty
+2011-02-13T19:15:05  <McLeopold> I could never decide if I wanted data to be stored in a database or in text files.
+2011-02-13T19:15:41  <janzert> hehe
+2011-02-13T19:18:08  <antimatroid> http://xkcd.com/
+2011-02-13T19:18:24  <antimatroid> we have a running joke of being the first to pick up on a missed closed bracket with our maths lecturers
+2011-02-13T19:19:03  <antimatroid> particularly as they already annoyed the hell out of one of our friends (not I surprisingly)
+2011-02-13T19:20:24  <flag> what's the purpose of labeling dead ants on the map?
+2011-02-13T19:20:31  <flag> shouldn't they just disappear?
+2011-02-13T19:20:57  <janzert> so simple bots can track them easier
+2011-02-13T19:21:05  <janzert> rather than just having them disapear
+2011-02-13T19:22:00  <flag> how long will a dead ant remain on the map? until the end of the game?
+2011-02-13T19:22:05  <janzert> and actually there are situations where otherwise you wouldn't know if an ant died or stepped out of vision
+2011-02-13T19:22:20  <janzert> I believe just for the turn following its death
+2011-02-13T19:22:49  <flag> ok
+2011-02-13T19:27:05  <antimatroid> flag: just the turn after, you can treat it as land if you don't want the information, you also don't see information for one of your dead ants out of range of live ants visibility etc.
+2011-02-13T19:36:11  <flag> is my ant always 'a'?
+2011-02-13T19:36:29  <antimatroid> yes
+2011-02-13T19:36:39  <antimatroid> and the first enemy you always see is b for the rest of the game, etc.
+2011-02-13T19:36:54  <flag> okay, thanks
+2011-02-13T19:36:58  <antimatroid> np
+2011-02-13T19:37:15  <antimatroid> i'm curious, why c over c++?
+2011-02-13T19:37:37  <flag> no real reason, personally I just like coding in C
+2011-02-13T19:37:51  <antimatroid> as good a reason as any :)
+2011-02-13T19:37:58  <flag> :)
+2011-02-13T19:47:48  <antimatroid> i love being able to do things like, cin >> state, state++, grid[location], bug << stuff, etc.
+2011-02-13T19:48:55  <flag> you can do all those things in C too, except cin and cout which are easily replace by read, write, printf, etc.
+2011-02-13T19:49:17  <antimatroid> didn't know that
+2011-02-13T19:49:19  <flag> the only thing I'm really missing is something like an std::vector, but it's not that big of a deal
+2011-02-13T19:49:23  <antimatroid> i couldn't live without stl either?
+2011-02-13T19:49:33  <antimatroid> i use vectors more than i should
+2011-02-13T19:50:06  <antimatroid> it's nice being able to create n-dimensional things initialised to 0 or whatever in 1 line though
+2011-02-13T19:50:28  <flag> i simply like knowing what's going on behind the scenes
+2011-02-13T19:50:53  <antimatroid> i'm not knocking :)
+2011-02-13T19:51:01  <antimatroid> i only do that to java
+2011-02-13T19:51:05  <flag> haha
+2011-02-13T19:52:57  <antimatroid> jmcarthur: i'm torn, i know the second explanation before for option 1 is simpler for beginners, but the first is nicer
+2011-02-13T19:53:25  <antimatroid> flag: on the specs page, which line of latex do you prefer explaining battle resolution option 1?
+2011-02-13T19:56:56  <flag> i don't really have a preference
+2011-02-13T19:56:59  <antimatroid> I could go all out and define At then At+1 = {a in At | |enemies(a)| < min_{b in enemies(a)} |enemies(b)| }
+2011-02-13T19:57:10  <flag> simpler is probably better
+2011-02-13T19:57:10  <antimatroid> :*
+2011-02-13T19:57:14  <pyro-> antimatroid: use english
+2011-02-13T19:57:23  <antimatroid> pyro-: i did, it makes less sense
+2011-02-13T19:57:29  <flag> if you can explain it in pure english then you'll scare the least number of people away
+2011-02-13T19:57:39  <antimatroid> A given ant a lives if it has less enemies in range than any of those enemies in range have
+2011-02-13T19:58:15  <antimatroid> it's a bit of a mouth ful
+2011-02-13T19:58:17  <pyro-> antimatroid: its more interesting to specify when an ant doesn't live. i still dont understand your game but i assume ants live by default
+2011-02-13T19:58:55  <antimatroid> actually, you might be correct, it means saying at least as many instead of less thatn
+2011-02-13T19:59:12  <flag> a given ant A dies if it has more enemies in range than each of its enemies?
+2011-02-13T19:59:23  <janzert> an ant dies when it has the same or more enemies in range than its enemies have in range
+2011-02-13T19:59:49  <janzert> or than each of its enemies has in range
+2011-02-13T20:00:54  <antimatroid> i'm just changing it
+2011-02-13T20:00:59  <jmcarthur> antimatroid: this is a spec, not an implementation
+2011-02-13T20:01:16  <antimatroid> the second option becomes, there exists b in enemies(a) st enemies(a).size >= enemies(b).size
+2011-02-13T20:01:31  <jmcarthur> simplicity is way more important than "elegance"
+2011-02-13T20:01:46  <antimatroid> jmcarthur: but but but i'm a maths student :P
+2011-02-13T20:01:53  <jmcarthur> i like the exists version
+2011-02-13T20:01:53  <antimatroid> i strive for elegance
+2011-02-13T20:01:58  <jmcarthur> i think it's elegant
+2011-02-13T20:02:20  <jmcarthur> i would change one thing though
+2011-02-13T20:02:30  <janzert> I have no idea what that last second option description does ;)
+2011-02-13T20:02:37  <jmcarthur> i'd say st enemies(b).size <= enemies(a).size
+2011-02-13T20:02:49  <jmcarthur> since we just bound b
+2011-02-13T20:03:02  <antimatroid> Janzert: enemies(x) = set of enemies in range of ant x
+2011-02-13T20:06:08  <janzert> so.. an ant dies if none of the enemies in range have less enemies in range
+2011-02-13T20:08:52  <jmcarthur> no, an ant dies if *any* of them do
+2011-02-13T20:09:21  <jmcarthur> and that should be <=, not <
+2011-02-13T20:09:30  <jmcarthur> http://mathbin.net/58765
+2011-02-13T20:09:40  <jmcarthur> i think i got that roughly right
+2011-02-13T20:09:47  <jmcarthur> my latex is a bit rusty
+2011-02-13T20:10:53  <antimatroid> i wrote is so people might understand it easier :P
+2011-02-13T20:11:01  <jmcarthur> sure
+2011-02-13T20:11:07  <antimatroid> it's changed if people want to check
+2011-02-13T20:11:34  <jmcarthur> link?
+2011-02-13T20:11:53  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Game-Specification
+2011-02-13T20:12:00  <antimatroid> ctrl f battle option 1
+2011-02-13T20:13:00  <pyro-> wow at this rate im going to find it easier to read the source than your tortured spec :D
+2011-02-13T20:13:11  <jmcarthur> "A given ant a dies if it has at least as many enemies in range as at least one of those enemies in range have"  <-- ouch
+2011-02-13T20:13:13  <antimatroid> that doesn't make sense?
+2011-02-13T20:13:31  <antimatroid> feel free to suggest your own :P
+2011-02-13T20:13:34  <janzert> forget about ant a
+2011-02-13T20:13:55  <antimatroid> the maths makes it clear
+2011-02-13T20:14:02  <janzert> at least until you want to restate it with your math notation
+2011-02-13T20:14:16  <janzert> the maths leave it completely unclear to me
+2011-02-13T20:14:24  <janzert> at least I can work out the english description
+2011-02-13T20:14:51  <jmcarthur> i feel the opposite way
+2011-02-13T20:14:58  <jmcarthur> i think the english is way more confusing than the math :P
+2011-02-13T20:15:02  <antimatroid> me too, i'll do two paragraphs
+2011-02-13T20:15:07  <antimatroid> hold on
+2011-02-13T20:15:11  <jmcarthur> this is, IMO, the clearest explanation: http://mathbin.net/58765
+2011-02-13T20:15:25  <jmcarthur> i understand that it may just seem overly dense to some, though
+2011-02-13T20:16:24  <janzert> An ant dies if it has the same or more enemies in range as any of its enemies has, is correct?
+2011-02-13T20:17:01  <jmcarthur> that's kind of an ambiguous way to say it, but i think you have the idea at least
+2011-02-13T20:17:37  <jbroman> "If an ant departs Central Station moving north at 35 miles per hour, and another ant departs Boston Harbour moving southwest at 40 miles per hour, will the ants die?"
+2011-02-13T20:17:47  <janzert> slightly ambiquous is fine if you're going to have definitive source and a dense math notation explaining it as well :)
+2011-02-13T20:18:09  <janzert> at least it gets people headed in the right track before decoding the other notation
+2011-02-13T20:18:51  <jmcarthur> An ant alpha dies if and only if there exists some ant beta in the set of the enemies of alpha such that the number of enemies of beta is less than or equal to the number of enemies of alpha.   o_O
+2011-02-13T20:19:00  <jmcarthur> i love math notation. says so much in so little space :)
+2011-02-13T20:19:50  <antimatroid> yeah, i use it with english all the time, st and wrt especially
+2011-02-13T20:19:55  <antimatroid> or there exists
+2011-02-13T20:23:11  <antimatroid> try now?
+2011-02-13T20:23:27  <antimatroid> i prefer to keep a clear english definition too
+2011-02-13T20:23:33  <antimatroid> even if it's slightly more of a mouthful?
+2011-02-13T20:23:47  <jmcarthur> i hate such imperative descriptions :\
+2011-02-13T20:23:51  <jmcarthur> i find them very confusing
+2011-02-13T20:23:57  <jmcarthur> the math notation is nice and declarative
+2011-02-13T20:24:52  <antimatroid> yeah, the problem is maths notation is so loaded with with information that a lot of people don't have
+2011-02-13T20:24:59  <antimatroid> even worse is actual maths
+2011-02-13T20:25:06  <janzert> I'd say replace the "at least on of" with "any of" in the first descriptive sentence
+2011-02-13T20:25:20  <antimatroid> yeah, i'll take that
+2011-02-13T20:26:34  <janzert> anyway this will give a person reading it a general idea of what is going on and as we've seen to really understand it takes looking at a lot of actual examples
+2011-02-13T20:26:55  <janzert> which they'll get by watching games played
+2011-02-13T20:27:50  <antimatroid> yeah, i will do some gifs for those battle option parts at some point
+2011-02-13T20:27:57  <antimatroid> that way it can be made clear there and then
+2011-02-13T20:28:33  <janzert> I wouldn't worry about it too much, most people reading the spec are going to have already watch several games
+2011-02-13T20:29:06  <antimatroid> and i have a feeling they will run to the specs (or be pointed there after running to the forums or irc) going wtf
+2011-02-13T20:29:21  <janzert> hehe
+2011-02-13T20:29:42  <antimatroid> option 2 is even less intuitive though, so it's not like that changes
+2011-02-13T20:30:08  <jmcarthur> could be worse
+2011-02-13T20:30:43  <jmcarthur> we could have the "enemies" function be a proposition about two ants, giving true when they are enemies and false when they are friendlies
+2011-02-13T20:30:53  <jmcarthur> ;)
+2011-02-13T20:31:21  <jmcarthur> http://mathbin.net/58765
+2011-02-13T20:31:29  <jmcarthur> :\
+2011-02-13T20:31:37  <antimatroid> relation? :P
+2011-02-13T20:31:44  <jmcarthur> ha
+2011-02-13T20:31:46  <jmcarthur> yes
+2011-02-13T20:31:57  <jmcarthur> that was terrible of me
+2011-02-13T20:32:56  * jmcarthur clutters this up a bit more out of spite
+2011-02-13T20:33:03  <antimatroid> i'm doing a physics unit this semester without having done physics in years, that's going to be, interesting to say the least
+2011-02-13T20:33:18  <antimatroid> although it's on lie groups so hopefully it's more maths than anything
+2011-02-13T20:48:14  *** delt0r___ <delt0r___!~delt0r@188-22-161-201.adsl.highway.telekom.at> has joined #aichallenge
+2011-02-13T20:50:11  *** delt0r_ <delt0r_!~delt0r@188-22-165-214.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-02-13T20:56:37  <CIA-15> aichallenge: Jeremy Roman zeta * r9212cb3 / (7 files in 2 dirs): sandboxed compilation, runner now clones to a separate dir instead of running in submissions/ -- more error handling will be added later - http://bit.ly/e3XFdn
+2011-02-13T20:56:41  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-02-13T20:58:00  <janzert> yay
+2011-02-13T21:03:08  <McLeopold> antimatroid:  I would do diagrams for battle resolution.  With simpler english explainations
+2011-02-13T21:07:24  <antimatroid> McLeopold: how would you simplify the english explanation any further?
+2011-02-13T21:07:38  <antimatroid> i'm looking for the simplest clear explanation
+2011-02-13T21:07:56  <McLeopold> for option 1, the one we don't use?
+2011-02-13T21:08:11  <McLeopold> Explain the concept of an occupied ant.
+2011-02-13T21:08:48  <McLeopold> Then explain an ant can be killed by a less occupied ant.
+2011-02-13T21:09:12  <McLeopold> Conceptually, the should be able to see that ants on the edge of a group will probably get a kill.
+2011-02-13T21:09:15  <antimatroid> hehe, now we're all at odds, i've found that the most confusing explanation yet :P
+2011-02-13T21:09:21  <McLeopold> And ants on the inside won't.
+2011-02-13T21:09:44  <antimatroid> ants in the middle might get a kill, they're just more likely to also be killed
+2011-02-13T21:09:44  <McLeopold> Keep the math, but save that for later.  Not everyone understands it.
+2011-02-13T21:10:03  <McLeopold> They are more likely to not kill someone else.
+2011-02-13T21:10:16  <McLeopold> I would focus on who can kill who, not who will die
+2011-02-13T21:10:32  <McLeopold> The algo can be different from the explaination.
+2011-02-13T21:12:07  <antimatroid> if i say which ant can kill another ant, it might confuse people later with who gets points with kill scoring?
+2011-02-13T21:12:30  <antimatroid> otherwise i see how it might be simpler
+2011-02-13T21:13:39  <McLeopold> We can give the full math as well.  The "occupied" explaination is just to get them started.
+2011-02-13T21:13:58  <McLeopold> It makes the a.b.a case simple to reason about
+2011-02-13T21:14:14  <antimatroid> i don't find the occupied idea easier to understand
+2011-02-13T21:15:10  <antimatroid> janzert, jmcarthur: opinions?
+2011-02-13T21:16:57  <janzert> the short description above, seems like occupied is more confusing, but it might make more sense once expanded. I think what you have now is "good enough" for the time being
+2011-02-13T21:17:31  <janzert> as people start stumbling over it you can worry about trying to make it easier to understand
+2011-02-13T21:18:09  <janzert> also people who haven't had there head down it for quite a while will probably see easier ways to explain it
+2011-02-13T21:18:17  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-02-13T21:25:42  <janzert> amstan_: looks like a spammer made it through to the forums, I'm not sure with the new system if we are suppose to just ban them like we used to or there is something else to add them to the spam list
+2011-02-13T21:26:02  <amstan_> janzert: yeah, new system doesn't work either
+2011-02-13T21:26:14  <amstan_> janzert: i have another forum, and there's a ton of false positives
+2011-02-13T21:26:20  <janzert> :(
+2011-02-13T21:29:24  *** chris__0076 <chris__0076!~Chris_007@adsl-190-125-194.asm.bellsouth.net> has joined #aichallenge
+2011-02-13T21:32:22  *** Chris_0076 <Chris_0076!~Chris_007@adsl-66-197-162.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-02-13T21:38:46  <jmcarthur> i think the "occupied" variation has the most potential, personally
+2011-02-13T21:39:01  <jmcarthur> it's the intuition i had when we first came up with the rule
+2011-02-13T21:39:12  <antimatroid> what does occupied even mean?
+2011-02-13T21:39:45  <jmcarthur> how "busy" an ant is fighting (potentially multiple) other ants
+2011-02-13T21:40:00  <jmcarthur> the more busy you are, the more likely you are to die
+2011-02-13T21:40:04  <antimatroid> so it's the number of enemies within the battle radius?
+2011-02-13T21:40:08  <jmcarthur> depending onhow busy your opponents are
+2011-02-13T21:40:11  <jmcarthur> right
+2011-02-13T21:40:16  <jmcarthur> it's just a name for that idea
+2011-02-13T21:40:46  <antimatroid> it seems like it's just complicating it to me
+2011-02-13T21:41:03  <jmcarthur> you are less effective at defending when you're fighting more enemies, but they are less effective at attacking when they are fighting more enemies
+2011-02-13T21:41:44  <jmcarthur> that might be a good explanation of the intuition, i think... that last thing i said
+2011-02-13T21:42:12  <jmcarthur> it doesn't explain *how* it works at all, but it could put you in the right frame of mind
+2011-02-13T21:43:22  *** pyro-_ <pyro-_!~pyro@CPE-124-176-147-147.lns5.lon.bigpond.net.au> has joined #aichallenge
+2011-02-13T21:44:42  *** pyro-_ <pyro-_!~pyro@CPE-124-176-147-147.lns5.lon.bigpond.net.au> has quit IRC (Changing host)
+2011-02-13T21:44:42  *** pyro-_ <pyro-_!~pyro@unaffiliated/purplepanda> has joined #aichallenge
+2011-02-13T21:45:00  *** pyro- <pyro-!~pyro@CPE-124-176-147-147.lns5.lon.bigpond.net.au> has quit IRC (Disconnected by services)
+2011-02-13T21:45:08  *** pyro-_ is now known as pyro-
+2011-02-13T21:45:30  *** PurplePanda <PurplePanda!~pyro@CPE-124-176-147-147.lns5.lon.bigpond.net.au> has joined #aichallenge
+2011-02-13T21:46:24  *** PurplePanda <PurplePanda!~pyro@CPE-124-176-147-147.lns5.lon.bigpond.net.au> has quit IRC (Client Quit)
+2011-02-13T21:57:03  <amstan_> contestbot: later tell nullkuhl any news on a website design?
+2011-02-13T21:57:03  <contestbot> amstan_: Yep.
+2011-02-13T22:00:04  *** Blkt <Blkt!~Blkt@dynamic-adsl-94-34-26-111.clienti.tiscali.it> has quit IRC (Quit: ERROR: do not makunbound t please!)
+2011-02-13T22:37:52  <Mathnerd314> progress? the topic is old
+2011-02-13T22:59:23  <antimatroid> getting there slowly
+2011-02-13T23:16:02  <flag> yay, my C bot works
+2011-02-13T23:16:30  <flag> now I get to wait until the spec changes and rewrite it
+2011-02-13T23:18:20  <amstan_> contestbot: topic delete 3
+2011-02-13T23:18:20  <contestbot> amstan_: (topic [<channel>]) -- Returns the topic for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+2011-02-13T23:18:29  <amstan_> ugh
+2011-02-13T23:18:38  <amstan_> contestbot: topic remove 3
+2011-02-13T23:18:38  *** contestbot changes topic to "Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Roadmap for the next two contests: http://www.ai-contest.com/forums/viewtopic.php?f=20&t=1238"
+2011-02-13T23:18:46  <amstan_> contestbot: topic remove 3
+2011-02-13T23:18:46  *** contestbot changes topic to "Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/"
+2011-02-13T23:19:05  <antimatroid> flag: :)
+2011-02-13T23:19:13  <amstan_> contestbot: topic add Code Repo: http://github.com/aichallenge/aichallenge
+2011-02-13T23:19:13  *** contestbot changes topic to "Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge"
+2011-02-13T23:19:17  <antimatroid> i've changed the input for mine twice now since first implementing
+2011-02-13T23:20:04  <amstan_> contestbot: topic add Roadmap: goo.gl/qUcRN
+2011-02-13T23:20:04  *** contestbot changes topic to "Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge || Roadmap: goo.gl/qUcRN"
+2011-02-13T23:20:26  <amstan_> contestbot: topic remove 4; topic add Roadmap: http://goo.gl/qUcRN
+2011-02-13T23:20:26  <contestbot> amstan_: Error: '4;' is not a valid topic number.
+2011-02-13T23:20:36  <amstan_> contestbot: topic remove 4
+2011-02-13T23:20:36  *** contestbot changes topic to "Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge"
+2011-02-13T23:20:45  <amstan_> contestbot: topic add Roadmap: http://goo.gl/qUcRN
+2011-02-13T23:20:45  *** contestbot changes topic to "Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge || Roadmap: http://goo.gl/qUcRN"
+2011-02-13T23:20:47  <amstan_> there
+2011-02-13T23:20:50  <amstan_> sorry about the spam
+2011-02-13T23:21:29  <antimatroid> hardly spam :P
+2011-02-13T23:21:40  <antimatroid> cleaning up while creating temporary mess
+2011-02-13T23:21:48  <amstan_> bacn?
+2011-02-13T23:21:49  <amstan_> lol
+2011-02-13T23:21:58  <antimatroid> not that good

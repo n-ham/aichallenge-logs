@@ -1,0 +1,858 @@
+2011-03-06T00:00:08  <janzert> ahh, I missed that
+2011-03-06T00:00:17  <McLeopold> Unless I'm missing something big, TrueSkill doesn't have a magical "pick the perfect opponent" piece.
+2011-03-06T00:00:51  <McLeopold> These are bots, not humans.  We don't care about "fun" matches.  We want matches the drop the sigma the most.
+2011-03-06T00:01:10  <janzert> yes
+2011-03-06T00:01:43  <McLeopold> What we don't want is repeat games.
+2011-03-06T00:01:55  <janzert> we also have to make sure that trueskill isn't getting fooled if the graph of opponents isn't well connected
+2011-03-06T00:02:08  <bss03> McLeopold: Currently, this picks the "best" matchup, but not really iteratively.
+2011-03-06T00:02:39  <bss03> McLeopold: Like, once it chooses a map, if there's not enough valid players to fill that map, it'll just fail.
+2011-03-06T00:02:46  <McLeopold> bss03: yes, we constrain the pool of bots to avoid repeats, then we pick the best match.
+2011-03-06T00:03:29  <McLeopold> bss03: we'll need to think of fallback methods if we can't get a game for a seeded player.
+2011-03-06T00:03:49  <bss03> It's not exactly well-documented, even in the python I have, but the way XboX Live pairing work is that it chooses matches most likely to end in a draw.
+2011-03-06T00:04:04  <bss03> I.e. players of similar skill ranges.
+2011-03-06T00:04:06  <McLeopold> right, that's the "fun" factor
+2011-03-06T00:04:15  <McLeopold> not as important for bots
+2011-03-06T00:04:22  <antimatroid> McLeopold: what are you planning to call map files?
+2011-03-06T00:04:26  <antimatroid> map1.map looks weird
+2011-03-06T00:04:29  <McLeopold> are main concern is no repeat games
+2011-03-06T00:04:38  <McLeopold> antimatroid: maps?
+2011-03-06T00:04:41  <janzert> so a concern for making any ranking system work well is that we have a well connected graph of all the players and also that the maximum shortest path is kept relatively low
+2011-03-06T00:05:02  <janzert> so far as I know trueskill doesn't have anything builtin to help ensure that
+2011-03-06T00:05:03  <McLeopold> antimatroid: i figured we should think of unique names that describe the generation method.
+2011-03-06T00:05:12  <antimatroid> okay sure
+2011-03-06T00:05:32  <bss03> Well, any two TrueSkill ranked players can be compared for match "compatibility".
+2011-03-06T00:05:36  <McLeopold> janzert: I think the constraints I detailed in the wiki should help with that
+2011-03-06T00:05:39  <bss03> It give a number between 0 and 1.
+2011-03-06T00:06:33  <janzert> bss03: but that is just based on how close trueskill thinks they are in skill right or more accurately the chance of a draw between them right?
+2011-03-06T00:06:57  <bss03> When adding a player to the map we maximize the product of "compatibility" between the new player and all existing players.
+2011-03-06T00:07:00  <janzert> McLeopold: the only constraint there that encourages it from what I see is the no repeat matches one
+2011-03-06T00:07:35  <bss03> Yeah, it's just based on (mu, sigma) values -- and the Beta variance.
+2011-03-06T00:07:47  <McLeopold> yes, that's it.  We may need to tweak the variable X, but when done iteratively, it should provide well connected graphs.
+2011-03-06T00:08:18  <janzert> bss03: yes, trueskill compatibility doesn't take into account the opponent graph at all so far as I know
+2011-03-06T00:08:36  <janzert> McLeopold: yeah
+2011-03-06T00:08:41  <McLeopold> what was the beta, I forget?
+2011-03-06T00:09:22  <bss03> Beta is supposed to represent how big a "gap" there is in mu from the worst players to the best players.
+2011-03-06T00:09:39  <bss03> Something like if mu1 - mu2 = beta the mu2 has a 20% change of winning.
+2011-03-06T00:10:10  <bss03> The MS research paper uses initial_sigma / 2, IIRC.
+2011-03-06T00:11:40  <McLeopold> It looks like beta is calculated from the mu and sigma
+2011-03-06T00:11:49  *** chemuduguntar <chemuduguntar!~ravi@118-93-174-55.dsl.dyn.ihug.co.nz> has quit IRC (Remote host closed the connection)
+2011-03-06T00:12:37  <bss03> Also, the paper touches on the fact that the "fun" factor and the "minimizing sigma" ("informative") factor are the same.
+2011-03-06T00:12:53  <antimatroid> McLeopold: it would be nice if the engine would support spawning food symmetrically so we can play with both
+2011-03-06T00:14:10  <bss03> McLeopold: From the paper "...The variance of performance is given by \Beta^2 = (\sigma_0/2)^2..."
+2011-03-06T00:15:00  <bss03> But, they have said in other place that it might need to be tweaked acroding to the 20/80 rule.
+2011-03-06T00:16:52  <McLeopold> we care about minimizing sigma
+2011-03-06T00:17:43  <McLeopold> bss03: I'm going to push a schema change in a little bit.
+2011-03-06T00:18:13  <bss03> For the initial sigma base beta we are using to be correct, our "worst player" should beat our "best player" once every 667601 matches or so.
+2011-03-06T00:18:46  <bss03> Which, if ants is similar to PW, might be right.
+2011-03-06T00:19:13  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Quit: Page closed)
+2011-03-06T00:19:49  <bss03> McLeopold: What I mean is they they argue that by choosing these "most liekly to draw" matches, they are BOTH minimizing sigma and choosing "fun" games.
+2011-03-06T00:21:57  *** chris__0076 <chris__0076!~Chris_007@adsl-190-52-197.asm.bellsouth.net> has joined #aichallenge
+2011-03-06T00:23:13  <antimatroid> why doesn't pythong have ++?
+2011-03-06T00:23:14  <McLeopold> bss03: ok, so close matches (aka "fun") will drop the sigma the most.
+2011-03-06T00:23:15  <antimatroid> python*
+2011-03-06T00:23:21  <McLeopold> +=
+2011-03-06T00:23:28  <antimatroid> yeah, but that's an extra character
+2011-03-06T00:23:36  <antimatroid> well, a few when you add spaces
+2011-03-06T00:23:37  <McLeopold> Because it is misused and can cause obfuscated code.
+2011-03-06T00:23:55  <antimatroid> it's beautiful :(
+2011-03-06T00:24:00  <McLeopold> Python is meant to be easily read.
+2011-03-06T00:24:09  <McLeopold> By humans
+2011-03-06T00:24:20  <antimatroid> lol, that token stuff before wasn't easily readable by humans compared to how one would do it in c++
+2011-03-06T00:24:55  <McLeopold> http://stackoverflow.com/questions/1485841/python-behaviour-of-increment-and-decrement-operators
+2011-03-06T00:25:08  *** chris___0076 <chris___0076!~Chris_007@adsl-190-123-139.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-03-06T00:25:18  <McLeopold> well, if I had nice formatting on it, it would be
+2011-03-06T00:25:33  <McLeopold> At some point, you have to learn to read code.
+2011-03-06T00:26:17  <McLeopold> btw: that link is hilarious
+2011-03-06T00:41:45  <janzert> anyone have a problem with a toplevel "setup" directory for the setup scripts, configuration templates and such? I'm just finding that while the worker_setup script lived naturally in the worker directory the main server setup stuff feels quite out of place shoving it into the manager
+2011-03-06T00:48:50  *** delt0r_ <delt0r_!~delt0r@188-22-168-61.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-06T00:50:13  *** delt0r___ <delt0r___!~delt0r@188-22-172-185.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T00:56:25  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-06T00:58:30  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-06T00:59:43  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Read error: No route to host)
+2011-03-06T01:04:37  <antimatroid> McLeopold: i'm going to need to get some format info off you at some point
+2011-03-06T01:04:39  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-06T01:05:25  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-06T01:07:35  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-06T01:15:37  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-06T01:21:09  <antimatroid> McLeopold: are maps to always start with 1 ant per player?
+2011-03-06T01:25:30  *** chris___0076 <chris___0076!~Chris_007@adsl-176-226-83.asm.bellsouth.net> has joined #aichallenge
+2011-03-06T01:26:25  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 260 seconds)
+2011-03-06T01:26:30  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-06T01:26:31  *** ChanServ sets mode: +o amstan
+2011-03-06T01:28:29  *** chris__0076 <chris__0076!~Chris_007@adsl-190-52-197.asm.bellsouth.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T01:28:30  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Read error: No route to host)
+2011-03-06T01:32:49  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-06T01:38:37  *** chris__0076 <chris__0076!~Chris_007@adsl-176-15-23.asm.bellsouth.net> has joined #aichallenge
+2011-03-06T01:41:22  <sigh> antimatroid: ++ is beautiful? quick quiz: what is the value of "i" after this statement: j = i || (++i);
+2011-03-06T01:41:32  *** chris___0076 <chris___0076!~Chris_007@adsl-176-226-83.asm.bellsouth.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T01:47:47  <bss03> Well, I think I almost have a working test environment, but I also think I'm going to turn in for the night.
+2011-03-06T01:47:57  <bss03> So, no more updates from me until morning.
+2011-03-06T01:48:01  <bss03> Have fun!
+2011-03-06T01:48:06  *** bss03 is now known as bss03-AFK
+2011-03-06T01:50:11  *** lavalamp <lavalamp!180dae74@gateway/web/freenode/ip.24.13.174.116> has joined #aichallenge
+2011-03-06T01:54:33  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Read error: Connection reset by peer)
+2011-03-06T01:55:14  <lavalamp> is anyone awake?
+2011-03-06T01:55:18  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has quit IRC (Quit: ali1`)
+2011-03-06T01:55:32  <lavalamp> or on the other side of the world? :)
+2011-03-06T01:55:44  <pyro-> it is 17:55
+2011-03-06T01:55:56  <lavalamp> not here :)
+2011-03-06T01:56:07  <pyro-> :O crazy
+2011-03-06T01:56:13  <lavalamp> I'm having troubles running playgame.py from the epsilon branch....
+2011-03-06T01:56:32  <lavalamp> trying to test the starter package I'm making...
+2011-03-06T01:56:56  <pyro-> i don't know anything about it. sorry :D
+2011-03-06T01:57:03  <lavalamp> that's ok
+2011-03-06T01:57:15  <lavalamp> I think everyone that does is sleeping
+2011-03-06T01:57:23  <lavalamp> except maybe antimatroid
+2011-03-06T01:57:27  <pyro-> McLeopold promised to test my starter thing with his engine if i stop being lazy and finish it:D
+2011-03-06T01:57:33  *** pyro- is now known as DrunkenPanda
+2011-03-06T01:57:33  <lavalamp> haha
+2011-03-06T01:57:59  <lavalamp> which language are you doing?
+2011-03-06T01:58:08  <DrunkenPanda> typing is so hard:D i lnearly spelt DrunkenPanda wrong:D
+2011-03-06T01:58:15  <DrunkenPanda> scheme:D
+2011-03-06T01:58:21  <lavalamp> cool
+2011-03-06T01:58:22  <lavalamp> lol
+2011-03-06T01:58:43  <DrunkenPanda> i don't have a lava lamp D:
+2011-03-06T01:58:56  <lavalamp> Mine is burnt out, it's ok.
+2011-03-06T01:59:18  <DrunkenPanda> what lngiugae? are you doing? :D
+2011-03-06T01:59:24  <lavalamp> go
+2011-03-06T01:59:31  <DrunkenPanda> oh that sentence didnt turn out wweel :D
+2011-03-06T01:59:32  <lavalamp> golang.org
+2011-03-06T01:59:34  <lavalamp> haha
+2011-03-06T01:59:52  <lavalamp> I guess I could try debugging playgame.py....
+2011-03-06T01:59:58  <DrunkenPanda> is thee one from google:D
+2011-03-06T02:00:08  <lavalamp> is there a python debugger?
+2011-03-06T02:00:12  <lavalamp> yeah, that's the one.
+2011-03-06T02:00:45  <DrunkenPanda> i typed my search engine python devbugger and it saud i thing called pdb exist :D
+2011-03-06T02:01:01  <lavalamp> I guess I could have done that myself... :/
+2011-03-06T02:01:04  <DrunkenPanda> i never rrused it before though. i tlike to spike the sources qirht print statement:D
+2011-03-06T02:01:38  <DrunkenPanda> wow this is iwine go straight to my head:FD so fast:D
+2011-03-06T02:02:00  <DrunkenPanda> and! just can see if there is an exception throwenED!
+2011-03-06T02:02:01  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has joined #aichallenge
+2011-03-06T02:02:12  <DrunkenPanda> no needd for a debugging tool:D
+2011-03-06T02:02:45  *** JackyAlcine <JackyAlcine!~JackyAlci@unaffiliated/webjadmin> has quit IRC (Remote host closed the connection)
+2011-03-06T02:02:51  <lavalamp> pdb is not intuitive :/
+2011-03-06T02:03:20  <DrunkenPanda> isss nto an exception asn it just nots works? :(
+2011-03-06T02:03:26  <janzert> using a debugger with python is almost weird sounding to me
+2011-03-06T02:03:31  <janzert> :P
+2011-03-06T02:03:40  <DrunkenPanda> HEEloo janzert :D
+2011-03-06T02:03:46  <janzert> i.e. it's not done much
+2011-03-06T02:03:55  <lavalamp> haha
+2011-03-06T02:03:56  <DrunkenPanda> becuase you can print statement:D:D
+2011-03-06T02:03:59  * janzert waves
+2011-03-06T02:04:13  <lavalamp> alright so you just add prints everywhere?
+2011-03-06T02:04:21  <DrunkenPanda> und there is exvceptions:D
+2011-03-06T02:04:24  <janzert> heh, well what is the problem?
+2011-03-06T02:04:38  <DrunkenPanda> well only in place where you think it can be the wrng:D not on all lines of ceod:D
+2011-03-06T02:04:43  <lavalamp> playgame.py exceptions
+2011-03-06T02:05:01  <DrunkenPanda> wehat it says?
+2011-03-06T02:05:05  <DrunkenPanda> you must read him:D
+2011-03-06T02:05:16  <lavalamp> http://pastebin.com/gb8ReNYt
+2011-03-06T02:05:24  <lavalamp> I'm probably using it wrong or something
+2011-03-06T02:06:16  <DrunkenPanda> :O i would be looking for find the place whereist path deffiend
+2011-03-06T02:06:23  <DrunkenPanda> clearlyy its not getttign defined right:D
+2011-03-06T02:06:36  <DrunkenPanda> but i not know anything about thesees sources:D
+2011-03-06T02:06:39  <DrunkenPanda> or how to use:D
+2011-03-06T02:08:08  <lavalamp> hm
+2011-03-06T02:08:12  *** chris___0076 <chris___0076!~Chris_007@adsl-176-16-109.asm.bellsouth.net> has joined #aichallenge
+2011-03-06T02:08:14  <janzert> put a "print output_dir" at line 11 just after the try: line in engine.py
+2011-03-06T02:08:26  <janzert> I'm guessing for some reason it is set to None
+2011-03-06T02:09:18  <lavalamp> yes, it reported None
+2011-03-06T02:10:09  <janzert> try adding "-o ." to your playgame.py command line
+2011-03-06T02:10:54  <lavalamp> yeah I just thought of that
+2011-03-06T02:10:57  <lavalamp> ...and it works
+2011-03-06T02:11:04  *** chris__0076 <chris__0076!~Chris_007@adsl-176-15-23.asm.bellsouth.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-06T02:11:10  <janzert> if you don't want to specify it all the time...
+2011-03-06T02:11:27  <lavalamp> seems the default doesn't work...
+2011-03-06T02:11:39  <janzert> you can add "default='.'," to line 27 in playgame.py
+2011-03-06T02:11:46  <janzert> there isn't any default specified
+2011-03-06T02:11:56  <DrunkenPanda> its fixxed it :D
+2011-03-06T02:12:02  <DrunkenPanda> 
+2011-03-06T02:12:03  <lavalamp> ah I see
+2011-03-06T02:12:13  <lavalamp> so it's a non-optional optional parameter :)
+2011-03-06T02:12:26  <janzert> yeah, seems like :)
+2011-03-06T02:12:38  <lavalamp> ok and my go bot crashed, yay
+2011-03-06T02:12:52  <lavalamp> thank you, now I can go fix my own problems :)
+2011-03-06T02:12:56  <janzert> and we managed to that without even starting up a debugger or me having ever run playgame.py :P
+2011-03-06T02:13:05  <lavalamp> haha
+2011-03-06T02:13:10  <DrunkenPanda> lavalamp your bot know hwere is land and where is an ? nothing ?
+2011-03-06T02:13:23  <DrunkenPanda> i founds out yeesterday you has to calculate it D:
+2011-03-06T02:13:24  <lavalamp> no I'm just doing a starter package for now
+2011-03-06T02:13:38  <lavalamp> It moves randomly
+2011-03-06T02:13:49  <DrunkenPanda> :D how if ant crash into water :D
+2011-03-06T02:13:56  <lavalamp> it does keep track of where land/water/ants/dead ants are...
+2011-03-06T02:14:02  <DrunkenPanda> :D
+2011-03-06T02:14:10  <DrunkenPanda> swimming ant :D
+2011-03-06T02:14:19  <lavalamp> haha I think the server will not allow that
+2011-03-06T02:14:42  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has quit IRC (Read error: Connection reset by peer)
+2011-03-06T02:14:51  <DrunkenPanda> pff
+2011-03-06T02:14:58  <DrunkenPanda> boring servef no sensee of humoourD:
+2011-03-06T02:15:00  *** kaemo <kaemo!~mad5ci@afrj66.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-06T02:15:09  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-06T02:15:09  *** ChanServ sets mode: +o amstan
+2011-03-06T02:15:17  <lavalamp> ask for live jackets :)
+2011-03-06T02:15:24  <DrunkenPanda> TAch amstan!:D
+2011-03-06T02:15:45  <DrunkenPanda> hee :D it looks funny :D
+2011-03-06T02:15:55  <DrunkenPanda> and ant jacket eed many arm holes :D
+2011-03-06T02:22:34  *** chris__0076 <chris__0076!~Chris_007@adsl-190-52-151.asm.bellsouth.net> has joined #aichallenge
+2011-03-06T02:25:11  *** chris___0076 <chris___0076!~Chris_007@adsl-176-16-109.asm.bellsouth.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T02:26:38  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has quit IRC (Read error: Operation timed out)
+2011-03-06T02:31:25  <lavalamp> sweet, it works
+2011-03-06T02:31:34  <lavalamp> Is there a way to visualize this? :/
+2011-03-06T02:32:16  <lavalamp> *finds viewer*
+2011-03-06T02:35:58  *** me0w <me0w!~me0w@197.200.73.239> has joined #aichallenge
+2011-03-06T02:41:29  <lavalamp> does the viewer work?
+2011-03-06T02:42:06  <janzert> you know more than I do :)
+2011-03-06T02:43:28  <lavalamp> haha
+2011-03-06T02:43:52  <lavalamp> looking at the replay file I see lots of ant and food commands but the viewer shows nothing...
+2011-03-06T02:44:18  <janzert> I really know absolutely nothing about it :(
+2011-03-06T02:44:38  <lavalamp> ah that's ok
+2011-03-06T02:44:47  <janzert> I know Frontier is working on a javascript viewer but I'm not sure if that is different or not
+2011-03-06T02:45:01  <lavalamp> yeah the one in there appears to be js
+2011-03-06T02:45:46  <lavalamp> I'll just make the bot print something so I know it works
+2011-03-06T02:51:59  <antimatroid> lavalamp: I haven't run playgame.py myself yet
+2011-03-06T02:52:07  <antimatroid> i've just tested my bot by passing it game strings i might up
+2011-03-06T02:52:22  <antimatroid> made* up
+2011-03-06T02:52:24  <lavalamp> I managed to get it to run
+2011-03-06T02:52:36  <lavalamp> needs the -o parameter
+2011-03-06T02:52:54  <lavalamp> the visualizer doesn't seem to work
+2011-03-06T02:53:14  <lavalamp> but that's ok, I have my bot printing out the map now
+2011-03-06T02:53:14  <antimatroid> no, i don't think the engine and visualiser are using hte same format atm
+2011-03-06T02:53:20  <lavalamp> ah ok
+2011-03-06T02:53:29  <lavalamp> might be a problem ^^
+2011-03-06T02:53:35  <antimatroid> well yeah :P
+2011-03-06T02:53:43  <antimatroid> we're still making stuff
+2011-03-06T02:53:55  <lavalamp> that's fine
+2011-03-06T02:54:24  <lavalamp> I'm writing a go starter package (of course)
+2011-03-06T02:56:42  *** kaemo <kaemo!~mad5ci@afrj66.neoplus.adsl.tpnet.pl> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T02:57:56  <CIA-89> aichallenge: janzert epsilon * rbf793e6 / (6 files in 2 dirs): Initial work on main server setup script (still incomplete) - http://bit.ly/fXQ1H5
+2011-03-06T02:58:05  <janzert> well I'm finally off to bed, night all
+2011-03-06T02:58:09  <lavalamp> good night
+2011-03-06T02:58:30  <lavalamp> hm...
+2011-03-06T02:59:07  <lavalamp> So I guess you have to figure out which squares you can see yourself. Didn't realize that until just now... :/
+2011-03-06T03:02:27  <antimatroid> it's that or send a whole lot more input each turn
+2011-03-06T03:02:40  <antimatroid> it's really not hard to work out
+2011-03-06T03:05:47  <lavalamp> Yeah, it's not hard...
+2011-03-06T03:06:00  <lavalamp> The python package doesn't seem to do that, though...
+2011-03-06T03:06:32  <DrunkenPanda> its what i just did said before lavalamp !
+2011-03-06T03:06:47  <DrunkenPanda> its make sad ! :D
+2011-03-06T03:06:52  <lavalamp> ah is that what you meant
+2011-03-06T03:07:09  <DrunkenPanda> you cant see which is a what without a compute D:
+2011-03-06T03:07:29  <DrunkenPanda> and yes
+2011-03-06T03:07:31  <DrunkenPanda> none of them do
+2011-03-06T03:07:36  <lavalamp> it's way past my bed time here ^^
+2011-03-06T03:07:42  <DrunkenPanda> all broked starter packakakk:D
+2011-03-06T03:07:52  <DrunkenPanda> only non existed scheme one work right:D and he not exist:D
+2011-03-06T03:08:01  <lavalamp> haha I will think about if I want to do that or not...
+2011-03-06T03:08:02  <DrunkenPanda> gute nahct :D
+2011-03-06T03:08:25  <lavalamp> see you all later
+2011-03-06T03:08:25  *** lavalamp <lavalamp!180dae74@gateway/web/freenode/ip.24.13.174.116> has quit IRC (Quit: Page closed)
+2011-03-06T03:09:23  <DrunkenPanda> bye bye:D
+2011-03-06T03:09:53  <DrunkenPanda> ist why yuou make a goood consise coding antimatroid :D
+2011-03-06T03:09:57  <DrunkenPanda> not coniss
+2011-03-06T03:09:59  <DrunkenPanda> mmall
+2011-03-06T03:10:04  <DrunkenPanda> i cant think the word :(
+2011-03-06T03:10:11  <DrunkenPanda> to make not much bytes ! but more information :D
+2011-03-06T03:10:26  *** kaemo <kaemo!~mad5ci@dhg69.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-06T03:11:49  <DrunkenPanda> its more sense that force bot to recaluclat what engine know alread:D and much more sense than broked bot that think he know whta he dont"D
+2011-03-06T03:12:13  <DrunkenPanda> isnt it? :D i think its So :D
+2011-03-06T03:12:56  <DrunkenPanda> but already you maked him :D
+2011-03-06T03:13:04  <antimatroid> i think you're a bit drunk
+2011-03-06T03:13:09  <DrunkenPanda> i just to fix it so my bot does make caulculations :D
+2011-03-06T03:13:16  <DrunkenPanda> yes i'm ! :D
+2011-03-06T03:13:42  <DrunkenPanda> didn;t you also? :(
+2011-03-06T03:13:43  <antimatroid> the point of the io format is to minimise the amount of it, not to make people recalculate what is already known by the engine
+2011-03-06T03:13:53  <antimatroid> it wasn't my preference either, but I really don't think it's as bigger deal as you make
+2011-03-06T03:14:00  <DrunkenPanda> if you visiit i share :D
+2011-03-06T03:14:10  <DrunkenPanda> many sorts of beer :D
+2011-03-06T03:14:17  <antimatroid> cascade draught <3
+2011-03-06T03:14:29  <DrunkenPanda> deal yes! big deal:D much stupid :D
+2011-03-06T03:14:55  <DrunkenPanda> easy fixed, but too not understand why not want fixed :D
+2011-03-06T03:15:01  <DrunkenPanda> yes have!
+2011-03-06T03:15:08  <DrunkenPanda> cascade
+2011-03-06T03:15:11  <DrunkenPanda> crownie:D
+2011-03-06T03:15:28  <DrunkenPanda> spaklly wine:D
+2011-03-06T03:16:19  <antimatroid> i don't like wine
+2011-03-06T03:16:37  <antimatroid> didn't stop me consuming horrible amounts of goon when I'm younger, but it didn't help the fact that it tastes awful
+2011-03-06T03:16:44  <antimatroid> i was*
+2011-03-06T03:16:51  <DrunkenPanda> its okay.! much beer! some vodka! some bourbon! :D
+2011-03-06T03:16:56  <DrunkenPanda> not ttneed the wine:D
+2011-03-06T03:17:26  <DrunkenPanda> you saw banana in pjyama when littel? theme song good when enoughed to drink :D
+2011-03-06T03:18:30  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-06T03:20:03  <DrunkenPanda> chase the dion the stairs :D
+2011-03-06T03:34:12  *** me0w <me0w!~me0w@197.200.73.239> has quit IRC (Read error: Connection reset by peer)
+2011-03-06T03:57:50  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has joined #aichallenge
+2011-03-06T04:26:26  <antimatroid> sigh: was that you that i had the conversation about with water blocking?
+2011-03-06T04:26:44  <antimatroid> swap(about, with)
+2011-03-06T04:26:53  <sigh> antimatroid: don't think so
+2011-03-06T04:27:02  <antimatroid> must have been jmcarthur
+2011-03-06T04:27:06  <antimatroid> jmcarthur: you up?
+2011-03-06T05:09:01  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has quit IRC (Quit: ali1`)
+2011-03-06T05:28:57  <antimatroid> damn, i lasted at least a few months before losing the game
+2011-03-06T05:36:31  *** boegel <boegel!~boegel@91.182.129.36> has joined #aichallenge
+2011-03-06T05:57:53  *** chris__0076 <chris__0076!~Chris_007@adsl-190-52-151.asm.bellsouth.net> has quit IRC (Read error: Operation timed out)
+2011-03-06T06:12:00  *** chris__0076 <chris__0076!~Chris_007@adsl-66-196-58.asm.bellsouth.net> has joined #aichallenge
+2011-03-06T07:50:53  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-06T08:28:38  <antimatroid> ergh, euclidean distance makes things tricky when calculating who can get where first
+2011-03-06T08:29:21  <antimatroid> actually, i don't want to be using euclidean distance for what i'm doing, nevermind
+2011-03-06T08:29:26  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-06T08:29:54  <antimatroid> i think people are going to want to use more than one distance metric with their bots
+2011-03-06T08:47:19  <antimatroid> bleh, why the hell would python give a function for finding an element in a list but give an error if it's not there?
+2011-03-06T08:47:24  <antimatroid> why wouldn't it just return -1?
+2011-03-06T08:48:05  <antimatroid> oh, i guess count will do, err
+2011-03-06T08:49:25  *** delt0r___ <delt0r___!~delt0r@188-22-25-41.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-06T08:50:55  *** delt0r_ <delt0r_!~delt0r@188-22-168-61.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T08:51:06  <jbroman> antimatroid: If all you want is whether it's there, the "in" operator is best.
+2011-03-06T08:53:54  <antimatroid> jbroman: cheers
+2011-03-06T08:54:21  <antimatroid> on a better note, i just got it correctly working out which squares can be reached by which players fastest
+2011-03-06T08:57:54  <antimatroid> jbroman: http://codepad.org/C4c22fGS :)
+2011-03-06T08:58:11  <antimatroid> a partitioned map with . for draw squares
+2011-03-06T08:58:41  <jbroman> Oooh, shiny.
+2011-03-06T09:11:44  <antimatroid> hmm, i think it's calculating that wrong
+2011-03-06T09:11:52  <antimatroid> there is a square there that looks like one player should have it :\
+2011-03-06T09:15:05  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-06T09:17:00  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-06T09:22:09  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-06T09:23:33  <Frontier> I'm getting somewhere with the Java wrapper: http://marco-leise.homedns.org/antgui/work/visualizer.php?game_id=2&debug=true&java=true#visualizer On my computer I couldn't tell the difference between Java and HTML canvas any more. It is just as much as between browsers.
+2011-03-06T09:28:10  *** boegel <boegel!~boegel@91.182.129.36> has quit IRC (Ping timeout: 248 seconds)
+2011-03-06T09:30:54  <antimatroid> wasn't broken :)
+2011-03-06T09:33:17  *** boegel <boegel!~boegel@91.182.104.108> has joined #aichallenge
+2011-03-06T09:36:55  <janzert> antimatroid: see sequence.index(val) and sequence.find(val)
+2011-03-06T09:38:03  <jbroman> janzert: I think find is defined only for string.
+2011-03-06T09:38:08  <janzert> but jbroman also already pointed out the correct thing if you're just trying to test if it's there (i.e. val in seq)
+2011-03-06T09:38:21  <jbroman> [1,2,3].find(3) -> AttributeError: 'list' object has no attribute 'find'
+2011-03-06T09:38:30  <janzert> ahh, yeah
+2011-03-06T09:38:43  <jbroman> Why perplexes me, but alas.
+2011-03-06T09:39:49  <antimatroid> janzert: index returns an error if the list doesn't contain it
+2011-03-06T09:39:59  <antimatroid> i've got it done now anyway, i'm just cleaning stuff up
+2011-03-06T09:40:16  <antimatroid> otherwise there is now a map analyzer with no specified output format yet
+2011-03-06T09:40:38  <jbroman> antimatroid: He meant that the 'find' method returns -1 instead of raising an error. Unfortunately, 'find' exists on string (and not list, as far as I can tell).
+2011-03-06T09:40:53  <janzert> right
+2011-03-06T09:46:46  <antimatroid> it must be bedtime, here's the map analyzer if anyone wants to have a peek
+2011-03-06T09:46:56  <antimatroid> http://codepad.org/5re8ew4J
+2011-03-06T09:51:07  <antimatroid> i originally liked the for row in matrix syntax for python, but does it get confusing for all of you too?
+2011-03-06T09:51:27  <antimatroid> it's great until i decide after using it that I need to index more than the one data structure based on indexing values :\
+2011-03-06T09:52:07  <janzert> use "for row_ix, row in enumerate(matrix):"
+2011-03-06T09:52:21  <janzert> if you need the index as well as the item
+2011-03-06T09:55:08  <antimatroid> hmm, yeah that needs a big clean, but the access code is correct i'm pretty sure
+2011-03-06T09:56:36  <janzert> have you tested that pastebin on a real map?
+2011-03-06T09:56:46  <janzert> you're map parsing looks wrong
+2011-03-06T09:57:00  <janzert> ahh, no I guess it's fine
+2011-03-06T09:57:03  <antimatroid> i have tested it on maps :P
+2011-03-06T09:57:20  <janzert> err, actually
+2011-03-06T09:57:23  <antimatroid> janzert: http://codepad.org/C4c22fGS
+2011-03-06T09:57:27  <janzert> don't map lines have spaces in them?
+2011-03-06T09:57:36  <antimatroid> not between characters
+2011-03-06T09:57:40  <antimatroid> surely not, what a waste of room :P
+2011-03-06T09:57:48  <janzert> I think land was just a space
+2011-03-06T09:57:53  <janzert> err, thought
+2011-03-06T09:57:56  <janzert> I guess it's a .
+2011-03-06T09:57:57  *** kaemo <kaemo!~mad5ci@dhg69.neoplus.adsl.tpnet.pl> has quit IRC (Remote host closed the connection)
+2011-03-06T09:58:02  <antimatroid> ' ' land is new to me
+2011-03-06T09:58:07  <antimatroid> and i'm very against having it as ' '
+2011-03-06T09:58:26  <antimatroid> surely '.' costs as much to store and makes input a hell of a lot easier
+2011-03-06T09:58:27  <janzert> nah, that's fine I just thought that it was
+2011-03-06T09:58:32  <antimatroid> :)
+2011-03-06T09:58:44  <antimatroid> i like those partitioned map pictures
+2011-03-06T09:58:45  <janzert> makes it easier to look at too of course
+2011-03-06T09:59:42  <janzert> it'll be easy enough for McLeopold to do it, but you might want to wrap all your code into function(s) so he can import it and call it from another script
+2011-03-06T09:59:56  <janzert> which is how he'll actually use it I imagine
+2011-03-06T10:00:12  <janzert> since he was talking about it returning a dict
+2011-03-06T10:01:17  <antimatroid> sounds decent, i'll do that tomorrow
+2011-03-06T10:02:00  <antimatroid> i still need to work out with McLeopold at some point what format he wants me to give everything in too
+2011-03-06T10:02:05  *** kaemo <kaemo!~mad5ci@dhg69.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-06T10:04:19  <janzert> (10:49:46 PM) McLeopold: I want a function that will take a map file and return a dictionary of values.
+2011-03-06T10:04:19  <janzert> (10:49:55 PM) McLeopold: So, for now, { 'players': 4 }
+2011-03-06T10:04:40  <janzert> and then he went on to add about the first reachable spaces
+2011-03-06T10:04:50  <janzert> but sounds like you're ready for bed anyway
+2011-03-06T10:06:06  * janzert goes afk
+2011-03-06T10:06:49  <antimatroid> yeah, but i don't know what to say when there is something invalid about the map etc. etc.
+2011-03-06T10:06:55  <antimatroid> i'll do formating etc. after all that
+2011-03-06T10:07:13  <janzert> raise an exception
+2011-03-06T10:07:20  <janzert> formatting?
+2011-03-06T10:10:35  <antimatroid> formatting output
+2011-03-06T10:12:33  <janzert> it's a dictionary there isn't any format
+2011-03-06T10:13:56  <janzert> btw, it should be fine to just reuse ValueError if the map is bad
+2011-03-06T10:14:19  <janzert> i.e. simply 'raise ValueError("Specific reason map is bad message")"
+2011-03-06T10:23:59  <antimatroid> i'll put that stuff in tomorrow
+2011-03-06T10:24:15  <antimatroid> i'm terrible at going to bed, i've bene redditing :P
+2011-03-06T10:41:01  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-06T10:41:01  *** ChanServ sets mode: +o amstan
+2011-03-06T10:54:37  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-06T10:54:58  *** choas <choas!~lars@p548B6AA0.dip.t-dialin.net> has joined #aichallenge
+2011-03-06T11:00:45  <McLeopold> antimatroid: raising a value error sounds good
+2011-03-06T11:01:40  <amriedle> i would suppose some people here have wrist problems anyone have recommendations
+2011-03-06T11:02:17  <McLeopold> sleep with your hands open and your fingers straight
+2011-03-06T11:02:44  <amriedle> lol
+2011-03-06T11:03:00  <amriedle> i already sleep with brace on lol
+2011-03-06T11:03:52  <McLeopold> oh, then, I got nothing else
+2011-03-06T11:04:09  <bss03-AFK> I had some chronic wrist pain for a few months.  Turns out it was they way I'd lead forward on my hands while reading the Internet.
+2011-03-06T11:04:40  <amriedle> lol
+2011-03-06T11:04:46  <amriedle> that is sad and not the case for me
+2011-03-06T11:04:54  <bss03-AFK> I mostly use a better posture now.  But, for a while, it helped to have light pressure on the wrist.
+2011-03-06T11:04:56  <amriedle> mine is clearly a wrist strength problem most likely lo
+2011-03-06T11:05:20  <amriedle> cause it is mainly my right hand, and i type mainly with my left
+2011-03-06T11:05:26  <McLeopold> bss03: I have an sql statement for you...
+2011-03-06T11:05:42  <bss03-AFK> Something like a sweatband applied just a little bit of preasure and kept it warmer thatn the rest of my body.  Made it feel better.
+2011-03-06T11:06:07  <bss03-AFK> McLeopold: Go ahead, I'm about to start back to work on the assignment.
+2011-03-06T11:06:12  *** bss03-AFK is now known as bss03
+2011-03-06T11:06:31  <McLeopold> ho
+2011-03-06T11:06:36  <McLeopold> h/o
+2011-03-06T11:07:07  <bss03> h/o?
+2011-03-06T11:07:32  <amriedle> bss03: hmmm good idea
+2011-03-06T11:09:38  <amriedle> its bad when you start mixing dvorak and qwerty lol
+2011-03-06T11:09:52  <amriedle> i started to realize that most words are typed with left hand in qwerty layout
+2011-03-06T11:10:11  <amriedle> at least the words i type :P
+2011-03-06T11:12:36  <amriedle> i still have yet to understand my fortune cookie
+2011-03-06T11:12:36  <amriedle> lol
+2011-03-06T11:15:11  <McLeopold> bss03: I want to add a seed_id to the game table, so you can easily query for the last person to have been the seed player
+2011-03-06T11:15:26  <McLeopold> I can't decide if it will be user_id or submission_id
+2011-03-06T11:23:32  <bss03> I'm already walking the game <-> game_player join quite a lot, so it's mostly easy to just check for player_id = 0.  If you feel it needs to be added though,...
+2011-03-06T11:24:33  <bss03> I would guess that a submission_id is best.  We mostly schedule based on submission_id.
+2011-03-06T11:25:22  <McLeopold> we need to make sure people who submit often don't get too many games
+2011-03-06T11:29:40  *** politik__ <politik__!~joel@pool-96-237-242-89.bstnma.fios.verizon.net> has quit IRC (Remote host closed the connection)
+2011-03-06T11:30:00  <jmcarthur> i never liked the prioritizing people who submitted recently thing
+2011-03-06T11:30:09  <jmcarthur> i think their rotation should not be treated special
+2011-03-06T11:30:29  <jmcarthur> at least as far as timing
+2011-03-06T11:31:11  <bss03> McLeopold: Does epslion-new-schema work right now?  I've got a weird error.
+2011-03-06T11:31:23  <bss03> McLeopold: OperationalError: (1248, 'Every derived table must have its own alias')
+2011-03-06T11:32:34  <McLeopold> need to alias a table
+2011-03-06T11:33:35  <McLeopold> gotta go, be around later
+2011-03-06T11:33:38  <bss03> Looking back at my query that makes sense...
+2011-03-06T11:36:23  <bss03> I select from a union that I don't give a name; fixed locally.
+2011-03-06T11:38:16  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has quit IRC (Read error: Operation timed out)
+2011-03-06T11:38:35  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-06T11:38:35  *** ChanServ sets mode: +o amstan
+2011-03-06T11:46:55  *** boegel_ <boegel_!~boegel@boegel.ugent.be> has joined #aichallenge
+2011-03-06T11:51:59  *** sketchyd_ <sketchyd_!~djtumolo@pool-108-35-34-238.nwrknj.fios.verizon.net> has joined #aichallenge
+2011-03-06T11:54:03  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has joined #aichallenge
+2011-03-06T11:58:39  <bss03> McLeopold: Hrm, I think there's a useful index missing on game, but I'm not sure what it is yet.
+2011-03-06T12:01:49  <antimatroid> McLeopold: did you see my map partitions? :p
+2011-03-06T12:06:03  <bss03> :(
+2011-03-06T12:06:14  <bss03> What version of MySQL is on the server?
+2011-03-06T12:07:40  <bss03> Evidently I'm using an SQL feature the DB doesn't like, and it might be on the server, just not in MySQL 5.1?
+2011-03-06T12:10:49  <amstan> check what latest ubuntu has
+2011-03-06T12:18:36  *** boegel_ <boegel_!~boegel@boegel.ugent.be> has quit IRC (Read error: Connection reset by peer)
+2011-03-06T12:25:03  <bss03> :( 5.1, same as what I'm using.
+2011-03-06T12:25:31  <bss03> This may be difficult to side-step.
+2011-03-06T12:25:49  <bss03> Let see if the variable syntax McLeopold shoed me yesterday helps...
+2011-03-06T12:29:36  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-06T12:36:02  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-06T12:36:12  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-06T12:36:12  *** ChanServ sets mode: +o amstan
+2011-03-06T12:57:34  <bss03> Help with python-mysqld?  Anyone?
+2011-03-06T12:57:44  <amstan> bss03: yes?
+2011-03-06T12:57:55  <bss03> I have a python set which contains user_ids pulled from the database.
+2011-03-06T12:58:06  <amstan> ok?
+2011-03-06T12:58:20  <bss03> Then, I have a query that end like "WHERE s.user_id IN %s"...
+2011-03-06T12:58:42  <bss03> And when I make the exceute call, passing the set to be expanded at the %s, I get a traceback.
+2011-03-06T13:00:04  <bss03> http://pastebin.com/avZ8Ec3H
+2011-03-06T13:00:52  <bss03> I think it wants me to pre-stringify the set elements, maybe?
+2011-03-06T13:01:51  *** choas <choas!~lars@p548B6AA0.dip.t-dialin.net> has quit IRC (Ping timeout: 260 seconds)
+2011-03-06T13:02:12  *** amstan_ <amstan_!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-06T13:02:13  *** ChanServ sets mode: +o amstan_
+2011-03-06T13:02:18  <amstan_> ugh.. stupid internet
+2011-03-06T13:02:58  <bss03> You get my pastebin link?
+2011-03-06T13:03:06  <amstan_> bss03: yeah
+2011-03-06T13:03:19  <amstan_> bss03: instead of passing it the set
+2011-03-06T13:03:27  <amstan_> pass it something like map(int,yourset)
+2011-03-06T13:03:36  <amstan_> darn
+2011-03-06T13:03:38  <amstan_> not int
+2011-03-06T13:03:45  <amstan_> map(str,yourset)
+2011-03-06T13:03:52  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T13:03:56  *** amstan_ is now known as amstan
+2011-03-06T13:04:03  <bss03> Okay, so it does want me to pre-stringify the elements.
+2011-03-06T13:04:17  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2011-03-06T13:04:32  <bss03> Will do.  Seems like I should map db.literal or something over it. instead of just str, but str works in this case.
+2011-03-06T13:05:03  <amstan> bss03: that error says that that it tried to stringify the set, but it gave up when it found logs inside the set
+2011-03-06T13:05:44  <bss03> That's what I thought.  It seems like it should recursively call db.literal (or somesuch) before doing the join.
+2011-03-06T13:06:01  <amstan> nah, might be too much overhead
+2011-03-06T13:06:15  <bss03> Since, its certainly possible there are things inside the set that need to be escaped.
+2011-03-06T13:06:37  <amstan> bss03: they're nubers.. no need to escape numbers
+2011-03-06T13:06:52  <amstan> unless you're not sure they're numbers
+2011-03-06T13:06:52  <bss03> I mean MySQLdb should be duign that recursive call.
+2011-03-06T13:06:57  <amstan> where do you get them from?
+2011-03-06T13:07:04  <amstan> oh, ic
+2011-03-06T13:07:11  <amstan> idk... anyway
+2011-03-06T13:07:20  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2011-03-06T13:07:30  <bss03> Oh, they are definitely all longs from the database.  Calling str is sufficient here.
+2011-03-06T13:07:50  <bss03> Thanks for the confirmation and help.
+2011-03-06T13:08:29  <amstan> any time
+2011-03-06T13:16:50  *** kaemo <kaemo!~mad5ci@dhg69.neoplus.adsl.tpnet.pl> has quit IRC (Quit: *puff*)
+2011-03-06T13:34:14  <bss03> Hrm.  I am still getting stupid-ness when MySQLdb is asked to substitute a sequence.
+2011-03-06T13:37:20  *** amstan <amstan!~alex@CPE98fc113d2c65-CM001225d760aa.cpe.net.cable.rogers.com> has quit IRC (Read error: Operation timed out)
+2011-03-06T13:57:48  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-06T14:01:48  <amriedle> hehe
+2011-03-06T14:05:18  <bss03> It was expanding the %s to ("'1'",)
+2011-03-06T14:06:05  <bss03> So, it was somehow double-stringifying and other bogus stuff.
+2011-03-06T14:06:59  <bss03> I wrote my own set_to_db and it works, but I end up doing the format expansion manually...
+2011-03-06T14:07:11  <bss03> Still, it gets me to the next error.
+2011-03-06T14:11:21  <McLeopold> bss03: if you can use a query instead of passing a set, that would be better
+2011-03-06T14:11:32  <McLeopold> I think the entire thing can be all sql
+2011-03-06T14:12:05  <bss03> Yeah, I'm just trying to get the existing code to work.
+2011-03-06T14:12:47  <bss03> Right now, I'm creating a temp table with a "WHERE column IN ?" and the ? is the set, using it twice, dropping it and looping.
+2011-03-06T14:13:11  <bss03> Instead, I can build up the table incrementally and never have to pass a set.
+2011-03-06T14:13:52  <bss03> Now I'm getting an annying error:_mysql_exceptions.OperationalError: (1137, "Can't reopen table: 'od'")
+2011-03-06T14:18:43  <bss03> It seems like it doesn't like me using my temporary table twice in the same query.
+2011-03-06T14:18:49  <bss03> Maybe?
+2011-03-06T14:22:23  <bss03> That's annoying, seems it is a MySQL limitation.  There's a simple work around to copy the table with CREATE TEMP TABLE LIKE/SELECT * INTO and then use them separately.
+2011-03-06T14:22:43  <bss03> I'll look into that after lunch.
+2011-03-06T14:35:40  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-03-06T14:37:52  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has quit IRC (Quit: ali1`)
+2011-03-06T14:41:00  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-06T14:52:57  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-06T14:54:52  *** boegel <boegel!~boegel@91.182.104.108> has quit IRC (Quit: Leaving)
+2011-03-06T14:59:49  <jmcarthur> huh, when i use linux's default scheduler instead of the brainfuck scheduler, antimatroid's C++ bot performs much worse
+2011-03-06T15:00:54  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has joined #aichallenge
+2011-03-06T15:01:13  <jmcarthur> that's weird. i've never seen the absolute performance of a program go *up* with the BF scheduler
+2011-03-06T15:06:23  <jmcarthur> well, fares well for me, i guess
+2011-03-06T15:08:37  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 276 seconds)
+2011-03-06T15:20:41  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-03-06T15:31:56  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-06T15:32:30  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-06T15:34:36  *** chemuduguntar <chemuduguntar!~ravic@smtp.touchcut.com> has joined #aichallenge
+2011-03-06T15:58:53  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-06T16:07:29  <janzert> what causes a submission to have an 'invalid' game?
+2011-03-06T16:07:44  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-06T16:07:59  <McLeopold> janzert/amstan: what was the submission_hash used for?
+2011-03-06T16:08:18  <janzert> also I think once we are scheduling by player instead of submission we can get rid of the resubmission delay
+2011-03-06T16:08:34  <janzert> just disallow resubmission while the current one is compiling
+2011-03-06T16:09:05  <janzert> McLeopold: it is to verify that the worker has a noncorrupted download of the submission
+2011-03-06T16:09:20  <McLeopold> ok
+2011-03-06T16:09:25  <McLeopold> what is worker_query for?
+2011-03-06T16:09:31  <janzert> we had problems with workers getting truncated downloads occasionaly
+2011-03-06T16:09:45  <janzert> where is worker_query at?
+2011-03-06T16:09:49  <janzert> name doesn't ring a bell
+2011-03-06T16:10:00  <McLeopold> api_worker_query.php, in website
+2011-03-06T16:10:49  <janzert> gives the gpm of a worker
+2011-03-06T16:10:57  <McLeopold> and errors per minute too?
+2011-03-06T16:11:01  <janzert> it was used to make sure a worker hadn't crashed
+2011-03-06T16:11:04  <janzert> ahh yea
+2011-03-06T16:11:14  <janzert> which was another safety
+2011-03-06T16:11:21  <McLeopold> So, the worker doesn't request this page then?
+2011-03-06T16:11:29  <janzert> no, other utility scripts did
+2011-03-06T16:11:42  <McLeopold> okay, last one, api_server_setup?
+2011-03-06T16:12:15  <McLeopold> the worker request this once and is given their api key?
+2011-03-06T16:12:33  <janzert> yes, and setup script
+2011-03-06T16:12:45  <McLeopold> will this continue to be used?
+2011-03-06T16:12:56  <janzert> something equivalent anyway
+2011-03-06T16:13:12  <McLeopold> so, can I scrap the page from the website dir then?
+2011-03-06T16:13:40  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-06T16:13:46  <janzert> by equivalent I meant that page or on that does essentially the same thing
+2011-03-06T16:13:50  <janzert> I would leave it
+2011-03-06T16:14:06  <McLeopold> should I make it return your new worker_setup script?
+2011-03-06T16:14:38  <McLeopold> and, are you still needing a /root/.api_key file?
+2011-03-06T16:14:42  <janzert> I think just leave it for now, it'll need a little reworky
+2011-03-06T16:15:04  <McLeopold> I'll ignore it then, and leave you to make sure worker setup is functional.
+2011-03-06T16:15:20  <janzert> nah, the /root/.api_key can go away
+2011-03-06T16:15:34  <McLeopold> I'm thinking of moving the api stuff out of the main apache and into a python script that will serve the api calls.
+2011-03-06T16:15:53  <McLeopold> so, it would be on a different port.  Thoughts?
+2011-03-06T16:16:36  <janzert> hmm, for all but the setup call I would say consider dropping http altogether if you're going to do that
+2011-03-06T16:16:59  <janzert> making a simple http request for the setup call is rather handy though
+2011-03-06T16:17:20  <McLeopold> yeah, hitting a url is nice for testing
+2011-03-06T16:17:32  <McLeopold> I still want to pass json as well.
+2011-03-06T16:18:00  <McLeopold> I could pass pickled objects over tcp, but it wouldn't be as extensible.
+2011-03-06T16:18:53  <janzert> as far as moving it out of php... either way I'm fine with I guess, having a python api server live in the manager does seem nice
+2011-03-06T16:19:09  <McLeopold> okay, I'll run with that for now
+2011-03-06T16:19:34  <janzert> having a separate http server seems a little ugly but... so either way
+2011-03-06T16:19:36  <McLeopold> At least this way I can keep stuff in memory for api calls.
+2011-03-06T16:19:45  * janzert nods
+2011-03-06T16:19:57  <McLeopold> Plus it makes the move to zeta a little easier.
+2011-03-06T16:20:24  <McLeopold> And, we can not publish the port being used, for security.
+2011-03-06T16:20:54  <janzert> meh, I wouldn't publish it but would count on it being found anyway
+2011-03-06T16:21:09  <McLeopold> that's why we have the keys
+2011-03-06T16:21:54  <janzert> yeah, just we do need to worry about the security of that second server a bit more than with the way it is now
+2011-03-06T16:22:06  <janzert> mostly DoS attacks is what I'm thinking of
+2011-03-06T16:22:44  <janzert> hopefully it won't be a problem that someone pushes on us though
+2011-03-06T16:24:43  <janzert> one possible easy thing is if we can find the range of ip addresses for amazon ec2 east we could maybe firewall it off for access only from there
+2011-03-06T16:38:18  <McLeopold> janzert: if the manager tracks which workers have downloaded which submissions, I can attempt to hand matchups to the worker that is the closest to being setup
+2011-03-06T16:38:42  <McLeopold> This might naturally divide workers into processing different skill levels.
+2011-03-06T16:39:08  <McLeopold> except for new submissions, which would probably get downloaded to all of them
+2011-03-06T16:41:45  <janzert> hmm, I'm not sure the added complexity is worth any gain
+2011-03-06T16:42:42  <janzert> also even though all the workers should be identical I'd also worry a little about partitioning the players to certain workers
+2011-03-06T16:42:57  <janzert> in case of any weird differences
+2011-03-06T16:46:44  <McLeopold> in the servers, maybe
+2011-03-06T16:46:53  <McLeopold> I'll save that for later then.
+2011-03-06T16:46:55  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-06T16:47:54  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-03-06T16:49:28  *** delt0r_ <delt0r_!~delt0r@188-22-160-19.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-06T16:49:56  *** janzert1 <janzert1!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-03-06T16:51:10  *** delt0r___ <delt0r___!~delt0r@188-22-25-41.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-03-06T16:51:39  *** jmpespxo1eax <jmpespxo1eax!~notauser@76-10-183-34.dsl.teksavvy.com> has joined #aichallenge
+2011-03-06T16:53:31  *** janzert <janzert!~janzert@97-83-32-214.dhcp.trcy.mi.charter.com> has quit IRC (Read error: Connection reset by peer)
+2011-03-06T16:53:34  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-06T16:53:34  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has quit IRC (Ping timeout: 250 seconds)
+2011-03-06T16:53:36  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has quit IRC (Ping timeout: 250 seconds)
+2011-03-06T16:53:37  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has joined #aichallenge
+2011-03-06T17:03:33  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-03-06T17:05:07  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-06T17:20:19  *** choas <choas!~lars@p548B6AA0.dip.t-dialin.net> has joined #aichallenge
+2011-03-06T18:13:34  <bss03> McLeopold: Okay, what I have at GitHub is not optimal, but it works in my toy database.
+2011-03-06T18:14:26  <bss03> Oh, he's not here.
+2011-03-06T18:18:01  <bss03> Well, I have stuff that does some trueskill matching and compiles and runs against epsilon-new-schema.
+2011-03-06T18:19:00  <bss03> I'm going to set a pull / merge request.
+2011-03-06T18:22:07  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has quit IRC (Quit: ali1`)
+2011-03-06T18:23:22  *** choas <choas!~lars@p548B6AA0.dip.t-dialin.net> has quit IRC (Ping timeout: 260 seconds)
+2011-03-06T18:26:32  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has joined #aichallenge
+2011-03-06T18:48:46  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-06T18:48:47  *** ChanServ sets mode: +o amstan
+2011-03-06T18:52:32  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 260 seconds)
+2011-03-06T19:00:30  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-03-06T19:04:56  *** amstan_ <amstan_!~alex@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-06T19:04:56  *** ChanServ sets mode: +o amstan_
+2011-03-06T19:05:37  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 246 seconds)
+2011-03-06T19:53:03  *** amstan_ <amstan_!~alex@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 264 seconds)
+2011-03-06T20:15:22  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has quit IRC (Quit: ali1`)
+2011-03-06T20:38:48  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-06T20:43:35  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-03-06T20:49:11  *** DrunkenPanda <DrunkenPanda!~pyro@CPE-121-214-174-109.lnse3.lon.bigpond.net.au> has quit IRC (Quit: leaving)
+2011-03-06T21:21:07  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 276 seconds)
+2011-03-06T21:37:41  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (Read error: Operation timed out)
+2011-03-06T21:52:52  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Ping timeout: 245 seconds)
+2011-03-06T21:53:52  <antimatroid> bleh, i don't know how to output space information
+2011-03-06T21:54:00  <antimatroid> mcleopolds suggested way is a bit rank imo
+2011-03-06T21:54:34  <antimatroid> { 'space': {0: 14, 1: 14, (0,1): 7} }    - you could end up with many (0,1,4), (0,2,4), etc. parts which all need sorting etc.
+2011-03-06T21:55:52  <jmcarthur> antimatroid: your starter goes significantly slower under the normal linux scheduler compared to the BF scheduler, which is what i was running at the time i timed yours before
+2011-03-06T21:56:09  <antimatroid> hmmm i wonder what causes that
+2011-03-06T21:56:23  <antimatroid> jmcarthur: did you see my map partitions, I think they look cool
+2011-03-06T21:56:30  <jmcarthur> which i find strange. this is the first time i've seen a program's absolute performance being *faster* under BF
+2011-03-06T21:56:37  <jmcarthur> i'm not sure i have seen that
+2011-03-06T21:56:52  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2011-03-06T21:56:53  <jmcarthur> antimatroid: anyway, my starter is faster than yours under the normal scheduler
+2011-03-06T21:57:03  <antimatroid> hmm okay, i'll play around later
+2011-03-06T21:57:11  <antimatroid> http://codepad.org/C4c22fGS there's the 2 partitions i put on codepad
+2011-03-06T21:57:21  <antimatroid> i just put '.' for "draw squares"
+2011-03-06T21:58:28  <jmcarthur> looks cool, but i'm not sure i understand
+2011-03-06T21:58:45  <jmcarthur> i assume the idea isn't to completely fill those spaces with ants
+2011-03-06T21:59:21  *** ali1` <ali1`!~ali@c-76-16-103-3.hsd1.il.comcast.net> has joined #aichallenge
+2011-03-06T22:01:03  <antimatroid> jmcarthur: that's me partitioning the map based on which squares can be reached by which player first
+2011-03-06T22:01:19  <antimatroid> it's just me checking my map_analyzer is calculating "access" properly
+2011-03-06T22:01:27  <jmcarthur> ah
+2011-03-06T22:01:42  <jmcarthur> so kind of a voronoi thingy
+2011-03-06T22:01:46  <antimatroid> it was a bit messy to actually get it
+2011-03-06T22:01:49  <antimatroid> very much so
+2011-03-06T22:02:40  <antimatroid> http://codepad.org/VM6YrFBh line 85 on gives the cool part :)
+2011-03-06T22:08:04  *** Ttech <Ttech!ttech@botters/staff/ttech> has quit IRC (Remote host closed the connection)
+2011-03-06T22:09:38  <jmcarthur> i'm spending a quarter of my time parsing unsigned ints... surely that's not normal?
+2011-03-06T22:09:55  <antimatroid> from my bot or yours
+2011-03-06T22:09:58  <jmcarthur> mine
+2011-03-06T22:10:00  <jbroman> jmcarthur: Well, it could mean that the rest of your code is just that awesome.
+2011-03-06T22:10:05  <jmcarthur> i have no idea where your time is spent
+2011-03-06T22:11:30  <antimatroid> either way, they're both sufficiently fast i think
+2011-03-06T22:11:51  <jmcarthur> i'm partly doing this as exercise
+2011-03-06T22:12:07  <jmcarthur> and i'm really curious about this particular thing
+2011-03-06T22:12:50  *** Ttech <Ttech!ttech@botters/staff/ttech> has joined #aichallenge
+2011-03-06T22:26:03  <antimatroid> i'm a little unsure as to what it would take for dimkadimon to think a game was sufficiently differen to pw :s
+2011-03-06T22:26:38  <jbroman> antimatroid: Next AI challenge: kickboxing.
+2011-03-06T22:27:02  <antimatroid> jborman: i wanted to do mario kart :P
+2011-03-06T22:27:07  <antimatroid> jbroman*
+2011-03-06T22:27:47  <antimatroid> woah, there's a strong preference for battle option 1 in the forums now
+2011-03-06T22:30:13  <bss03> Link to vote?
+2011-03-06T22:30:38  <bss03> I did pretty well in PW, but I think I want option 2 so I don't get bit by a huge learning curve.
+2011-03-06T22:31:20  <jmcarthur> i still don't understand the learning curve argument. could you explain?
+2011-03-06T22:31:30  <antimatroid> http://www.ai-contest.com/forum/viewtopic.php?f=21&t=1313&start=30
+2011-03-06T22:32:12  <jmcarthur> j3camero has the same thought but wasn't able to sufficiently explain it to me
+2011-03-06T22:32:13  <antimatroid> neither do i, as far as i can tell, both options require fairly similar macro strategies (you will want a tree for fighting ants), yet option 1 provides way more interesting micro and is easier to calculate, easier to understand etc. etc.
+2011-03-06T22:32:25  <antimatroid> i understand j3camero's argument
+2011-03-06T22:32:41  <jmcarthur> well, i understand one aspect of his argument
+2011-03-06T22:32:55  <antimatroid> his is about a top bot just pantsing a lower ranked bot without even losing an ant, that's not possible with option 2, you have to lose an ant to kill some
+2011-03-06T22:33:29  <jmcarthur> given that bot A has better micro than bot B, with option 1 A has a larger advantage against B than with option 2
+2011-03-06T22:33:36  <antimatroid> the brick wall wasn't necessarily about that I don't think, but that's more that you don't want too many "walls" where it takes a significant amount of work to get absolutely any kind of improvement, but you're going to have some places like that anyway
+2011-03-06T22:34:00  <antimatroid> anyway, i'm out for a while
+2011-03-06T22:35:34  <jmcarthur> bss03: i should probably say this in the forums, but my problem with option 2 is mainly that the best strategy is to spread out as much as possible so that you stand the best chance of having one of your ants facing more than one enemy ant at once
+2011-03-06T22:35:56  <jmcarthur> basically, a dumb strategy that "breaks" the game
+2011-03-06T22:36:58  <jmcarthur> the flip side of that strategy is it also minimizes the chances that a single enemy ant can take out more than one of your ants
+2011-03-06T22:37:30  <jmcarthur> add to that the fact that spreading out increases your spawn rate and that there is basically no incentive *not* to spread out, and you have a really boring game
+2011-03-06T22:39:13  <jmcarthur> the most complicated thing micro-wise would be, once you have a high density of ants, pulling the bulk of your ants *away* from combat so that you have a sparse attack front and a dense swarm in the middle which is not fighting
+2011-03-06T22:39:47  <jmcarthur> s/middle which is not fighting/back, away from all combat,/
+2011-03-06T22:42:29  <bss03> Sorry, was edting the wiki...
+2011-03-06T22:43:32  <bss03> With Opt1, it is possible to kill an ant without losing any of your ants a "0-for-1."
+2011-03-06T22:44:09  <bss03> With Opt2, that's not possible, but it is possible to kill 2 ants and only lose 1 of your ants; a "1-for-2".
+2011-03-06T22:44:44  <bss03> In both cases, being able to find those advantages will probably make a significant difference is ranking.
+2011-03-06T22:45:25  <bss03> In absolute terms, the difference between a 1-for-2 and a 0-for-1 is little-to-nothing.
+2011-03-06T22:46:04  <bss03> However, when looked at as an advtange ratio, the 0-for-1 is a much greater advantage.
+2011-03-06T22:46:17  <jmcarthur> right, i agree with that
+2011-03-06T22:46:29  <jmcarthur> but i don't think that's really related to learning curve
+2011-03-06T22:46:45  <bss03> If those are difficult to find for newbies, it will leave a wide-to-insurmountable gap in that rankings.
+2011-03-06T22:46:54  <jmcarthur> it just means that two closely ranked bots are less likely to draw
+2011-03-06T22:47:06  <jmcarthur> i don't think it means they will be less closely ranked
+2011-03-06T22:47:15  <bss03> That gap is where there is a sharp tend upward in skill, that that's the learning curve I want to avoid.
+2011-03-06T22:47:57  <jmcarthur> so you mean you'd rather the top bots and the bottom bots be closer together in skill?
+2011-03-06T22:48:30  <jmcarthur> i don't mean to give that a negative-sounding spin, although i do see it as a negative, personally
+2011-03-06T22:48:32  <bss03> I mean that I don't want the newbies to be discouraged by a huge gap.
+2011-03-06T22:49:42  <jmcarthur> alright. this boils down to the same argument that j3camero has i think, and i just disagree that newbies will be so discouraged by it. and i think that's really all i can say without starting to repeat myself
+2011-03-06T22:49:44  <bss03> It might mean that bot rank 123 beats bot rank 124 80%+ percent of the time, instead of having a smooth incremental growth.
+2011-03-06T22:49:52  <bss03> But, I really haven't decided quite yet.
+2011-03-06T22:50:37  <jmcarthur> in my experiences and observations, newbies are amazingly resiliant to difficult things because they don't even know the limits of their own abilities
+2011-03-06T22:51:15  <jmcarthur> when i was new to programming i did things that amaze me in retrospect
+2011-03-06T22:52:23  <jmcarthur> i wrote a physics engine in hypercard when i was like 10 years old, for example. i don't say it to brag though. IMO, most newbies that are interested enough could do the same thing
+2011-03-06T22:52:32  <jmcarthur> and that's my point
+2011-03-06T22:53:17  <jmcarthur> ^^ was without access to the internet or anything, too
+2011-03-06T22:53:54  <janzert1> bss03: In your new pairing method under future, why have the first method for choosing a seed player at all?
+2011-03-06T22:53:55  <jmcarthur> newbies now also can benefit from the wisdom of other contestants, if they get involved in the forums or irc channel
+2011-03-06T22:54:10  <jmcarthur> anyway, i'm leaving for now
+2011-03-06T22:54:12  <janzert1> getting rid of it immediately removes an advantage from spamming
+2011-03-06T22:55:02  <janzert1> and 2 and 3 are what I was bringing up the other day as what people had agreed on before
+2011-03-06T22:55:06  <bss03> janzert1: I thought we still wanted to have new submissions play quickly.
+2011-03-06T22:55:19  <janzert1> no just the player's first submission
+2011-03-06T22:55:44  <bss03> janzert1: That way you quickly know if your bot fails to make any moves, or times out, or any of the other stupid stuff that can occur even after a good compile.
+2011-03-06T22:56:12  <bss03> Oh, well, if we just want to prefer the first submission, then yeah, that can be dropped.
+2011-03-06T22:56:14  <janzert1> we're suppose to add functional testing after compilation before accepting the submission
+2011-03-06T22:56:29  <bss03> It makes things easier for me (or whoever gets around to implementing it first).
+2011-03-06T22:56:56  <bss03> For epsilon?  I thought functional testing was put off until zeta...
+2011-03-06T22:57:34  <janzert1> it should be easy to add for this one and I thought we would
+2011-03-06T22:58:28  <janzert1> also was concerned in McLeopold's version the mention about not choosing submissions that had an invalid result from a game, do you know anything about that?
+2011-03-06T22:58:37  <bss03> I don't see an "Issue" for it on GitHub at all.  I certainly don't see it labeled "launch", and the Matchmaking stuff can't really wait on anything that won't be ready at launch.
+2011-03-06T22:59:09  <bss03> Yeah.  I thought I left a mention about that.
+2011-03-06T22:59:34  <janzert1> there's lots of stuff not in the issue tracker that needs to be done before launch :)
+2011-03-06T22:59:34  <bss03> He wanted an "invalid" submission to let the next submission in without waiting the "cooldown".
+2011-03-06T23:00:45  <bss03> I don't think he's really told me exactly how to identify an "invalid" submission in the database, either.
+2011-03-06T23:00:48  <janzert1> ok, I'll have to ask him about it. I just hope he doesn't want to go back to the old way of kicking submissions back out of the contest because of bad behavior
+2011-03-06T23:02:13  <janzert1> e.g. crashing and timing out
+2011-03-06T23:02:39  <bss03> I kinda agree.
+2011-03-06T23:03:00  <bss03> I have a roomate that didn't like it when his bot was paired against a "failbot".
+2011-03-06T23:03:14  <janzert1> that is something I'll be strongly opposed to it
+2011-03-06T23:03:35  <bss03> It didn't happen too often, but it was a nearly information-free event, and he had to go back to the "end of the queue" as far as getting to play again.
+2011-03-06T23:03:37  <janzert1> yeah, that rather sucks but it's worse when your submission is kicked out of the finals cause it timed out
+2011-03-06T23:04:02  <bss03> Yeah, and hopefully trueskill should pair people against failbots less often.
+2011-03-06T23:04:23  <bss03> Plus, even when it does pick a failbot, you might be in a 3+ player game and still get some good information.
+2011-03-06T23:04:26  <janzert1> and functional testing should greatly narrow down the field of them anyway
+2011-03-06T23:04:42  <janzert1> yeah, n-player games will help that aspect
+2011-03-06T23:05:17  <bss03> Can you open issues?  There should be one for functional testing.
+2011-03-06T23:05:28  *** jmpespxo1eax is now known as jmpespxoreax
+2011-03-06T23:05:34  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2011-03-06T23:05:50  <janzert1> probably can but I don't know how ;)
+2011-03-06T23:05:54  <janzert1> I'll take a look
+2011-03-06T23:06:39  <bss03> https://github.com/aichallenge/aichallenge/issues, then "Create Issue".  I think.
+2011-03-06T23:06:54  <bss03> Are you working on functional testing right now or... ?
+2011-03-06T23:07:26  <bss03> I worked on the TrueSkill matchmaking basically all weekend.
+2011-03-06T23:08:35  <janzert1> Currently working on making automatic setup scripts for servers
+2011-03-06T23:08:59  <janzert1> I'll wait for McLeopold to merge is branch back in before tackling functional testing
+2011-03-06T23:09:17  <janzert1> actually before that I'll move compilation onto the workers
+2011-03-06T23:13:09  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-06T23:13:09  *** ChanServ sets mode: +o amstan
+2011-03-06T23:14:15  <bss03> Wow, there's so much to do.  Are we going to be able to launch this month?
+2011-03-06T23:14:29  <bss03> Plus, I can basically only chip in on the weekends.
+2011-03-06T23:15:23  <amstan> bss03: maybe, maybe not
+2011-03-06T23:15:24  <janzert1> yeah, the amount of change that is being done right now has me rather worried
+2011-03-06T23:16:11  <amstan> janzert1: too much change for epsilon? or.. lack of change to actually start the contest?
+2011-03-06T23:16:33  <janzert1> too much, it's gone quite a bit beyond a simple integration of ants to the current code
+2011-03-06T23:16:57  <janzert1> not that the current code was pretty in anyway
+2011-03-06T23:17:09  <amstan> janzert1: you mean stuff like the db schema?
+2011-03-06T23:17:27  <janzert1> not just the db schema no
+2011-03-06T23:17:53  <bss03> You mean like TrueSkill instead of BayesELO? *pout*
+2011-03-06T23:18:05  <janzert1> no trueskill is necessary integration
+2011-03-06T23:18:21  <amstan> janzert1: well what else?
+2011-03-06T23:18:47  <bss03> Is there any issue marked "Launch" that doesn't actually need to be done before launch?
+2011-03-06T23:19:08  <janzert1> reworking the worker api to use its own server is the other major one I recall off the top of my head
+2011-03-06T23:19:11  <amstan> i don't think so, i was pretty conservative at marking them
+2011-03-06T23:19:15  <amstan> but there's just a ton
+2011-03-06T23:20:08  <bss03> If the launch is anything like last time, we need to be able to distribute matches from day 1.
+2011-03-06T23:20:09  <janzert1> but that's just cause it's the one I talked with McLeopold about this afternoon
+2011-03-06T23:21:01  <bss03> Although, I suppose last time the web server crumbled first.
+2011-03-06T23:21:02  <janzert1> yep, and we have a way to do that already. I just think we're rewriting too many things from scratch
+2011-03-06T23:21:14  <amstan> bss03: mysql
+2011-03-06T23:21:23  <amstan> bss03: mostly because of no proper optimization
+2011-03-06T23:21:37  <janzert1> instead doing the smallest incremental change that will get something working
+2011-03-06T23:22:07  <janzert1> of course I'm as much at fault as anyone since I just rewrote the worker setup script from scratch
+2011-03-06T23:22:15  <amstan> janzert1: lol, ya
+2011-03-06T23:22:15  <bss03> Well, the TrueSkill stuff probably still needs some optimization...
+2011-03-06T23:22:24  <amstan> bss03: does it?
+2011-03-06T23:22:33  <janzert1> I have to admit I'm a bit worried about that
+2011-03-06T23:22:49  <bss03> I have a feeling the triply nested "IN (subquery)" stuff could take a while.
+2011-03-06T23:22:58  <bss03> But, actually, that's very little to do with TrueSkill.
+2011-03-06T23:23:20  <janzert1> I'd much prefer that the code got the player information from the database then did a bunch of pairings all in python code
+2011-03-06T23:23:27  <bss03> The triply-nested stuff was to handle 4.1-4.2.
+2011-03-06T23:23:36  <janzert1> so the database could be out of the loop for most of it
+2011-03-06T23:23:51  *** janzert1 is now known as janzert
+2011-03-06T23:23:56  <amstan> bss03: why do you call it trueskill stuff, it's just the pairings
+2011-03-06T23:24:03  <amstan> bss03: trueskill was finished afaik
+2011-03-06T23:24:08  <bss03> I was told by MacLeopold to do it all in the SQL server.
+2011-03-06T23:24:25  <bss03> Well, I had to implement trueskill matchmaking.
+2011-03-06T23:24:44  <amstan> but are you actually using trueskill for that?
+2011-03-06T23:24:47  <janzert> bss03: yeah I know he is the one that wants it that way, it just worries me
+2011-03-06T23:24:48  <bss03> That's not actually very well done in the trueskill python package I was pointed at.
+2011-03-06T23:25:06  <bss03> Yeah, I'm using the match making algorithm from the truskill paper.
+2011-03-06T23:25:29  <bss03> https://github.com/aichallenge/aichallenge/wiki/TrueSkill-Matchmaking -- existing section is what is in my pull request.
+2011-03-06T23:25:31  <amstan> bss03: oh.. i see
+2011-03-06T23:25:54  <amstan> i was confused why you called it trueskill even though it was not actually importing the trueskill library
+2011-03-06T23:26:42  <bss03> 1. I do the trueskill calculation in SQL, so I don't need the python library. 2. I couldn't like the "pairwise compatibility" function in the trueskill python library.
+2011-03-06T23:27:29  <amstan> oh.. right.. about that trueskill library, it seems like dmj added a wrapper for it for no reason
+2011-03-06T23:27:48  <amstan> unless we're actually going to use lists
+2011-03-06T23:28:01  <amstan> but.. i really liked the player objects that the library wanted as input
+2011-03-06T23:28:14  <janzert> bss03: so I imagine doing it all in SQL that there is a good gain in efficiency for doing one pairing but how about when doing a few hundred at once?
+2011-03-06T23:28:45  <bss03> janzert: I was thinking about that just now cause you sort of mentioned it.
+2011-03-06T23:29:27  <janzert> yeah, I was just wondering your opinion on it specifically :)
+2011-03-06T23:30:12  <janzert> hoping you can maybe ease my mind a little ;)
+2011-03-06T23:30:33  <bss03> I think it is diffiult to really take what we've got (or even the future plans) and just "grab N" instead of "grab 1".
+2011-03-06T23:30:49  <janzert> although one good thing is getting replay data out of the database should be really nice boost
+2011-03-06T23:31:00  <janzert> moved out, that is
+2011-03-06T23:31:44  <bss03> But, each individual step will probably be faster.  Particularly if we set up the right indexes.
+2011-03-06T23:33:31  <janzert> one thing that would probably help more than anything is if someone that really knows how to do a good job of putting some caching into the apache/php combo comes along
+2011-03-06T23:33:42  <bss03> If I can write steps 1-3 as a single sql query then you can easily do "grab N" and get a lot of seeds probably much quicker.
+2011-03-06T23:34:13  <janzert> yeah, and that's the way I used to do it with python pairing
+2011-03-06T23:34:42  <bss03> But step 4 has to be repeated in a loop to fill out the map and I don't think you can easily "fold" multiple loop iterations into a single SQL query.
+2011-03-06T23:35:17  * janzert nods
+2011-03-06T23:36:55  <janzert> btw, for map selection I'd go with LFU and map priority is a hard priority ahead of any selection criteria
+2011-03-06T23:36:55  <bss03> Well, maybe with non-standard SQL.  I think I saw a DB2 trick for doing it by SELECTing from a table you are currently INSERTing INTO.
+2011-03-06T23:37:09  <janzert> i.e. any map not at the lowest priority isn't even considered
+2011-03-06T23:37:55  <janzert> or priority could just be dropped altogether and a map enabled field replace it
+2011-03-06T23:37:56  <bss03> A hard priority, really?
+2011-03-06T23:38:09  <janzert> all it was ever used for was to disable maps
+2011-03-06T23:38:14  <bss03> Based on manager/sql.py that means that "old" maps would be effectively dropped.
+2011-03-06T23:38:23  <janzert> yep
+2011-03-06T23:38:44  <janzert> that's exactly what it did
+2011-03-06T23:38:49  <bss03> Oh, okay.
+2011-03-06T23:38:59  <bss03> I'll try and remember that for when I can work on it again.
+2011-03-06T23:39:09  <bss03> I'm 40 minutes. overdue for bedtime.
+2011-03-06T23:39:24  <janzert> :) see you
+2011-03-06T23:39:28  <bss03> DJ starts early.
+2011-03-06T23:40:04  <bss03> I'll be on whever I have time to pitch in, but I don't usually have much during the week.
+2011-03-06T23:40:08  <bss03> Have fun!
+2011-03-06T23:40:12  *** bss03 is now known as bss03-AFK
+2011-03-06T23:44:33  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-06T23:45:26  <janzert> Hey McLeopold, ready to merge in 20 hours? ;)
+2011-03-06T23:45:34  <McLeopold> :(
+2011-03-06T23:45:39  <McLeopold> ;(
+2011-03-06T23:45:45  <McLeopold> :'(
+2011-03-06T23:46:19  <janzert> btw, I saw your start of a page on worker api
+2011-03-06T23:46:34  <McLeopold> I saw the remark about thinking there's too much change going on before launch.
+2011-03-06T23:46:59  <McLeopold> I agree, I'll stick with php worker api for now.
+2011-03-06T23:47:20  <janzert> can we change the calls to get a matchup and return result to generic task request/return
+2011-03-06T23:47:22  <McLeopold> Also, I'm a dba, and the matchmaking *will* be fast.
+2011-03-06T23:47:39  <janzert> actually maybe generic turn in isn't really a good idea
+2011-03-06T23:47:49  <janzert> ok
+2011-03-06T23:48:14  <McLeopold> so, one php file with a "request_type" in the json?
+2011-03-06T23:48:24  <janzert> yeah
+2011-03-06T23:48:43  <McLeopold> I don't think that gains us anything.  You still have to code for it somewhere.
+2011-03-06T23:48:59  <janzert> and also the matchup queue maybe should be a generic task queue
+2011-03-06T23:49:21  <janzert> yes, but the worker does one task at a time basically (or n tasks)
+2011-03-06T23:49:24  <McLeopold> the matchups are very specific
+2011-03-06T23:49:55  <McLeopold> okay, so, get next task, which could be anything?
+2011-03-06T23:50:01  <janzert> right
+2011-03-06T23:50:08  <McLeopold> yeah, let's do that
+2011-03-06T23:50:25  <McLeopold> how do we decide what the next task is?
+2011-03-06T23:50:34  <janzert> although at this point I'm only planning on compilation or run game tasks
+2011-03-06T23:50:53  <McLeopold> they kinda work together
+2011-03-06T23:51:09  <McLeopold> a new submission needs to be compiled and be run in a game as the seed player
+2011-03-06T23:51:11  <janzert> I *think* but am not positive it should be any compilation task otherwise the next game
+2011-03-06T23:51:45  <McLeopold> so, any game where the seed player hasn't had a game will have a compile task just before it
+2011-03-06T23:51:47  <janzert> let the worker go ahead compile and test it then tell the manager it's ready to be paired
+2011-03-06T23:52:32  <McLeopold> btw, tossing in some memcache is pretty easy
+2011-03-06T23:52:45  <McLeopold> That will help with database thrashing
+2011-03-06T23:53:19  <janzert> we don't know whether compilation is going to succeed until we finish so I'm not sure about doing the full pairing until then
+2011-03-06T23:53:32  <janzert> oh
+2011-03-06T23:54:12  <janzert> that reminds me of another pairing criteria I remembered (while in the shower of course :) )
+2011-03-06T23:54:45  <janzert> when playing a new submission that has no previous games it should try to be paired with submissions that do have previous games
+2011-03-06T23:54:57  <McLeopold> can you put that in the wiki?
+2011-03-06T23:56:38  <janzert> ahh, nevermind I see bss03 already got it added in his latest modification of the page
+2011-03-06T23:57:06  <McLeopold> so, my idea with valid game was this...
+2011-03-06T23:57:08  <janzert> oops, no I guess he doesn't
+2011-03-06T23:57:40  <McLeopold> If a bot compiles, but then crashes right away, the user should be able to upload a working bot without waiting for the cool down period.
+2011-03-06T23:57:58  <McLeopold> The invalid bot will be marked as invalid and be taken out of rotation.
+2011-03-06T23:58:47  <janzert> yes, that is the functional testing and the submission never enters the contest
+2011-03-06T23:58:58  <janzert> cooldown isn't even invoked
+2011-03-06T23:59:07  <McLeopold> so, part of compilation then?
+2011-03-06T23:59:12  <janzert> right
+2011-03-06T23:59:31  <McLeopold> okay, then we don't need the logic in the matchmaking
+2011-03-06T23:59:39  <janzert> yep
+2011-03-06T23:59:59  <McLeopold> But I'd still like to look for bots that crash often and take them out of rotation

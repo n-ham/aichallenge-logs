@@ -1,0 +1,261 @@
+2011-03-12T00:06:22  <antimatroid> _flag: which unsymmetrical maps?
+2011-03-12T00:06:49  <antimatroid> i've not really played around with asymmetric maps yet, and have been fairly opposed to them the whole time
+2011-03-12T00:09:13  <antimatroid> _flag: I don't think food has been spawned symmetrically yet, we would need to work out how to do it
+2011-03-12T00:09:23  <antimatroid> i've proposed a method for doing it, but not sure how others feel about it
+2011-03-12T00:25:40  <_flag> antimatroid: You made some asymmetric maps awhile ago, but it doesn't really matter. The big thing is the symmetric food spawning.
+2011-03-12T00:25:45  <janzert> https://github.com/aichallenge/aichallenge/blob/epsilon-new-schema/ants/ants.py
+2011-03-12T00:26:07  <janzert> antimatroid: you might want to take a look at the three methods in there and see if one of them is your proposal
+2011-03-12T00:54:57  *** delt0r_ <delt0r_!~delt0r@188-22-171-127.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-12T00:56:16  *** delt0r___ <delt0r___!~delt0r@188-22-173-65.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-12T01:21:22  *** sigh <sigh!~sigh@ppp118-209-66-111.lns20.mel4.internode.on.net> has joined #aichallenge
+2011-03-12T01:26:14  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-12T01:27:55  <McLeopold> sigh: food can be placed on any land, with no restrictions.  dead ants are informational only, they are not actually on the map
+2011-03-12T01:28:56  <sigh> McLeopold: good to know
+2011-03-12T01:31:09  <sigh> McLeopold: question: in do_attack_closest what is the meaning of this line: "if self.map[a_row][a_col] != LAND: ", before I got rid of CONFLICT, this line would always evaluate to true?
+2011-03-12T01:31:28  <McLeopold> let me look
+2011-03-12T01:31:50  <sigh> also, do_attack_occupied set killed ants to LAND, and do_attack_closest set them to CONFLICT
+2011-03-12T01:32:15  <sigh> also, I don't see how do_attack_occupied manages to be order-independent, but that might just me be
+2011-03-12T01:34:03  <McLeopold> hmm, must have been a left over check before I was marking spots as conflict
+2011-03-12T01:34:56  <McLeopold> attack_occupied is locally deterministic, meaning you only need to see the state of the ants around you
+2011-03-12T01:35:25  <McLeopold> each ant can be determined to live or die independent of all the other ants
+2011-03-12T01:36:03  <sigh> nearby_ants only finds ants that are alive, so ants already killed wont count
+2011-03-12T01:36:04  <McLeopold> I also didn't update the function for use with sending the dead ant lines, which is why attack_closest is different
+2011-03-12T01:36:38  <sigh> thus nearby_ants will return different results if the ant is evaluated first, as opposed to last
+2011-03-12T01:38:39  <McLeopold> attack_occupied was written and thrown away before I was in source control.  what you see was written fast and never tested
+2011-03-12T01:39:00  <sigh> heh ok :)
+2011-03-12T01:40:18  <McLeopold> hmm...does nearby ants screw up the attack_closest as well?
+2011-03-12T01:41:14  <McLeopold> in attack_closest, it is suppose to remove an attack group so that the ants do disappear
+2011-03-12T01:41:41  <sigh> McLeopold: it should be alright, because technically the ants are supposed to be partitioned into distinct sets
+2011-03-12T01:41:43  <McLeopold> if you start with the closest distances, you are assured you won't miss an ant
+2011-03-12T01:42:16  <sigh> but it's a bit tenuous, I would rather if the partitioning was explicit, so that the order-independence was obvious
+2011-03-12T01:42:24  <McLeopold> I think my working version of attack_occupied had a kill list that was later applied
+2011-03-12T01:42:36  <sigh> especially if this is the canonical impl for other engines
+2011-03-12T01:42:51  <McLeopold> yeah, if you have question about what is going on, everyone will
+2011-03-12T01:43:10  <McLeopold> it's tough to balance speed, cleverness and straighforwardness
+2011-03-12T01:43:14  <sigh> :)
+2011-03-12T01:43:47  <McLeopold> I think if we go with your ant store functions, it might read better?
+2011-03-12T01:43:58  <sigh> I don't think doing it explicitly will insure a significant performance penalty
+2011-03-12T01:44:11  <McLeopold> it should be obvious that an attack group is located, then removed, then it continues
+2011-03-12T01:44:30  <McLeopold> python function calls are expensive in loops
+2011-03-12T01:45:21  <McLeopold> early on I had both a pure matrix and a pure list implementation, and both were quite slow compared to the hybrid
+2011-03-12T01:45:36  <sigh> I don't propose function calls, just doing the partitioning as a seperate phase to the actual killing
+2011-03-12T01:45:41  <sigh> *extra function calls
+2011-03-12T01:46:03  <McLeopold> oh, so I am creating "kill groups", just cache the entire list, then kill them all off
+2011-03-12T01:46:13  <McLeopold> that might make the scoring easier to understand too
+2011-03-12T01:46:40  <McLeopold> were going to piss off people in languages without Fraction objects. :)
+2011-03-12T01:47:36  <McLeopold> I've made more changes to the ants.py game engine, making me more scared to merge.
+2011-03-12T01:49:16  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-12T01:49:18  <McLeopold> bedtime, night
+2011-03-12T01:49:20  <sigh> I'm happy to write a proposed alternative to the do_attack functions and you can decide if you like it
+2011-03-12T01:49:22  <sigh> ok, night
+2011-03-12T02:25:35  <antimatroid> sigh: have you guys done symmetric food yet?
+2011-03-12T02:25:48  <sigh> antimatroid: no
+2011-03-12T02:25:51  <antimatroid> _flag said before that it seems horribly unfair with asymmetric atm
+2011-03-12T02:26:19  <antimatroid> i really don't see how we'll get food spawning fairly asymmetrically without a common seed
+2011-03-12T02:27:10  <antimatroid> and i'm not a fan of it being "almost" fair, it makes each game very hard to tell whether your bot did well with if you don't know it started with the same chances as everyone else
+2011-03-12T02:28:50  <sigh> antimatroid: I'll have a look at symmetric later then
+2011-03-12T02:29:01  <sigh> might have to wait till monday though, dunno
+2011-03-12T02:29:08  <antimatroid> :) cheers
+2011-03-12T02:29:14  <antimatroid> it really shouldn't be very hard i don't think
+2011-03-12T02:31:05  <antimatroid> sigh: is resolve battles still just a single function somewhere? or has it become lodged into the engine?
+2011-03-12T02:32:15  <sigh> it's a single function, why?
+2011-03-12T02:32:47  <antimatroid> because we need to be able to change that easily  :P
+2011-03-12T02:32:52  <antimatroid> by we i mean me
+2011-03-12T02:33:01  <sigh> haha
+2011-03-12T02:35:06  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-03-12T02:48:15  <antimatroid> my square struct is quite horrible again, ah well
+2011-03-12T02:48:36  <antimatroid> i have lastseen, iswall, isfood, occupied, ant, and vectors for new_ants and dead_ants :\
+2011-03-12T02:50:49  * antimatroid still thinks it should be considered ideal to avoid implicit information where possible
+2011-03-12T03:45:32  *** delt0r___ <delt0r___!~delt0r@188-22-171-127.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-12T03:46:56  *** delt0r_ <delt0r_!~delt0r@188-22-171-127.adsl.highway.telekom.at> has quit IRC (Ping timeout: 248 seconds)
+2011-03-12T04:22:55  <sigh> antimatroid: how does your symmetric method work fairly?
+2011-03-12T04:23:13  <antimatroid> sigh: each player starts with exactly the same outlook
+2011-03-12T04:23:52  <sigh> so your method chooses a random location R
+2011-03-12T04:24:05  <sigh> and determines a translation T
+2011-03-12T04:24:18  <sigh> and places food at R+T?
+2011-03-12T04:24:22  <antimatroid> rtrans and ctrans are already given by the starting locations
+2011-03-12T04:24:25  <sigh> and then what for other food?
+2011-03-12T04:24:53  <sigh> forget about row and col, that just makes things confusing to talk about, just think of them as vectors
+2011-03-12T04:24:54  <antimatroid> you pick a location R that is land, then place n food items, getting each location by continually translating by rtrans and ctrans
+2011-03-12T04:25:35  <sigh> so R, R+T, R+2*T... R+nT
+2011-03-12T04:25:35  <sigh> ?
+2011-03-12T04:25:51  <antimatroid> R + nT = R but yeah
+2011-03-12T04:26:04  <antimatroid> i pick everything so that R + nT = R
+2011-03-12T04:26:08  <antimatroid> that gives your tesselation
+2011-03-12T04:26:34  <sigh> how are you sure it tessellates? doesn't that depend on the dimensions of the map?
+2011-03-12T04:26:34  <antimatroid> i've also made sure that no two players start in the same row or col, meaning 1. you can get rtrans and ctrans from any two players starting postions and 2. it looks better
+2011-03-12T04:26:46  <antimatroid> i pick the dimensions so that it works
+2011-03-12T04:27:03  <sigh> what are the conditions for the dimensions?
+2011-03-12T04:27:35  <antimatroid> http://pastebin.com/4STgz3Zk
+2011-03-12T04:27:41  <antimatroid> that is my pick dimesions function
+2011-03-12T04:28:02  <sigh> nice c++
+2011-03-12T04:28:10  <antimatroid> your basic conditions are
+2011-03-12T04:28:11  <antimatroid> self.no_players = lcm(self.rows/gcd(self.row_t, self.rows), self.cols/gcd(self.col_t, self.cols) )
+2011-03-12T04:28:13  <antimatroid> err yeah sorry :P
+2011-03-12T04:29:33  <sigh> ok, im in no mood for number theory atm... I'll trust it
+2011-03-12T04:30:01  <antimatroid> sigh: basically, the number of translates it takes to get back into the same row is rows/gcd(rows, r_translate), then it's the lcm of those to get both to meet at the same time
+2011-03-12T04:30:09  <antimatroid> everything else follows pretty easily once you understand that
+2011-03-12T04:30:18  <sigh> yeah, I can see what you are doing, I just cbf verifying
+2011-03-12T04:30:24  <antimatroid> yep :)
+2011-03-12T04:30:29  <antimatroid> i assure you i'm right
+2011-03-12T04:30:51  <antimatroid> it's really neat how well the torus works for symmetry with n players though
+2011-03-12T04:31:04  <antimatroid> there are a bunch of groups one could formally define
+2011-03-12T04:31:45  <antimatroid> jmcarthur did a count of "number of feasible starting positions" with a fairly wide net and there were HEAPS
+2011-03-12T04:34:17  <antimatroid> i'm surprised queues and do while are so much effort in python
+2011-03-12T04:34:32  <sigh> why is a queue so much effort?
+2011-03-12T04:34:46  <antimatroid> you can't just use a list like a stack can you?
+2011-03-12T04:34:59  <antimatroid> when i googled it i only got some answer for importing deques
+2011-03-12T04:36:19  <sigh> yeah, what's wrong with deque?
+2011-03-12T04:36:39  <antimatroid> nothing it was just a bit of effort
+2011-03-12T04:37:00  <antimatroid> i like minimalism
+2011-03-12T04:37:12  <sigh> how would you make it more minimal?
+2011-03-12T04:37:25  <antimatroid> allow lists to pop_front?
+2011-03-12T04:37:50  <antimatroid> or make it fairly easy to have a double ended list or whatever
+2011-03-12T04:38:10  <antimatroid> or even just make stack and queue recognised data structures with in built implementations?
+2011-03-12T04:38:15  <antimatroid> they're pretty standard structures
+2011-03-12T04:38:32  <antimatroid> i still think the list method is a bit strange for stacks
+2011-03-12T04:38:42  <antimatroid> but i will admit it works quite nicely
+2011-03-12T04:38:58  <sigh> are you complaining about one import line?
+2011-03-12T04:39:19  <sigh> that is part of the standard library?
+2011-03-12T04:39:30  <antimatroid> one has to remember the import line, and i'm simultaneously arguing not just having stack and queue as known types
+2011-03-12T04:39:50  <antimatroid> i like stuff that is intuitively easy to remember
+2011-03-12T04:39:56  <antimatroid> i will find anything to complain about
+2011-03-12T04:39:58  <antimatroid> it's what i do
+2011-03-12T04:40:14  <sigh> not just having stack and queue as known types?
+2011-03-12T04:40:17  <sigh> what does that mean?
+2011-03-12T04:40:32  <antimatroid> well you can just say stack<int> s in c++
+2011-03-12T04:40:39  <antimatroid> it's intuitively easy to remember
+2011-03-12T04:40:48  <sigh> you have to import from std lib
+2011-03-12T04:41:00  <antimatroid> import <stack> again intuiteively easy to remember
+2011-03-12T04:41:24  <sigh> as opposed to stack = []
+2011-03-12T04:41:47  <sigh> either way, a queue is just as much effort to import in both languages
+2011-03-12T04:41:51  <antimatroid> squaresToCheck = [] doesn't really say stack
+2011-03-12T04:42:03  <antimatroid> it's more effort to remember the python import line :P
+2011-03-12T04:42:19  <sigh> -_-
+2011-03-12T04:42:21  <antimatroid> :P
+2011-03-12T04:43:30  <antimatroid> i take it you're looking at symmetric implementation of food spawning now?
+2011-03-12T04:43:45  <sigh> I was just looking at the specs
+2011-03-12T04:43:46  <antimatroid> there are still those issues about some squares containing live ants/food
+2011-03-12T04:44:04  <sigh> I'm technically playing board games with friends
+2011-03-12T04:44:12  <antimatroid> ah fair enough
+2011-03-12T04:45:09  <antimatroid> for the moment i would not place food when an ant blocks one of the squares, but do place it even if you're "placing over" a current food square
+2011-03-12T04:45:28  <sigh> why over current food?
+2011-03-12T04:45:30  <antimatroid> under the grounds that "too bad if you didn't manage to get to that square yet", but i'm still open to others opinions
+2011-03-12T04:45:47  <sigh> should that apply to the other food placement options?
+2011-03-12T04:46:05  <antimatroid> i'd ideally like to pick something that's fair and doesn't open any strategy for where to place ants in order to limit where enemies will get food spawned
+2011-03-12T04:46:31  <antimatroid> i really don't know, like i said on the wiki, i know there's a problem, i don't know the correct fix
+2011-03-12T04:48:08  <antimatroid> i only want to limit that kind of strategy because it's messy, unlikely to really help and just going to cause people complaining, but even that opinion is open to others opinions of course
+2011-03-12T06:23:27  *** choas <choas!~lars@p578F6A6B.dip.t-dialin.net> has joined #aichallenge
+2011-03-12T07:15:28  *** sigh <sigh!~sigh@ppp118-209-66-111.lns20.mel4.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-03-12T07:32:16  *** boegel_ <boegel_!~boegel@10-208-5-188.mobileinternet.proximus.be> has joined #aichallenge
+2011-03-12T07:54:05  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-12T07:57:27  *** boegel_ <boegel_!~boegel@10-208-5-188.mobileinternet.proximus.be> has quit IRC (Quit: This computer has gone to sleep)
+2011-03-12T08:01:21  *** boegel <boegel!~boegel@10-208-5-188.mobileinternet.proximus.be> has joined #aichallenge
+2011-03-12T08:21:34  *** boegel <boegel!~boegel@10-208-5-188.mobileinternet.proximus.be> has quit IRC (Quit: This computer has gone to sleep)
+2011-03-12T08:31:47  *** boegel <boegel!~boegel@91.182.127.98> has joined #aichallenge
+2011-03-12T08:31:56  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-12T08:55:51  *** delt0r_ <delt0r_!~delt0r@188-22-172-147.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-12T08:56:52  *** delt0r___ <delt0r___!~delt0r@188-22-171-127.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-12T09:12:46  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-12T09:32:05  *** boegel <boegel!~boegel@91.182.127.98> has quit IRC (Ping timeout: 252 seconds)
+2011-03-12T09:37:15  *** boegel <boegel!~boegel@91.182.106.17> has joined #aichallenge
+2011-03-12T09:38:02  *** sketchyd_ <sketchyd_!~djtumolo@pool-108-35-34-238.nwrknj.fios.verizon.net> has quit IRC (Ping timeout: 264 seconds)
+2011-03-12T09:47:40  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-12T09:52:06  *** Frontier <Frontier!~marco@dslb-088-070-155-247.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-12T10:00:44  *** Frontier <Frontier!~marco@dslb-088-070-155-247.pools.arcor-ip.net> has joined #aichallenge
+2011-03-12T10:20:10  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-12T10:25:53  *** kaemo <kaemo!~mad5ci@dbn167.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-12T10:46:01  <McLeopold> antimatroid: ping
+2011-03-12T10:56:18  <amriedle> good evening children of the weekend
+2011-03-12T10:58:10  <McLeopold> howdy
+2011-03-12T12:14:17  <amriedle> "you add up the number of hours that I've spent in conversation with editors, compilers, and debuggers over the years, I don't doubt that they add up to more time than I've spent in conversation with human beings."
+2011-03-12T12:22:12  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-12T12:22:12  *** ChanServ sets mode: +o amstan
+2011-03-12T12:27:31  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-12T13:42:36  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-220-122.asm.bellsouth.net> has joined #aichallenge
+2011-03-12T13:56:03  *** kaemo <kaemo!~mad5ci@dbn167.neoplus.adsl.tpnet.pl> has quit IRC (Ping timeout: 276 seconds)
+2011-03-12T13:59:09  <antimatroid> McLeopold: pong
+2011-03-12T14:08:24  *** kaemo <kaemo!~mad5ci@aeij192.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-03-12T14:20:14  *** amriedle2 <amriedle2!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-12T14:29:21  *** antimatroid1 <antimatroid1!~Nick@63.199.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-12T14:32:04  *** antimatroid <antimatroid!~Nick@181.202.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 264 seconds)
+2011-03-12T15:12:33  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-12T15:15:00  *** boegel <boegel!~boegel@91.182.106.17> has quit IRC (Quit: Leaving)
+2011-03-12T15:30:51  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-03-12T15:34:33  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-12T15:46:14  *** amriedle2 <amriedle2!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: leaving)
+2011-03-12T16:11:35  *** antimatroid1 <antimatroid1!~Nick@63.199.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-03-12T16:11:54  *** antimatroid <antimatroid!~Nick@63.199.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-12T16:48:26  <Frontier> McLeopold: The new replay format is really slim compared to the old one. It uses less than 10% of the space :-)
+2011-03-12T16:52:58  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-03-12T16:55:36  *** delt0r___ <delt0r___!~delt0r@188-22-173-94.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-12T16:56:54  *** delt0r_ <delt0r_!~delt0r@188-22-172-147.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-03-12T17:02:53  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-12T17:04:53  *** Frontier <Frontier!~marco@dslb-088-070-155-247.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-12T17:12:19  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-03-12T17:20:53  *** Frontier <Frontier!~marco@dslb-088-070-155-247.pools.arcor-ip.net> has joined #aichallenge
+2011-03-12T17:36:13  <CIA-33> aichallenge: Marco Leise epsilon * r1176fae / (17 files in 4 dirs):
+2011-03-12T17:36:13  <CIA-33> aichallenge: - new replay format
+2011-03-12T17:36:13  <CIA-33> aichallenge: - splitted javascript file - http://bit.ly/f0LkV1
+2011-03-12T17:40:44  <Frontier> @later tell sigh: I checked in the support for the new replay format. There seems to be a bug with the locations where ants spawn.
+2011-03-12T17:40:44  <contestbot> Frontier: Yep.
+2011-03-12T17:53:25  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-12T17:54:17  *** choas <choas!~lars@p578F6A6B.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-12T17:57:26  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (Ping timeout: 252 seconds)
+2011-03-12T18:21:47  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has joined #aichallenge
+2011-03-12T18:23:43  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-12T18:24:18  *** Frontier <Frontier!~marco@dslb-088-070-155-247.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-03-12T18:27:36  *** kaemo <kaemo!~mad5ci@aeij192.neoplus.adsl.tpnet.pl> has quit IRC (Ping timeout: 248 seconds)
+2011-03-12T18:31:57  <sigh> @later tell Frontier What is the bug? The only thing I can think of is that the map shows the state at the end of the game (because in your replay spec you say: define the map, only '%' are important)... initial ants are the ones whose start turn is 0, I can change if required. Otherwise please give me enough details to reproduce the bug.
+2011-03-12T18:31:57  <contestbot> sigh: OK
+2011-03-12T18:42:56  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has joined #aichallenge
+2011-03-12T18:42:56  *** ChanServ sets mode: +o amstan
+2011-03-12T18:49:08  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (Ping timeout: 252 seconds)
+2011-03-12T19:03:16  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has joined #aichallenge
+2011-03-12T19:21:57  *** amstan_ <amstan_!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has joined #aichallenge
+2011-03-12T19:21:57  *** ChanServ sets mode: +o amstan_
+2011-03-12T19:24:22  *** amstan <amstan!~alex@bas1-hamilton01-1096625272.dsl.bell.ca> has quit IRC (Ping timeout: 255 seconds)
+2011-03-12T19:28:19  *** amstan_ <amstan_!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has quit IRC (Read error: No route to host)
+2011-03-12T19:28:35  *** amstan_ <amstan_!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has joined #aichallenge
+2011-03-12T19:28:35  *** ChanServ sets mode: +o amstan_
+2011-03-12T20:09:22  *** amstan_ <amstan_!~alex@bas1-hamilton01-2925008255.dsl.bell.ca> has quit IRC (Ping timeout: 255 seconds)
+2011-03-12T20:19:29  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-12T20:33:50  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-12T21:46:33  *** amstan <amstan!~amstan@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-12T21:46:33  *** ChanServ sets mode: +o amstan
+2011-03-12T21:50:11  *** amstan_ <amstan_!~alex@69-165-150-184.dsl.teksavvy.com> has joined #aichallenge
+2011-03-12T21:50:11  *** ChanServ sets mode: +o amstan_
+2011-03-12T21:50:11  *** amstan_ <amstan_!~alex@69-165-150-184.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-03-12T22:01:51  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-03-12T22:11:33  <bss03> jmcarthur: Are all your dependencies for your start bot going to be on the workers?
+2011-03-12T22:11:59  <bss03> jmcarthur: I have the haskel-platform from Debian Sid installed and there are some things missing.
+2011-03-12T22:12:42  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 248 seconds)
+2011-03-12T22:12:58  <bss03> jmcarthur: blaze, bytestring, hashable, time, unordered-containers.
+2011-03-12T22:13:30  <bss03> jmcathur: Sid is still stuck on 2010.1.0.0.1, is Maverick better?
+2011-03-12T22:26:57  <bss03> @later tell jmcarthur: Some of your ants-bot dependencies aren't in the haskell-platform in Maverick; will they be on the contest compile boxes?
+2011-03-12T22:26:57  <contestbot> bss03: OK
+2011-03-12T22:27:52  <amstan> jmcarthur: bss03: you guys have to add them to the setup script
+2011-03-12T22:28:23  <bss03> amstan: I'm just trying to figure out where jmcarthur got them, at this point.
+2011-03-12T22:28:42  <bss03> amstan: I thought installing haskell-platform locally would be enough. :(
+2011-03-12T22:37:09  <bss03> Sometimes I think Haskellers are as bad as Rubites in trying to make everyone use thier packaging system.
+2011-03-12T22:37:25  <amstan> i don't like packages, i agree
+2011-03-12T22:37:39  <bss03> I trust (aptitude install $pkg) much more than (cabal install $pkg).  If for no other reason because there's an uninstall.
+2011-03-12T22:46:01  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.15/20110303170601])
+2011-03-12T22:59:44  <jmcarthur> bss03: the idea is for the server to have those already
+2011-03-12T22:59:57  <jmcarthur> bss03: just cd into the library directory and run cabal install. it will handle everything
+2011-03-12T23:00:11  <jmcarthur> i can't work on it for a few days, probably
+2011-03-12T23:00:24  * jmcarthur is in new york for a job interview right now
+2011-03-12T23:01:50  <jmcarthur> bss03: you can unregister cabal packages and, if you install them as user packages, just trash them from your home directory
+2011-03-12T23:02:11  <jmcarthur> bss03: also if you have a distro that doesn't suck then most haskell packages can be managed by the package manager anyway :P
+2011-03-12T23:29:35  <antimatroid> jmcarthur: are you going to include the stuff in the starter packs for people to get it running locally? :P
+2011-03-12T23:33:28  <jmcarthur> antimatroid: i think it's fine to require the haskell platform, and it just takes one extra command beyond that...
+2011-03-12T23:44:15  <antimatroid> yeah, i don't really mind with haskell
+2011-03-12T23:44:25  <antimatroid> if someone plans to use it i expect them to be fairly capable
+2011-03-12T23:44:38  <antimatroid> my current problem is i have two output functions for a struct
+2011-03-12T23:45:20  <antimatroid> one is for a format to read stuff back in again from file, the other is so that the output is human readable, i can't really have both with << unless i strictly use one for ofstreams and the other for ostreams D:
+2011-03-12T23:48:06  <jmcarthur> ew
+2011-03-12T23:54:29  <antimatroid> exactly
+2011-03-12T23:54:58  <antimatroid> it's for nplayer normal form games though, so it's printing an ndimensional tensor in human readable form that's really just stored in a 1d vector :P
+2011-03-12T23:55:17  <antimatroid> well, it's actually printing n such tensors
+2011-03-12T23:56:55  <antimatroid> http://pastebin.com/7qm3bbQk
+2011-03-12T23:57:05  <antimatroid> the human readable function is consierably more horrible code wise :P

@@ -1,0 +1,657 @@
+2011-05-08T00:05:16  <janzert> amstan: same as a main server basically but run worker_setup.py instead of server_setup.py
+2011-05-08T00:05:44  <amstan> it should work if i execute it on the same server with the manager, right?
+2011-05-08T00:05:59  <janzert> I believe so but I haven't tested that in a while
+2011-05-08T00:06:40  <janzert> also the cron job and worker startup script mentioned in the setup don't actually work
+2011-05-08T00:06:54  <janzert> it is still pointing to the old planetwars scripts
+2011-05-08T00:06:58  <amstan> API Base url?  would be http://hypertriangle.com:13080/ right?
+2011-05-08T00:07:08  <janzert> yep
+2011-05-08T00:07:15  <amstan> where do i get the api key from?
+2011-05-08T00:07:17  <janzert> where api_* pages are found
+2011-05-08T00:07:36  <janzert> you set it in the main server server_info.php
+2011-05-08T00:07:55  <janzert> it can be any string basically
+2011-05-08T00:08:01  <amstan> what's the key for that property?
+2011-05-08T00:08:07  <janzert> I'd recommend a random 128bit hex number :)
+2011-05-08T00:08:15  <amstan> there's no line with key in there
+2011-05-08T00:08:36  <janzert> I don't remember what the variable name is offhand...
+2011-05-08T00:09:10  <janzert> looks like it is 'api_key'
+2011-05-08T00:09:28  <janzert> actually I'm wrong
+2011-05-08T00:10:29  <janzert> the api_key in the server_info.php is used for api_server_setup.php and it generates a specific worker key
+2011-05-08T00:10:39  <janzert> it is the worker key that the worker_setup.py needs
+2011-05-08T00:10:52  <janzert> you'll need to manually insert that into the main server database
+2011-05-08T00:11:24  <amstan> so, what do i need to do then? run api_server_setup.php?
+2011-05-08T00:11:52  <janzert> basically pick a key then "insert into worker SET api_key = 'workerkey', ip_address = '<worker ip address>';"
+2011-05-08T00:12:11  <janzert> the api_server_setup.php is for automatic worker setup with ec2
+2011-05-08T00:12:18  <amstan> ok.. first.. i have to get api_key into the server_info.php
+2011-05-08T00:12:27  <amstan> i wanted to fix that first, on the template ones too
+2011-05-08T00:13:01  <janzert> you should be able to actually skip the api_key in server_info.php unless you'll be doing automatic worker deployment
+2011-05-08T00:13:24  <amstan> yeah, but i'm both verifying that everything goes smooothly and setting this up
+2011-05-08T00:13:27  <janzert> it should only be used in api_server_setup
+2011-05-08T00:13:35  <amstan> so i want to have the repo either working nicely, or documented at the end
+2011-05-08T00:14:12  <janzert> and api_server_setup.php is broked too
+2011-05-08T00:14:32  <janzert> obviously since it still points at the old svn repo :P
+2011-05-08T00:14:36  <amstan> yeah
+2011-05-08T00:14:38  <amstan> i noticed
+2011-05-08T00:16:17  <CIA-33> aichallenge: Alexandru Stan epsilon * rc5bb76d / (4 files in 4 dirs): deleted duplicate sample files(all the templates are now in the setup folder), added the api_key option in the sample server_info.php - http://bit.ly/muCk0Z
+2011-05-08T00:16:18  <amstan> k.. so..
+2011-05-08T00:16:21  <amstan> now there's that..
+2011-05-08T00:16:30  <amstan> i need to make a random 128 bit string
+2011-05-08T00:18:19  <amstan> there we go: print "%x"%random.randint(0,2**128)
+2011-05-08T00:21:29  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-05-08T00:21:40  <amstan> sigh..
+2011-05-08T00:21:42  <amstan> [Sun May 08 00:21:22 2011] [error] [client 192.168.0.1] PHP Fatal error:  Call to a member function get() on a non-object in /home/contest/aichallenge/website/index.php on line 15
+2011-05-08T00:21:46  <amstan> memcached is installed, running
+2011-05-08T00:21:48  <amstan> but i still get that
+2011-05-08T00:24:11  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Client Quit)
+2011-05-08T00:29:17  <CIA-33> aichallenge: Alexandru Stan epsilon * r3c9b663 / website/index.php : added check so index.php doesn't crash when memcached is not properly working(need help on this too) - http://bit.ly/lnhI8x
+2011-05-08T00:32:57  <CIA-33> aichallenge: Alexandru Stan epsilon * r08f7467 / website/.gitignore : added forums, phpmyadmin to the gitignore in website - http://bit.ly/kyddgr
+2011-05-08T00:35:25  <amstan> janzert: what's with $server_info["api_create_key"] ?
+2011-05-08T00:36:22  <janzert> sorry, yes 'api_create_key' is the correct variable name in server_info.php
+2011-05-08T00:36:27  <amstan> ugh..
+2011-05-08T00:36:36  <janzert> no idea about memcached
+2011-05-08T00:37:00  <amstan> janzert: the real problem with memcached is that it didn't have a check if it was loading like the other files, my commit fixed that
+2011-05-08T00:38:59  <janzert> but it still isn't working correctly?
+2011-05-08T00:39:38  <janzert> from what McLeopold said before it sounded like the package just needed to be installed on the server and no further configuration was necessary
+2011-05-08T00:40:02  <amstan> janzert: it worked on my main hypertriangle server, but on the test 13000 server it didn't
+2011-05-08T00:40:10  <amstan> seems like the module is not active or something
+2011-05-08T00:40:17  <amstan> even though i did a2enmod
+2011-05-08T00:40:25  <amstan> maybe the firewall is still active or something
+2011-05-08T00:40:34  <amstan> i don't think ufw is disabled
+2011-05-08T00:40:57  <janzert> it'd be rather weird for a firewall to be blocking localhost communication
+2011-05-08T00:41:27  <CIA-33> aichallenge: Alexandru Stan epsilon * rcf1e0ac / setup/server_info.php.template : real key for the setting of api_create_key - http://bit.ly/isFTZS
+2011-05-08T00:44:13  <amstan> janzert: why is server_info.php owned by root? is that my bad or is it supposed to be that way?
+2011-05-08T00:47:21  <amstan> janzert: ok.. so i have the server_key setup properly.. i have a key from server_setup.php
+2011-05-08T00:47:30  <amstan> though it's giving me all kinds of other random stuff
+2011-05-08T00:47:42  <amstan> from the svn, that's not valid anymore
+2011-05-08T00:48:03  <amstan> i guess we'll have to fix that sometime
+2011-05-08T00:48:22  <amstan> what does Install startup cronjob? [no]  do?
+2011-05-08T00:50:50  <amstan> oh my.. all these packages
+2011-05-08T00:51:24  * amstan wonders why /var/cache/apt/archives is not used, they're all already in there
+2011-05-08T00:51:43  <amstan> would cut down installation time a lot
+2011-05-08T00:52:14  <janzert> the startup cronjob would install a cronjob to start the worker script on a reboot
+2011-05-08T00:52:29  <amstan> how do i do this manually?
+2011-05-08T00:52:34  <janzert> all packages are being installed in a chroot so the base system isn't available
+2011-05-08T00:52:44  <janzert> what part?
+2011-05-08T00:52:56  <amstan> the worker.py script
+2011-05-08T00:53:12  <amstan> mcleopold gave me an example, but i just want to make sure we're all on the same wavelength
+2011-05-08T00:53:21  <janzert> I haven't actually run it
+2011-05-08T00:53:22  <amstan> something like ./worker.py 0
+2011-05-08T00:53:24  <amstan> oh
+2011-05-08T00:53:30  <janzert> but just look at the bottom of the file
+2011-05-08T00:53:40  <janzert> you can see the optparse stuff pretty easily
+2011-05-08T00:53:55  <janzert> it's something like worker.py -t something something :}
+2011-05-08T00:54:20  <amstan> what does worker_init.py do?
+2011-05-08T00:54:35  <amstan> it has something to do with that .tgz file, when do i run that?
+2011-05-08T00:54:41  <amstan> or did it already?
+2011-05-08T00:54:43  <janzert> you don't
+2011-05-08T00:55:05  <janzert> it's used for the automatic deploy to setup the environment to run worker_setup.py
+2011-05-08T00:55:16  <amstan> well shit: http://pastebin.com/z2JEyaQY
+2011-05-08T00:55:18  <amstan> lol
+2011-05-08T00:55:26  <amstan> oh.. right..
+2011-05-08T00:55:32  <amstan> that might be one issue, i don't have amd64
+2011-05-08T00:55:33  <janzert> e.g. create the worker, download that .tgz file, unpack it in the right spot
+2011-05-08T00:55:52  <janzert> hmm
+2011-05-08T00:56:23  <janzert> you can try just changing it to i386 and see if it works I suppose
+2011-05-08T00:56:52  <janzert> although your system is going to be in a state that worker_setup probably can't continue from at this point
+2011-05-08T00:56:54  <amstan> full paste: http://pastebin.com/fMg60AbN
+2011-05-08T00:57:04  <amstan> anything that i can delete?
+2011-05-08T00:57:28  <janzert> /srv/chroot/* and let me check if there's anything else
+2011-05-08T00:57:53  <amstan> there's an aic-base
+2011-05-08T00:57:56  <amstan> i could delete that
+2011-05-08T00:59:26  <janzert> yep, I think just 'rm -rf /srv/chroot' should do it
+2011-05-08T00:59:52  <janzert> from where the script crashed there
+2011-05-08T01:00:14  <amstan> any idea how to make ubuntu regurgitate what arch and version it is?
+2011-05-08T01:00:23  <amstan> i could try looking in sources.list, but that's a hack
+2011-05-08T01:00:30  <amstan> i think there was a file in /etc/ or something
+2011-05-08T01:00:37  <janzert> looking for?
+2011-05-08T01:00:54  <janzert> oh, missed the first question
+2011-05-08T01:00:58  <janzert> no idea
+2011-05-08T01:01:22  <janzert> there's debian_version
+2011-05-08T01:01:30  <janzert> but I'm not sure how to check the ubuntu version
+2011-05-08T01:01:41  <amstan>  /etc/lsb-release => DISTRIB_CODENAME=natty
+2011-05-08T01:04:16  <janzert> on memcache again, did php5-memcached and memcached packages both get installed?
+2011-05-08T01:04:32  <amstan> janzert: yes, i have them both installed, the extension is working
+2011-05-08T01:04:40  <janzert> ahh
+2011-05-08T01:05:39  <amstan> janzert: i think "if (extension_loaded ('memcache')) {" fails
+2011-05-08T01:08:10  <janzert> hmm, that's a php extension nothing to do with apache btw
+2011-05-08T01:08:41  <amstan> oh
+2011-05-08T01:08:45  <amstan> darn
+2011-05-08T01:08:59  <janzert> maybe printing the output of get_loaded_extensions() to see if it is in the list
+2011-05-08T01:09:09  <janzert> s/maybe/maybe try
+2011-05-08T01:09:11  <amstan> can i do it with php-cli?
+2011-05-08T01:09:30  <janzert> I'm not positive if that loads the same extensions or not
+2011-05-08T01:09:33  <amstan> array.. ugh..
+2011-05-08T01:09:54  <amstan> janzert: how about a php_info
+2011-05-08T01:10:35  <janzert> that should list it too
+2011-05-08T01:10:39  <amstan> http://hypertriangle.com:13080/phpinfo.php
+2011-05-08T01:10:54  <amstan> it's in there..
+2011-05-08T01:11:40  <janzert> looks like it's called memcached their and memcache in the code?
+2011-05-08T01:12:13  <janzert> McLeopold told me those were the packages he was using but now I wonder
+2011-05-08T01:12:31  <janzert> 'cause I know he was going back and forth between a few different ones at one point
+2011-05-08T01:12:33  <amstan> well.. presumably the d at the end is fro daemon
+2011-05-08T01:13:00  <janzert> yes, but the extension still seems to be named memcached
+2011-05-08T01:13:25  <janzert> at least I don't see a plain memcache extension in that list
+2011-05-08T01:13:40  <amstan> http://home.hypertriangle.com/phpinfo.php
+2011-05-08T01:13:42  <amstan> you're right..
+2011-05-08T01:13:49  <amstan> the other server i have is just memcache, without d
+2011-05-08T01:14:03  <janzert> both running natty?
+2011-05-08T01:14:20  <janzert> wonder if it's something that changed
+2011-05-08T01:14:22  <amstan> nope, my home.hypertriangle is karmic
+2011-05-08T01:15:05  <amstan> lucid*
+2011-05-08T01:15:58  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T01:21:16  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 258 seconds)
+2011-05-08T01:27:28  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T01:32:00  *** NESTEA <NESTEA!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T01:33:14  <CIA-33> aichallenge: Alexandru Stan fix-32bit-worker * radbcb5d / setup/install_tools.py : added get_ubuntu_release_info - http://bit.ly/kLxX1V
+2011-05-08T01:33:15  <amstan> janzert: heheh ^
+2011-05-08T01:36:27  <CIA-33> aichallenge: Alexandru Stan fix-32bit-worker * r6d66382 / setup/worker_setup.py : made worker_setup to install the same ubuntu in the chroot as the host is, using get_ubuntu_release_info - http://bit.ly/lmwp9o
+2011-05-08T01:36:29  <amstan> janzert: may i merge that?
+2011-05-08T01:37:15  <amstan> https://github.com/aichallenge/aichallenge/compare/epsilon...fix-32bit-worker
+2011-05-08T01:42:14  <janzert> hmm
+2011-05-08T01:42:41  <janzert> I'd rather just match the arch
+2011-05-08T01:43:02  <amstan> janzert: what?
+2011-05-08T01:43:06  <janzert> you need to change more than just that when switching ubuntu versions
+2011-05-08T01:43:29  <janzert> e.g. see my commit a while back to update to natty
+2011-05-08T01:43:43  <janzert> and if you go older than maverick the changes are much greater
+2011-05-08T01:44:03  <amstan> grep -R natty . only return worker_setup.py about a broken package and your sources.list
+2011-05-08T01:44:10  <amstan> returns*
+2011-05-08T01:44:29  <janzert> yeah, but I'd still rather just stick with a known configuration
+2011-05-08T01:44:48  <amstan> we could put a check in the installer, a warning if it's not natty
+2011-05-08T01:45:03  <amstan> but i would like to have less things hardcoded
+2011-05-08T01:45:04  <janzert> pre-maverick the chroot configuration moves location a couple of times
+2011-05-08T01:45:22  <janzert> I'd rather hardcode so we can say, this is what it is
+2011-05-08T01:45:29  <amstan> my commits there don't imply we'll be able to use anything but natty
+2011-05-08T01:45:53  <amstan> what about putting a check for that?
+2011-05-08T01:46:04  <janzert> less magic, more explicit in other words
+2011-05-08T01:46:21  <janzert> and throw an error if it's not natty?
+2011-05-08T01:46:27  <amstan> yeah
+2011-05-08T01:46:30  <janzert> that would be fine
+2011-05-08T01:46:35  <amstan> assert version==natty
+2011-05-08T01:47:08  <amstan> janzert: about that sources.list, how about copying it from host?
+2011-05-08T01:47:15  <janzert> also have you checked to see if changing the arch actually gives you a working system?
+2011-05-08T01:47:29  <janzert> I'd rather not
+2011-05-08T01:47:32  <amstan> janzert: i'm installing i386 right now
+2011-05-08T01:47:51  <janzert> since the host may have extra sources
+2011-05-08T01:47:59  <amstan> what's wrong with extra sources?
+2011-05-08T01:48:04  <janzert> and we may also want to add some ppa in the future
+2011-05-08T01:48:16  <janzert> we could end up with a different version of a package than we expect
+2011-05-08T01:48:29  <amstan> is that a problem for the chroot machine?
+2011-05-08T01:48:52  <janzert> it's what the bots are compiled and run under
+2011-05-08T01:49:14  <amstan> shouldn't that comp have access to the same software as the host?
+2011-05-08T01:49:17  <amstan> i don't understand
+2011-05-08T01:49:19  <janzert> nope
+2011-05-08T01:49:31  <janzert> the chroot only has access to what is installed in it
+2011-05-08T01:49:38  <amstan> also, aren't we installing the languages and stuff on the host?
+2011-05-08T01:49:42  <janzert> it can technically be a whole different distribution
+2011-05-08T01:49:43  <janzert> nope
+2011-05-08T01:50:33  <amstan> well.. shit: http://pastebin.com/ZYdt15Xg
+2011-05-08T01:50:44  <amstan> my lsb_release doesn't exist in --chroot-setup mode
+2011-05-08T01:50:59  <amstan> i should probably move that line, to somewhere where i'm sure it's only ubuntu
+2011-05-08T01:51:25  <janzert> ahh, I didn't notice that was setting global variables
+2011-05-08T01:51:37  <amstan> janzert: any suggestions?
+2011-05-08T01:51:42  <janzert> yeah, just move that line into setup_base_chroot
+2011-05-08T01:51:59  <amstan> should i just do it in setup_base_chroot, where it's needed?
+2011-05-08T01:52:18  <janzert> yp, setup_base_chroot won't be executed in the chroot itself
+2011-05-08T01:52:21  <janzert> yep
+2011-05-08T01:52:55  <janzert> you're only about halfway through the chroot setup btw ;)
+2011-05-08T01:53:02  <amstan> yes, i noticed
+2011-05-08T01:56:38  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-176-227-242.asm.bellsouth.net> has joined #aichallenge
+2011-05-08T01:57:37  <amstan> janzert: i was thinking of: if version!="natty":   raise Exception("This contest framework was designed to work on Ubuntu Natty(11.04) only.")
+2011-05-08T01:58:08  <janzert> sure, put that right at the start of main
+2011-05-08T01:58:26  <janzert> then also shove the arch into options
+2011-05-08T01:58:37  <amstan> janzert: which options?
+2011-05-08T01:58:50  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has quit IRC (Read error: No route to host)
+2011-05-08T01:59:08  <janzert> it's the options object that gets passed around for everything to pull the setup configuration out of
+2011-05-08T01:59:09  *** nullkuhl <nullkuhl!~nullkuhl@196.221.101.99> has joined #aichallenge
+2011-05-08T01:59:09  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has joined #aichallenge
+2011-05-08T01:59:25  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-08T01:59:42  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-05-08T01:59:46  <janzert> it's called opts in main
+2011-05-08T02:01:20  <janzert> so move your get_ubuntu_release_info call to the top of main, throw an exception if not natty and the set opts.arch = ubuntu_arch after the get_options call
+2011-05-08T02:01:37  <amstan> ok
+2011-05-08T02:01:50  <janzert> but I also thought of a problem since lsb_release isn't in the chroot you'll need to catch that exception
+2011-05-08T02:02:27  <janzert> probably just set the version to natty if lsb_release has an error
+2011-05-08T02:03:53  <janzert> it'll allow a false positive if run on a distribution without lsb_release but it's going to get pretty intertwined to get everything working correctly otherwise
+2011-05-08T02:05:07  <amstan> janzert: the chroot has /etc/lsb-release
+2011-05-08T02:05:11  <amstan> so i might change to that..
+2011-05-08T02:11:47  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-08T02:16:09  <CIA-33> aichallenge: Alexandru Stan fix-32bit-worker * rc5748f0 / setup/install_tools.py : made get_release_info more stable, added check_ubuntu_version - http://bit.ly/klp8Og
+2011-05-08T02:16:29  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-08T02:18:01  <amstan> janzert: opts is a dict, right?
+2011-05-08T02:28:42  <CIA-33> aichallenge: Alexandru Stan epsilon * r5fdc4d6 / ants/dist/starter_bots/ruby/ants.rb :
+2011-05-08T02:28:43  <CIA-33> aichallenge: Merge pull request #85 from MatmaRex/epsilon
+2011-05-08T02:28:43  <CIA-33> aichallenge: Ruby starter - helper functions, no more r lines - http://bit.ly/kyBxcR
+2011-05-08T02:29:28  <amstan> janzert: so.. see that instal_tools.py commit, it shouldn't crash anymore
+2011-05-08T02:29:47  <amstan> janzert: do you still want me to do those opt things?
+2011-05-08T02:30:40  <janzert> opts is an optparse values object
+2011-05-08T02:30:51  <amstan> never worked with them before
+2011-05-08T02:30:54  <amstan> can i use it as a dict?
+2011-05-08T02:31:27  <janzert> basically for what you're doing just use it like a regular object and set attributes on it
+2011-05-08T02:32:04  <amstan> oh, so.. opt.ubuntu_arch, opt_ubuntu_version = check_ubuntu_version()
+2011-05-08T02:32:14  <janzert> basically
+2011-05-08T02:32:16  <amstan> opt.*
+2011-05-08T02:32:42  <janzert> but I think you only need to put the arch into it
+2011-05-08T02:32:57  <amstan> what about the bit from worker_setup.py?
+2011-05-08T02:33:00  <janzert> just do the version check directly in the main function and raise an exception if it's wrong
+2011-05-08T02:33:18  <amstan> i need the version in there..
+2011-05-08T02:33:35  <janzert> this is all in worker_setup.py
+2011-05-08T02:33:56  <janzert> in the main function first line do version, arch = check_ubuntu_version()
+2011-05-08T02:34:14  <janzert> then compare the version to natty and raise exception if not
+2011-05-08T02:34:27  <janzert> then call get_options to get the opts object
+2011-05-08T02:34:39  <janzert> after that call set opts.ubuntu_arch = arch
+2011-05-08T02:35:06  <janzert> then use that in the chroot setup function
+2011-05-08T02:35:16  <amstan> yes, but what about %s http://us.archive.ubuntu.com/ubuntu/" % (ubuntu_arch, ubuntu_version, base_chroot_dir,))
+2011-05-08T02:35:20  <amstan> it needs ubuntu_version
+2011-05-08T02:35:24  <amstan> and that's not in the same scope
+2011-05-08T02:35:26  <janzert> hardcode it to natty
+2011-05-08T02:35:29  <amstan> aww
+2011-05-08T02:35:32  <amstan> after all that work, lol
+2011-05-08T02:35:44  <janzert> since that is all everything will work with anyway
+2011-05-08T02:36:10  <janzert> if it's anything but natty the sources.list that gets installed will cause problems later on
+2011-05-08T02:37:10  <amstan> janzert: well.. i was just wondering if we could not hardcode it to natty there, we already have the exception for that
+2011-05-08T02:37:21  <amstan> it's pretty much the same functionality
+2011-05-08T02:38:16  <janzert> it makes the code simpler to hardcode it
+2011-05-08T02:38:29  <amstan> yeah.. ok
+2011-05-08T02:38:31  <janzert> and not hardcoding it just opens up the opportunity for more errors later on
+2011-05-08T02:39:43  <CIA-33> aichallenge: Alexandru Stan fix-32bit-worker * r2d0550c / (3 files): only included the check in the main functions, hardcoded natty back into the debootstrap - http://bit.ly/jFq6Qs
+2011-05-08T02:40:03  <amstan> like that?
+2011-05-08T02:40:27  <amstan> full diff: https://github.com/aichallenge/aichallenge/compare/epsilon...fix-32bit-worker
+2011-05-08T02:42:06  <amstan> janzert: ^
+2011-05-08T02:42:33  *** kaemo <kaemo!~mad5ci@d33-29.icpnet.pl> has joined #aichallenge
+2011-05-08T02:44:01  <janzert> yep looks fine
+2011-05-08T02:45:28  <amstan> well
+2011-05-08T02:45:32  <amstan> i wanted to install using that..
+2011-05-08T02:45:34  <amstan> but..
+2011-05-08T02:45:45  <amstan> it somehow tought it was done the base chroot
+2011-05-08T02:45:49  <amstan> and now i have a bunch of users
+2011-05-08T02:45:57  <amstan> how do i reverse it?
+2011-05-08T02:47:15  <amstan> do i just delete the users?
+2011-05-08T02:47:27  <amstan> and /srv/chroot again?
+2011-05-08T02:49:23  <janzert> yeah
+2011-05-08T02:49:39  <janzert> I'm pretty sure that should do it
+2011-05-08T02:50:34  <amstan> janzert: oh man.. fstab is full too
+2011-05-08T02:51:06  <janzert> oh yeah, if it added the users
+2011-05-08T02:52:56  <janzert> that's the really nice thing about ec2 and using a vm for testing, it's very easy to start over fresh again :}
+2011-05-08T02:53:27  <amstan> yeah, i would use them if i had access to them
+2011-05-08T02:54:41  <CIA-33> aichallenge: Alexandru Stan epsilon * radbcb5d / setup/install_tools.py : added get_ubuntu_release_info - http://bit.ly/kLxX1V
+2011-05-08T02:54:42  <CIA-33> aichallenge: Alexandru Stan epsilon * r2d0550c / (3 files): only included the check in the main functions, hardcoded natty back into the debootstrap - http://bit.ly/jFq6Qs
+2011-05-08T02:54:44  <CIA-33> aichallenge: Alexandru Stan epsilon * r6d66382 / setup/worker_setup.py : made worker_setup to install the same ubuntu in the chroot as the host is, using get_ubuntu_release_info - http://bit.ly/lmwp9o
+2011-05-08T02:54:47  <CIA-33> aichallenge: Alexandru Stan epsilon * rc5748f0 / setup/install_tools.py : made get_release_info more stable, added check_ubuntu_version - http://bit.ly/klp8Og
+2011-05-08T02:55:56  <amstan> k.. running setup
+2011-05-08T02:55:58  <amstan> and there's an error
+2011-05-08T02:56:00  <amstan> hmm
+2011-05-08T02:58:18  <CIA-33> aichallenge: Alexandru Stan epsilon * r1624e21 / setup/worker_setup.py : fixed typo - http://bit.ly/iAhAWD
+2011-05-08T02:58:56  <amstan> i cannot catch a break..
+2011-05-08T02:59:07  <janzert> :{
+2011-05-08T02:59:18  <amstan> setup_base_chroot does not have opts in it..
+2011-05-08T02:59:29  <amstan> it's options?
+2011-05-08T02:59:40  <amstan> i guess
+2011-05-08T02:59:43  <amstan> is that the same thing?
+2011-05-08T03:01:48  * amstan is getting irritated about those are you sure messages, lol
+2011-05-08T03:04:22  <amstan> ok.. maybe it's time for me to go to bed
+2011-05-08T03:04:36  <amstan> i don't care what happens to that install process now, i'll reset it tomorrow if i have to
+2011-05-08T03:07:38  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-08T03:08:30  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T03:09:26  <janzert> :/
+2011-05-08T03:09:51  <amstan> my copying of .deb files seemed to have sped up the process
+2011-05-08T03:09:53  <amstan> i might wait
+2011-05-08T03:10:00  <amstan> it's getting java now
+2011-05-08T03:10:05  <janzert> yeah it's basically only called opts in main because I was  too lazy to spell it out
+2011-05-08T03:10:19  <janzert> you'll see it gets passed down as a parameter to the various functions
+2011-05-08T03:10:46  <amstan> yeah, i  s/*/options/g 'd it
+2011-05-08T03:11:13  <amstan> i should really stop doing --amends and push -f
+2011-05-08T03:11:49  <amstan> fonts... why would it need fonts? lol
+2011-05-08T03:11:58  <janzert> java demands it :P
+2011-05-08T03:12:17  <janzert> actually I don't know what the dependency is that pulls 'em in
+2011-05-08T03:12:32  <amstan> we should make a cd
+2011-05-08T03:12:39  <amstan> with the contest framework
+2011-05-08T03:12:48  <amstan> just install everything from there
+2011-05-08T03:12:49  <amstan> lol
+2011-05-08T03:12:57  <amstan> it'll have debs too
+2011-05-08T03:13:23  <amstan> i really like this sandbox system
+2011-05-08T03:13:40  <amstan> you can pretty much try different versions of ubuntu in it, assuming you don't care about drivers
+2011-05-08T03:14:09  <amstan> s/ubuntu/anydistro?/g
+2011-05-08T03:19:28  <amstan> and now i'm compiling go
+2011-05-08T03:20:05  <amstan> we should really get that repo for haskell and the others
+2011-05-08T03:20:17  <amstan> just make our own debs with the compiled stuff
+2011-05-08T03:24:12  <janzert> yeah, that'd be nice
+2011-05-08T03:24:43  <janzert> and yeah I think so long as the distro can use whatever kernel is currently in use you should be able to put it in a chroot
+2011-05-08T03:33:47  <amstan> janzert: yay.. it's done
+2011-05-08T03:33:59  <janzert> sweet
+2011-05-08T03:34:20  <janzert> try running play_one_game and see if it works
+2011-05-08T03:35:49  <amstan> janzert: where from?
+2011-05-08T03:36:06  <janzert> in the ants directory
+2011-05-08T03:36:17  <janzert> it just runs a game with some of the sample bots
+2011-05-08T03:36:47  <amstan> it launched w3m on me
+2011-05-08T03:37:22  <amstan> contest@aichallengebeta:~/aichallenge/ants$ cat game_logs/0.replay
+2011-05-08T03:37:23  <amstan> {"error": "'repo_path'"}
+2011-05-08T03:37:45  <janzert> ugh, that must be one of the changes McLeopold made with his recent checkins
+2011-05-08T03:37:50  <janzert> the w3m thing that is
+2011-05-08T03:38:31  <janzert> hmm, that's a rather unhelpful error
+2011-05-08T03:38:49  <janzert> maybe check the repo_path setting in the worker/server_info.py
+2011-05-08T03:38:49  <amstan> yeah..
+2011-05-08T03:39:17  <janzert> it should be relative to the root_path
+2011-05-08T03:39:24  <amstan> "root_path": "/home/contest",
+2011-05-08T03:39:25  <janzert> not an absolute path by the way
+2011-05-08T03:39:29  <amstan> there's no repo_path
+2011-05-08T03:39:48  <janzert> really
+2011-05-08T03:40:09  <janzert> in the worker directory?
+2011-05-08T03:40:15  <amstan> yeah... that's weird..
+2011-05-08T03:40:24  <amstan> should i add it manually?
+2011-05-08T03:40:42  <janzert> sure, but also is there one in the template in your setup directory?
+2011-05-08T03:40:44  <amstan> the server_info.py file in worker seems to be really skeletal
+2011-05-08T03:40:52  <janzert> setup/worker_server_info.py.template
+2011-05-08T03:40:54  <amstan> setup has it properly
+2011-05-08T03:40:55  <amstan> yeah
+2011-05-08T03:41:11  <amstan> should i attempt to fix this?
+2011-05-08T03:41:35  * janzert checks to see if a server_info.py got checked in somehow
+2011-05-08T03:41:50  <janzert> nope
+2011-05-08T03:41:56  <amstan> janzert: i don't dismiss the possibility of me having had that file before
+2011-05-08T03:41:59  <janzert> yeah, you could just fix it manually
+2011-05-08T03:42:15  <janzert> probably just copy over the template and fill in the values
+2011-05-08T03:42:25  <amstan> yeah.. my server_info has stuff like db_username in it
+2011-05-08T03:42:39  <amstan> i think it's a manager server_info file
+2011-05-08T03:42:41  <janzert> it must be left over from a while ago
+2011-05-08T03:42:47  <janzert> ahh, that could be
+2011-05-08T03:44:31  <amstan> janzert: play one game is definatelly doing ants stuff now
+2011-05-08T03:44:36  <janzert> great
+2011-05-08T03:44:41  <amstan> ran about 8 jailusers
+2011-05-08T03:44:46  <amstan> and it's turning now..
+2011-05-08T03:44:48  <amstan> woot
+2011-05-08T03:44:59  <janzert> the sandbox chroots should be working then
+2011-05-08T03:45:56  <amstan> k.. wtf? http://hypertriangle.com:13080/visualizer.php?game_id=0
+2011-05-08T03:46:54  <amstan> http://hypertriangle.com:13080/ants/games/0/0.replay
+2011-05-08T03:47:16  <janzert> heh
+2011-05-08T03:47:48  <amstan> ok.. editing it a little
+2011-05-08T03:47:56  <janzert> did McLeopold change the replay format in his last batch of checkins?
+2011-05-08T03:48:21  <amstan> yay
+2011-05-08T03:48:22  <amstan> http://hypertriangle.com:13080/visualizer.php?game_id=0
+2011-05-08T03:48:24  <amstan> there we go
+2011-05-08T03:48:44  <amstan> and that game was just ran in the sandbox..
+2011-05-08T03:48:45  <janzert> yay
+2011-05-08T03:48:47  <amstan> cool
+2011-05-08T03:49:03  <amstan> so.. bugs discovered today while setting up the sandbox
+2011-05-08T03:49:05  <amstan> very few
+2011-05-08T03:49:08  <amstan> janzert: good job
+2011-05-08T03:49:41  <janzert> well what you did is what I've been doing locally for testing :)
+2011-05-08T03:50:17  <amstan> contestbot: later tell mcleopold I have the sandbox ready on the hypertriangle beta server, when you have time we can work on that
+2011-05-08T03:50:17  <contestbot> amstan: Ready to serve, my lord.
+2011-05-08T03:50:26  <amstan> the only thing i'm affraid now is the sql state..
+2011-05-08T03:50:32  <janzert> ?
+2011-05-08T03:50:41  <janzert> oh just the overall state of the sql
+2011-05-08T03:50:43  <amstan> i have a feeling my schema is out of date
+2011-05-08T03:50:47  <amstan> on the server
+2011-05-08T03:50:49  <janzert> ahh
+2011-05-08T03:51:06  <amstan> and i have no idea what clearing it and reinstalling it would do
+2011-05-08T03:51:37  <janzert> the thing I'm dreading right now is that to make it work at all efficiently I've gotta change the way the sandbox class works a bit
+2011-05-08T03:51:53  <janzert> for compilation that is
+2011-05-08T03:52:20  <amstan> would that be a big problem to change?
+2011-05-08T03:52:49  <janzert> not really it's just that I really should change the API of the class and that means I'll need to change the engine to match
+2011-05-08T03:52:56  <janzert> I'd rather not touch too much
+2011-05-08T03:53:05  *** sigh_ <sigh_!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T03:56:47  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T03:58:18  *** Zepp <Zepp!~m2ellis@taurine.csclub.uwaterloo.ca> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T03:58:23  *** Zepp <Zepp!~m2ellis@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-05-08T04:02:08  *** sigh_ <sigh_!~sigh@210.18.207.102> has quit IRC (Read error: Connection reset by peer)
+2011-05-08T04:04:24  *** Kingpin13 <Kingpin13!~Kingpin13@cpc24-aztw23-2-0-cust12.aztw.cable.virginmedia.com> has joined #aichallenge
+2011-05-08T04:04:29  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-08T04:10:10  *** berak <berak!~chatzilla@89.204.153.133> has joined #aichallenge
+2011-05-08T04:12:15  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T04:26:23  *** amstan <amstan!~amstan@184.175.3.188> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T05:08:13  *** mcstar <mcstar!~mcstar@adsl-89-134-29-192.monradsl.monornet.hu> has joined #aichallenge
+2011-05-08T05:20:57  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T05:21:21  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-05-08T05:29:18  *** sigh_ <sigh_!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T05:31:55  *** delt0r___ <delt0r___!~delt0r@188-22-31-50.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-08T05:32:20  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-08T05:32:22  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Quit: WeeChat 0.3.4)
+2011-05-08T05:33:26  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 276 seconds)
+2011-05-08T05:33:38  *** delt0r_ <delt0r_!~delt0r@188-22-172-164.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-05-08T05:36:45  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-05-08T05:39:06  *** sigh_ <sigh_!~sigh@210.18.207.102> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T05:45:59  *** okayzed <okayzed!~okay@98.158.22.181> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T05:47:02  *** okayzed <okayzed!~okay@98.158.22.181> has joined #aichallenge
+2011-05-08T05:48:34  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-05-08T05:51:32  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-08T05:54:45  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-05-08T06:04:34  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T06:07:33  *** sigh_ <sigh_!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T06:09:41  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T06:10:27  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T06:12:59  *** sigh_ <sigh_!~sigh@210.18.207.102> has quit IRC (Ping timeout: 258 seconds)
+2011-05-08T06:48:32  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-08T07:03:10  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 260 seconds)
+2011-05-08T07:11:04  *** sigh_ <sigh_!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T07:14:26  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Ping timeout: 246 seconds)
+2011-05-08T07:15:07  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-08T07:41:14  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-05-08T08:00:56  *** delt0r_ <delt0r_!~delt0r@188-22-30-88.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-08T08:02:56  *** delt0r___ <delt0r___!~delt0r@188-22-31-50.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-05-08T08:38:24  *** delt0r___ <delt0r___!~delt0r@188-22-18-134.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-08T08:39:50  *** delt0r_ <delt0r_!~delt0r@188-22-30-88.adsl.highway.telekom.at> has quit IRC (Ping timeout: 246 seconds)
+2011-05-08T08:45:44  *** Bankai <Bankai!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-08T09:04:34  *** sigh_ <sigh_!~sigh@210.18.207.102> has quit IRC (Read error: Connection reset by peer)
+2011-05-08T09:06:07  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-05-08T09:08:40  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T09:27:22  *** Bankai <Bankai!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T09:31:10  *** kaemo <kaemo!~mad5ci@d33-29.icpnet.pl> has quit IRC (Ping timeout: 258 seconds)
+2011-05-08T09:37:27  *** Eruonen <Eruonen!~Omar@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-05-08T10:22:38  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-08T10:57:03  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T10:58:39  *** Frontier <Frontier!~Marco@dslb-088-070-155-076.pools.arcor-ip.net> has joined #aichallenge
+2011-05-08T11:17:59  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-08T11:21:00  *** Boosh <Boosh!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-08T11:21:26  *** Boosh is now known as Guest78896
+2011-05-08T11:22:52  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-05-08T11:35:43  <mcstar> kde 4.6.3 is out
+2011-05-08T11:38:05  *** delt0r_ <delt0r_!~delt0r@188-22-162-177.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-08T11:39:35  *** delt0r___ <delt0r___!~delt0r@188-22-18-134.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-05-08T11:48:46  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-05-08T11:55:58  *** _0x47 <_0x47!~slash@p3EE0BACD.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T11:59:57  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-08T12:01:19  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-08T12:02:44  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-08T12:02:50  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T12:12:27  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-08T12:14:38  *** KP13 <KP13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T12:16:34  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 260 seconds)
+2011-05-08T12:16:43  *** _0x471 <_0x471!~slash@p3EE0BEB9.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T12:17:18  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-08T12:17:44  *** _0x47 <_0x47!~slash@p3EE0BACD.dip.t-dialin.net> has quit IRC (Ping timeout: 260 seconds)
+2011-05-08T12:19:51  *** _0x47 <_0x47!~slash@p5B25ECE0.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T12:20:46  *** _0x471 <_0x471!~slash@p3EE0BEB9.dip.t-dialin.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T12:40:08  *** kaemo <kaemo!~mad5ci@d33-29.icpnet.pl> has joined #aichallenge
+2011-05-08T12:44:20  <Frontier> mcstar: seems like you have been waiting for its release. is there anything exciting about it?
+2011-05-08T12:44:52  <mcstar> yes, me
+2011-05-08T12:44:55  <mcstar> :)
+2011-05-08T12:45:21  <mcstar> i just saw it among the upgrades and the channel was too quiet
+2011-05-08T12:51:02  <Frontier> but it is only bug fixes. I have something else: The company Attachmate took over Novell. This means that most of or the whole team working on the free .NET implementation Mono gets fired.
+2011-05-08T12:52:14  <Frontier> About 30 people were working on free .NET and SilverLight implementations there.
+2011-05-08T12:54:05  <Frontier> (source: derstandard.at)
+2011-05-08T12:59:30  *** _0x47 <_0x47!~slash@p5B25ECE0.dip.t-dialin.net> has quit IRC (Ping timeout: 261 seconds)
+2011-05-08T12:59:42  *** _0x47 <_0x47!~slash@p5B25E30A.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T13:05:26  *** _0x471 <_0x471!~slash@p5B25E035.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T13:06:21  *** _0x47 <_0x47!~slash@p5B25E30A.dip.t-dialin.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T13:11:58  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-05-08T13:12:04  <mcstar> noway
+2011-05-08T13:12:05  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-08T13:12:09  <mcstar> they want raise
+2011-05-08T13:12:19  <mcstar> so they ciculate this news
+2011-05-08T13:12:33  <mcstar> ive never heard of attachmate
+2011-05-08T13:12:41  <mcstar> but if its true what u say
+2011-05-08T13:12:45  <mcstar> then f them
+2011-05-08T13:16:03  *** _0x471 <_0x471!~slash@p5B25E035.dip.t-dialin.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T13:31:32  *** _0x47 <_0x47!~slash@p5B25EE07.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T13:39:25  *** Guest78896 <Guest78896!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T13:52:37  *** namina <namina!4d65d1a8@gateway/web/freenode/ip.77.101.209.168> has joined #aichallenge
+2011-05-08T13:53:23  <namina> SimAnt!!! => http://i.imgur.com/GQrCE.jpg
+2011-05-08T13:55:21  <mcstar> nice find
+2011-05-08T14:08:39  <Frontier> oh that is old, we had a nice talk about this game here already
+2011-05-08T14:09:30  <Frontier> there is a youtube video by someone who found out how you can win the game in a few minutes without actually cheating I think
+2011-05-08T14:10:00  <Frontier> nice glowing eyes on the ant lion ^^
+2011-05-08T14:11:27  *** namina <namina!4d65d1a8@gateway/web/freenode/ip.77.101.209.168> has quit IRC (Quit: Page closed)
+2011-05-08T14:22:00  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-08T14:25:03  <Frontier> my sister claims she has just been stinged by this little insect: http://dl.dropbox.com/u/1217837/IMGP0389.JPG
+2011-05-08T14:25:03  <Frontier> has anyone seen such a creature before?
+2011-05-08T14:29:18  <McLeopold> hi Frontier
+2011-05-08T14:30:45  <mcstar> whoa
+2011-05-08T14:30:48  <mcstar> thats big
+2011-05-08T14:31:18  <mcstar> 5mm?
+2011-05-08T14:32:03  <Frontier> I found out what it is: an asian type of lady bug, imported to fight harmful insects in agriculture
+2011-05-08T14:32:55  <mcstar> ladybug? the one with the spots?
+2011-05-08T14:32:57  <Frontier> It is the larva, so don't twist your brains imagining how this could be a lady bug :p
+2011-05-08T14:33:06  <mcstar> ok
+2011-05-08T14:33:08  <mcstar> :)
+2011-05-08T14:33:16  <Frontier> I found pictures on this german site: http://www.natur-in-nrw.de/HTML/Tiere/Insekten/Kaefer/Cucujoidea/TK-2188.html
+2011-05-08T14:34:09  <mcstar> interesting
+2011-05-08T14:34:19  <mcstar> ive seen this before
+2011-05-08T14:34:21  <McLeopold> Frontier: I made some changes to the visualizer and added some issue to github
+2011-05-08T14:34:39  <mcstar> its tiny like i said right?
+2011-05-08T14:34:47  <mcstar> approx 5mm?
+2011-05-08T14:34:56  <Frontier> McLeopold: That's fine, I'll have a look at it.
+2011-05-08T14:35:20  <Frontier> mcstar: yes, a relatively small thing
+2011-05-08T14:37:26  <Frontier> ...and ants that protect their aphid farm are probably their biggest enemy (to get back on topic *g*)
+2011-05-08T14:37:39  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Quit: Leaving)
+2011-05-08T14:38:26  <Frontier> McLeopold: "Visualizer Links" is an open task?
+2011-05-08T14:38:44  <McLeopold> Clicking player names does nothing
+2011-05-08T14:38:58  <McLeopold> although I didn't put the info into the replay json until yesterday
+2011-05-08T14:41:26  <Frontier> McLeopold: The sample replay I had running on my machine had the player names clickable. It has been working since months ;-)
+2011-05-08T14:42:16  <Frontier> or check this file in the repo: https://github.com/aichallenge/aichallenge/blob/6e8ae9144287300e89f348332c855082331e9f26/ants/visualizer/games/0/2.replay
+2011-05-08T14:43:14  <Frontier> I see you replaced the string 'player' with the game id. That's fine.
+2011-05-08T14:43:59  <McLeopold> hmm
+2011-05-08T14:44:06  <Frontier> Were the player links added acording to the wiki? https://github.com/aichallenge/aichallenge/wiki/Ants-replay-format
+2011-05-08T14:44:33  <McLeopold> yes, except I changed "players" to playernames
+2011-05-08T14:46:06  <Frontier> yeah ok, I wasn't 100% confident with that either
+2011-05-08T14:46:20  <Frontier> players could be ids or names
+2011-05-08T14:47:05  <McLeopold> I think the contrast thing is important
+2011-05-08T14:47:10  <McLeopold> I'll play with the links later
+2011-05-08T14:47:43  <Frontier> Did you add any filed to the 'local visualizer' that I would add to the build script?
+2011-05-08T14:47:54  <Frontier> *files
+2011-05-08T14:48:26  <Frontier> (I'm zipping them up for download, although I don't know yet how downloads will be linked into the web site)
+2011-05-08T14:49:36  <McLeopold> no
+2011-05-08T14:50:59  <Frontier> I stopped documenting my code at some point to get finished ^^, I hope you didn't have a hard time finding your way through.
+2011-05-08T14:54:44  *** _0x47 <_0x47!~slash@p5B25EE07.dip.t-dialin.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T14:54:47  *** _0x471 <_0x471!~slash@p3EE0B963.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T14:55:14  *** amstan <amstan!~amstan@184.175.3.188> has joined #aichallenge
+2011-05-08T14:55:14  *** ChanServ sets mode: +o amstan
+2011-05-08T14:59:56  <Frontier> McLeopold: Ok I'll leave the player link issue up to you. The final scores thing is something that may become a bit ugly. Since the graph displays score/time we have a... how do they say in sci-fi? singularity
+2011-05-08T15:00:28  <amstan> @seen McLeopold
+2011-05-08T15:00:28  <contestbot> amstan: McLeopold was last seen in #aichallenge 10 minutes and 51 seconds ago: <McLeopold> no
+2011-05-08T15:00:35  <amstan> McLeopold: hey
+2011-05-08T15:02:23  <Frontier> amstan: Sorry, I haven't looked at anything aichallenge for two weeks. How is the preparation going?
+2011-05-08T15:03:55  <amstan> Frontier: pretty well, i think
+2011-05-08T15:04:11  <amstan> Frontier: i had an issue with the the visualizer
+2011-05-08T15:04:25  <amstan> i tried playing something from play_one_game.sh
+2011-05-08T15:04:40  <amstan> but it gave me an error about json format
+2011-05-08T15:04:47  <amstan> i had to change it to "storage" and then it worked
+2011-05-08T15:06:01  <Frontier> Sounds like what McLeopold changed to be less confusing
+2011-05-08T15:06:49  <Frontier> where did you change something?
+2011-05-08T15:07:21  *** Wov <Wov!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-08T15:09:36  *** boegel <boegel!~boegel@91.182.170.136> has joined #aichallenge
+2011-05-08T15:11:12  <Frontier> amstan: ^
+2011-05-08T15:26:52  *** _0x471 <_0x471!~slash@p3EE0B963.dip.t-dialin.net> has quit IRC (Read error: Operation timed out)
+2011-05-08T15:28:41  *** _0x47 <_0x47!~slash@p5B25E485.dip.t-dialin.net> has joined #aichallenge
+2011-05-08T15:29:54  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-05-08T15:31:53  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110422205559])
+2011-05-08T15:33:07  *** _0x47 <_0x47!~slash@p5B25E485.dip.t-dialin.net> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T15:41:30  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has quit IRC (Read error: Connection reset by peer)
+2011-05-08T15:41:47  *** nullkuhl <nullkuhl!~nullkuhl@196.221.101.99> has joined #aichallenge
+2011-05-08T15:41:47  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has joined #aichallenge
+2011-05-08T15:42:45  <amstan> Frontier: do i have to rebuild the visualizer then?
+2011-05-08T15:43:44  <McLeopold> amstan: what's up?
+2011-05-08T15:43:55  *** Wov <Wov!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T15:44:14  <amstan> McLeopold: i have the worker going
+2011-05-08T15:44:19  <amstan> play_one_game works
+2011-05-08T15:44:30  <McLeopold> what about the web?
+2011-05-08T15:44:45  <amstan> the game that play_one_game outputs doesn't work in the visualizer
+2011-05-08T15:44:49  <amstan> did you change the visualizer?
+2011-05-08T15:44:56  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-05-08T15:44:56  <McLeopold> very little, but yes
+2011-05-08T15:45:04  <McLeopold> storageformat should be "json"
+2011-05-08T15:45:04  <amstan> something about s/storage/json/g
+2011-05-08T15:45:06  <amstan> yeah
+2011-05-08T15:45:16  <amstan> i gave the visualizer json, and it didn't like it
+2011-05-08T15:45:21  <amstan> maybe i have to rebuild it?
+2011-05-08T15:45:21  <McLeopold> hmm...
+2011-05-08T15:45:24  <McLeopold> oh, yeah
+2011-05-08T15:45:31  <McLeopold> I was going directly to the source
+2011-05-08T15:45:32  <amstan> ok
+2011-05-08T15:46:01  <amstan> McLeopold: also, see this: https://github.com/aichallenge/aichallenge/commit/387e88c93ec16e304a1add2ad7a8d9c7e6ceece7
+2011-05-08T15:46:27  <amstan> thouse things annoyed me greatly yesterday
+2011-05-08T15:46:43  <amstan> oh.. right.. your create_test_data still fails
+2011-05-08T15:46:47  <amstan> something about duplicate players
+2011-05-08T15:54:26  <McLeopold> okay, stuff can move out of sql
+2011-05-08T15:55:20  <McLeopold> also, I moved replays to ants/games instead of ants, but I'm not sure I like it
+2011-05-08T15:55:32  <McLeopold> I think having ants.ai-contest.com would be better.
+2011-05-08T15:55:42  <amstan> McLeopold: why is this important?
+2011-05-08T15:55:44  <McLeopold> I want to treat the replays as permalinks
+2011-05-08T15:55:55  <McLeopold> so they always work regardless of the contest
+2011-05-08T15:56:34  <amstan> Frontier: ping
+2011-05-08T15:58:09  <amstan> Frontier: https://github.com/aichallenge/aichallenge/commit/a1b56bda7cee793ebda808f30fb8ddd8be765290#commitcomment-374131
+2011-05-08T15:58:46  <amstan> Frontier: for that matter, can we get rid of that games folder from ants/visualizer? the format in those replays are out of date
+2011-05-08T15:59:17  <amstan> McLeopold: why does play_one_game.sh stop at 100 turns?
+2011-05-08T15:59:56  <amstan> q
+2011-05-08T16:03:46  *** HighMighty <HighMighty!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-08T16:03:49  <amstan> McLeopold: have you done any changes on the sql?
+2011-05-08T16:03:56  <amstan> i have a feeling the test server is out of date
+2011-05-08T16:06:39  <McLeopold> yes
+2011-05-08T16:06:47  <McLeopold> the sql files should be up to date
+2011-05-08T16:06:59  <amstan> by out of date i mean the database that i have
+2011-05-08T16:07:03  <McLeopold> the last change was making game_player mu/sigma field allow nulls
+2011-05-08T16:07:10  <McLeopold> idk
+2011-05-08T16:07:14  <amstan> so, that's not important
+2011-05-08T16:07:31  <McLeopold> I'd drop and recreate
+2011-05-08T16:07:36  <amstan> would it break everything if i drop and recreate?
+2011-05-08T16:07:51  <McLeopold> well, not for my system, it's part of my testing
+2011-05-08T16:08:31  <McLeopold> play_one_game stops at 100 turns because it is meant to be part of the quickstart guide.  play a quick game, see the visualizer, learn how to use playgame.py
+2011-05-08T16:08:43  <McLeopold> mom's here, gtg
+2011-05-08T16:08:52  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-05-08T16:08:56  <amstan> why does it use the sandbox then?
+2011-05-08T16:09:00  * amstan is totally confused
+2011-05-08T16:23:23  <Frontier> amstan: the sample replays are there for a quick check if the visualizer works. (I reference the second replay in the build script for testing). I'd like there to be one sample file for reference, but if you would prefer to have no data files in the repo they can be deleted.
+2011-05-08T16:24:14  <amstan> why do you need it in the build script though? it's not like it gets copied over
+2011-05-08T16:24:19  <Frontier> Well that sounds wrong. The build doesn't depend on the file, it is more of a unit test
+2011-05-08T16:26:12  <Frontier> You can type "ant run-visualizer" and see if the build system works and produces a runnable jar file.
+2011-05-08T16:26:40  <amstan> with the replay inside?
+2011-05-08T16:27:05  <Frontier> no, just there sitting in the games directory on your file system
+2011-05-08T16:27:45  <Frontier> Like you write a PDF viewer and keep some sample files around in the repo
+2011-05-08T16:28:40  <amstan> so.. what does the build system do with the replay file then? does it copy it? does it reference it in the visualizer?
+2011-05-08T16:29:07  <Frontier> it just calls "java -jar visualizer.jar games/0/2.replay" basically
+2011-05-08T16:29:17  <amstan> oh
+2011-05-08T16:29:18  <amstan> ok
+2011-05-08T16:29:21  *** boegel <boegel!~boegel@91.182.170.136> has quit IRC (Quit: Leaving)
+2011-05-08T16:29:25  <amstan> got it
+2011-05-08T16:57:25  *** delt0r___ <delt0r___!~delt0r@188-22-168-68.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-08T16:59:20  *** delt0r_ <delt0r_!~delt0r@188-22-162-177.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-05-08T17:06:46  *** Crivens <Crivens!~Miranda@cs27020114.pp.htv.fi> has quit IRC (Read error: Connection reset by peer)
+2011-05-08T17:10:43  *** berak <berak!~chatzilla@89.204.153.133> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-05-08T17:50:48  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-05-08T18:01:46  *** kaemo <kaemo!~mad5ci@d33-29.icpnet.pl> has quit IRC (Ping timeout: 258 seconds)
+2011-05-08T18:07:55  *** Frontier <Frontier!~Marco@dslb-088-070-155-076.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-08T18:10:22  *** Frontier <Frontier!~marco@dslb-088-070-155-076.pools.arcor-ip.net> has joined #aichallenge
+2011-05-08T18:10:36  *** antimatroid <antimatroid!~nick@44.240.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-05-08T18:10:51  *** antimatroid <antimatroid!~nick@44.240.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-05-08T18:17:07  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-08T18:32:10  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-08T18:37:01  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-05-08T19:22:10  *** Eruonen <Eruonen!~Omar@e198153.upc-e.chello.nl> has quit IRC ()
+2011-05-08T19:55:51  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-05-08T20:02:46  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-05-08T20:27:58  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-05-08T21:04:30  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-08T21:04:38  *** antimatroid <antimatroid!~nick@44.240.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-05-08T21:15:44  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-05-08T21:23:18  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-08T21:23:52  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-08T21:24:45  *** orivej <orivej!~orivej@host-47-146-66-217.spbmts.ru> has quit IRC (Ping timeout: 252 seconds)
+2011-05-08T21:26:26  *** orivej <orivej!~orivej@host-90-146-66-217.spbmts.ru> has joined #aichallenge
+2011-05-08T22:00:03  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-05-08T22:14:17  *** mcstar <mcstar!~mcstar@adsl-89-134-29-192.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.4)
+2011-05-08T22:19:43  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: money can't buy you love, but it can if you have enough)
+2011-05-08T22:35:24  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-05-08T22:57:37  *** amstan <amstan!~amstan@184.175.3.188> has quit IRC (Read error: No route to host)
+2011-05-08T23:00:10  *** amstan <amstan!~amstan@184.175.3.188> has joined #aichallenge
+2011-05-08T23:00:10  *** ChanServ sets mode: +o amstan
+2011-05-08T23:17:40  *** JaycobColeman <JaycobColeman!~Jaycob@69-161-6-157-rb2.nwc.dsl.dynamic.acsalaska.net> has joined #aichallenge
+2011-05-08T23:56:45  *** amstan_ <amstan_!~amstan@184.175.3.188> has joined #aichallenge
+2011-05-08T23:56:45  *** ChanServ sets mode: +o amstan_
+2011-05-08T23:56:45  *** amstan <amstan!~amstan@184.175.3.188> has quit IRC (Read error: Connection reset by peer)

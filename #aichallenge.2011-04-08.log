@@ -1,0 +1,450 @@
+2011-04-08T00:16:04  *** antimatroid <antimatroid!~nick@142.120-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 248 seconds)
+2011-04-08T00:34:09  *** antimatroid <antimatroid!~nick@92.130-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-08T00:49:54  *** antimatroid <antimatroid!~nick@92.130-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 276 seconds)
+2011-04-08T01:06:10  *** antimatroid <antimatroid!~nick@025.013.dsl.vic.iprimus.net.au> has joined #aichallenge
+2011-04-08T01:12:39  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T01:16:47  *** antimatroid <antimatroid!~nick@025.013.dsl.vic.iprimus.net.au> has quit IRC (Ping timeout: 260 seconds)
+2011-04-08T01:36:21  *** antimatroid <antimatroid!~nick@025.013.dsl.vic.iprimus.net.au> has joined #aichallenge
+2011-04-08T01:36:33  <antimatroid> re allowing bots to write to file in the final contest
+2011-04-08T01:36:47  <antimatroid> the ranking algorithm assumes the bots have constant "ability" yeah?
+2011-04-08T01:36:55  <antimatroid> janzert: ^?
+2011-04-08T01:37:33  <janzert> no the ranking algorithm does fine with varying ability
+2011-04-08T01:37:34  <amstan> it does?
+2011-04-08T01:37:38  <amstan> yeah
+2011-04-08T01:37:58  <janzert> there are huge technical hurdles to make file writing work though
+2011-04-08T01:38:21  <janzert> since a bot plays games on different workers, possibly simultaneously
+2011-04-08T01:38:49  <janzert> well... huge might be exaggerating a bit
+2011-04-08T01:39:09  <antimatroid> i don't see what people would need to write to file that they couldn't already have done locally
+2011-04-08T01:39:44  <amstan> antimatroid: it could make true learning bots
+2011-04-08T01:39:54  <amstan> without having the need to reupload
+2011-04-08T01:40:08  <antimatroid> you are really going to want to do that on tcp anyway
+2011-04-08T01:40:13  <antimatroid> then just once it's "trained" upload
+2011-04-08T01:40:28  <janzert> yeah, I believe what they are wanting is a way to let the bot learn independently
+2011-04-08T01:40:36  <amstan> idk, if people want to make it cool like that, they should
+2011-04-08T01:41:08  <janzert> but I think it is much over rated to have it for the bot after upload
+2011-04-08T01:41:15  <antimatroid> so if someone beat bocsi last contest near the start, later it wouldn't have counted as though they beat the best bot?
+2011-04-08T01:41:35  <antimatroid> because at the time bocsi wasn't considered to be of the ability of the best bot
+2011-04-08T01:42:26  <antimatroid> or at least, with trueskill if bayeslo did assume constant ability
+2011-04-08T01:42:32  <antimatroid> otherwise i'm not really sure how it works :s
+2011-04-08T01:43:03  <janzert> bayeselo does make an assumption of constant ability
+2011-04-08T01:43:32  <antimatroid> so if with trueskill you beat the best bot at the start, you wouldn't get the real gain of beating the best bot?
+2011-04-08T01:43:33  <antimatroid> i don't like that
+2011-04-08T01:44:38  <antimatroid> imo that's almost like saying all past game data is not as useful as current data, because the bots are no longer the same
+2011-04-08T01:54:06  *** antimatroid <antimatroid!~nick@025.013.dsl.vic.iprimus.net.au> has quit IRC (Ping timeout: 246 seconds)
+2011-04-08T01:58:57  <janzert> @later antimatroid the way we are using trueskill during the finals (when no submissions happen) it will assume constant performance
+2011-04-08T01:58:58  <contestbot> janzert: User error -- Replace user.
+2011-04-08T01:59:11  <janzert> @later tell antimatroid the way we are using trueskill during the finals (when no submissions happen) it will assume constant performance
+2011-04-08T01:59:11  <contestbot> janzert: I come to serve.
+2011-04-08T02:01:22  *** antimatroid <antimatroid!~nick@110.014.dsl.vic.iprimus.net.au> has joined #aichallenge
+2011-04-08T02:01:28  <sigh> janzert: so if they are allowed to write to disk, won't that violate that assumption?
+2011-04-08T02:01:45  <antimatroid> what sigh said
+2011-04-08T02:01:53  <janzert> yes, we would need to make a small change in the way we are using trueskill
+2011-04-08T02:02:01  <janzert> but that is probably a line or two of code
+2011-04-08T02:02:09  <antimatroid> but do we want to drop that assumption?
+2011-04-08T02:02:13  <janzert> and trivial compared to the rest of making it work
+2011-04-08T02:02:30  <antimatroid> i would say most bots are going to be of constant ability in the finals
+2011-04-08T02:02:43  <janzert> if it's invalid ;)
+2011-04-08T02:06:42  *** antimatroid <antimatroid!~nick@110.014.dsl.vic.iprimus.net.au> has quit IRC (Ping timeout: 246 seconds)
+2011-04-08T02:06:56  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-04-08T02:07:03  <sigh> antimatroid seems to have a crappy connection
+2011-04-08T02:09:30  *** antimatroid <antimatroid!~nick@110.014.dsl.vic.iprimus.net.au> has joined #aichallenge
+2011-04-08T02:09:38  <antimatroid> ergh my internet is annoying
+2011-04-08T02:09:46  <antimatroid> but does the benefit of allowing people to write to files in the finals outweigh the cost of dropping the assumption?
+2011-04-08T02:10:08  <antimatroid> that is my biggest reservation about allowing file writing in the actual contest
+2011-04-08T02:11:35  <janzert> my thought is that the cost of implementing it isn't offset by the benefit it brings, so I'm not giving much thought about how to make the rankings work with it
+2011-04-08T02:12:29  <janzert> there are too many technical hurdles to do it and we already are having a hard time reaching the finish line of an up and running contest
+2011-04-08T02:20:25  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-04-08T02:21:37  <sigh> if anything, just give people read access... although that doesn't give anyone the ability to do anything they couldn't already
+2011-04-08T02:22:15  <janzert> yeah, they already are allowed to read anything they upload with the bot
+2011-04-08T02:26:19  <antimatroid> janzert: i agree, i was just trying to clarify what exactly the implications were :)
+2011-04-08T02:54:15  <Keth> What happens if a bot creates a seperate thread?
+2011-04-08T02:54:24  <Keth> and messes stuff up?
+2011-04-08T02:55:36  <janzert> the bots have a hard limit in the OS on creating threads
+2011-04-08T02:55:39  <Keth> I'm kind of afraid of enemy bots cheating in number of ways like running away, crashing the engine, creating tcp connections or like 1000 threads
+2011-04-08T02:55:49  <Keth> e.g. all of those things can be done bot detects "I'm losing"
+2011-04-08T02:56:02  <Keth> when bot*
+2011-04-08T02:56:19  <janzert> that's what the sandbox is meant to prevent
+2011-04-08T02:56:29  <Keth> by sandbox you mean the engine?
+2011-04-08T02:56:35  <janzert> no
+2011-04-08T02:56:46  <Keth> What does sandbox do?
+2011-04-08T02:56:48  <janzert> the bots are basically run in a restricted environment
+2011-04-08T02:57:34  <Keth> And what the approach briefly would be?
+2011-04-08T02:58:20  <janzert> quite a few things are combined but basically not allowing it to access or use resources it shouldn't
+2011-04-08T02:58:42  <Keth> i see
+2011-04-08T02:59:38  <janzert> it's almost certainly not perfect and a concern is of course that bot finds a way to do something it shouldn't, fortunately so far no has done that
+2011-04-08T03:00:07  <Keth> yeah I see
+2011-04-08T03:01:04  <antimatroid> if a lot of bots were crashing to a specific bot, it would be looked at, and the bot potentially thrown out of the contest
+2011-04-08T03:01:26  <antimatroid> if they were purposely doing something to crash other bots etc.
+2011-04-08T03:01:57  <antimatroid> there are no longer draconian rules like disqualification if you timeout in the final contest
+2011-04-08T03:02:05  <antimatroid> that happened to me in tron D: i will never forget
+2011-04-08T03:02:43  <janzert> I did throw one submission out last year that accidently crashed the workers, I think it was trying to include and build the whole haskell runtime if I remember right
+2011-04-08T03:05:17  <sigh> why would they do that?
+2011-04-08T03:05:31  <janzert> he wanted a different version than we had
+2011-04-08T03:05:36  <sigh> haha
+2011-04-08T03:06:07  <janzert> I probably stated it wrong above, I mean he was building haskell from scratch
+2011-04-08T03:06:47  <janzert> of course compilation also wasn't sandboxed then so this wasn't a break out from the sandbox
+2011-04-08T03:07:29  <sigh> what's happening in regard to compilation in this contest?
+2011-04-08T03:08:02  <janzert> it's been a while but I think McLeopold may have already sandboxed it
+2011-04-08T03:08:29  <janzert> it has been moved solely to the workers I know
+2011-04-08T03:08:41  <sigh> ahhh
+2011-04-08T03:09:36  <sigh> I think McLeopold has made an issue with your name on it regarding that
+2011-04-08T03:09:49  <sigh> well, regarding jails and workers
+2011-04-08T03:10:07  <janzert> I think that is the addition of chroot to the sandbox process
+2011-04-08T03:10:19  <sigh> i see
+2011-04-08T03:10:38  <janzert> yeah, looks like
+2011-04-08T03:11:24  <janzert> hmm, I do see that "sandboxed compilation" issue is still open though
+2011-04-08T03:11:47  <sigh> a lot of stuff is open
+2011-04-08T03:12:15  <sigh> hmm... I'm going to close the leap second issue as WONTFIX so it feels like I
+2011-04-08T03:12:21  <sigh> I'm doing something
+2011-04-08T03:12:25  <janzert> :)
+2011-04-08T03:20:51  *** fgump <fgump!~gump@188.74.82.177> has joined #aichallenge
+2011-04-08T03:34:15  *** sigh <sigh!~sigh@110-174-168-43.static.tpgi.com.au> has left #aichallenge ("Leaving")
+2011-04-08T03:35:44  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has quit IRC (Quit: Get MacIrssi - http://www.sysctl.co.uk/projects/macirssi/)
+2011-04-08T03:35:45  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has quit IRC (Read error: Operation timed out)
+2011-04-08T03:36:03  *** JamesMG <JamesMG!~jamesg@mri-mail.musicreports.com> has joined #aichallenge
+2011-04-08T03:37:16  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-04-08T03:39:01  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-04-08T03:39:27  *** andy__ <andy__!55e0a6c0@gateway/web/freenode/ip.85.224.166.192> has joined #aichallenge
+2011-04-08T03:42:04  *** andy__ <andy__!55e0a6c0@gateway/web/freenode/ip.85.224.166.192> has quit IRC (Client Quit)
+2011-04-08T03:49:40  * fgump is away: I'm busy
+2011-04-08T03:57:21  *** amstan <amstan!~amstan@206-248-186-52.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-04-08T04:34:03  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-08T04:34:53  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-04-08T04:39:55  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 258 seconds)
+2011-04-08T04:50:50  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-04-08T05:05:08  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-04-08T05:11:45  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-08T05:25:51  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T05:25:58  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T05:36:33  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.28> has joined #aichallenge
+2011-04-08T05:49:38  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Remote host closed the connection)
+2011-04-08T06:04:49  *** kaemo <kaemo!~mad5ci@109.243.200.64> has joined #aichallenge
+2011-04-08T06:19:04  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T06:19:08  *** Keth_ <Keth_!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T06:30:17  *** kaemo <kaemo!~mad5ci@109.243.200.64> has quit IRC (Ping timeout: 240 seconds)
+2011-04-08T06:44:01  *** ebrahim <ebrahim!~ebrahim@unaffiliated/ebrahim> has joined #aichallenge
+2011-04-08T06:59:11  <antimatroid> there is an easyish way to "go around" traps
+2011-04-08T06:59:27  <antimatroid> well, if you can find them, fill it in with water, then make your moves
+2011-04-08T06:59:32  <antimatroid> so you force it to find a path around
+2011-04-08T07:00:11  *** delt0r_ <delt0r_!~delt0r@188-22-165-207.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-08T07:01:29  *** delt0r___ <delt0r___!~delt0r@188-22-170-149.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-04-08T07:04:40  *** ebrahim <ebrahim!~ebrahim@unaffiliated/ebrahim> has quit IRC (Ping timeout: 248 seconds)
+2011-04-08T07:04:42  *** mebrahim <mebrahim!~ebrahim@unaffiliated/ebrahim> has joined #aichallenge
+2011-04-08T07:06:34  *** mebrahim <mebrahim!~ebrahim@unaffiliated/ebrahim> has quit IRC (Remote host closed the connection)
+2011-04-08T07:10:47  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Remote host closed the connection)
+2011-04-08T07:11:40  <sigh> antimatroid: traps?
+2011-04-08T07:11:51  <antimatroid> sigh: blocked off corridors
+2011-04-08T07:12:08  <antimatroid> if you set one of those up, you can basically leave it as is which i have now coined trap :P
+2011-04-08T07:12:28  <sigh> i see
+2011-04-08T07:13:35  <antimatroid> you would have to make some kind of "temporary water"
+2011-04-08T07:13:46  <antimatroid> but that way your ants would know to go around it
+2011-04-08T07:13:59  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-04-08T07:14:13  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-04-08T07:15:40  <antimatroid> sigh: dead collided ants are just treated the same as dead battled ants for scoring yes?
+2011-04-08T07:15:52  <antimatroid> and if no ant is in range of two colliding friends, then the points are lost?
+2011-04-08T07:16:03  <sigh> collided ants are not scored atm
+2011-04-08T07:16:12  <antimatroid> i think we want as above is that's easy to change?
+2011-04-08T07:17:05  <sigh> *shrug* sure
+2011-04-08T07:17:20  <antimatroid> well otherwise if two enemies collide, no scores are assigned
+2011-04-08T07:17:33  <antimatroid> and if two friends inevitable going to die kamakazee, the enemy doesn't get points
+2011-04-08T07:17:41  <antimatroid> i think that's against what we want
+2011-04-08T07:18:22  <antimatroid> sure it's be part of the game, but it's a less fun game imo :P
+2011-04-08T07:18:26  <antimatroid> it'd*
+2011-04-08T07:18:27  <antimatroid> ergh :P
+2011-04-08T07:19:00  *** fgump <fgump!~gump@188.74.82.177> has quit IRC (Quit: Leaving)
+2011-04-08T07:25:21  *** mcsmash <mcsmash!mcsmash@firefly.cat.pdx.edu> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T07:25:28  *** mcsmash <mcsmash!mcsmash@firefly.cat.pdx.edu> has joined #aichallenge
+2011-04-08T07:26:10  <antimatroid> i think i found a neat reduction
+2011-04-08T07:27:15  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.28> has quit IRC (Read error: Connection timed out)
+2011-04-08T07:29:10  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.28> has joined #aichallenge
+2011-04-08T07:31:10  *** Keth_ <Keth_!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T07:31:47  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T07:39:58  <sigh> antimatroid: neat reduction?
+2011-04-08T07:42:19  <antimatroid> sigh: take an n-player game tree, if i'm not assuming the other players are rational, then i think MY set of "subgame perfect nash equilibria" (not really, but same concept, different backward induction rule) is equivalent to the "same" set when treating the game as a two player zero sum game tree of me vs them with payoffs of mine vs -mine
+2011-04-08T07:42:41  <antimatroid> and i can collapse all of their nodes into one layer
+2011-04-08T07:43:19  <antimatroid> my bot wouldn't be able to cooperate then
+2011-04-08T07:43:27  <antimatroid> but i doubt it's going to really be helpful in this
+2011-04-08T07:44:10  <sigh> i like the part where other players aren't rational
+2011-04-08T07:44:25  <antimatroid> are you willing to assume that in ants?
+2011-04-08T07:44:42  <antimatroid> like when evaluating what might happen with your turns, are you willing to assume the other players will do what is best for them?
+2011-04-08T07:44:54  <antimatroid> there is a neat alternative backward induction you can use if you are willing to assume that
+2011-04-08T07:45:01  <antimatroid> which is different to actual nash equilibria
+2011-04-08T07:45:17  <antimatroid> i was originally going to do my thesis based off that last idea, but then this gsoc thing came up
+2011-04-08T07:45:22  <sigh> assume that they are or aren't rational?
+2011-04-08T07:45:54  <antimatroid> if you assume they are, then when doing backward induction, each player will bring up their best possible payoff, while every other player will always pull up their worst
+2011-04-08T07:46:10  <sigh> yeah
+2011-04-08T07:46:44  <antimatroid> normally you pull up the worst of the drawing best for the player
+2011-04-08T07:48:13  <sigh> hmm... reddit is down
+2011-04-08T07:49:14  <antimatroid> reddit gets more awful every week
+2011-04-08T07:49:29  <sigh> content or uptime?
+2011-04-08T07:49:47  <antimatroid> content
+2011-04-08T07:49:59  <antimatroid> and more youtube quality comments
+2011-04-08T07:50:25  <sigh> yeah, that's been happening for a while though
+2011-04-08T07:51:04  <antimatroid> it always happens
+2011-04-08T07:51:07  <antimatroid> it always has happened
+2011-04-08T07:51:10  <antimatroid> since before the internet
+2011-04-08T07:51:12  <antimatroid> i hate it though
+2011-04-08T07:51:20  <antimatroid> it makes me rage :P
+2011-04-08T07:51:22  <sigh> eternal september :P
+2011-04-08T07:51:32  <antimatroid> ?
+2011-04-08T07:51:50  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-04-08T07:51:57  <antimatroid> september is a good month
+2011-04-08T07:51:57  <sigh> http://en.wikipedia.org/wiki/Eternal_September
+2011-04-08T07:52:01  <antimatroid> i was born in september
+2011-04-08T07:52:27  <antimatroid> oh, cause that's when america starts back from summer vacation?
+2011-04-08T07:52:39  <sigh> yup
+2011-04-08T07:52:39  <antimatroid> ah, should have kept reading
+2011-04-08T07:52:42  <antimatroid> yeah i hate that time of year
+2011-04-08T07:52:48  <sigh> haha
+2011-04-08T07:53:11  <sigh> well, that was a quick change of heart
+2011-04-08T07:53:28  <antimatroid> i'm flexible with my opinions
+2011-04-08T07:53:35  <sigh> :)
+2011-04-08T07:53:37  <antimatroid> except for battle
+2011-04-08T07:53:37  <antimatroid> :P
+2011-04-08T07:54:08  <sigh> my current favourite subreddit is AskScience, I just hope that doesn't start sucking
+2011-04-08T07:54:17  <antimatroid> i haven't been there
+2011-04-08T07:54:23  <antimatroid> /r/math is my favourite
+2011-04-08T07:54:41  <antimatroid> but slow, and getting worse as everything else is
+2011-04-08T07:54:48  <sigh> math quality seems to be going down
+2011-04-08T07:54:54  <sigh> yeah
+2011-04-08T07:55:19  *** Keth_ <Keth_!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T07:55:19  *** Keth <Keth!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T07:55:22  <antimatroid> http://math.ucr.edu/home/baez/roots/
+2011-04-08T07:55:25  <antimatroid> have you seen that though?
+2011-04-08T07:55:28  <antimatroid> pretty damn awesome
+2011-04-08T07:55:48  <sigh> looks familiar
+2011-04-08T07:55:51  <sigh> I think I have :)
+2011-04-08T07:55:53  <antimatroid> i don't often go on those things, but that one is mega
+2011-04-08T07:56:21  <sigh> :)
+2011-04-08T07:57:07  <antimatroid> i think i've worked out my macro strategy
+2011-04-08T07:57:18  <antimatroid> now i just need to implement it and iron out all the micro
+2011-04-08T07:57:18  <sigh> kill everyone?
+2011-04-08T07:57:37  <antimatroid> nah, i think i'm going to try and avoid battles unless the kill/death ratio > 1
+2011-04-08T07:57:57  <antimatroid> then i need to play around with then appropriate time to reduce that back to 1
+2011-04-08T07:58:08  <sigh> you want more kills than deaths? o_O
+2011-04-08T07:58:13  <antimatroid> >=1 that is
+2011-04-08T07:58:19  <antimatroid> yes, for multiplayer near the start
+2011-04-08T07:58:53  <sigh> by death I guess you mean your own bots
+2011-04-08T07:58:59  <sigh> that makes a bit more sense
+2011-04-08T07:58:59  <antimatroid> 1. collect food (using heuristics), 2. search non-battle ants incrementally from all locations at once 3. game tree for battles
+2011-04-08T07:59:17  <antimatroid> yep
+2011-04-08T08:02:24  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-08T08:23:38  *** delt0r <delt0r!~delt0r@stebbins.cibiv.univie.ac.at> has joined #aichallenge
+2011-04-08T08:44:12  *** delt0r <delt0r!~delt0r@stebbins.cibiv.univie.ac.at> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.15/20110303170030])
+2011-04-08T08:47:26  <antimatroid> sigh: i got a reddit error page today where they had the balls to say it could be a good sign a new feature is being implemented
+2011-04-08T08:54:40  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-08T09:08:58  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-04-08T09:11:50  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Client Quit)
+2011-04-08T09:15:27  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-08T09:17:42  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-04-08T09:33:54  *** Frontier <Frontier!~marco@dslb-088-071-185-049.pools.arcor-ip.net> has joined #aichallenge
+2011-04-08T09:37:42  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T09:58:56  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 260 seconds)
+2011-04-08T10:00:51  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-08T10:44:23  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-04-08T11:19:04  *** Keth_ <Keth_!kwketh@client-81-97-43-31.cht-bng-012.adsl.virginmedia.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-08T11:23:36  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T11:25:08  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-04-08T11:26:17  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-04-08T11:37:45  <sigh> @later tell McLeopold in worker/sandbox.py you only check the input once every second... how is that fair to bots?
+2011-04-08T11:37:45  <contestbot> sigh: Yep.
+2011-04-08T11:37:53  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-08T11:43:21  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-08T11:43:40  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-04-08T12:40:34  *** amstan <amstan!~amstan@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-08T12:40:34  *** ChanServ sets mode: +o amstan
+2011-04-08T12:49:55  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-04-08T12:53:13  <McLeopold> @later tell sigh I didn't write sandbox.py, I think your right that the timer call in monitor_input needs to be changed
+2011-04-08T12:53:13  <contestbot> McLeopold: As you wish.
+2011-04-08T13:38:32  <janzert> I'm not sure why the timer call is used, but all it does is delay the start of the input thread by 1 second. The input is read continuously after that and operates correctly.
+2011-04-08T13:38:33  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0/20110318052756])
+2011-04-08T13:39:05  <janzert> the only time it would cause a problem is if the start up time for a bot was reduced to near 1 second or less
+2011-04-08T13:46:56  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-04-08T13:47:10  <Stocha> @seen phire
+2011-04-08T13:47:10  <contestbot> Stocha: phire was last seen in #aichallenge 3 days, 2 hours, 24 minutes, and 56 seconds ago: <phire> I'm seeing some large delays
+2011-04-08T13:47:23  <Stocha> @seen keith
+2011-04-08T13:47:23  <contestbot> Stocha: I have not seen keith.
+2011-04-08T13:47:31  <Stocha> @seen keth
+2011-04-08T13:47:31  <contestbot> Stocha: keth was last seen in #aichallenge 10 hours, 47 minutes, and 24 seconds ago: <Keth> yeah I see
+2011-04-08T13:50:27  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Client Quit)
+2011-04-08T14:11:12  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.28> has quit IRC (Read error: Connection timed out)
+2011-04-08T14:11:16  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-04-08T14:13:03  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.28> has joined #aichallenge
+2011-04-08T14:19:32  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-08T14:39:34  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T15:00:47  *** delt0r___ <delt0r___!~delt0r@188-22-164-134.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-08T15:02:02  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.28> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-04-08T15:02:39  *** delt0r_ <delt0r_!~delt0r@188-22-165-207.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-04-08T15:13:50  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Ping timeout: 264 seconds)
+2011-04-08T15:18:04  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-08T15:18:34  *** skynetz <skynetz!~none@unaffiliated/skynetz> has joined #aichallenge
+2011-04-08T15:43:39  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-04-08T15:49:23  *** Frontier <Frontier!~marco@dslb-088-071-185-049.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-04-08T15:57:09  *** Kender <Kender!~Kender@5ED3098D.cm-7-4a.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-08T15:59:38  *** Kender_away <Kender_away!~Kender@5ED3098D.cm-7-4a.dynamic.ziggo.nl> has quit IRC (Ping timeout: 246 seconds)
+2011-04-08T15:59:38  *** Kender is now known as Kender_away
+2011-04-08T16:00:38  *** boegel <boegel!~boegel@91.182.157.54> has joined #aichallenge
+2011-04-08T16:14:15  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.14.26> has joined #aichallenge
+2011-04-08T16:30:38  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Ping timeout: 264 seconds)
+2011-04-08T16:34:11  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-08T16:42:10  <ahmedhelal> hello
+2011-04-08T16:43:24  <amstan> hi
+2011-04-08T17:06:00  *** boegel <boegel!~boegel@91.182.157.54> has quit IRC (Quit: Leaving)
+2011-04-08T17:07:53  *** andy___ <andy___!4e48bca9@gateway/web/freenode/session> has joined #aichallenge
+2011-04-08T17:08:32  <ahmedhelal> when will the new challenge be up ? and is it going to replace the current data on the aicontest website ?
+2011-04-08T17:09:53  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T17:10:01  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T17:12:01  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-04-08T17:15:44  *** andy___ <andy___!4e48bca9@gateway/web/freenode/session> has quit IRC (Changing host)
+2011-04-08T17:15:44  *** andy___ <andy___!4e48bca9@gateway/web/freenode/ip.78.72.188.169> has joined #aichallenge
+2011-04-08T17:18:09  <amstan> ahmedhelal: idk, and yes
+2011-04-08T17:28:32  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-04-08T17:58:12  *** fgump <fgump!~gump@188.74.82.177> has joined #aichallenge
+2011-04-08T18:00:28  *** andy___ <andy___!4e48bca9@gateway/web/freenode/ip.78.72.188.169> has quit IRC (Ping timeout: 252 seconds)
+2011-04-08T18:02:58  <ahmedhelal> amstan: what about the old rankings, shouldnt it be kept somewhere ? i can donate hosting space and domain if it needs
+2011-04-08T18:03:36  <amstan> ahmedhelal: we have hosting, problem is someone actually doing it
+2011-04-08T18:03:39  <amstan> there's an issue about it
+2011-04-08T18:04:28  <ahmedhelal> can i help in that ? maybe ?
+2011-04-08T18:05:24  *** bcv <bcv!6d5047c2@gateway/web/freenode/ip.109.80.71.194> has joined #aichallenge
+2011-04-08T18:08:20  <amstan> ahmedhelal: https://github.com/aichallenge/aichallenge/issues#issue/11
+2011-04-08T18:09:30  <amstan> ahmedhelal: if you have some ideas on how to make stuff static...
+2011-04-08T18:10:36  <amstan> antimatroid: ping
+2011-04-08T18:11:01  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-04-08T18:16:36  <ahmedhelal> amstan: is the game visualizer ajax ? i mean does it grab its data from somewhere or is it all in the page?
+2011-04-08T18:16:55  <amstan> depends on which contest we're talking about
+2011-04-08T18:17:14  <amstan> tron had a show_game_info.php page that the javascript downloaded
+2011-04-08T18:17:25  <amstan> contestbot: botrepo
+2011-04-08T18:17:26  <contestbot> amstan: I'm sorry Dave, err amstan; I cannot 'botrepo'.
+2011-04-08T18:17:47  <amstan> contestbot: learn https://github.com/aichallenge/contestbot as botrepo
+2011-04-08T18:17:47  <contestbot> amstan: Error: This key-factoid relationship already exists.
+2011-04-08T18:17:54  <amstan> contestbot: learn botrepo as https://github.com/aichallenge/contestbot
+2011-04-08T18:17:54  <contestbot> amstan: Job's done.
+2011-04-08T18:17:57  <amstan> contestbot: forget https://github.com/aichallenge/contestbot
+2011-04-08T18:17:57  <contestbot> amstan: I think that worked...
+2011-04-08T18:18:19  <amstan> ahmedhelal: planet wars uses http://ai-contest.com/game_info.php?game_id=%d
+2011-04-08T18:18:50  <amstan> contestbot: game 4415957
+2011-04-08T18:18:51  <contestbot> amstan: Game played at 2010-09-09 20:16:34, on map 684, cheese_bot beat a1k0n. http://ai-contest.com/visualizer_canvas.php?game_id=4415957
+2011-04-08T18:19:00  <amstan> oh man.. that still works
+2011-04-08T18:21:31  <ahmedhelal> amstan: k so it either, 1- not to offer games data any more and just have an archive of the problem statement, ranking list.           2- keep all current stuff along with the db and just move it to a sub domain, and have a new separate db for the new contest.
+2011-04-08T18:21:43  <ahmedhelal> it's*
+2011-04-08T18:21:50  <amstan> ahmedhelal: 1 is not cool
+2011-04-08T18:22:04  <amstan> 2 is .. simple but ... might break in the future, it's a delicate setup
+2011-04-08T18:22:17  <amstan> 3 will be future proof, but it'll take some work to convert
+2011-04-08T18:22:25  <ahmedhelal> exactly
+2011-04-08T18:22:25  <amstan> 3 as in... make a static copy of the website
+2011-04-08T18:22:51  <ahmedhelal> yeah i get it, but it will take more work than creating the new website for the new contest, which isnt fair :)
+2011-04-08T18:23:16  <amstan> also.. 2 might require some cpu
+2011-04-08T18:23:21  <amstan> for looking in the database and stuff
+2011-04-08T18:23:30  <amstan> 3 is faster
+2011-04-08T18:23:46  <ahmedhelal> shouldnt, as ppl would be more interested in the latest contest
+2011-04-08T18:23:54  <jbroman> amstan: That's less of a concern than the fragility because archived copies won't be accessed that much.
+2011-04-08T18:23:56  <amstan> ok, i guess so
+2011-04-08T18:24:03  <ahmedhelal> for instance if you check the visits for the challenge right before planet wars,  i believe not too much traffic would be in there
+2011-04-08T18:24:22  <amstan> jbroman: yes.. but i imagine us updating php or whatever, and then the archived copy breaks
+2011-04-08T18:24:28  <amstan> or it needs new db access
+2011-04-08T18:24:32  <jbroman> amstan: Yeah, that's the fragility.
+2011-04-08T18:24:46  <jbroman> The CPU power is not the concern.
+2011-04-08T18:24:49  <amstan> oh.. right, ok
+2011-04-08T18:25:03  <amstan> still fragility will make it annoying to get 2
+2011-04-08T18:25:14  <ahmedhelal> amstan: why would it be touched anyway ?, i mean why dont you  totally separate between the file system and the db of the old challenge and the new one
+2011-04-08T18:25:34  <jbroman> ahmedhelal: If you mean a separate instance, it costs money.
+2011-04-08T18:25:35  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T18:25:42  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T18:25:42  <amstan> jbroman: we could vm it
+2011-04-08T18:25:56  <ahmedhelal> jbroman: for hosting fees, etc ?
+2011-04-08T18:25:59  <jbroman> amstan: You'd also have to reverse-proxy HTTP requests.
+2011-04-08T18:26:11  <amstan> nah.. just use a subdomain
+2011-04-08T18:26:22  <jbroman> amstan: Even with a subdomain.
+2011-04-08T18:26:33  <jbroman> unless it has a separate public IP
+2011-04-08T18:26:39  <amstan> yeah, ok, you're right
+2011-04-08T18:26:46  <jbroman> (EC2, for instance, will not allocate >1 public IPs/instance.)
+2011-04-08T18:27:17  <amstan> well, archiving them statically is a lot of work, and i don't think anybody wants to do that
+2011-04-08T18:27:35  <amstan> so we might as well make sure we get all the data to run it(before it's lost) and have something up already
+2011-04-08T18:28:41  <amstan> jbroman: speaking of lost data... any idea where the db for http://csclub.uwaterloo.ca/~j3camero/contest/fall2009/results.php is at?
+2011-04-08T18:29:07  <amstan> jeff might know.. but you're syscom, you could look around
+2011-04-08T18:33:09  <jbroman> amstan: I'm pretty sure it's either contest or contest2 on caffeine.
+2011-04-08T18:33:38  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-04-08T18:33:50  <jbroman> If Jeff wants to, I can probably grab an SQL dump.
+2011-04-08T18:34:18  <amstan> well.. you know jeff these days
+2011-04-08T18:39:43  <jbroman> Actually, looks like it's running out of j3camero's own DB.
+2011-04-08T18:39:49  <jbroman> Assuming mysql_login.php is correct.
+2011-04-08T18:40:07  <amstan> jbroman: it is, but i think there's a login problem or something
+2011-04-08T18:40:10  <amstan> check the http error logs
+2011-04-08T18:40:17  <amstan> or the db doesn't exist anymore
+2011-04-08T18:40:25  <amstan> which would suck
+2011-04-08T18:40:29  <amstan> it worked a few months ago
+2011-04-08T18:42:12  <jbroman> Yeah, tables are gone from j3camero.
+2011-04-08T18:42:44  <amstan> well.. that's annoying
+2011-04-08T18:44:37  <ahmedhelal> amstan: i think i have a found  away to archive the stored games
+2011-04-08T18:44:47  <amstan> ahmedhelal: ok?
+2011-04-08T18:45:04  <ahmedhelal> amstan: let me go offline first to make sure its not a cached copy or grabbing anything from ur db or so
+2011-04-08T18:45:40  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.14.26> has quit IRC (Quit: Konversation terminated!)
+2011-04-08T18:47:02  <amstan> huh?
+2011-04-08T18:48:54  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.21.242> has joined #aichallenge
+2011-04-08T18:49:06  <ahmedhelal> amstan: http://dl.dropbox.com/u/15722463/Visualized_Game.zip
+2011-04-08T18:51:29  <ahmedhelal> amstan: saw that ?
+2011-04-08T18:53:31  <amstan> ahmedhelal: it doesn't like your zip: need PK compat. v6.3 (can do v4.6)
+2011-04-08T18:53:49  <ahmedhelal> urgh 1 sec
+2011-04-08T18:54:34  <ahmedhelal> http://dl.dropbox.com/u/15722463/visualized.zip
+2011-04-08T18:50:51  <ahmedhelal> works ?
+2011-04-08T18:50:59  <ahmedhelal> amstan: ^^
+2011-04-08T18:51:53  <amstan> ahmedhelal: yes, problem is that you're downloading a css and a js file for each file
+2011-04-08T18:51:58  <amstan> even though they're all the same
+2011-04-08T18:52:52  <ahmedhelal> so its a storage problem now ? :)
+2011-04-08T18:55:25  <amstan> well.. you don't want to waste space on such things
+2011-04-08T18:56:36  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T18:56:49  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T18:58:09  <ahmedhelal> ill try to see if i can fix that, but if not i think this would be the best option so far, wasting few megabytes and saving alot of work and effort
+2011-04-08T18:58:25  <amstan> it's a small thing, it could be potentially fixed
+2011-04-08T18:58:33  <amstan> it's probably a setting of your downloader
+2011-04-08T18:59:14  <ahmedhelal> yeah it might not be fixable though, due to the way that php page returns the data
+2011-04-08T18:59:47  <amstan> the js file does not change, yet your script makes a new js file for every game
+2011-04-08T19:00:10  <amstan> also.. what about the links from other places, do they get rewritten?
+2011-04-08T19:00:24  <ahmedhelal> what links ?
+2011-04-08T19:00:56  <amstan> from this page for example: http://ai-contest.com/profile.php?user_id=8565
+2011-04-08T19:04:06  <ahmedhelal> will investigate the whole thing tonight
+2011-04-08T19:05:35  <amstan> ahmedhelal: yes.. the server setup is public, see the topic
+2011-04-08T19:08:06  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-08T19:08:50  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.21.242> has left #aichallenge ("Konversation terminated!")
+2011-04-08T19:08:54  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.21.242> has joined #aichallenge
+2011-04-08T19:09:19  *** Sunhay_ <Sunhay_!~ssbasi@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-04-08T19:31:15  *** fgump <fgump!~gump@188.74.82.177> has quit IRC (Quit: Leaving)
+2011-04-08T19:39:21  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T19:39:27  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T19:44:13  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-04-08T19:46:44  *** Keth <Keth!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T19:46:45  *** Keth_ <Keth_!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T19:48:13  *** Keth <Keth!~kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T19:48:14  *** Keth_ <Keth_!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T19:48:25  <antimatroid> amstan: pong
+2011-04-08T19:48:34  <amstan> antimatroid: how's the content on the wiki, is it ready?
+2011-04-08T19:48:49  <antimatroid> hmmm good questiion
+2011-04-08T19:48:57  <antimatroid> i don't think so, what do you want to be ready?
+2011-04-08T19:49:07  <antimatroid> it's hard to finalise stuff when the rules aren't even finalised :P
+2011-04-08T19:49:16  <amstan> well.. we have to finalize the rules then
+2011-04-08T19:49:22  <amstan> what's the hold on that, jeff?
+2011-04-08T19:50:54  <antimatroid> i think we'd pretty much be right with a fighting rule
+2011-04-08T19:51:05  <antimatroid> the radiuses i am fairly happy with
+2011-04-08T20:03:37  *** Eruonen <Eruonen!onensora@e198153.upc-e.chello.nl> has quit IRC ()
+2011-04-08T20:06:11  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-08T20:11:36  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-04-08T20:11:39  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-04-08T20:28:05  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-08T20:43:25  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-04-08T21:21:15  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has joined #aichallenge
+2011-04-08T21:32:28  *** suicidolt <suicidolt!~jediHater@97.104.27.168> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.16/20110323145543])
+2011-04-08T21:32:40  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-08T21:53:58  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has joined #aichallenge
+2011-04-08T21:53:58  *** ChanServ sets mode: +o amstan_
+2011-04-08T21:54:42  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110323143040])
+2011-04-08T22:13:25  *** Keth_ <Keth_!kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-04-08T22:13:51  *** Keth <Keth!~kwketh@client-81-97-42-124.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-08T22:35:38  *** everbird <everbird!~Adium@114.246.156.105> has joined #aichallenge
+2011-04-08T22:54:04  *** delt0r_ <delt0r_!~delt0r@188-22-163-236.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-08T22:55:49  *** delt0r___ <delt0r___!~delt0r@188-22-164-134.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-04-08T22:57:25  *** skynetz <skynetz!~none@unaffiliated/skynetz> has quit IRC (Quit: .)
+2011-04-08T22:58:48  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-04-08T23:00:23  *** chris__0076 <chris__0076!~Chris_007@adsl-190-55-147.asm.bellsouth.net> has joined #aichallenge
+2011-04-08T23:03:25  *** Chris_0076 <Chris_0076!~Chris_007@adsl-176-16-141.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-08T23:28:27  *** amstan_ <amstan_!~alex@206-248-186-52.dsl.teksavvy.com> has quit IRC (Ping timeout: 246 seconds)
+2011-04-08T23:56:08  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)

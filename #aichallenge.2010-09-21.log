@@ -1,0 +1,1786 @@
+2010-09-21T00:00:08  <bss03> Zarathust: That python engine is available in source form from the Google Code project.
+2010-09-21T00:00:50  <sigh> ai-contest source: http://code.google.com/p/ai-contest
+2010-09-21T00:00:54  *** rogue780 <rogue780!~rogue780@c-68-34-234-213.hsd1.md.comcast.net> has quit IRC (Quit: Leaving)
+2010-09-21T00:04:31  <sigh> bss03: for enemy planets, isn't that approximately the current number of ships on the planet?
+2010-09-21T00:05:04  <bss03> sigh: Right.
+2010-09-21T00:05:30  <bss03> sigh: I'm not currently considering, reinforments that are not yet in the air.
+2010-09-21T00:05:38  <sigh> then it doesn't really care about distance
+2010-09-21T00:05:52  <bss03> sigh: I do consider reinforcing flees that are knows.
+2010-09-21T00:06:01  <bss03> sigh: I also consider the growth of the planet.
+2010-09-21T00:06:04  <sigh> does your bot often attack enemies far away in preference to closer targets?
+2010-09-21T00:07:12  <bss03> No, it likes closer targets.  It will "just" continue a drawn-out contest for a hostile planet when it would be better off doing more expansion onto neutral planets.
+2010-09-21T00:07:36  <Snowplan> thanks sigh
+2010-09-21T00:07:38  <sigh> hmm... ok, I'm probably misunderstanding something then
+2010-09-21T00:07:43  <sigh> carry on :)
+2010-09-21T00:09:11  <bss03> sigh: I build a Map from [0..n] -> GameState, then run a fitness function against ALL the planets, with the "time" being part of the input.
+2010-09-21T00:09:40  *** naglijo_ <naglijo_!~naglijo@c-68-40-201-118.hsd1.mi.comcast.net> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T00:09:50  <bss03> Then I filter based on ship availablity, ship need, and sort.
+2010-09-21T00:10:27  <bss03> Right now "n" is maxTransitTime -- the maximum distance between any two planets.
+2010-09-21T00:10:46  <sigh> yeah, I get that, I'm just a bit confused by your evaluation function... but I don't have time to think about that right now
+2010-09-21T00:11:53  <bss03> sigh: Why not?  You are in the top 5, right?
+2010-09-21T00:11:54  <bss03> @rank
+2010-09-21T00:11:54  <contestbot> bss03: Error: The command "rank" is available in the Alias, ChannelStats, and Factoids plugins.  Please specify the plugin whose command you wish to call by using its name as a command before "rank".
+2010-09-21T00:11:55  *** Olathe <Olathe!~Olathe@pool-98-111-156-209.phlapa.east.verizon.net> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T00:11:59  <bss03> @alias rank
+2010-09-21T00:12:00  <contestbot> bss03: Top 10 players: McLeopold(3512), kcm1700(3506), dmj111(3434), sighbot(3372), EBraun(3372), adumlah(3369), petesimard(3363), montanalow(3354), paulus(3335), Tracer(3290)
+2010-09-21T00:12:10  <sigh> bss03: I'm at work :P
+2010-09-21T00:12:23  <Zarathust> ok i've got the svn checkout
+2010-09-21T00:12:25  <bss03> sigh: Ah, carry on, then. :)
+2010-09-21T00:12:38  <Zarathust> how should i start engine?
+2010-09-21T00:13:09  <bss03> Zarathust: I don't know.  Maybe there are some docs?  I'm just using PlayGame.jar here.
+2010-09-21T00:13:30  <Zarathust> Ok
+2010-09-21T00:13:33  <bss03> Zarathust: I wrote enough of an engine to do my predictive analysis based on the spec. in Haskell.
+2010-09-21T00:13:46  <Zarathust> nice
+2010-09-21T00:13:56  <bss03> Zarathust: So, I don't really know my way around the Java or Phyton source, sorry. :(
+2010-09-21T00:14:27  <Zarathust> I'm in C#
+2010-09-21T00:14:49  <Zarathust> i crash after a few dozens of turns with very minimal code
+2010-09-21T00:14:55  <Zarathust> I wished to see the source to debug better
+2010-09-21T00:15:30  <bss03> Zarathust: I think the suggestion for getting extra debug information is to write stuff to a file.
+2010-09-21T00:15:57  <bss03> Zarathust: PlayGame.jar seems to swallow stdout and stderr from your program, but opening a file and logging to that should work.
+2010-09-21T00:16:01  <Zarathust> Yes i already do this
+2010-09-21T00:16:14  <Zarathust> But stepping through the engine could be better
+2010-09-21T00:16:30  *** naglijo <naglijo!~naglijo@c-68-40-201-118.hsd1.mi.comcast.net> has joined #aichallenge
+2010-09-21T00:16:47  <Zarathust> with java you can backtrack some executions
+2010-09-21T00:17:11  <antimatroid1> this competition is really starting to take its toll on me
+2010-09-21T00:17:20  <antimatroid1> i'm so damn tired today, and i even made it to bed by 1am last night
+2010-09-21T00:17:57  <bss03> antimatroid1: Walk away from it for a few days.  You'll probably some back with better ideas anyway. >:)
+2010-09-21T00:18:25  <bss03> antimatroid1: Let it soak into your subconscious.
+2010-09-21T00:19:59  <antimatroid1> i have ideas to implement currently but have to take a few days off
+2010-09-21T00:20:09  <antimatroid1> i have quite a few uni assignments to do this week and a test tomorrow
+2010-09-21T00:28:42  <bss03> @tcp-server
+2010-09-21T00:28:43  <contestbot> bss03: tcp-server = http://www.benzedrine.cx/planetwars/
+2010-09-21T00:28:50  <jmcarthur> there's something about coding for cache locality that just feels warm and fuzzy
+2010-09-21T00:29:02  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T00:31:17  <sigh> jmcarthur: my code make CPU warm and fuzzy...
+2010-09-21T00:31:22  <jmcarthur> heh
+2010-09-21T00:31:23  <sigh> *makes
+2010-09-21T00:31:33  *** kozlovsky <kozlovsky!5d645927@gateway/web/freenode/ip.93.100.89.39> has joined #aichallenge
+2010-09-21T00:31:42  <antimatroid1> my code is god awful
+2010-09-21T00:31:48  <antimatroid1> but it's much cleaner than last time
+2010-09-21T00:33:03  <antimatroid1> my guy still seems to suck on some maps
+2010-09-21T00:33:15  <antimatroid1> i really need to address that problem, some use being best on some
+2010-09-21T00:33:23  <antimatroid1> no use*
+2010-09-21T00:35:57  *** Waco <Waco!~dongs@174-18-19-25.tcso.qwest.net> has quit IRC (Quit: ( www.nnscript.com :: NoNameScript 4.22 :: www.esnation.com ))
+2010-09-21T00:37:44  *** otherAntimatroid <otherAntimatroid!~Jet@ppp118-208-209-202.lns20.hba1.internode.on.net> has joined #aichallenge
+2010-09-21T00:37:56  *** jesionaj <jesionaj!~dongs@174-18-19-25.tcso.qwest.net> has joined #aichallenge
+2010-09-21T00:37:59  *** jesionaj <jesionaj!~dongs@174-18-19-25.tcso.qwest.net> has left #aichallenge
+2010-09-21T00:38:05  *** jesionaj <jesionaj!~dongs@174-18-19-25.tcso.qwest.net> has joined #aichallenge
+2010-09-21T00:40:29  *** Utkarsh <Utkarsh!~admin@117.201.80.106> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T00:41:20  *** John__ <John__!18d6c33d@gateway/web/freenode/ip.24.214.195.61> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T00:43:06  *** pjreddie <pjreddie!8ce9ce82@gateway/web/freenode/ip.140.233.206.130> has joined #aichallenge
+2010-09-21T00:45:02  *** john__ <john__!18d6c33d@gateway/web/freenode/ip.24.214.195.61> has joined #aichallenge
+2010-09-21T00:45:17  <pjreddie> is something going on with the server? i submitted at like 10 this morning, no emails, no games, nothing...
+2010-09-21T00:48:15  *** kozlovsky <kozlovsky!5d645927@gateway/web/freenode/ip.93.100.89.39> has quit IRC (Quit: Page closed)
+2010-09-21T00:50:15  *** kozlovsky <kozlovsky!5d645927@gateway/web/freenode/ip.93.100.89.39> has joined #aichallenge
+2010-09-21T00:51:07  <Zannick> server is not very good
+2010-09-21T00:56:27  <contestbot> Top 10 players: McLeopold(3497), kcm1700(3489), dmj111(3422), sighbot(3373), EBraun(3361), adumlah(3353), petesimard(3351), montanalow(3341), paulus(3311), Tracer(3271)
+2010-09-21T00:59:51  *** mightybyte <mightybyte!~mightybyt@207-38-168-7.c3-0.43d-ubr1.qens-43d.ny.cable.rcn.com> has left #aichallenge
+2010-09-21T01:10:40  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-09-21T01:12:44  *** Snowplan <Snowplan!~snowplan@pool-173-69-213-11.bltmmd.fios.verizon.net> has left #aichallenge
+2010-09-21T01:19:21  <antimatroid1> drewrobb: lost that top spot aye ;)
+2010-09-21T01:21:16  <drewrobb> arggg
+2010-09-21T01:21:23  <drewrobb> these matches are so brutal
+2010-09-21T01:21:58  <antimatroid1> i really need to fix my bot up to win when it can
+2010-09-21T01:22:18  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has joined #aichallenge
+2010-09-21T01:22:46  <drewrobb> its not like your bot loses when it should have won
+2010-09-21T01:24:04  <antimatroid1> no, i think i have that part going alright
+2010-09-21T01:24:16  <antimatroid1> i just need to fix up a few combat things and work on my start
+2010-09-21T01:24:29  <antimatroid1> then it's time to try algorithms to generate better moves
+2010-09-21T01:25:13  <jmcarthur> awesome, i didn't realize that the arrow keys controlled the canvas visualizer
+2010-09-21T01:25:28  <antimatroid1> jmcarthur: thanks
+2010-09-21T01:25:33  <drewrobb> time to try search for me
+2010-09-21T01:25:40  <antimatroid1> oh main, does it fast forward too
+2010-09-21T01:25:41  <antimatroid1> best
+2010-09-21T01:25:44  <jmcarthur> yeah
+2010-09-21T01:25:52  <jmcarthur> it goes fast if you hold it down
+2010-09-21T01:26:05  <drewrobb> hmm not working for me
+2010-09-21T01:26:13  <sigh> jmcarthur: I changed mine so that I can skip to a move by clicking on the chart
+2010-09-21T01:26:14  <jmcarthur> it's just right and left
+2010-09-21T01:26:17  <sigh> really handy
+2010-09-21T01:26:21  <jmcarthur> sigh: nice
+2010-09-21T01:26:28  <antimatroid1> drewrobb: make sure you click on the canvas?
+2010-09-21T01:26:37  <jmcarthur> i don't have to click on it
+2010-09-21T01:26:53  <antimatroid1> my friend is trying to fix up the c++ one a big for testing with
+2010-09-21T01:26:58  <antimatroid1> bit*
+2010-09-21T01:27:21  <drewrobb> yeah, i'm clicking, holding down doesn't work
+2010-09-21T01:27:29  <sigh> antimatroid1: yeah, I'm essentially doing the same with the canvas one... displaying planet ids and such
+2010-09-21T01:27:32  <drewrobb> i have a really weird system so that is probably why
+2010-09-21T01:28:09  <sigh> hope to turn it into a display with a heap of useful info
+2010-09-21T01:28:31  *** hornairs <hornairs!~hornairs@66.49.234.213> has quit IRC (Quit: hornairs)
+2010-09-21T01:34:28  <drewrobb> antimatroid1: weird how you don't have much trouble with deepblue
+2010-09-21T01:36:57  <antimatroid1> deepblue is easy :P
+2010-09-21T01:37:35  <antimatroid1> rwa's top ranking is a sham
+2010-09-21T01:38:16  <sigh> if he doesn't play, he can't lose!
+2010-09-21T01:38:57  <antimatroid1> i should have done that when my elo was 800+ :P
+2010-09-21T01:42:55  <drewrobb> its a bit silly to get excited about doing well this early
+2010-09-21T01:43:13  <drewrobb> but it is the only thing that keeps me programming i suppose
+2010-09-21T01:45:40  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2010-09-21T01:45:42  <antimatroid1> yeah, i was starting to lose interest when people were owning me last week
+2010-09-21T01:45:56  <antimatroid1> doing well keeps one motivated
+2010-09-21T01:50:00  <drewrobb> oh man, this is just sad
+2010-09-21T01:50:03  <drewrobb> http://72.44.46.68/canvas?game_id=71843
+2010-09-21T01:50:48  <drewrobb> note how locutus takes the 99 0 growth center on turn 0
+2010-09-21T01:51:01  <sigh> ouch!
+2010-09-21T01:51:46  <sigh> he then proceeds to waste ships on neutrals in your area
+2010-09-21T01:51:53  <sigh> you seem to defend too much?
+2010-09-21T01:52:06  <drewrobb> he is exploiting a weird bug in my code
+2010-09-21T01:52:38  <drewrobb> my bot ignores 0 growth planets, and only attacks the nearest enemy under certain conditions
+2010-09-21T01:52:59  <drewrobb> sneaky sneaky
+2010-09-21T01:53:32  <sigh> ah, so because the 0 growth was the closest planet?
+2010-09-21T01:53:36  <antimatroid1> i have had troubles with predicting the closest neighbour and algorithms based of that information for similar reasons
+2010-09-21T01:53:44  <antimatroid1> closest enemy*
+2010-09-21T01:53:57  <antimatroid1> algorithms == heuristics
+2010-09-21T01:54:47  <drewrobb> this is just a hilarious corner case
+2010-09-21T01:56:27  <contestbot> Top 10 players: McLeopold(3495), kcm1700(3486), dmj111(3395), sighbot(3368), EBraun(3363), adumlah(3356), montanalow(3332), paulus(3311), petesimard(3284), Tracer(3263)
+2010-09-21T02:05:26  *** Tempest <Tempest!b445d0d5@gateway/web/freenode/ip.180.69.208.213> has joined #aichallenge
+2010-09-21T02:08:06  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-09-21T02:10:39  *** phreeza <phreeza!~phreeza@f048209144.adsl.alicedsl.de> has joined #aichallenge
+2010-09-21T02:10:53  <antimatroid1> drewrobb: current versions seem pretty well matched
+2010-09-21T02:11:40  *** amstan <amstan!~amstan@76-10-139-91.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T02:13:40  <Tempest> Does anyone know how a fleet's ID is assigned?
+2010-09-21T02:14:28  <drewrobb> indeed
+2010-09-21T02:14:36  <drewrobb> maybe time to release 1.4
+2010-09-21T02:14:42  *** Appleman1234 <Appleman1234!~Appleman1@c114-77-251-186.ipswc3.qld.optusnet.com.au> has joined #aichallenge
+2010-09-21T02:17:09  <jmcarthur> Tempest: unless you are talking about a starter pack, fleets don't inherently have IDs
+2010-09-21T02:17:24  <jmcarthur> i'm not familiar enough with the starters to answer if that's that you are talking about
+2010-09-21T02:17:34  <jmcarthur> *if that's what
+2010-09-21T02:21:24  <bss03> Tempest: Fleets don't have IDs, per se.  Their index in the Fleets() array may change as fleets arrive.
+2010-09-21T02:21:40  <delt0r___> does change...
+2010-09-21T02:22:10  <delt0r___> since the order of arrival is not the same as the order of dispatch
+2010-09-21T02:23:28  *** phreeza <phreeza!~phreeza@f048209144.adsl.alicedsl.de> has quit IRC (Quit: Computer has gone to sleep)
+2010-09-21T02:23:35  *** Appleman1234 <Appleman1234!~Appleman1@c114-77-251-186.ipswc3.qld.optusnet.com.au> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T02:29:14  *** phreeza <phreeza!~phreeza@f048209144.adsl.alicedsl.de> has joined #aichallenge
+2010-09-21T02:30:01  <Tempest> Thank you; the variable 'fleet_id' in PlanetWars.GetFleet() seems to be misnamed
+2010-09-21T02:30:54  <Tempest> in the starter pack
+2010-09-21T02:31:52  <mega1> now that my forum login is fixed, I can't log in anymore to the main site.
+2010-09-21T02:34:19  *** aerique <aerique!~euqirea@aerique.xs4all.nl> has joined #aichallenge
+2010-09-21T02:34:28  *** boegel <boegel!~boegel@AMontpellier-156-1-5-138.w90-0.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T02:34:45  *** boegel <boegel!~boegel@vpnp021.ugent.be> has joined #aichallenge
+2010-09-21T02:34:59  <boegel> hiya y'all
+2010-09-21T02:35:18  <boegel> I just made a new submission, and received two email concerning the compilation
+2010-09-21T02:35:40  <boegel> the first one said it failed ("collect2: ld terminated with signal 11 [Segmentation fault]"), the second said it succeeded
+2010-09-21T02:35:59  <boegel> is that expected? does the system try to compile the submission again when it fails?
+2010-09-21T02:36:10  <antimatroid1> that happeend to me once and the submission seemed to work fine
+2010-09-21T02:36:15  <antimatroid1> i'd leave it a little bit and see what happens
+2010-09-21T02:36:47  *** Baphomet <Baphomet!~a@219-90-178-128.ip.adam.com.au> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T02:37:08  <boegel> hmm, first game played seems like it's playing the old version
+2010-09-21T02:37:28  <boegel> I can easily tell, because my old bot didn't work at all, this is my first somewhat decent submission
+2010-09-21T02:38:08  <boegel> resubmitted, just to be sure :)
+2010-09-21T02:38:44  <boegel> how long does it take for the system to pick up the new version?
+2010-09-21T02:39:12  <antimatroid1> should be pretty much straight away, but it's hardly giving out games atm
+2010-09-21T02:39:17  <boegel> is it possible that it was playing with the older version during the submission, and that it'll take those odl results into account?
+2010-09-21T02:39:18  <antimatroid1> http://www.benzedrine.cx/planetwars/ try that
+2010-09-21T02:39:32  <antimatroid1> it shouldn't play your old versions ever
+2010-09-21T02:39:39  <antimatroid1> and your elo is pretty much wiped everytime you resubmit
+2010-09-21T02:40:00  <boegel> antimatroid1: hmm, cool
+2010-09-21T02:40:09  <boegel> antimatroid1: hmmk, I see
+2010-09-21T02:40:25  *** Baphomet <Baphomet!~a@219-90-178-128.ip.adam.com.au> has joined #aichallenge
+2010-09-21T02:41:20  <boegel> in this game, the system is definitely using my old bot: http://ai-contest.com/visualizer.php?game_id=4615883
+2010-09-21T02:41:29  <boegel> and it was played after my most recent submission
+2010-09-21T02:41:43  <boegel> antimatroid1: is it possible a game was in play *during* my submission?
+2010-09-21T02:42:04  <Zannick> haha, that would be a terrible race
+2010-09-21T02:42:05  <boegel> because the game result came in just 12s after my submission
+2010-09-21T02:42:17  <boegel> Zannick: yeah, my old bot was utter crap, full of bugs
+2010-09-21T02:42:19  <Zannick> i wonder if it does...
+2010-09-21T02:42:26  <Zannick> no, i mean race condition
+2010-09-21T02:42:42  <antimatroid1> boegel: it would wipe any old games when you resubmit (or at least that's waht it's done for me)
+2010-09-21T02:43:01  <boegel> Zannick: ah, ok
+2010-09-21T02:43:31  <boegel> well, the version it's playing doesn't match with what I'm seeing locally, so my best guess is that it's playind the old version
+2010-09-21T02:44:33  <Zannick> well, the 12s thing is also a good indicator it might be
+2010-09-21T02:45:52  <boegel> Zannick: I thought so too
+2010-09-21T02:46:16  <boegel> antimatroid1: the benzedrine version allows you to play as many games as you want in a short period of time?
+2010-09-21T02:46:28  <boegel> antimatroid1: and thus get a quick estimate of the quality of your bot?
+2010-09-21T02:47:31  <boegel> antimatroid1: how does it know if you're playing a new version? the ranking is cumulative, I assume, no matter which version you're using?
+2010-09-21T02:47:48  *** aerique <aerique!~euqirea@aerique.xs4all.nl> has quit IRC (Quit: ...)
+2010-09-21T02:49:57  *** bss03 is now known as bss03-AFK
+2010-09-21T02:54:09  <antimatroid1> boegel: you specify a username when running your bot, so if you want a new score, pick a new name
+2010-09-21T02:54:19  <antimatroid1> hence why you see people using different version numbers on tehre
+2010-09-21T02:55:40  *** perror <perror!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2010-09-21T02:55:45  <bss03-AFK> boegel: E.g. I use git to develop my bot.  I use git tag each time I submit to the official server.  I generate my tcp-server username using git describe.
+2010-09-21T02:56:28  <contestbot> Top 10 players: McLeopold(3507), kcm1700(3496), dmj111(3390), sighbot(3366), EBraun(3363), adumlah(3358), montanalow(3319), paulus(3300), petesimard(3282), Tracer(3262)
+2010-09-21T02:56:41  <bss03-AFK> My tags are DaTwinkDaddy-s#.  So, my username on the TCP server is DaTwinkDaddy-s#-<commits_after>-<unique_hash>.
+2010-09-21T03:06:29  <mega1> bss03-AFK: thanks, that's good
+2010-09-21T03:06:49  <mega1> do you also check that everything is committed?
+2010-09-21T03:07:19  *** sinan <sinan!~sinan@87.238.130.96> has joined #aichallenge
+2010-09-21T03:18:12  <boegel> antimatroid1: I see
+2010-09-21T03:19:03  <boegel> antimatroid1: you can just pick a password, and it'll be registred the first time you use a name or something?
+2010-09-21T03:22:23  *** Tempest <Tempest!b445d0d5@gateway/web/freenode/ip.180.69.208.213> has quit IRC (Quit: Page closed)
+2010-09-21T03:26:43  *** kozlovsky <kozlovsky!5d645927@gateway/web/freenode/ip.93.100.89.39> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T03:32:04  *** aerique <aerique!euqirea@xs2.xs4all.nl> has joined #aichallenge
+2010-09-21T03:35:17  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Remote host closed the connection)
+2010-09-21T03:39:58  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T03:40:20  *** pc is now known as xvinyl
+2010-09-21T03:40:21  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T03:40:22  *** mega1_ <mega1_!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-09-21T03:40:42  *** dufflebunk <dufflebunk!~dufflebun@adsl-99-91-40-235.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-09-21T03:41:16  <dufflebunk> I'm getting a failure to compile my (Haskell) bot on the server, but the email just lists some compile warnings.
+2010-09-21T03:41:27  <dufflebunk> tmp/ghc18909_0/ghc18909_0.s: Assembler messages:
+2010-09-21T03:41:28  <dufflebunk> /tmp/ghc18909_0/ghc18909_0.s:15882:0: Warning: 0000000757b12c00 shortened to 0000000057b12c00
+2010-09-21T03:41:40  <dufflebunk> HAs anyone has anything like that before?
+2010-09-21T03:43:13  *** delt0r_ <delt0r_!~delt0r@188-22-25-15.adsl.highway.telekom.at> has joined #aichallenge
+2010-09-21T03:43:38  <boegel> dufflebunk: using Haskell too? brave, like me :P
+2010-09-21T03:43:58  <dufflebunk> More interesting than C or Java.
+2010-09-21T03:44:47  *** delt0r___ <delt0r___!~delt0r@188-22-167-215.adsl.highway.telekom.at> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T03:48:25  *** [1]adesst <[1]adesst!~adesst@180.214.233.19> has joined #aichallenge
+2010-09-21T03:50:17  <[1]adesst> rrr... i've modified my bot, and still lossing the game.. :(
+2010-09-21T03:51:14  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T03:51:53  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T03:52:19  <[1]adesst> is there anyway that i could use ShowGame.jar to read an txt file, lets say the var data="blabla" of the website result
+2010-09-21T03:52:44  <[1]adesst> i am using python package
+2010-09-21T03:52:47  <[1]adesst> tq
+2010-09-21T03:56:25  *** john__ <john__!18d6c33d@gateway/web/freenode/ip.24.214.195.61> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T03:56:29  <contestbot> Top 10 players: McLeopold(3510), kcm1700(3495), dmj111(3450), EBraun(3368), sighbot(3354), adumlah(3344), montanalow(3315), petesimard(3307), Tracer(3305), paulus(3300)
+2010-09-21T03:57:30  *** mega1_ <mega1_!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Quit: No Ping reply in 180 seconds.)
+2010-09-21T03:57:34  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-09-21T03:58:25  *** pc is now known as xvinyl
+2010-09-21T03:58:50  *** Utkarsh <Utkarsh!~admin@117.201.80.106> has joined #aichallenge
+2010-09-21T04:01:09  *** naglijo <naglijo!~naglijo@c-68-40-201-118.hsd1.mi.comcast.net> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T04:03:25  *** [2]adesst <[2]adesst!~adesst@180.214.233.7> has joined #aichallenge
+2010-09-21T04:03:57  *** [1]adesst <[1]adesst!~adesst@180.214.233.19> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T04:04:13  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has quit IRC (Quit: leaving)
+2010-09-21T04:04:31  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has joined #aichallenge
+2010-09-21T04:04:55  <dufflebunk> Should a compile warning cause the compilation to fail?
+2010-09-21T04:09:54  *** mog_ <mog_!5b2cb099@gateway/web/freenode/ip.91.44.176.153> has joined #aichallenge
+2010-09-21T04:11:12  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Quit: No Ping reply in 180 seconds.)
+2010-09-21T04:12:38  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-09-21T04:14:00  *** Naktibalda <Naktibalda!~quassel@cpc2-heme6-0-0-cust884.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2010-09-21T04:15:49  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T04:16:04  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T04:35:45  *** Utkarsh <Utkarsh!~admin@117.201.80.106> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T04:36:48  *** [2]adesst <[2]adesst!~adesst@180.214.233.7> has quit IRC (Ping timeout: 264 seconds)
+2010-09-21T04:37:28  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T04:38:24  *** sigh <sigh!~sigh@137.206-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-09-21T04:40:12  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T04:40:39  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T04:41:38  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Write error: Broken pipe)
+2010-09-21T04:41:45  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-09-21T04:42:10  *** Utkarsh <Utkarsh!~admin@117.201.82.46> has joined #aichallenge
+2010-09-21T04:44:51  *** z-247 <z-247!~z-247@phenethylamine.net> has quit IRC (Quit: leaving)
+2010-09-21T04:45:11  *** mog_ <mog_!5b2cb099@gateway/web/freenode/ip.91.44.176.153> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T04:45:30  *** bss03-AFK <bss03-AFK!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T04:46:01  *** bss03-AFK <bss03-AFK!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has joined #aichallenge
+2010-09-21T04:47:35  <mega1> aerique: I have a submission that would print some useful info about the server, but my login stopped working.
+2010-09-21T04:47:37  <mega1> it's my starter package with a small mod in MyBot.lisp
+2010-09-21T04:47:38  <mega1> if you would be so kind as to submit it ...
+2010-09-21T04:47:50  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2010-09-21T04:48:51  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Quit: No Ping reply in 180 seconds.)
+2010-09-21T04:48:55  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-09-21T04:49:52  <mega1> or if any admin sees this and they fix my login that would be even better
+2010-09-21T04:52:40  <mega1> never mind, I'm in
+2010-09-21T04:53:02  <mega1> the password firefox remembered became somehow out of sync with reality
+2010-09-21T04:54:06  *** Gorovkhaia2 <Gorovkhaia2!~stroph@phenethylamine.net> has joined #aichallenge
+2010-09-21T04:56:17  *** sinan <sinan!~sinan@87.238.130.96> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T04:56:29  <contestbot> Top 10 players: McLeopold(3508), kcm1700(3494), dmj111(3445), EBraun(3380), sighbot(3351), adumlah(3343), montanalow(3310), paulus(3302), Tracer(3301), petesimard(3280)
+2010-09-21T04:58:09  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-09-21T05:07:14  <aerique> mega1: i never get mails about compilation errors :-|
+2010-09-21T05:07:33  <mega1> aerique: I do
+2010-09-21T05:07:36  <mega1> and it works :-)
+2010-09-21T05:07:44  <mega1> will post the updated starter package
+2010-09-21T05:07:53  <aerique> mega1: what was the problem?
+2010-09-21T05:08:21  <mega1> I think the problem was what you found.
+2010-09-21T05:08:52  <mega1> in my pack another problem was that compiler output was redirected to stderr
+2010-09-21T05:09:03  <mega1> to which the compile daemon didn't take kindly.
+2010-09-21T05:10:04  <aerique> aerique: ah, ofcourse that's probably a problem in my starter pack as well then
+2010-09-21T05:10:31  * aerique wonders why he's talking to himself
+2010-09-21T05:10:51  <mega1> it's a good way to maintain focus
+2010-09-21T05:16:27  *** lemonedo <lemonedo!~lemonedo@180.70.190.111> has joined #aichallenge
+2010-09-21T05:18:56  <aerique> mega1: so your starter pack is playing games now?
+2010-09-21T05:19:01  <mega1> yes
+2010-09-21T05:19:06  <mega1> http://ai-contest.com/profile.php?user_id=8565
+2010-09-21T05:19:13  <mega1> it's your dummy bot
+2010-09-21T05:19:25  *** MrCeeJ <MrCeeJ!~ctongue@77.246.171.42> has joined #aichallenge
+2010-09-21T05:19:28  <mega1> as you could tell, surely
+2010-09-21T05:21:05  <aerique> mega1: great, finally :)
+2010-09-21T05:21:20  <mega1> yeah, took ages
+2010-09-21T05:22:04  <aerique> mega1: shall we stay with 1.0.11 then or push our luck and ask them to install 1.0.42?
+2010-09-21T05:22:16  <mega1> ask them to install
+2010-09-21T05:22:33  <aerique> mega1: oh wait, they're considering allowing binaries so that would make the point moot
+2010-09-21T05:22:35  <mega1> I don't have the time now to prepare a binary for them
+2010-09-21T05:22:57  <mega1> that would make sense
+2010-09-21T05:23:54  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T05:27:14  *** lemonedo <lemonedo!~lemonedo@180.70.190.111> has quit IRC (Remote host closed the connection)
+2010-09-21T05:32:41  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has joined #aichallenge
+2010-09-21T05:46:20  <cYmen> oh aerique is here \o/
+2010-09-21T05:47:04  <cYmen> What would you recommend for getting started with lisp? Your package? Anwyn's? Are there o thers?
+2010-09-21T05:53:03  *** sinan <sinan!~sinan@80.90.175.232> has joined #aichallenge
+2010-09-21T05:54:31  <aerique> cYmen: at the moment I would use mega1's, he just got his package working
+2010-09-21T05:55:02  <cYmen> I'm not sure how that follows. :)
+2010-09-21T05:55:12  <cYmen> Here is something that barely works. Use that.
+2010-09-21T05:55:25  <cYmen> mega1: no offense.. :)
+2010-09-21T05:55:33  <aerique> well, use mine then which doesn't work ;-)
+2010-09-21T05:55:36  <mega1> the other packages do not work at all
+2010-09-21T05:55:52  <cYmen> ah I see :)
+2010-09-21T05:56:03  <mega1> other than that mine is a what I consider to be a cleanup of aerique's
+2010-09-21T05:56:03  *** sinan <sinan!~sinan@80.90.175.232> has quit IRC (Client Quit)
+2010-09-21T05:56:27  <aerique> cYmen: he also placed 11th in the Tron compo while I was in the 100's so you might want to follow his example 8-D
+2010-09-21T05:56:30  <contestbot> Top 10 players: McLeopold(3490), kcm1700(3480), dmj111(3448), EBraun(3363), sighbot(3341), petesimard(3330), adumlah(3326), Tracer(3284), paulus(3279), montanalow(3270)
+2010-09-21T05:57:49  <aerique> Just got mine working as well: http://ai-contest.com/visualizer.php?game_id=4617780http://ai-contest.com/visualizer.php?game_id=4617780
+2010-09-21T05:58:05  <aerique> ah, broken mouse button
+2010-09-21T05:58:44  <cYmen> oh you're that mega1 :)
+2010-09-21T05:58:46  <aerique> mega1: i muffled compiler notes and style warnings
+2010-09-21T05:59:32  <mega1> cYmen: which "that"? From #lisp? yes
+2010-09-21T05:59:58  <mega1> aerique: do they go to stderr?
+2010-09-21T06:01:02  <aerique> mega1: apparently
+2010-09-21T06:01:21  <mega1> bah
+2010-09-21T06:01:30  <aerique> mega1: (declaim (sb-ext:muffle-conditions sb-ext:compiler-note style-warning))
+2010-09-21T06:01:53  <aerique> at the top of MyBot.lisp
+2010-09-21T06:02:09  <mega1> okay
+2010-09-21T06:04:08  <mega1> aerique: the exit code of sbcl is 1 on error (when --disable-debugger)
+2010-09-21T06:04:28  <aerique> mega1: that's good no?
+2010-09-21T06:04:34  <mega1> so stderr can be simply redirected to stdout to see all the notes
+2010-09-21T06:04:49  <mega1> (which I'd get in the email from the server)
+2010-09-21T06:05:13  <mega1> I have to check if the server actually checks the exit code.
+2010-09-21T06:05:22  *** hakand <hakand!~hakand@78.187.137.161> has joined #aichallenge
+2010-09-21T06:05:41  <aerique> mega1: my impressions is it simply checks for output on stderr but i'd have to look at the code
+2010-09-21T06:06:04  <aerique> perhaps Janzert knows :)
+2010-09-21T06:07:28  <mega1> def check_path(path):
+2010-09-21T06:07:28  <mega1>   if not os.path.exists(path):
+2010-09-21T06:07:28  <mega1>     return "Failure: output file " + str(path) + " was not created\n"
+2010-09-21T06:07:44  <mega1> and it's called with "MyBot"
+2010-09-21T06:07:59  <mega1> so no, it doesn't check the exit code but we are still good
+2010-09-21T06:26:00  *** boegel <boegel!~boegel@vpnp021.ugent.be> has quit IRC (Quit: Leaving)
+2010-09-21T06:30:14  *** kozlovsky <kozlovsky!c2e2c7e2@gateway/web/freenode/ip.194.226.199.226> has joined #aichallenge
+2010-09-21T06:31:16  *** Macuyiko <Macuyiko!~macuyiko@ip-213-49-109-53.dsl.scarlet.be> has joined #aichallenge
+2010-09-21T06:32:32  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-09-21T06:36:08  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T06:40:45  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has quit IRC (Ping timeout: 255 seconds)
+2010-09-21T06:45:04  *** Utkarsh <Utkarsh!~admin@117.201.82.46> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T06:49:13  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has joined #aichallenge
+2010-09-21T06:51:44  *** Utkarsh <Utkarsh!~admin@117.201.84.50> has joined #aichallenge
+2010-09-21T06:53:44  *** danielvf <danielvf!~dvf@67-197-181-252.dyn.comporium.net> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T06:56:30  <contestbot> Top 10 players: kcm1700(3495), McLeopold(3472), dmj111(3434), EBraun(3395), petesimard(3328), adumlah(3326), sighbot(3325), paulus(3312), montanalow(3265), Tracer(3253)
+2010-09-21T06:58:28  *** tobiassjosten <tobiassjosten!~tobias@static-212.214.7.110.addr.tdcsong.se> has joined #aichallenge
+2010-09-21T07:09:41  *** Utkarsh <Utkarsh!~admin@117.201.84.50> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T07:10:25  *** dhartmei <dhartmei!~dhartmei@106-30.3-213.fix.bluewin.ch> has joined #aichallenge
+2010-09-21T07:15:14  *** Utkarsh <Utkarsh!~admin@117.201.88.245> has joined #aichallenge
+2010-09-21T07:20:31  *** kozlovsky <kozlovsky!c2e2c7e2@gateway/web/freenode/ip.194.226.199.226> has quit IRC (Quit: Page closed)
+2010-09-21T07:30:55  *** Sean_McEligot <Sean_McEligot!~Sean_McEl@va-67-233-80-248.dhcp.embarqhsd.net> has joined #aichallenge
+2010-09-21T07:42:06  *** hakand <hakand!~hakand@78.187.137.161> has quit IRC (Remote host closed the connection)
+2010-09-21T07:43:18  *** hakand <hakand!~hakand@78.187.137.161> has joined #aichallenge
+2010-09-21T07:44:10  <hakand> getting addicted to terminal (:
+2010-09-21T07:54:46  *** delt0r___ <delt0r___!~delt0r@188-22-21-63.adsl.highway.telekom.at> has joined #aichallenge
+2010-09-21T07:56:15  *** delt0r_ <delt0r_!~delt0r@188-22-25-15.adsl.highway.telekom.at> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T07:56:31  <contestbot> Top 10 players: kcm1700(3497), McLeopold(3481), dmj111(3442), EBraun(3415), adumlah(3352), sighbot(3330), paulus(3313), petesimard(3306), Tracer(3277), Loks1982(3262)
+2010-09-21T07:58:14  *** hakand <hakand!~hakand@78.187.137.161> has quit IRC (Quit: leaving)
+2010-09-21T08:01:59  *** Utkarsh <Utkarsh!~admin@117.201.88.245> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T08:03:50  *** hakand <hakand!~hakand@78.187.137.161> has joined #aichallenge
+2010-09-21T08:04:29  <antimatroid1> you people are awfully quiet tonight
+2010-09-21T08:05:22  <hakand> working on their secret strategies (:
+2010-09-21T08:05:50  <antimatroid1> i don't have time for that tonight ):
+2010-09-21T08:06:36  <hakand> and its 3pm in here, working :/
+2010-09-21T08:06:51  <antimatroid1> it's 10pm here :P
+2010-09-21T08:08:20  *** Utkarsh <Utkarsh!~admin@117.201.84.68> has joined #aichallenge
+2010-09-21T08:08:22  <Naktibalda> 1pm :)
+2010-09-21T08:11:57  <hakand> mouse=ultime weapon of productivity destruction
+2010-09-21T08:12:46  *** hakand is now known as HakanD
+2010-09-21T08:13:16  *** ermau <ermau!~ermau@about/csharp/regular/ermau> has joined #aichallenge
+2010-09-21T08:17:36  *** ermau is now known as ermau|wor
+2010-09-21T08:17:40  *** ermau|wor is now known as ermau|work
+2010-09-21T08:17:54  *** HakanD <HakanD!~hakand@78.187.137.161> has quit IRC (Quit: leaving)
+2010-09-21T08:18:19  *** HakanD <HakanD!~hakand@78.187.137.161> has joined #aichallenge
+2010-09-21T08:18:32  *** sinan <sinan!~sinan@80.90.175.232> has joined #aichallenge
+2010-09-21T08:23:19  *** otherAntimatroid <otherAntimatroid!~Jet@ppp118-208-209-202.lns20.hba1.internode.on.net> has left #aichallenge
+2010-09-21T08:23:30  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has joined #aichallenge
+2010-09-21T08:23:30  *** ChanServ sets mode: +o amstan
+2010-09-21T08:26:00  <aerique> mega1: seems that declaim of mine doesn't work on 1.0.11
+2010-09-21T08:27:16  *** artyom_shegeda <artyom_shegeda!d90cc122@gateway/web/freenode/ip.217.12.193.34> has joined #aichallenge
+2010-09-21T08:28:48  <mega1> aerique: I ended up with this:
+2010-09-21T08:28:50  <mega1> http://quotenil.com/git/?p=planet-wars.git;a=blobdiff;f=MyBot.lisp;h=3322ddf5e02d837c5fef2b0c35de75819ad739f3;hp=5657cba30408aaa77b02f71fa76d72018bc09cda;hb=b51c33399126d4ba83f611a45ac00b3abf88586d;hpb=ad96df470ac84cc021010a5b806bc070b5a3ed82
+2010-09-21T08:29:31  <mega1> bah, pasting the whole file would be shorter than that url
+2010-09-21T08:30:37  <aerique> mega1: no needed, already grabbed it from your git earlier :)
+2010-09-21T08:30:54  <mega1> cool
+2010-09-21T08:31:44  *** HakanD <HakanD!~hakand@78.187.137.161> has quit IRC (Quit: leaving)
+2010-09-21T08:32:37  *** HakanD <HakanD!~hakand@78.187.137.161> has joined #aichallenge
+2010-09-21T08:35:29  <antimatroid1> hmmm, with so much variation of bots on different maps, would it work better if each time bots were paired, they had a match off on a few maps to decide which one was the winner/loser out of them?
+2010-09-21T08:36:16  *** ratatata <ratatata!55679cdb@gateway/web/freenode/ip.85.103.156.219> has joined #aichallenge
+2010-09-21T08:36:52  <HakanD> implement suitable strategies for different kind of maps? (:
+2010-09-21T08:38:29  <HakanD> i have categorized maps based on distance of neutrals, enemy home etc, and choosing different strategies for each
+2010-09-21T08:39:12  <antimatroid1> i am, i'm just pondering ways of better ranking bots
+2010-09-21T08:40:21  <HakanD> yep, sth needs to be done about ranking
+2010-09-21T08:41:15  <HakanD> at least for final round
+2010-09-21T08:41:38  <antimatroid1> problem is you may always end up with some cyclic kind of preferences
+2010-09-21T08:41:47  <antimatroid1> which makes it hard to give a perfect ranking
+2010-09-21T08:42:01  <antimatroid1> but i still think it could be improved upon what it's doing currently
+2010-09-21T08:46:20  <HakanD> haha, twitter fail again (:
+2010-09-21T08:47:48  <HakanD> some serious hacking going on
+2010-09-21T08:47:54  <HakanD> these guys will never learn about security
+2010-09-21T08:48:47  *** artyom_shegeda <artyom_shegeda!d90cc122@gateway/web/freenode/ip.217.12.193.34> has quit IRC (Quit: Page closed)
+2010-09-21T08:48:55  <pgpaskar_> how so?
+2010-09-21T08:49:50  <HakanD> via XSS, with their new css feature
+2010-09-21T08:51:10  <HakanD> http://mashable.com/2010/09/21/twitter-mouseover-bug/
+2010-09-21T08:52:28  <pgpaskar_> how unfortunate
+2010-09-21T08:52:33  <pgpaskar_> they need to sanitize more
+2010-09-21T08:52:54  <pacotabaco> Poor TwitterWhale... a hard work today :P https://twitter.com/twltterwhale
+2010-09-21T08:53:18  <HakanD> they have only 1 input area, with no protection for xss
+2010-09-21T08:54:13  <HakanD> great way of developing world-class app (:
+2010-09-21T08:55:11  <HakanD> bah, dont even use twitter.com for now
+2010-09-21T08:55:34  <HakanD> even for trying, as this is a big vulnerability
+2010-09-21T08:56:32  <contestbot> Top 10 players: kcm1700(3493), McLeopold(3472), dmj111(3450), EBraun(3374), adumlah(3340), paulus(3303), sighbot(3298), petesimard(3298), montanalow(3272), Tracer(3255)
+2010-09-21T08:56:39  <HakanD> well, must admit it is funny (:
+2010-09-21T08:56:49  <bartwe> hmz
+2010-09-21T08:56:57  <bartwe> is someone claiming to be me on benzedrine ?
+2010-09-21T08:57:08  <antimatroid1> hahaha, that's hilarious
+2010-09-21T08:57:13  <sigh> haha
+2010-09-21T08:57:19  <sigh> what's the name
+2010-09-21T08:57:29  <bartwe> bartwe.11
+2010-09-21T08:58:03  <antimatroid1> that's awesome
+2010-09-21T08:58:03  <HakanD> you ai expanded and took control :P
+2010-09-21T08:58:13  <bartwe> har
+2010-09-21T08:58:19  <bartwe> i don't like this
+2010-09-21T08:58:23  <antimatroid1> why?
+2010-09-21T08:58:33  <antimatroid1> it's not like it really matters
+2010-09-21T08:58:39  <bartwe> matters to me
+2010-09-21T08:59:03  <antimatroid1> don't think you can really prevent it
+2010-09-21T08:59:14  <bartwe> true
+2010-09-21T08:59:23  <antimatroid1> unless you literally go through and claim every possible bartwe username /version number
+2010-09-21T08:59:24  <bartwe> the password feature doesn't support the versioning
+2010-09-21T08:59:47  <bartwe> i guess i could ask dhartmei about that
+2010-09-21T09:00:04  <antimatroid1> probably more effort than it's worth tbh imo :P
+2010-09-21T09:00:26  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has quit IRC (Quit: Naith)
+2010-09-21T09:00:56  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T09:01:10  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T09:01:25  <bartwe> guess i should feel flattered
+2010-09-21T09:02:00  <antimatroid1> yeah, no ones taking the time to imitate me
+2010-09-21T09:02:31  *** sigh is now known as antimatroid2
+2010-09-21T09:02:40  <antimatroid2> don't worry
+2010-09-21T09:02:45  <HakanD> (:
+2010-09-21T09:03:34  <antimatroid1> :)
+2010-09-21T09:03:40  <antimatroid2> btw, why does your name have a 1 at the end?
+2010-09-21T09:03:45  <antimatroid2> where is antimatroid?
+2010-09-21T09:03:49  <amstan> ...
+2010-09-21T09:03:57  <pgpaskar_> ~ . ~
+2010-09-21T09:03:57  <antimatroid2> hi amstan!
+2010-09-21T09:04:20  <amstan> @sigh
+2010-09-21T09:04:20  <contestbot> i know...
+2010-09-21T09:04:22  <antimatroid1> i probably registered antimatroid and it kicked me out for not logging in with it, or it timed out, came back with this and stayed as that, either way meh
+2010-09-21T09:04:23  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has joined #aichallenge
+2010-09-21T09:04:29  <pgpaskar_> contestbot: rainbow F A B U L O U S
+2010-09-21T09:04:29  <contestbot> pgpaskar_: F A B U L O U S
+2010-09-21T09:04:36  <pgpaskar_> lol that will always be hilarious
+2010-09-21T09:04:40  <antimatroid2> :)
+2010-09-21T09:04:52  <antimatroid1> contestbot: rainbow R A I N B O W
+2010-09-21T09:04:52  <contestbot> antimatroid1: R A I N B O W
+2010-09-21T09:04:59  <antimatroid1> ha, i no longer hate contestbot
+2010-09-21T09:05:04  <antimatroid2> btw, amstan, I have an idea for contest bot
+2010-09-21T09:05:11  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has quit IRC (Client Quit)
+2010-09-21T09:05:22  <pgpaskar_> give it a soldering iron and have ti build robots
+2010-09-21T09:05:26  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T09:05:31  <antimatroid2> could you make it post the game info (like the @game command) automatically when someone posts  link to a game?
+2010-09-21T09:05:32  <amstan> antimatroid2: cool
+2010-09-21T09:05:39  <antimatroid1> amstan: could we get the hourly rank updates in rainbow form?
+2010-09-21T09:05:42  <amstan> @game 111111
+2010-09-21T09:05:43  <contestbot> amstan: An error has occurred and has been logged. Please contact this bot's administrator for more information.
+2010-09-21T09:05:51  <amstan> antimatroid1: it needs a valid gameid
+2010-09-21T09:05:52  <pgpaskar_> @rankings
+2010-09-21T09:05:53  <contestbot> pgpaskar_: Top 10 players: kcm1700(3491), McLeopold(3470), dmj111(3449), EBraun(3371), adumlah(3338), paulus(3299), petesimard(3298), sighbot(3297), montanalow(3270), Tracer(3252)
+2010-09-21T09:05:56  <pgpaskar_> oh wow
+2010-09-21T09:06:00  <antimatroid2> yeah, I know
+2010-09-21T09:06:01  <amstan> @rainbow [rankings]
+2010-09-21T09:06:02  <contestbot> amstan: Top 0 players: kcm1(9), McLeopold(), dmj(), EBraun(), adumlah(), paulus(), petesimard(2), (1 more message)
+2010-09-21T09:06:02  *** antimatroid2 is now known as sigh
+2010-09-21T09:06:05  <pgpaskar_> mcleopold fell off the #1 spot
+2010-09-21T09:06:08  <pgpaskar_> dun dun dunnnnnnn!
+2010-09-21T09:06:09  <HakanD> haha
+2010-09-21T09:06:17  <bartwe> auch
+2010-09-21T09:06:23  <antimatroid1> yay for c++
+2010-09-21T09:06:24  <pgpaskar_> @rainbow OwNeD!!!
+2010-09-21T09:06:24  <contestbot> pgpaskar_: OwNeD!!!
+2010-09-21T09:06:28  <pgpaskar_> :P
+2010-09-21T09:06:40  <sigh> like is someone pastes: http://www.ai-contest.com/visualizer.php?game_id=4619923
+2010-09-21T09:06:49  <amstan> @game 4619923
+2010-09-21T09:06:50  <contestbot> amstan: Game played at 2010-09-21 07:30:30, on map 685, kcm1700 beat Tracer. http://ai-contest.com/visualizer_canvas.php?game_id=4619923
+2010-09-21T09:06:53  <sigh> contestbot will post the players and results
+2010-09-21T09:06:54  <contestbot> sigh: I'm sorry Dave, I cannot will.
+2010-09-21T09:07:08  <amstan> he cannot will, lol!
+2010-09-21T09:07:10  * pgpaskar_ slaps contestbot with a telephone
+2010-09-21T09:07:20  <sigh> :D
+2010-09-21T09:07:26  <bartwe> contest do that.
+2010-09-21T09:07:29  <bartwe> contestbot do that.
+2010-09-21T09:07:30  <contestbot> bartwe: You have no gotten any error messages recently, so here's a random one just to let you know that we care.
+2010-09-21T09:07:32  *** askhader <askhader!~askhader@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2010-09-21T09:07:41  <askhader> Hm, it appears your bot has achieve sentience...
+2010-09-21T09:07:44  <bartwe> ehmz
+2010-09-21T09:07:48  <antimatroid1> haha
+2010-09-21T09:07:56  <askhader> We simply must do something about this.
+2010-09-21T09:08:06  <amstan> contestbot: @success
+2010-09-21T09:08:07  <contestbot> amstan: You have no gotten any error messages recently, so here's a random one just to let you know that we care.
+2010-09-21T09:08:09  <bartwe> this cannot stand
+2010-09-21T09:08:10  <amstan> contestbot: success
+2010-09-21T09:08:10  <contestbot> amstan: Ready to serve, my lord.
+2010-09-21T09:08:20  <pgpaskar_> contestbot: allyourspace
+2010-09-21T09:08:20  <contestbot> are belong to us
+2010-09-21T09:08:25  <amstan> even though he's sentient, he obeys us
+2010-09-21T09:08:34  <pgpaskar_> the three rules of robotics
+2010-09-21T09:08:39  <bartwe> contestbot what are the three laws ?
+2010-09-21T09:08:39  <contestbot> bartwe: Error: No factoid matches that key.
+2010-09-21T09:08:51  <pgpaskar_> 1) do not talk about robots, 2) do not talk about robots, 3) robots have no rules
+2010-09-21T09:08:52  <antimatroid1> oh dear, he seems to have lost that part
+2010-09-21T09:08:56  <sigh> @help what
+2010-09-21T09:08:56  <contestbot> sigh: (what <an alias, 0 arguments>) -- Alias for "whatis $*".
+2010-09-21T09:09:10  <pgpaskar_> contestbot: whatis live?
+2010-09-21T09:09:10  <contestbot> pgpaskar_: Error: No factoid matches that key.
+2010-09-21T09:09:16  <pgpaskar_> contestbot: whatis love?
+2010-09-21T09:09:16  <contestbot> pgpaskar_: Error: No factoid matches that key.
+2010-09-21T09:09:19  * pgpaskar_ slaps contestbot 
+2010-09-21T09:09:36  <HakanD> contestbot: whatis bot
+2010-09-21T09:09:36  <contestbot> HakanD: I do not know about 'bot', but I do know about these similar topics: 'botrepo', 'bottopic', 'botdoc'
+2010-09-21T09:10:09  *** Utkarsh <Utkarsh!~admin@117.201.84.68> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T09:10:10  <sigh> amstan: so is it possible to automate that @game command when someone posts a link? or too hard?
+2010-09-21T09:10:37  <amstan> sigh: i was trying too, but i can't make the snarfer api work
+2010-09-21T09:10:39  <pgpaskar_> shouldnt be that hard to do gameid=[0-9]+ or something
+2010-09-21T09:10:44  <pgpaskar_> then have it look up the gameid
+2010-09-21T09:11:00  <sigh> amstan: ok, no worries
+2010-09-21T09:12:18  *** bartwe <bartwe!~bwerf@bwerf.xs4all.nl> has left #aichallenge
+2010-09-21T09:12:50  *** bartwe <bartwe!~bwerf@bwerf.xs4all.nl> has joined #aichallenge
+2010-09-21T09:12:59  *** Olathe <Olathe!~Olathe@pool-98-111-156-209.phlapa.east.verizon.net> has joined #aichallenge
+2010-09-21T09:16:09  *** Utkarsh <Utkarsh!~admin@117.201.80.184> has joined #aichallenge
+2010-09-21T09:16:25  *** Sean_McEligot <Sean_McEligot!~Sean_McEl@va-67-233-80-248.dhcp.embarqhsd.net> has quit IRC (Ping timeout: 264 seconds)
+2010-09-21T09:19:16  <antimatroid1> who's fatbot?
+2010-09-21T09:19:23  <antimatroid1> they just stormed tcp
+2010-09-21T09:19:45  <antimatroid1> i demand a match against them aha
+2010-09-21T09:20:57  <sigh> haha... funny game: http://72.44.46.68/canvas?game_id=78147
+2010-09-21T09:22:08  <sigh> 3 of his games against drewrobb are like this
+2010-09-21T09:22:28  <antimatroid1> yeah, my bot has similar problems with not taking it's win efficiently
+2010-09-21T09:22:34  <antimatroid1> its****
+2010-09-21T09:22:39  *** shul <shul!480de1b2@gateway/web/freenode/ip.72.13.225.178> has joined #aichallenge
+2010-09-21T09:23:55  <antimatroid1> http://72.44.46.68/canvas?game_id=78305
+2010-09-21T09:23:59  <antimatroid1> not sure how i won that
+2010-09-21T09:26:34  <sigh> drewrobb doesn't redistribute his ships
+2010-09-21T09:27:29  *** Sean_McEligot <Sean_McEligot!~Sean_McEl@va-67-233-80-248.dhcp.embarqhsd.net> has joined #aichallenge
+2010-09-21T09:27:36  <antimatroid1> yeah, he will cane once he does
+2010-09-21T09:27:59  <antimatroid1> i should stop assuming every competitor is male, but i'm yet to come across a counterexample
+2010-09-21T09:28:09  <shul> antimatroid1: are you waiting in the start on purpose ?
+2010-09-21T09:28:22  *** wvdschel <wvdschel!~wim@188.188.231.207> has joined #aichallenge
+2010-09-21T09:28:25  <bartwe> the enemy of slimbot ?
+2010-09-21T09:28:35  <antimatroid1> waiting where? i made a move on the first go there
+2010-09-21T09:28:47  <antimatroid1> i have certain things in place to try and eliminate stupid moves yes
+2010-09-21T09:28:57  <antimatroid1> but it's a very bad hack that doesn't work very well
+2010-09-21T09:29:00  <shul> antimatroid1: gg :)
+2010-09-21T09:29:04  <wvdschel> hmmmm, I've written a bot, and it seems to crash whenever it kills all enemy planets, which kind of sucks
+2010-09-21T09:29:11  <shul> or should I say ggl (good game logic)
+2010-09-21T09:29:35  <wvdschel> but I've added debug prints to everything, and it doesn't get any input after it's last orders, so I'm not sure what I'm doing wrong
+2010-09-21T09:29:37  <shul> wvdschel: does it happen when the game ends? and you won ?
+2010-09-21T09:29:39  <bartwe> antimatroid1: not sure if i disagree with fatbots strategyagainst drewrobb
+2010-09-21T09:29:45  <wvdschel> shul, yes
+2010-09-21T09:30:05  <shul> wvdschel: so why does it suck? you won :) ... but you should check what happened
+2010-09-21T09:30:11  <wvdschel> with the Jars I got from a starter pack
+2010-09-21T09:30:25  <wvdschel> shul, because the PlayGame.jar output says the other bot won!
+2010-09-21T09:30:49  <shul> wvdschel: that's what I meant
+2010-09-21T09:30:55  <antimatroid1> are you doing something like say finding nearest enemy planet at the end and it then not existing?
+2010-09-21T09:30:59  <antimatroid1> and bot crashing or something
+2010-09-21T09:31:12  <shul> antimatroid1: that's not good
+2010-09-21T09:31:26  <antimatroid1> it was a question not a statement
+2010-09-21T09:31:38  <antimatroid1> although my bot seems to chew up lots of memory right at the end of a game
+2010-09-21T09:31:44  *** Utkarsh <Utkarsh!~admin@117.201.80.184> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T09:31:45  <antimatroid1> and yet to work out what's causing it
+2010-09-21T09:31:54  <wvdschel> antimatroid1, that's what I thought at first, but I added a few more debug prints, and it doesn't even call my make_move function
+2010-09-21T09:32:17  <wvdschel> so there is no calculating going on
+2010-09-21T09:33:09  <wvdschel> an extract from my source:
+2010-09-21T09:33:11  <wvdschel> case 'go':
+2010-09-21T09:33:11  <wvdschel>                 this.make_move();
+2010-09-21T09:33:25  <wvdschel> (from the input parser)
+2010-09-21T09:33:36  <wvdschel>     this.make_move = function() {
+2010-09-21T09:33:36  <wvdschel> 	sys.debug("Start");
+2010-09-21T09:33:42  <antimatroid1> awww man, it's so boring when people play like 12 games to get their bot up near the top then stop running it
+2010-09-21T09:33:51  <wvdschel> and yet no Start appears on my debug output
+2010-09-21T09:34:20  <wvdschel> antimatroid1, with the TCP client?
+2010-09-21T09:34:27  *** Utkarsh <Utkarsh!~admin@117.201.80.184> has joined #aichallenge
+2010-09-21T09:34:59  <wvdschel> shul, well, it's no good if my brilliant tactics destroy every bit of the enemy, while after I do so they get the victory on a technicality
+2010-09-21T09:35:23  <wvdschel> got to go. will be back
+2010-09-21T09:35:25  *** wvdschel <wvdschel!~wim@188.188.231.207> has quit IRC (Quit: ragequit)
+2010-09-21T09:36:36  <antimatroid1> got to play fatbot
+2010-09-21T09:36:44  <antimatroid1> got to beat* fatbot
+2010-09-21T09:36:50  <antimatroid1> oh it was a timeout, no fun
+2010-09-21T09:37:25  *** sinan <sinan!~sinan@80.90.175.232> has quit IRC (Ping timeout: 264 seconds)
+2010-09-21T09:44:08  *** kozlovsky <kozlovsky!5d645927@gateway/web/freenode/ip.93.100.89.39> has joined #aichallenge
+2010-09-21T09:45:01  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T09:45:43  *** Utkarsh <Utkarsh!~admin@117.201.80.184> has quit IRC (Ping timeout: 255 seconds)
+2010-09-21T09:47:14  *** s_denchev <s_denchev!5f2be205@gateway/web/freenode/ip.95.43.226.5> has joined #aichallenge
+2010-09-21T09:49:14  <sigh> arg... my future state prediction is completely and utterly broken
+2010-09-21T09:49:20  *** s_denchev is now known as s_denchev__at_wo
+2010-09-21T09:49:44  *** s_denchev__at_wo is now known as s_denchev|work
+2010-09-21T09:49:59  <sigh> how my bot is functioning is beyond my knowledge
+2010-09-21T09:50:32  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T09:50:39  <antimatroid1> haha, i'm pretty sure mine works, but there's lots of things i need to fix up
+2010-09-21T09:50:45  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T09:50:46  <antimatroid1> if only there was moar time
+2010-09-21T09:50:54  <bartwe> http://72.44.46.68/canvas?game_id=78633
+2010-09-21T09:50:59  <bartwe> intresting game i think
+2010-09-21T09:51:06  <bartwe> meager start
+2010-09-21T09:51:11  <bartwe> strange stagnation in the middle
+2010-09-21T09:51:14  <bartwe> stupid end
+2010-09-21T09:51:15  <MrCeeJ> I have a question about 'fair play'. it is probably better on the forums but I thought i'd ask here anyway. When moving ships from a->b to reinforce, moving 50 ships in 50 1 ship fleets is obviously going to cause more pain for other bots than one single fleet, but is clearly not making your bot any stronger tactically, just exploiting a possible weakness of your opponent (i.e. bad sportsmanship)... is it against the rules / spirit of the competition? (
+2010-09-21T09:52:05  <bartwe> MrCeeJ: have you checked if the game server doesn't combine those attacks ?
+2010-09-21T09:52:19  <antimatroid1> i'm pretty sure they fixed this
+2010-09-21T09:52:24  *** Utkarsh <Utkarsh!~admin@117.201.80.184> has joined #aichallenge
+2010-09-21T09:52:30  <antimatroid1> i pointed it out to them ages ago
+2010-09-21T09:52:41  <antimatroid1> same as you can't send fleets of size 0 anymore
+2010-09-21T09:52:43  <MrCeeJ> No i didn't want to implement it. I read they removed size 0 fleets, but there was a comment to the effect of 'size 1 and greater fleets are fleets'
+2010-09-21T09:52:58  <antimatroid1> yeah, but i think the game engine merges them
+2010-09-21T09:53:08  <sigh> that's what I've heard also
+2010-09-21T09:53:18  <MrCeeJ> thanks
+2010-09-21T09:53:19  <sigh> I think it was mentioned in that same thread on teh form
+2010-09-21T09:53:21  <sigh> *forum
+2010-09-21T09:53:43  <antimatroid1> by all means feel free to spam ships to every planet from yours, but it's not going to cripple my so i don't care
+2010-09-21T09:53:55  <antimatroid1> me*
+2010-09-21T09:54:47  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T09:54:54  * sigh is off to build a spam bot
+2010-09-21T09:54:55  <MrCeeJ> It was more that by simply overriding the sendShips method to loop and send them individually you might get and advantage for (a) bad programming (b) bad sportsmanship and (c) no effort
+2010-09-21T09:55:28  <HakanD> it is fixed
+2010-09-21T09:55:31  <HakanD> game engine merges them now
+2010-09-21T09:55:45  <MrCeeJ> ok
+2010-09-21T09:56:32  <contestbot> Top 10 players: kcm1700(3495), McLeopold(3474), dmj111(3450), Arekku(3390), EBraun(3376), adumlah(3340), paulus(3304), sighbot(3297), petesimard(3281), montanalow(3275)
+2010-09-21T09:56:46  *** Blkt <Blkt!~user@160.80.135.101> has joined #aichallenge
+2010-09-21T09:56:51  <MrCeeJ> 2nd related question, having your n planets send n-1 fleets size one to each other each turn might also hurt the other bot, but is actually consuming your own resources. So would this use of ships be prevented under fair play?
+2010-09-21T09:57:17  <antimatroid1> that's fine, but a rather stupid tactic imo
+2010-09-21T09:57:25  <bartwe> MrCeeJ: you would lose with such a tactics
+2010-09-21T09:57:37  <bartwe> also alot of bots come pretty close to doing that allready
+2010-09-21T09:57:38  <antimatroid1> if the bot is stupid enough to be crippled by it, chances are you would have beaten them anyway
+2010-09-21T09:57:48  <antimatroid1> if it isn't, then it's going to own you
+2010-09-21T09:57:53  <delt0r> MrCeeJ, You really can't send enough to time out a properly coded bot
+2010-09-21T09:58:08  *** ermau|work <ermau|work!~ermau@about/csharp/regular/ermau> has quit IRC (Quit: ermau|work)
+2010-09-21T09:58:43  <sigh> yeah, above a certain level the games are legitimately full of hundreds of fleets
+2010-09-21T09:59:03  <sigh> if a bot can't deal with that, it is screwed
+2010-09-21T09:59:04  <antimatroid1> it's really not hard to handle
+2010-09-21T09:59:06  *** Sean_McEligot <Sean_McEligot!~Sean_McEl@va-67-233-80-248.dhcp.embarqhsd.net> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T09:59:21  <antimatroid1> you only care about a fleets destination, arrival time and size
+2010-09-21T09:59:25  <sigh> yup
+2010-09-21T09:59:28  <antimatroid1> use that as you wish
+2010-09-21T09:59:33  <sigh> and fleet owner
+2010-09-21T09:59:52  <antimatroid1> well yeah, but that i have combined into fleets with both players having 0+ ships
+2010-09-21T09:59:53  <delt0r> I can parse and sort 400000 fleets in under 0.1 secs here on my machine...
+2010-09-21T10:00:23  <delt0r> So as long as there is no silly n^3 or something lurking --its going to handle the fleets
+2010-09-21T10:00:35  <sigh> :)
+2010-09-21T10:01:28  <sigh> I can't think of any situation that would involve require looking at all pairs of fleets, let alone any higher order
+2010-09-21T10:01:40  <sigh> doubtless there are some, I just can't think of any
+2010-09-21T10:02:12  <shul> delt0r: question is, what are the specs of the contest machine
+2010-09-21T10:02:28  <MrCeeJ> I was more concerned about the unknown processing power of the servers and the 1sec rule. 21 planets with 20 fleets generated per turn for the last 10 turns is 4000, if you then parse that list for each of you 20 planets you have 80,000 iterations of your loop to get through
+2010-09-21T10:02:29  *** sinan <sinan!~sinan@80.90.175.112> has joined #aichallenge
+2010-09-21T10:02:37  <delt0r> true... but the point remains. fleet counts are unlikely to be an issue
+2010-09-21T10:03:20  <sigh> MrCeeJ: you shouldn't need to process all fleets for each planet
+2010-09-21T10:03:52  <MrCeeJ> the real point i am getting at is are actions designed soley to make life harder for the other player to process against the spirit:
+2010-09-21T10:03:55  <MrCeeJ> "Entries which are deemed to violate the spirit of fair and sportsmanlike competition will be disqualified without any opportunity for appeal"
+2010-09-21T10:04:15  *** retybok <retybok!~retybok@194.167.143.5> has quit IRC (Read error: No route to host)
+2010-09-21T10:04:33  <sigh> MrCeeJ: in this case the obvious trick is splitting up your fleets is mitigated by the server merging them
+2010-09-21T10:04:44  <sigh> any other use of fleets is fair game
+2010-09-21T10:05:40  <delt0r> There is a legit reason to have fleets sent on the same turn from the same planet source and destination
+2010-09-21T10:05:48  *** Zeiris <Zeiris!~Zeiris@d206-116-158-135.bchsia.telus.net> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T10:06:10  <antimatroid1> yep, i often do it now
+2010-09-21T10:06:36  <delt0r> that is the bot may decide that with 0.5 sec left it wants to send 10 --but later ups that to 20
+2010-09-21T10:07:19  <sigh> delt0r: I agree, I was just talking in the context of attempting to cause mischief :P
+2010-09-21T10:07:43  <sigh> my code does it too
+2010-09-21T10:08:20  <delt0r> mine does not at this stage... you can't "uncommit" troops --so i manage that myself
+2010-09-21T10:08:27  <MrCeeJ> so essentially all that is banned is actual cheating as described by "memory scanning, intentionally losing games, and behavior conditional on the opponent's identity" rather than attempting to trap / trick / crash the opposing bots
+2010-09-21T10:08:49  <delt0r> MrCeeJ, and also having lots of accounts
+2010-09-21T10:08:55  <MrCeeJ> yeah
+2010-09-21T10:09:11  <MrCeeJ> shame as it takes so long to get a stable rank :/
+2010-09-21T10:09:19  <sigh> yeah :(
+2010-09-21T10:09:28  <delt0r> loose agaist yourself --easiest ladder hack --hardest to detect and stop
+2010-09-21T10:09:31  <sigh> you might want to play on the tcp server for quicker feedback
+2010-09-21T10:10:10  *** kcm1700 <kcm1700!Email@112.152.160.149> has joined #aichallenge
+2010-09-21T10:10:10  <MrCeeJ> yeah I havn't looked into setting that up yet
+2010-09-21T10:10:25  <MrCeeJ> but I have some powerful hardware at home, and didn't want to write code that fell over on the server
+2010-09-21T10:10:30  <sigh> MrCeeJ: it takes all of 2 minutes :)
+2010-09-21T10:10:39  <sigh> MrCeeJ: yes, of course
+2010-09-21T10:11:59  <MrCeeJ> I shall probably see some of you on tcp later on this evening. Thanks for the responses :)
+2010-09-21T10:12:16  *** hornairs <hornairs!~hornairs@66.49.234.213> has joined #aichallenge
+2010-09-21T10:12:38  <sigh> good lunk!
+2010-09-21T10:12:40  <sigh> *luck
+2010-09-21T10:13:45  <bartwe> hi
+2010-09-21T10:13:52  <bartwe> i need some suggestions for my bot
+2010-09-21T10:14:00  <bartwe> the .10 series is not really beating the .8 series
+2010-09-21T10:14:00  <antimatroid1> haha
+2010-09-21T10:14:09  <bartwe> and i'm losing momentum ....
+2010-09-21T10:14:09  <antimatroid1> .11 seems pretty good :P
+2010-09-21T10:14:24  <bartwe> antimatroid1: .11 is worse then .8 and also, not mine
+2010-09-21T10:14:40  <antimatroid1> that last part was the point ;)
+2010-09-21T10:15:16  <bartwe> geh,
+2010-09-21T10:15:24  <bartwe> do you guys model coordinated strikes ?
+2010-09-21T10:15:35  <sigh> bartwe: I do
+2010-09-21T10:15:49  <bartwe> how do you model somethign like that ?
+2010-09-21T10:16:04  <bartwe> even picking the fleet seems very combinatorial
+2010-09-21T10:16:14  <sigh> I do loop over each destination planet and decide the best way of attacking it
+2010-09-21T10:16:18  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T10:16:25  <sigh> where that attack can involve multiple sources
+2010-09-21T10:17:02  <sigh> I do each destination independently and score them based on the cost of attacking them, distance and other factors
+2010-09-21T10:17:45  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T10:18:30  <sigh> previous to that I looped over all sources and picked the best destination to send ships to, that was much simpler but didn't allow as sophisticated attacks
+2010-09-21T10:20:06  <antimatroid1> sigh: i do much the same, but it feels way to sub optimal to do well later
+2010-09-21T10:20:33  <antimatroid1> i'm trying to work out ways to solve the problem better, but it gets complicated with fleets being 0 or above x
+2010-09-21T10:21:17  <sigh> antimatroid1: sure, but I'm no where near reaching the potential of this current approach
+2010-09-21T10:21:39  <antimatroid1> yeah neither, my point is the above is what i see as that key :P
+2010-09-21T10:22:11  <bartwe> one issue with coordinated strikes is the combination of timing and reevaluation of not yet departed fleet bits of a strike
+2010-09-21T10:22:19  <bartwe> i see no good way to model that
+2010-09-21T10:22:45  <antimatroid1> you can compute a surprising amount :P
+2010-09-21T10:22:51  <sigh> :)
+2010-09-21T10:23:26  <sigh> bartwe: example of my coordinated attacks, see the end of this game: http://www.ai-contest.com/visualizer.php?game_id=4615907
+2010-09-21T10:23:51  <sigh> last 15 moves or so when I take the last planets
+2010-09-21T10:23:56  <bartwe> the timing seems off
+2010-09-21T10:24:22  <sigh> a bit, enemy does stuff in the mean time to screw up timing, and I have bugs too
+2010-09-21T10:24:58  <MrCeeJ> the neutral 44 you take on turn 29/30, you hit first with 24 then with 27 a turn later
+2010-09-21T10:25:09  <MrCeeJ> possibly not rounding up the distance ?
+2010-09-21T10:26:13  <sigh> MrCeeJ: nah, it wont be a rounding error... it's either a bug, or I'm being over defensive
+2010-09-21T10:26:34  <sigh> probably bug :)
+2010-09-21T10:26:54  <sigh> point I wanted to illustrate was the coordinated attack, not the timing :P
+2010-09-21T10:27:05  <sigh> so stop picking on me :D
+2010-09-21T10:27:08  <MrCeeJ> :p
+2010-09-21T10:27:08  <bartwe> hehe
+2010-09-21T10:27:13  <bartwe> looks great
+2010-09-21T10:27:18  <bartwe> how do you pick the sources ?
+2010-09-21T10:27:29  <sigh> secret atm :P
+2010-09-21T10:27:32  <MrCeeJ> I was under the impression that the coordination (timing) was the point :p
+2010-09-21T10:28:04  <sigh> MrCeeJ: timing is more of a detail... the hard part is getting different source planets to act in unison
+2010-09-21T10:28:22  *** justin_pdx <justin_pdx!~Justin@c-76-115-6-111.hsd1.or.comcast.net> has joined #aichallenge
+2010-09-21T10:28:37  *** kunaljain <kunaljain!7c7bfbc3@gateway/web/freenode/ip.124.123.251.195> has joined #aichallenge
+2010-09-21T10:29:03  <sigh> if you know what sources you want to use, then it is easy to brute force possible timings
+2010-09-21T10:29:12  <MrCeeJ> it is only a matter of perspective, you can look at all the sources and pick a destination, or you can look at all the destinations and pick a (combination of) sources
+2010-09-21T10:29:23  <sigh> *easy being relative here
+2010-09-21T10:29:23  <kunaljain> if you are out of turn, then which player wins ? The player with more number of planets or more number of Army ?
+2010-09-21T10:29:33  <MrCeeJ> army size
+2010-09-21T10:29:47  <kunaljain> MrCeeJ: thanks
+2010-09-21T10:29:52  <antimatroid1> those are sort of dual problems
+2010-09-21T10:29:57  <bartwe> kunaljain: very hard to have superior army size at move 200 without a equal or better planet position
+2010-09-21T10:30:08  <antimatroid1> in that they're really the same, and you don't necessarily have to lose that detail doing the former
+2010-09-21T10:30:25  <bartwe> sigh: does coordinated strikes reduce or increase the complexity of moving units forward ?
+2010-09-21T10:30:40  <sigh> moving units forward?
+2010-09-21T10:30:49  <sigh> like redistributing them?
+2010-09-21T10:30:59  <bartwe> yes, into a position of influence
+2010-09-21T10:31:13  <sigh> for me those two part of the code are completely independant
+2010-09-21T10:31:28  <sigh> *completely is an approximation
+2010-09-21T10:31:43  <sigh> so it doesn't really impact me, but that's just my approach
+2010-09-21T10:32:30  *** phreeza <phreeza!~phreeza@f048209144.adsl.alicedsl.de> has joined #aichallenge
+2010-09-21T10:33:17  <antimatroid1> yeah, i've split my makemove function up into different components based on priority
+2010-09-21T10:33:27  <bartwe> so do you reevaluate the sending of units in a coordinated strike for which the initial units are inflight ?
+2010-09-21T10:34:12  <sigh> bartwe: at the moment my bot has no notion of state... it doesn't remember that the previous move it wanted to do a coordinated strike :P
+2010-09-21T10:34:57  <sigh> It will be a long time before I change that, because making my bot stateful will make testing and debugging much harder
+2010-09-21T10:35:17  *** s_denchev|work <s_denchev|work!5f2be205@gateway/web/freenode/ip.95.43.226.5> has quit IRC (Quit: Page closed)
+2010-09-21T10:35:48  <antimatroid1> i want to know if we're guaranteed distances of at least 2 in the final tournament of not
+2010-09-21T10:35:59  <antimatroid1> it would make things a LOT easier if it was
+2010-09-21T10:36:15  <MrCeeJ> I have seen some planets that overlap and cause issues for bots
+2010-09-21T10:36:18  <sigh> dhartmei said yes... but looking at the generating script, I can't see it
+2010-09-21T10:36:24  <bartwe> sigh: genius
+2010-09-21T10:36:24  <MrCeeJ> but it is possible tehy were 2 away and just large
+2010-09-21T10:36:26  *** sorki <sorki!~sorki@psyche.sks2.muni.cz> has joined #aichallenge
+2010-09-21T10:36:34  <sigh> bartwe: what is?
+2010-09-21T10:36:45  <bartwe> sigh: replotting the coordinated strike in every timestep
+2010-09-21T10:36:49  <shul> how do I translate "if (pw.Production(1) >= pw.Production(2)) {" to C++ ?
+2010-09-21T10:36:54  <bartwe> it may make you vunerable to overcommit
+2010-09-21T10:36:55  <antimatroid1> unless they are at exactly the same point, they are distanced at least 1 apart
+2010-09-21T10:36:56  <bartwe> but very cool
+2010-09-21T10:37:04  <sigh> :)
+2010-09-21T10:37:09  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has joined #aichallenge
+2010-09-21T10:37:09  *** ChanServ sets mode: +o amstan
+2010-09-21T10:37:11  <antimatroid1> but you never see a fleet from the enemy if they send it to a planet distanced 1 from its soure
+2010-09-21T10:37:15  <sigh> it was just eisier that way
+2010-09-21T10:37:22  <sigh> *easier
+2010-09-21T10:37:33  <antimatroid1> shul: that's already fine?
+2010-09-21T10:38:07  *** justin_pdx <justin_pdx!~Justin@c-76-115-6-111.hsd1.or.comcast.net> has quit IRC (Quit: justin_pdx)
+2010-09-21T10:38:21  <shul> antimatroid1: what ?
+2010-09-21T10:40:51  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T10:40:55  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T10:41:22  *** mightybyte <mightybyte!~mightybyt@209.48.164.34> has joined #aichallenge
+2010-09-21T10:42:58  *** phreeza <phreeza!~phreeza@f048209144.adsl.alicedsl.de> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T10:43:01  <bartwe> sigh: still don't see how your cost function accepts the coordinated attck :)
+2010-09-21T10:43:06  <bartwe> but very cool stuff
+2010-09-21T10:44:07  *** jorge_ <jorge_!~quassel@127.Red-88-23-16.staticIP.rima-tde.net> has joined #aichallenge
+2010-09-21T10:44:09  <Naktibalda> antimatroid1: I remember that C++ starter pack hasn't Production method :)
+2010-09-21T10:44:14  <jorge_> hi
+2010-09-21T10:44:21  <sigh> bartwe: yeah, cost function is something I think about all the time... my current one makes no sense
+2010-09-21T10:44:25  <sigh> but it does the job
+2010-09-21T10:44:42  <Naktibalda> shul: that comparison is useless, you can delete it now
+2010-09-21T10:44:48  <jorge_> is it possible to have a visualization engine locally like the one in the web? I mean, smooth :)
+2010-09-21T10:45:06  <jorge_> pacotabaco: hi :)
+2010-09-21T10:45:15  *** phreeza <phreeza!~phreeza@f048194139.adsl.alicedsl.de> has joined #aichallenge
+2010-09-21T10:45:21  <sigh> jorge_: code is here: http://github.com/DanielVF/Planet-Wars-Canvas-Visualizer
+2010-09-21T10:45:35  *** iouri_ <iouri_!2668d00a@gateway/web/freenode/ip.38.104.208.10> has joined #aichallenge
+2010-09-21T10:45:43  <sigh> use visualize_localy.py as your visualiser
+2010-09-21T10:45:43  <jorge_> sigh: thanks!
+2010-09-21T10:46:04  <Naktibalda> oh, and download up to date version of visualizer.js
+2010-09-21T10:46:23  <sigh> oh? that's not up to date?
+2010-09-21T10:47:12  <Naktibalda> it doesn't display ship count/growth rate
+2010-09-21T10:47:48  <sigh> ah
+2010-09-21T10:48:21  <Naktibalda> http://planetwars.zerd.net/
+2010-09-21T10:48:22  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-09-21T10:48:46  <Naktibalda> http://planetwars.zerd.net/visualizer.js was updated 2 days ago
+2010-09-21T10:48:58  <jorge_> aha
+2010-09-21T10:48:59  <jorge_> thanks
+2010-09-21T10:49:37  <Naktibalda> it's used in tcp site
+2010-09-21T10:49:50  <sigh> yeah, I've noticed that
+2010-09-21T10:50:38  <sigh> it's a very handy feature :)
+2010-09-21T10:50:46  *** bartwe <bartwe!~bwerf@bwerf.xs4all.nl> has left #aichallenge
+2010-09-21T10:50:52  *** bartwe <bartwe!~bwerf@bwerf.xs4all.nl> has joined #aichallenge
+2010-09-21T10:52:20  <pacotabaco> hi jorge_ ;)
+2010-09-21T10:56:32  <contestbot> Top 10 players: kcm1700(3524), McLeopold(3483), dmj111(3475), Arekku(3405), EBraun(3382), adumlah(3374), petesimard(3317), montanalow(3300), sighbot(3285), paulus(3280)
+2010-09-21T10:56:58  <sigh> everytime contestbot comes around I drop a rank :(
+2010-09-21T10:57:20  <antimatroid1> it's a conspiracy ;)
+2010-09-21T10:57:23  <sigh> :P
+2010-09-21T10:57:51  <sigh> oh well, it's no suprise... nearly everyone in the top 10 has beaten me
+2010-09-21T10:58:08  *** justin_pdx <justin_pdx!~Justin@c-76-115-6-111.hsd1.or.comcast.net> has joined #aichallenge
+2010-09-21T10:58:09  <antimatroid1> my bot is flopping miserably on there
+2010-09-21T10:58:20  <sigh> is it the one on tcp?
+2010-09-21T10:58:24  <antimatroid1> yep
+2010-09-21T10:58:28  <sigh> o_O
+2010-09-21T10:58:59  <sigh> my one is the same as sigh-1A that I had on tcp the last two days
+2010-09-21T10:59:21  <antimatroid1> yeah, i think mine is only good on some maps
+2010-09-21T10:59:36  <sigh> yeah, that can be a problem
+2010-09-21T10:59:40  <antimatroid1> then fails on others, which doesn't do well on the main site
+2010-09-21T10:59:58  <antimatroid1> but that's alright, just need to fix up move selection
+2010-09-21T11:00:10  <sigh> :)
+2010-09-21T11:00:11  <antimatroid1> i'm too agressive sometimes, to the point that i can't back up my claims
+2010-09-21T11:00:51  <sigh> sigh-1 reached the top of tcp on sunday BECAUSE it was too aggressive
+2010-09-21T11:01:05  <sigh> but then everyone caught up and it started being demolished
+2010-09-21T11:01:08  <antimatroid1> yeah, works well often, but not always
+2010-09-21T11:01:57  <sigh> oh well, guess you had the same effect
+2010-09-21T11:01:58  *** justin_pdx <justin_pdx!~Justin@c-76-115-6-111.hsd1.or.comcast.net> has quit IRC (Client Quit)
+2010-09-21T11:02:03  <sigh> reached the top with aggression :P
+2010-09-21T11:02:34  <antimatroid1> shouldn't be that surprising, with the quality of rage bot and all :P
+2010-09-21T11:03:04  <sigh> :D
+2010-09-21T11:03:29  <antimatroid1> i have a love hate relationship with ragebot aha
+2010-09-21T11:03:39  <antimatroid1> mostly love these days
+2010-09-21T11:04:23  <sigh> ok, time to sleep
+2010-09-21T11:04:31  <antimatroid1> night
+2010-09-21T11:04:37  <sigh> see you all later
+2010-09-21T11:04:43  *** sigh <sigh!~sigh@137.206-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving...)
+2010-09-21T11:09:14  *** ajhager <ajhager!~ajhager@c-69-136-3-186.hsd1.in.comcast.net> has quit IRC (Ping timeout: 245 seconds)
+2010-09-21T11:09:33  <bartwe> argh, stupid moves :((((
+2010-09-21T11:12:44  *** elijahbal <elijahbal!bbear@all.your.bases.belong.to.shellium.org> has quit IRC (Quit: ZNC - http://znc.sourceforge.net)
+2010-09-21T11:13:18  *** tobiassjosten <tobiassjosten!~tobias@static-212.214.7.110.addr.tdcsong.se> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T11:14:22  *** elijahbal <elijahbal!bbear@all.your.bases.belong.to.shellium.org> has joined #aichallenge
+2010-09-21T11:17:42  *** hornairs <hornairs!~hornairs@66.49.234.213> has quit IRC (Quit: hornairs)
+2010-09-21T11:29:11  *** Tempest <Tempest!b445d0d5@gateway/web/freenode/ip.180.69.208.213> has joined #aichallenge
+2010-09-21T11:29:17  <Tempest> hi
+2010-09-21T11:32:11  <Tempest> may i assume the growth rate of any planet is always less than or equal to 5?
+2010-09-21T11:33:32  <edcba> hmm
+2010-09-21T11:33:51  *** mightybyte <mightybyte!~mightybyt@209.48.164.34> has quit IRC (Quit: leaving)
+2010-09-21T11:33:59  <edcba> why do you need this assumption ??
+2010-09-21T11:34:55  *** danielvf <danielvf!~dvf@67-197-181-252.dyn.comporium.net> has joined #aichallenge
+2010-09-21T11:35:31  *** ajhager <ajhager!~ajhager@c-69-136-3-186.hsd1.in.comcast.net> has joined #aichallenge
+2010-09-21T11:36:10  *** kunaljain <kunaljain!7c7bfbc3@gateway/web/freenode/ip.124.123.251.195> has quit IRC (Quit: Page closed)
+2010-09-21T11:36:47  <jesionaj> It looks like its always between 1 and 5 based on map_generator.py, but I know I've seen a 0 growth on tcp
+2010-09-21T11:37:05  <jesionaj> No idea if that's a custom or what
+2010-09-21T11:37:25  <danielvf> jesionaj: There are 0's on the server too
+2010-09-21T11:38:06  <jesionaj> oh, there's two different ranges in map_generator
+2010-09-21T11:38:35  <jesionaj> center can be 0, others are 1-5 from the looks of it
+2010-09-21T11:42:39  *** tires <tires!d43cf382@gateway/web/freenode/ip.212.60.243.130> has joined #aichallenge
+2010-09-21T11:44:21  *** Kastra <Kastra!~kastra-@91.110.188.211> has joined #aichallenge
+2010-09-21T11:48:01  <jmcarthur> dufflebunk: those are weird warnings
+2010-09-21T11:48:25  <jmcarthur> woah i was way scrolled up
+2010-09-21T11:53:52  *** tires <tires!d43cf382@gateway/web/freenode/ip.212.60.243.130> has quit IRC (Quit: Page closed)
+2010-09-21T11:54:55  *** Sean_McEligot <Sean_McEligot!~Sean_McEl@va-67-233-80-248.dhcp.embarqhsd.net> has joined #aichallenge
+2010-09-21T11:55:11  *** sinan <sinan!~sinan@80.90.175.112> has quit IRC (Read error: Operation timed out)
+2010-09-21T11:56:16  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has quit IRC (Quit: Konversation terminated!)
+2010-09-21T11:56:31  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has joined #aichallenge
+2010-09-21T11:56:31  *** ChanServ sets mode: +o amstan
+2010-09-21T11:56:34  <contestbot> Top 10 players: kcm1700(3523), McLeopold(3485), dmj111(3478), Arekku(3403), EBraun(3381), adumlah(3374), petesimard(3318), montanalow(3299), sighbot(3285), paulus(3280)
+2010-09-21T12:01:17  *** ajhager <ajhager!~ajhager@c-69-136-3-186.hsd1.in.comcast.net> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T12:08:08  *** aerique <aerique!euqirea@xs2.xs4all.nl> has quit IRC (Quit: ...)
+2010-09-21T12:11:33  <shul> where is the link to tcp.zip for windows ?
+2010-09-21T12:12:59  *** ratatata <ratatata!55679cdb@gateway/web/freenode/ip.85.103.156.219> has quit IRC (Quit: Page closed)
+2010-09-21T12:14:57  *** mightybyte <mightybyte!~mightybyt@209.48.164.34> has joined #aichallenge
+2010-09-21T12:15:49  *** Kastra <Kastra!~kastra-@91.110.188.211> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T12:20:48  *** boegel <boegel!~boegel@vpnp021.ugent.be> has joined #aichallenge
+2010-09-21T12:27:36  *** Blkt <Blkt!~user@160.80.135.101> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T12:28:52  <jesionaj> http://www.benzedrine.cx/planetwars/tcp.zip
+2010-09-21T12:31:27  <shul> jesionaj: thanks, but it says the server was not found, does it work for you (maybe its a dns problem on my end) ?
+2010-09-21T12:32:19  <dwchandler> $ host www.benzedrine.cx
+2010-09-21T12:32:19  <dwchandler> www.benzedrine.cx is an alias for insomnia.benzedrine.cx.
+2010-09-21T12:32:19  <dwchandler> insomnia.benzedrine.cx has address 213.3.30.106
+2010-09-21T12:32:45  *** Baphomet <Baphomet!~a@219-90-178-128.ip.adam.com.au> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T12:33:18  <jesionaj> Works fine for me, maybe try: 213.3.30.106/planetwars/tcp.zip
+2010-09-21T12:35:40  *** Sean_McEligot <Sean_McEligot!~Sean_McEl@va-67-233-80-248.dhcp.embarqhsd.net> has left #aichallenge
+2010-09-21T12:37:11  *** Baphomet <Baphomet!~a@219-90-178-128.ip.adam.com.au> has joined #aichallenge
+2010-09-21T12:38:07  <jmcarthur> my bot is going to be trivially parallelizable. i'm debating whether i should use more than one core for the tcp server
+2010-09-21T12:38:18  <jmcarthur> maybe i could just have my bot under a different name for that
+2010-09-21T12:39:36  <phreeza> jmcarthur: the real contest only allows 1 thread though, right?
+2010-09-21T12:39:51  <phreeza> or was it 1 process
+2010-09-21T12:39:58  <jesionaj> both
+2010-09-21T12:40:46  <jmcarthur> yeah the real one only allows a single thread
+2010-09-21T12:41:13  <jmcarthur> although i'm not entirely sure whether that's enforced technically, i will not be exploiting that
+2010-09-21T12:41:34  <jmcarthur> wish i could though. it would give me a significant advantage
+2010-09-21T12:41:43  <jmcarthur> *i think
+2010-09-21T12:43:46  <phreeza> youre using haskell?
+2010-09-21T12:43:52  *** Alex_____ <Alex_____!501886b0@gateway/web/freenode/ip.80.24.134.176> has joined #aichallenge
+2010-09-21T12:44:00  <phreeza> can you even controll that with ghc?
+2010-09-21T12:44:27  <jmcarthur> oh yeah
+2010-09-21T12:44:35  *** __Duh__ <__Duh__!534dff82@gateway/web/freenode/ip.83.77.255.130> has joined #aichallenge
+2010-09-21T12:45:34  <jmcarthur> for me it's just a matter of building with -threaded and running with +RTS -N (or i could wrap it with a C main and have those flags passed to the haskell runtime automatically)
+2010-09-21T12:45:42  <jmcarthur> this of course depends on getting to upload a binary
+2010-09-21T12:46:48  <jmcarthur> wish i had more than two cores at my disposal for the tcp server
+2010-09-21T12:47:32  <jmcarthur> i have a nettop with a dual core Atom that has hyperthreading, making it 4 virtual cpus, but i doubt it would really be much faster if at all
+2010-09-21T12:47:35  *** ntroPi <ntroPi!d9bb993f@gateway/web/freenode/ip.217.187.153.63> has joined #aichallenge
+2010-09-21T12:47:50  <ntroPi> hi
+2010-09-21T12:48:04  <jmcarthur> hyello
+2010-09-21T12:50:03  *** Alex_____ <Alex_____!501886b0@gateway/web/freenode/ip.80.24.134.176> has quit IRC (Quit: Page closed)
+2010-09-21T12:56:19  *** justin_pdx <justin_pdx!~Justin@199.223.126.66> has joined #aichallenge
+2010-09-21T12:56:33  <contestbot> Top 10 players: kcm1700(3574), dmj111(3555), McLeopold(3508), adumlah(3395), EBraun(3393), sighbot(3341), montanalow(3336), paulus(3305), Tracer(3290), Arekku(3257)
+2010-09-21T12:56:57  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has quit IRC (Quit: Konversation terminated!)
+2010-09-21T12:57:07  <pjreddie> out of curiosity, why haskell?
+2010-09-21T12:57:09  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has joined #aichallenge
+2010-09-21T12:57:09  *** ChanServ sets mode: +o amstan
+2010-09-21T12:57:38  *** __Duh__ <__Duh__!534dff82@gateway/web/freenode/ip.83.77.255.130> has quit IRC (Quit: Page closed)
+2010-09-21T12:58:29  <bartwe> woo, new personal record
+2010-09-21T12:58:38  <bartwe> 9489 units at round 200
+2010-09-21T12:59:51  <amstan> bartwe: link?
+2010-09-21T13:00:16  <bartwe> http://72.44.46.68/canvas?game_id=81457
+2010-09-21T13:00:53  <jmcarthur> pjreddie: i could spout the evangelism, but then i would just appear to be a fanboy
+2010-09-21T13:01:35  <jmcarthur> i've done it enough here as it is ;)
+2010-09-21T13:02:13  <pgpaskar_> lol so many mirrors
+2010-09-21T13:02:25  <jmcarthur> bartwe: lol
+2010-09-21T13:02:45  *** joanpujol <joanpujol!5331333a@gateway/web/freenode/ip.83.49.51.58> has joined #aichallenge
+2010-09-21T13:02:55  <joanpujol> Hi
+2010-09-21T13:03:48  <joanpujol> Anyone from the organitzation?
+2010-09-21T13:03:55  <shul> bartwe: lol
+2010-09-21T13:04:23  <joanpujol> Or that can look at compile error messages? I've problem submiting my updated java code
+2010-09-21T13:04:43  <joanpujol> I've tried to ask help in the forums but not solved my problem
+2010-09-21T13:04:50  <justin_pdx> bartwe: Meanie.  heh.
+2010-09-21T13:05:15  *** hornairs <hornairs!~hornairs@142.157.133.10> has joined #aichallenge
+2010-09-21T13:05:26  *** amstan <amstan!~alex@129-97-120-33.uwaterloo.ca> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T13:05:52  <shul> jesionaj: thanks, it worked !
+2010-09-21T13:05:57  *** Kastra <Kastra!~kastra-@91.110.188.211> has joined #aichallenge
+2010-09-21T13:06:02  <jesionaj> np
+2010-09-21T13:06:05  <shul> now the question is whether my firewall stops 995
+2010-09-21T13:06:31  *** jorge_ <jorge_!~quassel@127.Red-88-23-16.staticIP.rima-tde.net> has quit IRC (Remote host closed the connection)
+2010-09-21T13:07:07  *** sinan <sinan!~sinan@87.238.131.214> has joined #aichallenge
+2010-09-21T13:07:25  <joanpujol> None had java compile errors?
+2010-09-21T13:07:33  *** danielvf <danielvf!~dvf@67-197-181-252.dyn.comporium.net> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T13:07:56  *** danielvf <danielvf!~dvf@67-197-181-252.dyn.comporium.net> has joined #aichallenge
+2010-09-21T13:09:32  <kcm1700> whoa...  http://ai-contest.com/visualizer.php?game_id=4623894
+2010-09-21T13:10:40  <dufflebunk> jmcarthur: Yes they are. I can't find anything online resembling them.
+2010-09-21T13:10:57  <kcm1700> small difference at the beginning makes subtle difference at the end of the game.
+2010-09-21T13:11:23  <bartwe> kcm1700: nice feedforward system
+2010-09-21T13:11:35  <jmcarthur> dufflebunk: i'm tempted to just blame all the old software on the server
+2010-09-21T13:11:38  <bartwe> dmj111 seems to use coordinated attack
+2010-09-21T13:11:56  <bartwe> should give you a larger window of attack possily
+2010-09-21T13:12:40  <bartwe> he does make you pay for the neutrals
+2010-09-21T13:13:03  <bartwe> no clue why he doesn't take the neutral in his area
+2010-09-21T13:13:54  <bartwe> ademar: p0wned :) http://72.44.46.68/canvas?game_id=81747
+2010-09-21T13:15:07  <kcm1700> nice ragebot
+2010-09-21T13:15:20  <shul> kcm1700: ןמאקרקדאןמע
+2010-09-21T13:15:27  <shul> kcm1700: interesting
+2010-09-21T13:16:02  <kcm1700> thanks a lot.... what were those characters? ןמאקרקדאןמע ???
+2010-09-21T13:17:05  <shul> kcm1700: I'll let you guess :-), hint: my nick is related to that
+2010-09-21T13:17:19  <shul> do you need an ai-contest login to use the TCP server ?
+2010-09-21T13:18:00  *** JCS^ <JCS^!jcs@200-207-104-183.dsl.telesp.net.br> has joined #aichallenge
+2010-09-21T13:18:01  <Janzert> nope
+2010-09-21T13:18:12  <Janzert> just pick a name and optionally password
+2010-09-21T13:18:27  <dufflebunk> jmcarthur: so am I, but that doesn't help me with getting my bot to work.
+2010-09-21T13:18:34  *** ajhager <ajhager!~ajhager@140-182-234-54.dhcp-bl.indiana.edu> has joined #aichallenge
+2010-09-21T13:18:47  <jmcarthur> dufflebunk: i'm really close to convincing the relevant people to allow binary submissions
+2010-09-21T13:18:58  <jmcarthur> which would solve all that :D
+2010-09-21T13:19:30  <dufflebunk> jmcarthur: I'm guessing it has something to do with with the use of System.Timeout.timeout but I'm not sure. It would suck if it is.
+2010-09-21T13:19:42  <Janzert> contestbot seen j3camero
+2010-09-21T13:19:42  <contestbot> Janzert: j3camero was last seen in #aichallenge 5 days, 14 hours, 29 minutes, and 32 seconds ago: <j3camero> Cyndre: are you interested in building it? That would be soooo bitchin. I have seen some simple online IDEs before, and I gotta say it's pretty cool. We could build something unprecedented!
+2010-09-21T13:19:47  <Janzert> bah
+2010-09-21T13:20:00  <jmcarthur> dufflebunk: System.Timeout.timeout unfortunately doesn't do quite what would want it to
+2010-09-21T13:20:17  <jmcarthur> dufflebunk: in the tron contest i ended up writing an FFI binding so i could use SIGALRM
+2010-09-21T13:20:25  <jmcarthur> might end up using that again
+2010-09-21T13:20:49  *** drewrobb <drewrobb!~drewrobb@ool-182e3a60.dyn.optonline.net> has quit IRC (Read error: Operation timed out)
+2010-09-21T13:20:50  <jmcarthur> *what i would want it to
+2010-09-21T13:21:04  <dufflebunk> It does what I want it to do, stops the evaluation after 900 ms. I just had to be sure to useControl.Exception.evaluate with it
+2010-09-21T13:21:11  *** sinan <sinan!~sinan@87.238.131.214> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T13:21:32  <jmcarthur> dufflebunk: my problem with it was that it can't give you partial information if it has to stop early
+2010-09-21T13:21:34  <pacotabaco> hi my bot suddenly starts to send "invalid input" (see: http://72.44.46.68/canvas?game_id=81524)
+2010-09-21T13:21:48  <jmcarthur> dufflebunk: and my tron bot (and current bot) had partial information to give
+2010-09-21T13:22:06  <pacotabaco> i log all output data and seems to be correctlly formatted
+2010-09-21T13:22:06  <dufflebunk> jmcarthur: Ah, yeah, like best move found so far. Mine's not that advanced yet.
+2010-09-21T13:22:43  <pacotabaco> no 0 ships fleets and no fleets to self planet, there are more things to check?
+2010-09-21T13:23:02  <jmcarthur> pacotabaco: negative fleets?
+2010-09-21T13:23:03  <dufflebunk> sending more ships than you have on a planet
+2010-09-21T13:23:13  <pacotabaco> no
+2010-09-21T13:23:48  <pacotabaco> "12 8 12\n4 19 17\n3 5 9\n9 2 26\ngo"
+2010-09-21T13:23:57  <pacotabaco> \n after go too :P
+2010-09-21T13:23:58  <jmcarthur> pacotabaco: not owning the source planet?
+2010-09-21T13:24:20  <pacotabaco> mmm i'll check
+2010-09-21T13:26:34  <a1k0n> usually it'll give a reason in log.txt if you run the java engine
+2010-09-21T13:26:39  <a1k0n> (PlayGame.jar)
+2010-09-21T13:27:06  <shul> my first silly try : http://72.44.46.68/canvas?game_id=81946
+2010-09-21T13:27:20  <shul> how do u add . and all sorts of stuff after it ?
+2010-09-21T13:28:07  <jesionaj> that's just the username
+2010-09-21T13:28:26  *** sinan <sinan!~sinan@87.238.131.214> has joined #aichallenge
+2010-09-21T13:28:28  <dufflebunk> jmcarthur: couldn't you use an MVar and timeout? Put the partial info or final solution into the MVar, then the main thread will have access to it if the worker is stopped
+2010-09-21T13:28:44  * dufflebunk hasn't done much multi-threaded haskell
+2010-09-21T13:29:03  <jmcarthur> dufflebunk: i did that but ran into some issue that i don't remember
+2010-09-21T13:29:09  <shul> dufflebunk: multithreading is against the rules
+2010-09-21T13:29:15  <jmcarthur> shul: you can use green threads
+2010-09-21T13:29:57  <jmcarthur> dufflebunk: what i ended up doing was sharing a couples MVars with the SIGALRM signal handler, last time
+2010-09-21T13:29:58  <pacotabaco> jmcarthur: you are right... sening from an enemy planet :P (shit happens!)
+2010-09-21T13:30:08  <HakanD> hehe, Civ5 is out :)
+2010-09-21T13:30:34  <a1k0n> if only i had a machine fast enough to play it
+2010-09-21T13:30:35  <jmcarthur> dufflebunk: when the signal is received it waits for the worker to finish its current iteration, grabs the current result, then pushes it to another MVar that the IO thread is waiting on
+2010-09-21T13:30:52  <jmcarthur> then the IO thread pushes back to the worker thread when it's done
+2010-09-21T13:31:06  <HakanD> if only i have time enough to play it :)
+2010-09-21T13:31:09  <jmcarthur> in fact, i had the IO thread push back to the worker between sending orders and receiving the next game state
+2010-09-21T13:31:14  <HakanD> enough time-
+2010-09-21T13:31:16  <dufflebunk> shul: yeah, no OS threads so it should be fine
+2010-09-21T13:31:22  <jmcarthur> and then grab it back again when the next state update is received
+2010-09-21T13:31:38  <jmcarthur> so it was really working all the time except during actual IO and during signal handling
+2010-09-21T13:31:51  <shul> HakanD: civ5 is the biggest enemy of ai-contest :)
+2010-09-21T13:32:10  <jmcarthur> civ5 is my friend because i never got into civ
+2010-09-21T13:32:11  <a1k0n> and minecraft, it turns out
+2010-09-21T13:32:18  <jmcarthur> therefore is gives me an advantage in the contest
+2010-09-21T13:32:20  <jmcarthur> *it
+2010-09-21T13:32:28  *** perror <perror!~fleury@aldebaran.labri.fr> has quit IRC (Quit: Bye all !)
+2010-09-21T13:32:46  <HakanD> Starcraft2 also
+2010-09-21T13:32:54  <kcm1700> powned by mcleopold's :-)
+2010-09-21T13:32:59  <dufflebunk> jmcarthur: interesting
+2010-09-21T13:33:59  <shul> sid meyer is jmcarthur friend, it was all pre-orchestrated years ago
+2010-09-21T13:38:00  <shul> minecraft is out ? oh...
+2010-09-21T13:38:30  <bartwe> finally....
+2010-09-21T13:38:52  <bartwe> 10.13.b is only somewhat worse then .8.2 that cost days, horrible
+2010-09-21T13:39:19  *** boegel <boegel!~boegel@vpnp021.ugent.be> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T13:39:28  *** ajhager <ajhager!~ajhager@140-182-234-54.dhcp-bl.indiana.edu> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T13:40:03  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has quit IRC (Remote host closed the connection)
+2010-09-21T13:40:38  *** ermau <ermau!~ermau@about/csharp/regular/ermau> has joined #aichallenge
+2010-09-21T13:40:42  *** boegel <boegel!~boegel@AMontpellier-156-1-98-156.w90-14.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T13:42:26  *** ermau is now known as ermau|work
+2010-09-21T13:43:22  *** mark_jn <mark_jn!~mark@64.7.137.162> has joined #aichallenge
+2010-09-21T13:43:48  *** sinan <sinan!~sinan@87.238.131.214> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T13:44:36  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2010-09-21T13:44:36  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2010-09-21T13:45:56  *** HakanD <HakanD!~hakand@78.187.137.161> has quit IRC (Quit: brb)
+2010-09-21T13:46:12  <jmcarthur> it's interesting how everybody's attempts to improve their bots is resulting in disaster
+2010-09-21T13:46:17  <jmcarthur> *are
+2010-09-21T13:47:07  <ntroPi> yea ... one little change and i lose agains ragebot on a map where i usually win in 60 turns.
+2010-09-21T13:48:10  <jmcarthur> i wonder why this is
+2010-09-21T13:49:23  <ntroPi> because noone _really_ understands their heuristics for choosing planets ;)
+2010-09-21T13:49:37  <ntroPi> thats the case with my current bot anyways
+2010-09-21T13:51:21  <ntroPi> just feels right and works somehow :-D
+2010-09-21T13:53:41  *** hornairs <hornairs!~hornairs@142.157.133.10> has quit IRC (Quit: hornairs)
+2010-09-21T13:54:27  <dwchandler> because heristics work best when they are simple, and when multiple heristics fits together in transparent and predictable ways
+2010-09-21T13:54:51  <dwchandler> hey, where'd my "u" go?
+2010-09-21T13:54:56  <boegel> is there a way in which you can always win?
+2010-09-21T13:55:15  <boegel> I'm not asking to explain how, I just wonder if there is
+2010-09-21T13:55:21  <dwchandler> boegel: yes. solve the big equation
+2010-09-21T13:55:35  <boegel> dwchandler: :)
+2010-09-21T13:55:46  <boegel> dwchandler: but not in 1s, I presume
+2010-09-21T13:56:08  *** Ceridan <Ceridan!~mikhail.k@ip-79-111-185-189.bb.netbynet.ru> has joined #aichallenge
+2010-09-21T13:56:14  <dwchandler> no. there's always pruning of some kind needed
+2010-09-21T13:56:34  <contestbot> Top 10 players: kcm1700(3584), McLeopold(3551), dmj111(3522), adumlah(3412), EBraun(3408), montanalow(3355), Tracer(3335), sighbot(3332), paulus(3317), Loks1982(3259)
+2010-09-21T13:57:55  <jmcarthur> it almost seems like there should be a closed-form solution to this game, but i don't know that anybody will find it
+2010-09-21T13:59:25  <danielvf> I just profiled my javascript bot - 55% of CPU time in the garbage collector
+2010-09-21T13:59:30  <danielvf> Maybe I need to fix that.
+2010-09-21T14:00:09  <boegel> danielvf: :)
+2010-09-21T14:00:28  <boegel> danielvf: as long as you don't run into time-outs, who cares? :)
+2010-09-21T14:00:37  *** kay_ is now known as Guest95353
+2010-09-21T14:01:21  <danielvf> boegel: yeah, but I do on the server. :D
+2010-09-21T14:02:03  <boegel> danielvf: ah :)
+2010-09-21T14:02:09  <boegel> danielvf: then you should fix it
+2010-09-21T14:02:38  <danielvf> Or I just need to find out how to disable garbage collection. Surely I can't make too much trash in 200  turns
+2010-09-21T14:03:24  <boegel> I wouldn't be too sure about that...
+2010-09-21T14:04:09  <jmcarthur> err
+2010-09-21T14:04:14  <jmcarthur> yeah i wouldn't try that
+2010-09-21T14:04:29  <danielvf> lol
+2010-09-21T14:04:44  *** Gorovkhaia2 <Gorovkhaia2!~stroph@phenethylamine.net> has joined #aichallenge
+2010-09-21T14:05:04  <Gorovkhaia2> i love this game http://ai-contest.com/visualizer.php?game_id=4623664
+2010-09-21T14:05:11  <danielvf> sadly, It's not an option
+2010-09-21T14:06:34  <boegel> Gorovkhaia2: haha, I can see why :)
+2010-09-21T14:06:38  <boegel> Gorovkhaia2: finish fail
+2010-09-21T14:08:31  *** Bobng <Bobng!~T@78.151.110.153> has joined #aichallenge
+2010-09-21T14:09:26  <dwchandler> danielvf: are you bumping against 1 second? if not, don't worry about profiling yet
+2010-09-21T14:09:45  <danielvf> dwchandler: yeah, I'm getting 3 turns of play on the server
+2010-09-21T14:09:54  <dwchandler> ouch.
+2010-09-21T14:10:20  <danielvf> dwchandler: This wasn't coded for speed, so I'm not too worried.
+2010-09-21T14:10:25  *** HakanD <HakanD!~hakan@78.160.65.83> has joined #aichallenge
+2010-09-21T14:11:00  *** shul <shul!480de1b2@gateway/web/freenode/ip.72.13.225.178> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T14:13:16  <jmcarthur> not much javascript is coded for speed anyway
+2010-09-21T14:13:30  <dufflebunk> jmcarthur: any idea if there's a way to control the compile options? It may only happen with -O2
+2010-09-21T14:14:01  <jmcarthur> dufflebunk: you may be able to try {-# OPTIONS -O0 #-}, but i think command line flags override pragmas
+2010-09-21T14:14:10  <dufflebunk> Tried it, no luck
+2010-09-21T14:14:31  <jmcarthur> no way that i know of then, aside from waiting for binaries to be supported
+2010-09-21T14:14:33  <dufflebunk> actually, it was GHC_OPTIONS I tried
+2010-09-21T14:14:47  <jmcarthur> no big difference
+2010-09-21T14:15:32  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.8/20100722155716])
+2010-09-21T14:15:48  <jmcarthur> the only thing i can suggest if you don't want to wait for binary support is set up a VM with ubuntu server 8.04 64 bit, install the distro's ghc, and try building with it
+2010-09-21T14:16:19  <dufflebunk> I might have to do that to track it down.
+2010-09-21T14:18:04  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-09-21T14:21:03  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T14:21:09  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T14:27:20  <danielvf> I guess I'm the victim of unknown timeouts or invalid commands
+2010-09-21T14:27:29  *** shades <shades!~shades@cheshire.telephreak.org> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T14:27:42  <danielvf> Since I can run a while local game in 5 seconds
+2010-09-21T14:28:11  <jmcarthur> probably timeouts. i *always* had issues with those in the last contest
+2010-09-21T14:28:22  *** shades <shades!~shades@cheshire.telephreak.org> has joined #aichallenge
+2010-09-21T14:28:43  <jmcarthur> i'm still convinced that the server occasionally giving us less than 0.1s sometimes
+2010-09-21T14:28:46  <jmcarthur> *gave
+2010-09-21T14:29:05  <jmcarthur> never was able to verify since we couldn't do stderr output
+2010-09-21T14:30:45  <jmcarthur> but even setting my timeout to 0.1s would still give me timeouts sometimes, even though local testing showed that my bot would always complete in a timely manner on my machine
+2010-09-21T14:31:20  *** mb <mb!5b2cb099@gateway/web/freenode/ip.91.44.176.153> has joined #aichallenge
+2010-09-21T14:31:46  *** mb is now known as Guest64701
+2010-09-21T14:32:06  <boegel> my latest bot is doing surprisingly well, given the fact that I can make it a lot more aggressive and targetted, w00!
+2010-09-21T14:33:10  *** SophieB <SophieB!~SophieB@unaffiliated/cmi-dos> has joined #aichallenge
+2010-09-21T14:33:30  *** smhanov <smhanov!~smhanov@69-196-140-14.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T14:34:27  <HakanD> great, ubuntu network manager decided to play hide and seek
+2010-09-21T14:34:42  <jmcarthur> this is the first time i've used this repa library. purely functional regular arrays are taking some time to get used to, but so far it's pretty cool
+2010-09-21T14:35:09  <jmcarthur> i'm not used to indexing being so abstracted, is the main mental stumbling block i'm having
+2010-09-21T14:37:12  <jmcarthur> for example, replication along any dimension is just an indexing transformation rather than an actual copy, so my function for precomputing planet distances basically replicates the array of coordinates twice, along two different dimensions, then applies the distance computation element-wise to "both" arrays (although there is actually only one, just with different indexing transformations under
+2010-09-21T14:37:14  <jmcarthur> two different names)
+2010-09-21T14:41:22  *** ysulaiman <ysulaiman!4d40073b@gateway/web/freenode/ip.77.64.7.59> has joined #aichallenge
+2010-09-21T14:41:53  *** McLeopold <McLeopold!~scott@67.139.105.186> has joined #aichallenge
+2010-09-21T14:42:22  <McLeopold> http://ai-contest.com/visualizer.php?game_id=4624224
+2010-09-21T14:42:27  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has joined #aichallenge
+2010-09-21T14:43:17  <jmcarthur> weird
+2010-09-21T14:44:35  <McLeopold> I though that matched looked good for me.  Yet I can keep the #1 stop even when I bet him?
+2010-09-21T14:44:42  <McLeopold> beat
+2010-09-21T14:45:14  <delt0r___> McLeopold: Thats Bayesian for you...
+2010-09-21T14:45:33  <McLeopold> yeah, too many losses on maps I'm weak on
+2010-09-21T14:45:46  <jmcarthur> McLeopold: it looks like you've lost to more bots that are worse than kcm
+2010-09-21T14:45:50  <delt0r___> change the prior change the result. Personally there should be a bunch of extra probablity mass right over me ;)
+2010-09-21T14:45:57  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T14:46:13  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T14:46:29  <jmcarthur> McLeopold: i wish the confidence interval was shown
+2010-09-21T14:46:29  <McLeopold> uh, everyone's worse that kcm...and me
+2010-09-21T14:46:35  <jmcarthur> that would probably put you at ease about it
+2010-09-21T14:46:42  <kcm1700> that's strange... his bot is better than mine..
+2010-09-21T14:46:56  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T14:46:59  <McLeopold> Maybe he has tighter confidence?
+2010-09-21T14:47:19  <McLeopold> I wonder if the averages are switched?
+2010-09-21T14:47:21  <jmcarthur> McLeopold: no, i mean you probably have overlapping confidence intervals
+2010-09-21T14:47:37  <McLeopold> Is it possible to look?
+2010-09-21T14:47:47  <jmcarthur> McLeopold: tighter confidence wouldn't be reflected in the rank, which is only the mean
+2010-09-21T14:47:48  <McLeopold> Or is that secret info?
+2010-09-21T14:48:01  <jmcarthur> i doubt it's secret, but i don't know of a way to see it without having an admin show you
+2010-09-21T14:48:06  <McLeopold> I thought it was the mean - confidence?
+2010-09-21T14:48:12  <jmcarthur> no, it's just mean
+2010-09-21T14:48:20  <jmcarthur> i have been pushing for the lower confidence bound
+2010-09-21T14:48:24  <jmcarthur> but to no avail
+2010-09-21T14:48:27  <McLeopold> That puts me at less ease. :)
+2010-09-21T14:48:49  <McLeopold> It makes more sense when you begin.  Start at the bottom.
+2010-09-21T14:49:07  <McLeopold> After you are established, it can be tricky.
+2010-09-21T14:49:16  <jmcarthur> McLeopold: it could be that you have a very tight confidence interval, which would mean that games affect your rank less
+2010-09-21T14:50:19  <jmcarthur> i agree. i don't care if it takes a while to get to the top. in fact, i think that is better
+2010-09-21T14:50:36  <McLeopold> I see. So I could be 3530-3534, and kcm could be 3520-3602 or something.
+2010-09-21T14:50:49  <jmcarthur> yeah
+2010-09-21T14:50:57  <McLeopold> My lower bound could be higher, but not the mean.
+2010-09-21T14:51:15  <jmcarthur> exactly
+2010-09-21T14:51:20  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2010-09-21T14:51:20  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2010-09-21T14:52:19  <McLeopold> Well, when I lose to dmj, it won't matter. :)
+2010-09-21T14:52:25  <jmcarthur> heh
+2010-09-21T14:55:30  <McLeopold> It would be cool to see a graph of the top bots with their confidence intervals.
+2010-09-21T14:56:02  <jmcarthur> i thought about that too
+2010-09-21T14:56:06  <McLeopold> And, a list of up and coming undefeated new bots.
+2010-09-21T14:56:19  <McLeopold> Like a rookie list or something.
+2010-09-21T14:56:33  <contestbot> Top 10 players: kcm1700(3561), McLeopold(3532), dmj111(3503), adumlah(3400), EBraun(3389), montanalow(3331), Tracer(3317), sighbot(3286), paulus(3256), Loks1982(3239)
+2010-09-21T14:56:34  <McLeopold> Maybe winning streak.
+2010-09-21T14:56:40  <McLeopold> Up and down arrows.
+2010-09-21T14:57:15  <jmcarthur> the bots with the most played games that still have confidence intervals overlapping the top bots' intervals
+2010-09-21T14:58:01  <McLeopold> Yeah, that would get you a list of potential new winners.
+2010-09-21T14:58:40  <jmcarthur> what i think would be really awesome is if there was an ajaxy page showing current games
+2010-09-21T14:58:49  <boegel> is the 'size' of the maps known? i.e. how many turns would it take to go from one side to the other?
+2010-09-21T14:58:52  <jmcarthur> so people would stop complaining that there were no games being played :P
+2010-09-21T14:59:00  <jmcarthur> boegel: not (yet) specified
+2010-09-21T14:59:06  <McLeopold> Yeah, or at least a number of current games.
+2010-09-21T14:59:11  <boegel> jmcarthur: hmmk, thx
+2010-09-21T14:59:17  <McLeopold> boegel: The most I've seen is about 30
+2010-09-21T14:59:23  *** Ari2 <Ari2!as66033@kielo.uta.fi> has joined #aichallenge
+2010-09-21T14:59:34  <jmcarthur> McLeopold: a live readout would be awesome though, especially showing winners of recent games and stuff
+2010-09-21T15:00:59  <kcm1700> I have made a graph of rank changes of only very few people.  http://kcm1700.snucse.org/new/rankgraph.png
+2010-09-21T15:01:18  <jmcarthur> kcm1700: that's pretty cool!
+2010-09-21T15:01:58  *** ysulaiman <ysulaiman!4d40073b@gateway/web/freenode/ip.77.64.7.59> has quit IRC (Quit: Page closed)
+2010-09-21T15:02:44  <McLeopold> kcm1700: you didn't happen to record elo's as well, did you?
+2010-09-21T15:03:14  <kcm1700> I didn't.. but probably i'm gonna start work on elo score.
+2010-09-21T15:03:45  <McLeopold> That's awesome.  Does it get updated regularly?
+2010-09-21T15:04:15  <kcm1700> probably... hope so. i'm using crontab to get it updated.
+2010-09-21T15:04:19  <jmcarthur> danielvf: thank you for investigating the timeout issue! nobody did that last year, to my knowledge, despite my (and others') loud complaints
+2010-09-21T15:04:30  <jmcarthur> s/last year/last contest/
+2010-09-21T15:04:34  <danielvf> jmcarthur: NP
+2010-09-21T15:04:42  <danielvf> Just getting around to it.
+2010-09-21T15:06:39  <McLeopold> kcm1700: http://ai-contest.com/visualizer.php?game_id=4623894
+2010-09-21T15:06:50  <McLeopold> Does that game look like it could go either way?
+2010-09-21T15:08:26  <kcm1700> I think giving more turns could give a different result.
+2010-09-21T15:09:07  <McLeopold> yeah, or at least make you victory more clear.  It's hard to tell with all the fleets flying around
+2010-09-21T15:09:08  <jmcarthur> to me it looks like the potential was there for one of the bots to screw up, but i think the win was deserved if there would have been no screwups in a longer game
+2010-09-21T15:09:22  <jmcarthur> *abnormal screwups, i mean
+2010-09-21T15:09:24  *** ysulaiman <ysulaiman!4d40073b@gateway/web/freenode/ip.77.64.7.59> has joined #aichallenge
+2010-09-21T15:09:55  <McLeopold> If dmj's logic would have gone for the neutral, who knows.
+2010-09-21T15:10:05  <jmcarthur> i'd give it a 25% chance of being a different outcome for more turns
+2010-09-21T15:10:31  <kcm1700> The turn limit is too short.
+2010-09-21T15:10:35  <McLeopold> yeah, small but still there.
+2010-09-21T15:10:40  * jmcarthur goes to make up more BS numbers in the kitchen
+2010-09-21T15:10:46  *** joanpujol <joanpujol!5331333a@gateway/web/freenode/ip.83.49.51.58> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T15:10:50  <jmcarthur> i agree, we should have more turns
+2010-09-21T15:10:57  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T15:11:01  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T15:11:05  <jmcarthur> at least 300-400
+2010-09-21T15:11:35  <kcm1700> and I'll need to change my bot not to crash after 200 turns.
+2010-09-21T15:11:40  <jmcarthur> me too
+2010-09-21T15:11:45  <kcm1700> it crashes on 201st turn :-)
+2010-09-21T15:11:51  <jmcarthur> mine too ;)
+2010-09-21T15:12:11  <jmcarthur> well, i'm making it take an optional argument for turns, but default to 200 for the server
+2010-09-21T15:12:19  *** Naktibalda <Naktibalda!~quassel@cpc2-heme6-0-0-cust884.9-1.cable.virginmedia.com> has joined #aichallenge
+2010-09-21T15:13:59  <McLeopold> divide by zero?
+2010-09-21T15:14:23  <kcm1700> and out or index too.
+2010-09-21T15:16:06  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has joined #aichallenge
+2010-09-21T15:16:14  *** ntroPi <ntroPi!d9bb993f@gateway/web/freenode/ip.217.187.153.63> has quit IRC (Quit: cya)
+2010-09-21T15:17:06  *** ysulaiman <ysulaiman!4d40073b@gateway/web/freenode/ip.77.64.7.59> has quit IRC (Quit: Page closed)
+2010-09-21T15:17:31  <Lafi> you make an array of 200 states ?
+2010-09-21T15:17:41  <Lafi> and use that to simulate ?
+2010-09-21T15:22:04  *** mark_jn <mark_jn!~mark@64.7.137.162> has quit IRC (Quit: leaving)
+2010-09-21T15:34:55  *** ermau|work <ermau|work!~ermau@about/csharp/regular/ermau> has quit IRC (Quit: ermau|work)
+2010-09-21T15:37:01  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC ()
+2010-09-21T15:40:23  *** dstufft <dstufft!~dstufft@merlin.xenofox.com> has quit IRC (Quit: Reconnecting)
+2010-09-21T15:40:26  <jmcarthur> Lafi: :)
+2010-09-21T15:40:30  *** dstufft <dstufft!~dstufft@merlin.xenofox.com> has joined #aichallenge
+2010-09-21T15:41:06  <jmcarthur> not necessarily that
+2010-09-21T15:41:18  <jmcarthur> but it's nice to be able to simulate a game to completion
+2010-09-21T15:41:30  <jmcarthur> since out-of-turns is an endgame condition, it must be in any correct simulation
+2010-09-21T15:46:08  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T15:47:12  <dwchandler> way too late, but it would be awesome if number of turns were included in game state
+2010-09-21T15:47:15  <bartwe> moin
+2010-09-21T15:47:35  <Janzert> http://code.google.com/p/ai-contest/issues/detail?id=74
+2010-09-21T15:48:00  <delt0r___> dwchandler: not really... well i don't think so
+2010-09-21T15:48:09  <delt0r___> but i an't nobody
+2010-09-21T15:48:13  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-09-21T15:48:15  <Janzert> j3camero has given provisional approval
+2010-09-21T15:49:03  <Janzert> although that was on friday and he seems to have disappeared afterward
+2010-09-21T15:49:22  <bartwe> # : key value
+2010-09-21T15:49:23  <contestbot> bartwe: I have no idea what you mean.
+2010-09-21T15:49:25  <bartwe> makes sense
+2010-09-21T15:49:35  <bartwe> # rainbow Hello world
+2010-09-21T15:49:35  <contestbot> bartwe: Hello world
+2010-09-21T15:50:01  <Janzert> heh
+2010-09-21T15:50:21  <delt0r___> cool bot-- mine can't do that
+2010-09-21T15:50:25  *** nullkuhl <nullkuhl!~nullkuhl@196.221.13.149> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T15:50:50  *** nullkuhl <nullkuhl!~nullkuhl@196.221.13.149> has joined #aichallenge
+2010-09-21T15:50:55  <dwchandler> # rainbow Bot Pride
+2010-09-21T15:50:55  <contestbot> dwchandler: Bot Pride
+2010-09-21T15:51:34  <dwchandler> Janzert: thanks for the link. I hope it gets in
+2010-09-21T15:54:09  <jmcarthur> i do too
+2010-09-21T15:55:14  *** delt0r_ <delt0r_!~delt0r@188-22-22-230.adsl.highway.telekom.at> has joined #aichallenge
+2010-09-21T15:56:20  *** delt0r___ <delt0r___!~delt0r@188-22-21-63.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T15:56:33  <contestbot> Top 10 players: McLeopold(3522), kcm1700(3518), dmj111(3513), adumlah(3388), EBraun(3362), montanalow(3331), Tracer(3312), sighbot(3280), Loks1982(3254), Arekku(3233)
+2010-09-21T16:01:10  *** pc <pc!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T16:01:12  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T16:05:44  <kcm1700> # rainbow ABCDEFG
+2010-09-21T16:05:44  <contestbot> kcm1700: ABCDEFG
+2010-09-21T16:06:13  <boegel> is the starting budget of 100 ships a given?
+2010-09-21T16:06:21  <jmcarthur> no
+2010-09-21T16:06:28  <jmcarthur> at least not yet
+2010-09-21T16:06:35  <boegel> jmcarthur: hmmk, thx :)
+2010-09-21T16:08:35  <boegel> how can I win a game with invalid input, see http://72.44.46.68/getplayer?player=boegel.20100921.9e1fca9872d9913bbd9725ff0c9601d5
+2010-09-21T16:08:48  <boegel> if I look at the game, it doesn't seem a win at all either
+2010-09-21T16:09:01  <boegel> is that a bug in the evaluation I'm seeing then?
+2010-09-21T16:09:37  <jmcarthur> boegel: your opponent probably bugged out
+2010-09-21T16:09:44  <Janzert> pretty sure it means allchemist sent an illegal order
+2010-09-21T16:12:10  <boegel> jmcarthur: ah, it doens't mean it was my bot that sent the wrong order, ok, my mistake
+2010-09-21T16:12:22  *** seon <seon!~yseop@134.9.98-84.rev.gaoland.net> has joined #aichallenge
+2010-09-21T16:14:35  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-09-21T16:16:04  *** drewrobb <drewrobb!~drewrobb@ool-182e3a60.dyn.optonline.net> has joined #aichallenge
+2010-09-21T16:17:26  *** seon <seon!~yseop@134.9.98-84.rev.gaoland.net> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T16:21:56  *** retybok_ <retybok_!~retybok@i03m-212-195-151-239.d4.club-internet.fr> has joined #aichallenge
+2010-09-21T16:22:48  <retybok_> Has the protocol changed? I keep getting these "lost invalid" games on dhartmei's tcp server, but I don't have them on my machine when I play against the example bots...
+2010-09-21T16:25:24  <McLeopold> ouch, mysql error on the rankings page.
+2010-09-21T16:25:57  <McLeopold> too many connects.  you'd think that would be cached?
+2010-09-21T16:26:42  <McLeopold> contestbot: rankings 10
+2010-09-21T16:26:53  <contestbot> McLeopold: Error: There was a problem accessing the interface to ai-contest.com
+2010-09-21T16:27:35  <bartwe> long live dataases
+2010-09-21T16:28:04  <McLeopold> was that typo on purpose?  I'm trying to pronounce it...
+2010-09-21T16:28:52  <dwchandler> daaases
+2010-09-21T16:29:01  <McLeopold> Looks like it's down for the count.
+2010-09-21T16:29:07  <retybok_> McLeopold: don't worry you're still ranked first :-D
+2010-09-21T16:29:10  <dwchandler> who needs pesky consonants
+2010-09-21T16:29:15  <bartwe> my '' key is roken at times :)
+2010-09-21T16:29:23  <retybok_> (i can still access it)
+2010-09-21T16:29:31  <dwchandler> bartwe: lol
+2010-09-21T16:29:35  <McLeopold> I missed the crossover.  I want to know how I bumped up again?
+2010-09-21T16:30:29  <kcm1700> my bot made another loss.
+2010-09-21T16:30:33  <McLeopold> got back in,
+2010-09-21T16:30:37  <McLeopold> yea, I'm watching
+2010-09-21T16:30:49  <kcm1700> was too greedy
+2010-09-21T16:30:55  <bartwe> hmz, damn close to using full cpu without bounded search
+2010-09-21T16:31:02  <bartwe> time for the profiler
+2010-09-21T16:31:24  <McLeopold> I don't think you were greedy enough?  Unless your refering to the top center planet.
+2010-09-21T16:32:10  *** Guest64701 <Guest64701!5b2cb099@gateway/web/freenode/ip.91.44.176.153> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T16:32:41  <McLeopold> kcm1700: I think it is your misdirected traffic issue again.
+2010-09-21T16:41:21  <bartwe> woot
+2010-09-21T16:42:32  <bartwe> what would you guys suggest for the red side to keep this combat less chaotic ? http://72.44.46.68/canvas?game_id=85055
+2010-09-21T16:42:50  *** smhanov <smhanov!~smhanov@206-248-176-37.dsl.teksavvy.com> has joined #aichallenge
+2010-09-21T16:43:42  *** customKoncept <customKoncept!521c35f0@gateway/web/freenode/ip.82.28.53.240> has joined #aichallenge
+2010-09-21T16:43:53  <Tempest> PlayGame.jar crashes and in the log file there's only one word, "initializing"...
+2010-09-21T16:44:12  <customKoncept> looked to me as though the log file isn't actually used
+2010-09-21T16:44:42  <Zannick> use a different log file
+2010-09-21T16:44:58  <Zannick> log.txt is rumored to be used by the visualizer, too
+2010-09-21T16:45:37  <Tempest> Zannick: wow thank you it works!
+2010-09-21T16:48:55  *** makg <makg!5b2cb099@gateway/web/freenode/ip.91.44.176.153> has joined #aichallenge
+2010-09-21T16:50:51  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T16:54:05  *** smhanov <smhanov!~smhanov@206-248-176-37.dsl.teksavvy.com> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T16:56:03  <McLeopold> bartwe: sending a fleet of 70 at turn 41 lost you that side of the board temporarily.
+2010-09-21T16:56:14  <bartwe> yeah, its weird
+2010-09-21T16:56:21  *** Kastra <Kastra!~kastra-@91.110.188.211> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T16:56:34  <contestbot> Top 10 players: McLeopold(3521), kcm1700(3519), dmj111(3512), adumlah(3389), EBraun(3362), montanalow(3329), Tracer(3316), sighbot(3282), Loks1982(3254), _Shurf(3235)
+2010-09-21T16:56:44  <McLeopold> That's the type of problem I'm working on now.
+2010-09-21T16:57:50  <bartwe> looks like a stupendously stupid move to expend that much to a neutral .
+2010-09-21T16:58:14  <McLeopold> especially when you can already count the incoming fleets to your growth 5 planet just below
+2010-09-21T16:58:15  <bartwe> i think the problem is in the worstcase predictor, it fails to take the arrivals into account
+2010-09-21T16:58:52  <bartwe> it fails to see inflight enemy fleets as a source of incomming attacks
+2010-09-21T16:59:09  <bartwe> +potential
+2010-09-21T16:59:35  *** Mathnerd314 <Mathnerd314!~mathnerd3@128.198.97.131> has joined #aichallenge
+2010-09-21T17:02:13  *** Palmik <Palmik!~Palmik@palmikpc.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2010-09-21T17:04:13  *** ajhager <ajhager!~ajhager@c-69-136-3-186.hsd1.in.comcast.net> has joined #aichallenge
+2010-09-21T17:04:17  *** choas <choas!~lars@p578F67B3.dip.t-dialin.net> has joined #aichallenge
+2010-09-21T17:06:28  *** customKoncept <customKoncept!521c35f0@gateway/web/freenode/ip.82.28.53.240> has quit IRC (Quit: Page closed)
+2010-09-21T17:10:32  <dufflebunk> ah ha! 0x757b12c00 is the number of milliseconds in a year
+2010-09-21T17:12:19  <dufflebunk> jmcarthur: that's probably too big for an Int32
+2010-09-21T17:13:08  <Zannick> it's 9 bytes
+2010-09-21T17:13:48  <Zannick> lastlog 757b12
+2010-09-21T17:14:22  <Zannick> yeah, the thing pasted earlier was an int64
+2010-09-21T17:14:43  <Zannick> er, not 9 bytes
+2010-09-21T17:14:54  <Zannick> it's 5 bytes
+2010-09-21T17:15:02  <Zannick> 07 57 b1 2c 00
+2010-09-21T17:16:29  <dufflebunk> right, Int64, maybe too big for that too. I'll just skip that section. It'll just cause at most one incorrect calculation per year.
+2010-09-21T17:17:05  <Zannick> why does your bot need such a number?
+2010-09-21T17:17:56  <dufflebunk> I'm making sure the (green) thread doesn't go over 900 ms, and the time library gives me differences in a silly structure
+2010-09-21T17:18:09  <Zannick> ah
+2010-09-21T17:18:13  <dufflebunk> where it gives be the change in years, months, days, ... and you have to add it all up
+2010-09-21T17:19:11  <dufflebunk> Yep, that was it. No more warnings or errors from the compile script.
+2010-09-21T17:20:34  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has joined #aichallenge
+2010-09-21T17:20:44  *** dhartmei <dhartmei!~dhartmei@106-30.3-213.fix.bluewin.ch> has quit IRC (Quit: good night)
+2010-09-21T17:21:57  <bartwe> cool
+2010-09-21T17:22:13  <bartwe> with several days of work, i'm now at parity with my old bot :)
+2010-09-21T17:22:32  <bartwe> only this one has a sensible cost function
+2010-09-21T17:22:36  *** smhanov <smhanov!~smhanov@206-248-153-246.dsl.teksavvy.com> has joined #aichallenge
+2010-09-21T17:26:15  <McLeopold> bartwe: I know what you mean.
+2010-09-21T17:26:22  <McLeopold> I can't beat myself at all!
+2010-09-21T17:26:31  <bartwe> geh
+2010-09-21T17:27:07  <bartwe> i guess i could build somethign to automaticly walk the statespace of som of the magical constants
+2010-09-21T17:27:19  <bartwe> that could keep benzedrine busy for a few days
+2010-09-21T17:27:35  <justin_pdx> magical constants?
+2010-09-21T17:28:17  <McLeopold> Why don't you just do that locally?
+2010-09-21T17:28:29  <bartwe> against what and whom ?
+2010-09-21T17:28:42  <edcba> what magical constants you are referring to ?
+2010-09-21T17:29:11  <bartwe> meh, how to scale fudge factors in the cost function regarding cost of movement and such
+2010-09-21T17:34:27  *** smhanov <smhanov!~smhanov@206-248-153-246.dsl.teksavvy.com> has quit IRC (Ping timeout: 264 seconds)
+2010-09-21T17:35:06  *** smhanov <smhanov!~smhanov@69-165-137-94.dsl.teksavvy.com> has joined #aichallenge
+2010-09-21T17:35:55  <a1k0n> yes, each improvement i make in intelligence makes it play worse
+2010-09-21T17:37:20  <Naktibalda> I think that my latest version is too cautious
+2010-09-21T17:39:58  *** linux-m00n <linux-m00n!~oseba@89-212-156-60.dynamic.dsl.t-2.net> has joined #aichallenge
+2010-09-21T17:46:17  * Naktibalda is thinking about unit tests for bot
+2010-09-21T17:49:59  *** seon <seon!~yseop@134.9.98-84.rev.gaoland.net> has joined #aichallenge
+2010-09-21T17:52:41  *** MatthewR <MatthewR!545c3bc5@gateway/web/freenode/ip.84.92.59.197> has joined #aichallenge
+2010-09-21T17:53:03  *** tapwater <tapwater!~tapwater@cpe-70-112-192-229.austin.res.rr.com> has joined #aichallenge
+2010-09-21T17:53:25  <Naktibalda> there must be a lot of bugs in my code
+2010-09-21T17:53:43  *** kozlovsky <kozlovsky!5d645927@gateway/web/freenode/ip.93.100.89.39> has quit IRC (Quit: Page closed)
+2010-09-21T17:56:28  <seon> Naktibalda> cause you lose
+2010-09-21T17:56:29  <seon> ?
+2010-09-21T17:56:35  <contestbot> Top 10 players: McLeopold(3515), kcm1700(3507), dmj111(3503), adumlah(3374), montanalow(3357), EBraun(3339), Tracer(3302), sighbot(3274), Loks1982(3231), Arekku(3227)
+2010-09-21T17:56:37  *** smhanov <smhanov!~smhanov@69-165-137-94.dsl.teksavvy.com> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T17:56:44  <Naktibalda> no, because I see them in action :)
+2010-09-21T17:57:03  <seon> me too
+2010-09-21T17:57:05  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T17:57:15  <retybok_> I've found that fixing bugs improve performance a lot more than implementing new features :)
+2010-09-21T17:57:21  <retybok_> but it's not as much fun :)
+2010-09-21T17:57:40  <Naktibalda> hmm, that's good, looks like I have a lot of them
+2010-09-21T17:58:33  <seon> what are the bugs?
+2010-09-21T18:00:07  <Naktibalda> for example: sending more ships then necesarry
+2010-09-21T18:00:11  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Remote host closed the connection)
+2010-09-21T18:00:58  <Naktibalda> yesterday I discovered, that I clean targets list at the wrong level of nested loops, so it sends multiple fleets of the same size if there are enough
+2010-09-21T18:01:15  *** Ceridan <Ceridan!~mikhail.k@ip-79-111-185-189.bb.netbynet.ru> has quit IRC ()
+2010-09-21T18:01:45  <seon> Naktibalda> do you prefer to send more ships?
+2010-09-21T18:01:46  <Naktibalda> now I see that my planet size calculator after capturing works wrong, so it sends not enough ships to get a cheap capture
+2010-09-21T18:01:55  *** iouri_ <iouri_!2668d00a@gateway/web/freenode/ip.38.104.208.10> has quit IRC (Quit: Page closed)
+2010-09-21T18:02:16  <Naktibalda> no, I prefer to attack more targets at the same time :)
+2010-09-21T18:03:17  <Naktibalda> another bug that I see, is that if one planet is under attack, another planet sends multiple fleets at the same turn.
+2010-09-21T18:03:39  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has quit IRC (Quit: leaving)
+2010-09-21T18:04:46  <seon> how many ships do you use before retunr?
+2010-09-21T18:05:27  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has joined #aichallenge
+2010-09-21T18:07:44  *** sorki <sorki!~sorki@psyche.sks2.muni.cz> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T18:08:03  *** delt0r_ <delt0r_!~delt0r@188-22-22-230.adsl.highway.telekom.at> has quit IRC (Quit: Leaving)
+2010-09-21T18:13:39  <Naktibalda> 1 ship matters
+2010-09-21T18:14:12  *** MatthewR <MatthewR!545c3bc5@gateway/web/freenode/ip.84.92.59.197> has quit IRC (Quit: Page closed)
+2010-09-21T18:14:42  <Naktibalda> I just reduced a size of reinforcement fleet by one, and my bot lost in 200 turns by score instead of being dominated in 178
+2010-09-21T18:18:53  *** makg <makg!5b2cb099@gateway/web/freenode/ip.91.44.176.153> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T18:21:12  *** linux-m00n <linux-m00n!~oseba@89-212-156-60.dynamic.dsl.t-2.net> has quit IRC (Quit: Leaving)
+2010-09-21T18:21:19  *** seon <seon!~yseop@134.9.98-84.rev.gaoland.net> has quit IRC (Quit: Leaving.)
+2010-09-21T18:22:36  <Naktibalda> one more fix and game is almost close
+2010-09-21T18:23:05  *** mightybyte <mightybyte!~mightybyt@209.48.164.34> has quit IRC (Quit: leaving)
+2010-09-21T18:24:50  <Naktibalda> yep, old version had only 2 planets more at the end
+2010-09-21T18:25:08  <Naktibalda> old aggresive version of my bot is my main opponent :)
+2010-09-21T18:33:18  <Naktibalda> no use, it's loosing 79 games out of 100 allready :)
+2010-09-21T18:33:51  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-09-21T18:35:21  *** Mathnerd314 <Mathnerd314!~mathnerd3@128.198.97.131> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T18:36:51  *** Zeiris <Zeiris!~Zeiris@d206-116-158-135.bchsia.telus.net> has joined #aichallenge
+2010-09-21T18:42:49  *** retybok_ <retybok_!~retybok@i03m-212-195-151-239.d4.club-internet.fr> has quit IRC (Quit: leaving)
+2010-09-21T18:47:55  *** phreeza <phreeza!~phreeza@f048194139.adsl.alicedsl.de> has quit IRC (Quit: Computer has gone to sleep)
+2010-09-21T18:48:47  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T18:50:42  *** boegel <boegel!~boegel@AMontpellier-156-1-98-156.w90-14.abo.wanadoo.fr> has quit IRC (Quit: Leaving)
+2010-09-21T18:51:43  *** smhanov <smhanov!~smhanov@69-165-159-122.dsl.teksavvy.com> has joined #aichallenge
+2010-09-21T18:52:30  *** ysulaiman <ysulaiman!4d40073b@gateway/web/freenode/ip.77.64.7.59> has joined #aichallenge
+2010-09-21T18:54:51  *** ysulaiman <ysulaiman!4d40073b@gateway/web/freenode/ip.77.64.7.59> has quit IRC (Client Quit)
+2010-09-21T18:56:02  *** McLeopold <McLeopold!~scott@67.139.105.186> has quit IRC (Quit: Leaving)
+2010-09-21T18:56:34  <contestbot> Top 10 players: McLeopold(3512), kcm1700(3507), dmj111(3496), adumlah(3379), montanalow(3349), EBraun(3339), Arekku(3313), Tracer(3306), sighbot(3254), Loks1982(3215)
+2010-09-21T18:58:51  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2010-09-21T19:04:51  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T19:05:38  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T19:05:52  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T19:08:30  *** choas <choas!~lars@p578F67B3.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2010-09-21T19:20:25  *** amstan <amstan!~amstan@76-10-146-80.dsl.teksavvy.com> has joined #aichallenge
+2010-09-21T19:20:27  *** ChanServ sets mode: +o amstan
+2010-09-21T19:21:45  *** smhanov <smhanov!~smhanov@69-165-159-122.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2010-09-21T19:25:13  *** Bobng <Bobng!~T@78.151.110.153> has quit IRC (Quit: Leaving)
+2010-09-21T19:25:47  <pacotabaco> hi, just a question... the number of turns of a game affects the ELO?
+2010-09-21T19:27:07  <pacotabaco> for ex: if some one win in 50 turns get more ELO points than if he do it in 200?
+2010-09-21T19:27:26  <jmcarthur> nope
+2010-09-21T19:27:46  <jmcarthur> all wins count the same
+2010-09-21T19:27:59  <pacotabaco> ok, it's just win/lose/draw?
+2010-09-21T19:28:04  <jmcarthur> yup
+2010-09-21T19:28:10  <pacotabaco> ok, tnks :)
+2010-09-21T19:29:37  *** Mathnerd314 <Mathnerd314!~mathnerd3@128.198.97.131> has joined #aichallenge
+2010-09-21T19:32:00  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T19:36:46  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.86> has joined #aichallenge
+2010-09-21T19:36:54  *** smhanov <smhanov!~smhanov@69-196-186-254.dsl.teksavvy.com> has joined #aichallenge
+2010-09-21T19:37:59  *** yuwei <yuwei!~alex@voodoo.cs.waikato.ac.nz> has quit IRC (Quit: leaving)
+2010-09-21T19:39:18  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Ping timeout: 255 seconds)
+2010-09-21T19:39:18  *** jimmerton_ is now known as jimmerton
+2010-09-21T19:40:13  *** McLeopold <McLeopold!~scott@67.139.105.186> has joined #aichallenge
+2010-09-21T19:40:30  <McLeopold> contestbot: rankings 7
+2010-09-21T19:40:31  <contestbot> McLeopold: Top 7 players: McLeopold(3512), kcm1700(3508), dmj111(3496), adumlah(3379), montanalow(3349), EBraun(3340), Arekku(3314)
+2010-09-21T19:40:49  *** SophieB is now known as zz_SophieB
+2010-09-21T19:40:53  <McLeopold> Arekku is going straight to #1
+2010-09-21T19:42:45  <McLeopold> http://ai-contest.com/visualizer.php?game_id=4620680
+2010-09-21T19:42:56  <McLeopold> That is what most games will start to look like.
+2010-09-21T19:44:31  <Zannick> wow, nice defense
+2010-09-21T19:45:37  <Zannick> heh, nice cross-galaxy spread http://ai-contest.com/visualizer.php?game_id=4624633
+2010-09-21T19:46:38  <jmcarthur> nice
+2010-09-21T19:47:07  *** zz_SophieB is now known as SophieB
+2010-09-21T19:51:25  <Naktibalda> interesting route of petesimard ships
+2010-09-21T19:51:47  <McLeopold> I only hope he plays kcm1700 first. :)
+2010-09-21T19:55:09  *** SophieB is now known as zz_SophieB
+2010-09-21T19:55:10  <justin_pdx> Is ... is Arekku mimicking?
+2010-09-21T19:55:37  <McLeopold> No
+2010-09-21T19:55:54  <McLeopold> He is building very fast.  And defending well.
+2010-09-21T19:56:04  <kcm1700> Arekku impressive move...
+2010-09-21T19:56:34  <contestbot> Top 10 players: McLeopold(3501), kcm1700(3499), dmj111(3487), adumlah(3360), montanalow(3336), EBraun(3330), Tracer(3283), Arekku(3250), sighbot(3243), Willjarn(3235)
+2010-09-21T20:00:21  *** zz_SophieB is now known as SophieB
+2010-09-21T20:03:00  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T20:04:22  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T20:05:10  *** jimmerton <jimmerton!~jamespick@142.166.63.86> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T20:05:11  *** jimmerton_ is now known as jimmerton
+2010-09-21T20:07:00  *** McLeopold <McLeopold!~scott@67.139.105.186> has quit IRC (Quit: Leaving)
+2010-09-21T20:07:21  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T20:07:59  *** hamstah <hamstah!~hamstah@cpc1-oxfd20-2-0-cust894.4-3.cable.virginmedia.com> has joined #aichallenge
+2010-09-21T20:08:01  <hamstah> hey
+2010-09-21T20:08:48  <Naktibalda> why does playGame.jar make 1 turn more than given in parameter?
+2010-09-21T20:09:07  <hamstah> compute the last moves to see the winner I guess
+2010-09-21T20:09:35  <hamstah> last turn just updates
+2010-09-21T20:09:36  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T20:09:37  *** jimmerton_ is now known as jimmerton
+2010-09-21T20:10:23  <hamstah> I made scripts to run bots/game with netcat. kind of the same as tcpserver, but between 2 persons. is there a place I should add a link to them?
+2010-09-21T20:12:07  *** SophieB is now known as zz_SophieB
+2010-09-21T20:12:45  *** Macuyiko <Macuyiko!~macuyiko@ip-213-49-109-53.dsl.scarlet.be> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T20:13:18  *** ulope <ulope!~ulope@eq4.ulo.pe> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T20:13:48  *** justin_pdx <justin_pdx!~Justin@199.223.126.66> has quit IRC (Quit: justin_pdx)
+2010-09-21T20:15:03  *** fahi <fahi!fabian@hirschm.net> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T20:15:07  <Naith> Can add it to the forums
+2010-09-21T20:15:23  <Naktibalda> 2 persons or 2 bots?
+2010-09-21T20:15:31  *** fahi <fahi!fabian@hirschm.net> has joined #aichallenge
+2010-09-21T20:15:33  *** ulope <ulope!~ulope@eq4.ulo.pe> has joined #aichallenge
+2010-09-21T20:15:35  <Naktibalda> ah, it's p2p
+2010-09-21T20:15:50  <hamstah> Naith, k
+2010-09-21T20:16:10  <hamstah> its convenient if you want to play about someone in particular without giving out your code
+2010-09-21T20:16:12  *** cYmen <cYmen!~cymen@squint.a-oben.org> has quit IRC (Ping timeout: 255 seconds)
+2010-09-21T20:16:29  *** cYmen <cYmen!~cymen@squint.a-oben.org> has joined #aichallenge
+2010-09-21T20:16:44  <Naith> Sounds cool thanks I'll check it out later.
+2010-09-21T20:17:09  <Naktibalda> does it work without external IP?
+2010-09-21T20:17:19  <hamstah> works on localhost as well
+2010-09-21T20:17:26  <hamstah> anything netcat can connect to is fine
+2010-09-21T20:17:39  <hamstah> I tested it with a few people
+2010-09-21T20:17:55  *** zz_SophieB is now known as SophieB
+2010-09-21T20:25:25  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T20:26:07  *** SophieB is now known as zz_SophieB
+2010-09-21T20:26:32  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2010-09-21T20:27:23  *** cYmen <cYmen!~cymen@squint.a-oben.org> has quit IRC (Read error: Operation timed out)
+2010-09-21T20:27:57  *** cYmen <cYmen!~cymen@squint.a-oben.org> has joined #aichallenge
+2010-09-21T20:28:00  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T20:28:00  *** jimmerton_ is now known as jimmerton
+2010-09-21T20:33:26  *** zz_SophieB is now known as SophieB
+2010-09-21T20:37:47  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.86> has joined #aichallenge
+2010-09-21T20:39:31  *** fahi <fahi!fabian@hirschm.net> has quit IRC (Ping timeout: 240 seconds)
+2010-09-21T20:39:42  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T20:39:43  *** jimmerton_ is now known as jimmerton
+2010-09-21T20:41:24  *** cYmen <cYmen!~cymen@squint.a-oben.org> has quit IRC (Ping timeout: 255 seconds)
+2010-09-21T20:41:29  *** cYmen <cYmen!~cymen@squint.a-oben.org> has joined #aichallenge
+2010-09-21T20:42:27  <hamstah> ok posted into the forums.
+2010-09-21T20:42:33  *** fahi <fahi!fabian@hirschm.net> has joined #aichallenge
+2010-09-21T20:42:37  <hamstah> bbl, good night
+2010-09-21T20:45:15  *** rogue780 <rogue780!~rogue780@c-68-34-234-213.hsd1.md.comcast.net> has joined #aichallenge
+2010-09-21T20:45:44  *** SophieB is now known as zz_SophieB
+2010-09-21T20:48:10  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Quit: Leaving)
+2010-09-21T20:51:59  *** zz_SophieB is now known as SophieB
+2010-09-21T20:55:47  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T20:56:35  <contestbot> Top 10 players: McLeopold(3499), kcm1700(3497), dmj111(3483), adumlah(3357), montanalow(3333), EBraun(3328), Tracer(3280), Arekku(3247), sighbot(3241), Willjarn(3230)
+2010-09-21T20:56:44  *** smf68 <smf68!~smf68@smf68.ch> has quit IRC (Remote host closed the connection)
+2010-09-21T20:56:49  *** SophieB is now known as zz_SophieB
+2010-09-21T20:58:02  *** jimmerton <jimmerton!~jamespick@142.166.63.86> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T20:58:03  *** jimmerton_ is now known as jimmerton
+2010-09-21T21:00:09  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T21:02:04  *** JCS^ <JCS^!jcs@200-207-104-183.dsl.telesp.net.br> has quit IRC (Ping timeout: 265 seconds)
+2010-09-21T21:02:22  *** zz_SophieB is now known as SophieB
+2010-09-21T21:02:43  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T21:02:43  *** jimmerton_ is now known as jimmerton
+2010-09-21T21:04:38  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T21:05:25  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2010-09-21T21:05:49  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T21:06:42  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Read error: Connection reset by peer)
+2010-09-21T21:06:43  *** jimmerton_ is now known as jimmerton
+2010-09-21T21:09:14  *** SophieB is now known as zz_SophieB
+2010-09-21T21:09:15  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.86> has joined #aichallenge
+2010-09-21T21:11:52  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Ping timeout: 272 seconds)
+2010-09-21T21:11:52  *** jimmerton_ is now known as jimmerton
+2010-09-21T21:14:11  *** MarcAndrePC <MarcAndrePC!6015a376@gateway/web/freenode/ip.96.21.163.118> has joined #aichallenge
+2010-09-21T21:14:26  <MarcAndrePC> Hello - Allo
+2010-09-21T21:16:01  *** zz_SophieB is now known as SophieB
+2010-09-21T21:18:40  *** Mathnerd314 <Mathnerd314!~mathnerd3@128.198.97.131> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.8/20100722155716])
+2010-09-21T21:22:08  *** SophieB is now known as zz_SophieB
+2010-09-21T21:24:51  *** Snowplan <Snowplan!~snowplan@pool-173-69-213-11.bltmmd.fios.verizon.net> has joined #aichallenge
+2010-09-21T21:25:19  <Snowplan> is there a prob with the server Im getting connection refused
+2010-09-21T21:25:43  <Snowplan> prob just noobing it up
+2010-09-21T21:27:02  *** zz_SophieB is now known as SophieB
+2010-09-21T21:29:03  <Naktibalda> IP of tcp server was changed
+2010-09-21T21:29:20  <Snowplan> ok whats the new IP
+2010-09-21T21:29:34  <Snowplan> I didn't read that much into it
+2010-09-21T21:29:43  <Naktibalda> read http://www.benzedrine.cx/planetwars/
+2010-09-21T21:29:47  <Snowplan> thanks
+2010-09-21T21:30:03  <Tempest> rankings
+2010-09-21T21:30:09  <sigh> (don't forget to change the port as well)
+2010-09-21T21:30:11  <sigh> @rankinigs
+2010-09-21T21:30:12  <contestbot> sigh: I have no idea what you mean.
+2010-09-21T21:30:17  <sigh> @ranking
+2010-09-21T21:30:19  <contestbot> sigh: Top 10 players: McLeopold(3506), kcm1700(3497), dmj111(3487), adumlah(3369), montanalow(3339), EBraun(3332), Tracer(3284), Arekku(3251), sighbot(3245), Willjarn(3221)
+2010-09-21T21:30:27  <sigh> Tempest: there you go :P
+2010-09-21T21:30:51  <Tempest> thx
+2010-09-21T21:32:18  <Snowplan> lol forgot to change the port
+2010-09-21T21:32:32  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-17-224.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T21:32:55  <sigh> Snowplan: what did I say :P
+2010-09-21T21:33:31  <Snowplan> should change my name to noobplan
+2010-09-21T21:34:12  <sigh> nah, the only reason I mentioned that is because others made the same mistake
+2010-09-21T21:36:46  <Snowplan> I'm running off the java client is there a way to visualize
+2010-09-21T21:37:45  <Snowplan> damn thought my bot would do a bit better
+2010-09-21T21:37:57  <MarcAndrePC> what's your rank?
+2010-09-21T21:38:59  <Naktibalda> what to visualize? you can watch  games in server
+2010-09-21T21:39:41  <Snowplan> 945 now, no real AI work in my bot. Thought a rough version of my bot would at least be around 500
+2010-09-21T21:40:38  <Snowplan> alls I'm looking at on TCP is statements and you lose
+2010-09-21T21:40:39  <Snowplan> lol
+2010-09-21T21:41:04  <Snowplan> can I pipe the showgame
+2010-09-21T21:41:49  <Naktibalda> http://72.44.46.68/getratings find yourself
+2010-09-21T21:43:17  *** SophieB is now known as zz_SophieB
+2010-09-21T21:43:18  <Snowplan> Thanks
+2010-09-21T21:44:52  <sigh> you don't need to hunt through the ratings list, you can go to: http://72.44.46.68/getplayer?player=<username>
+2010-09-21T21:47:17  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T21:49:46  *** zz_SophieB is now known as SophieB
+2010-09-21T21:50:10  *** jimmerton <jimmerton!~jamespick@142.166.63.86> has quit IRC (Ping timeout: 276 seconds)
+2010-09-21T21:50:11  *** jimmerton_ is now known as jimmerton
+2010-09-21T21:50:18  <Snowplan> once again thanks sigh.
+2010-09-21T21:51:10  <Snowplan> why is the tcp server so much better then the waterloo one
+2010-09-21T21:51:57  <dufflebunk> the waterloo one has 1400 bots to play against each other
+2010-09-21T21:52:02  <jmcarthur> it's a completely different architecture with completely different goals
+2010-09-21T21:52:34  <jmcarthur> dufflebunk: 1884 bots, actually
+2010-09-21T21:53:37  <jmcarthur> a single round robin would require over 3.5 million games
+2010-09-21T21:53:45  <jmcarthur> and this number is still climbing
+2010-09-21T21:53:56  <dufflebunk> s/1400/more bots than I can count on my fingers and toes/
+2010-09-21T21:53:56  <jmcarthur> oh i did that math very wrong though
+2010-09-21T21:54:16  <jmcarthur> my bad, "only" 1.8 million games
+2010-09-21T21:54:20  <Snowplan> lol
+2010-09-21T21:54:34  <Snowplan> any idea on the prize yet
+2010-09-21T21:54:47  * jmcarthur shrugs
+2010-09-21T21:54:55  <jmcarthur> the prize could end up just being fame and glory
+2010-09-21T21:55:04  <jmcarthur> and a million recruiters breathing down your neck :)
+2010-09-21T21:55:20  <Snowplan> great point
+2010-09-21T21:55:38  <jmcarthur> Snowplan: a1k0n had that "problem" after the last contest
+2010-09-21T21:56:27  <Snowplan> It's always good to sweeten the pot.
+2010-09-21T21:56:35  <contestbot> Top 10 players: McLeopold(3509), kcm1700(3504), dmj111(3492), adumlah(3376), EBraun(3350), montanalow(3335), Tracer(3283), sighbot(3249), Arekku(3242), Loks1982(3225)
+2010-09-21T21:57:58  *** SophieB is now known as zz_SophieB
+2010-09-21T22:01:35  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-09-21T22:02:20  <Snowplan> Again I do thank all the people who made this contest.  This is fun.
+2010-09-21T22:03:08  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has joined #aichallenge
+2010-09-21T22:03:30  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T22:03:30  *** jimmerton_ is now known as jimmerton
+2010-09-21T22:04:48  *** zz_SophieB is now known as SophieB
+2010-09-21T22:05:42  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has quit IRC (Quit: Page closed)
+2010-09-21T22:10:07  <MarcAndrePC> lol I made a stupid bot and rank 228, but the work to make it better is so much bigger O_o
+2010-09-21T22:11:55  <Snowplan> I want to make a bot that can be stable in 300.  Def pat yourself on the back
+2010-09-21T22:13:01  <Naktibalda> everyone is making his bot better
+2010-09-21T22:14:36  <Naktibalda> what is AI actually?
+2010-09-21T22:14:39  <jimmerton> is there a way to make the simulator quicker?
+2010-09-21T22:14:45  <jimmerton> it takes a couple of seconds per game on my machine
+2010-09-21T22:14:48  <Snowplan> why?
+2010-09-21T22:14:52  <jimmerton> seems very slow
+2010-09-21T22:14:59  <jimmerton> to run through a few hundred games
+2010-09-21T22:15:15  <Naktibalda> jimmerton: make your bot faster :)
+2010-09-21T22:15:33  <jimmerton> hah, you think it's my bot that's slow?
+2010-09-21T22:15:37  <Naktibalda> how many turns your games last?
+2010-09-21T22:15:38  <jimmerton> I assumed it was the game engine
+2010-09-21T22:15:43  <jimmerton> 100-odd
+2010-09-21T22:16:14  <jmcarthur> are you talking about the engine or the visualizer?
+2010-09-21T22:16:18  <jimmerton> the engine
+2010-09-21T22:16:32  <jmcarthur> maybe try one of the c++ engines from the forums?
+2010-09-21T22:16:33  <jimmerton> java -jar tools/PlayGame
+2010-09-21T22:16:37  <jimmerton> ah I didn't see those
+2010-09-21T22:16:41  <jimmerton> I'll try one
+2010-09-21T22:16:41  <Naktibalda> couple of seconds for a game is very fast, you are allowed to use 1 second per turn
+2010-09-21T22:16:42  <jmcarthur> there's at least one
+2010-09-21T22:16:51  <jmcarthur> not sure if the Qt one is also c++ (probably is)
+2010-09-21T22:16:52  <Snowplan> mine sucks
+2010-09-21T22:17:00  <jimmerton> my bot is pretty stupid Naktibalda
+2010-09-21T22:17:06  <jimmerton> so it should be quick
+2010-09-21T22:17:11  <Naktibalda> what language is it?
+2010-09-21T22:17:22  <jimmerton> python
+2010-09-21T22:17:33  <jmcarthur> my bot is going to run full game simulations many times per turn, so i'm working hard to make it pretty fast
+2010-09-21T22:18:18  <jimmerton> how many turns into the future are you expecting to simulate?
+2010-09-21T22:18:29  <Naktibalda> why do you want to make it faster? It takes me a few minutes to analyze 1 game
+2010-09-21T22:18:47  <jimmerton> for bulk testing
+2010-09-21T22:18:53  <Snowplan> I want my bot to eventually realize this game is trivial and pursue global dominations
+2010-09-21T22:19:03  <jimmerton> sometimes I run a new version against all the bots on all the maps
+2010-09-21T22:19:14  <jimmerton> it takes about 10 minutes
+2010-09-21T22:19:27  <jimmerton> I'd like it to be quicker
+2010-09-21T22:19:44  <jmcarthur> jimmerton: i'm simulating all the way to the end of the match, just not all possible matches
+2010-09-21T22:20:26  <jmcarthur> as in, there is no branching factor
+2010-09-21T22:20:42  <jimmerton> how is there any value in that?
+2010-09-21T22:20:49  <jmcarthur> i shan't tell
+2010-09-21T22:20:53  <jimmerton> heh, ok
+2010-09-21T22:21:03  <jimmerton> are you assuming the enemy will do what your bot would do?
+2010-09-21T22:21:09  <jmcarthur> not at all
+2010-09-21T22:21:26  <jmcarthur> i am making no assumptions about the enemy, actually
+2010-09-21T22:21:37  <Snowplan> good to know
+2010-09-21T22:21:57  <jimmerton> I can't see much value in evaluating branches which are unlikely to occur
+2010-09-21T22:22:13  <jmcarthur> i assure you there is. i'm just not going to say what
+2010-09-21T22:23:21  <jimmerton> do you have a bot in the competition?
+2010-09-21T22:23:26  <Snowplan> I think a real AI thinks on its own thats why I'm running through cases to implement an indefinate strategy
+2010-09-21T22:23:47  <jmcarthur> not yet
+2010-09-21T22:24:07  <jimmerton> I'm just hand coding sensible strategy for now
+2010-09-21T22:24:15  <jimmerton> I'll look at proper ai methods later
+2010-09-21T22:24:21  <jimmerton> when I have better understanding of the game myself
+2010-09-21T22:24:24  <jmcarthur> heh, "proper"
+2010-09-21T22:24:27  <jmcarthur> no such thing
+2010-09-21T22:24:40  <jimmerton> what I mean is
+2010-09-21T22:24:44  <jimmerton> machine learning algorithms
+2010-09-21T22:24:48  <jmcarthur> ah
+2010-09-21T22:24:52  <jmcarthur> that's an unusual approach
+2010-09-21T22:24:56  *** Naith <Naith!~nickbarth@S0106001b38137d1b.ed.shawcable.net> has quit IRC (Quit: Naith)
+2010-09-21T22:25:03  <jimmerton> do you think so?
+2010-09-21T22:25:06  <Snowplan> anyone use linux
+2010-09-21T22:25:14  <jmcarthur> <-- uses linux
+2010-09-21T22:25:25  <jimmerton> I'm planning on hand coding most of the strategy and tweaking the value functions using machine learning
+2010-09-21T22:25:30  <jimmerton> linux and os x, what's up?
+2010-09-21T22:25:33  <Snowplan> It's actially awsome
+2010-09-21T22:25:33  <jmcarthur> jimmerton: yeah. the last contest was won by search algorithms
+2010-09-21T22:25:41  <Snowplan> actually
+2010-09-21T22:25:41  <greghaynes> No one, ever, uses linux. why?
+2010-09-21T22:26:03  <jmcarthur> i don't think search applies as strongly this time
+2010-09-21T22:26:11  <jmcarthur> because the search space is so huge
+2010-09-21T22:26:15  <greghaynes> Defintely
+2010-09-21T22:26:21  <greghaynes> Tron was all about search
+2010-09-21T22:26:23  <jimmerton> I think the value functions will be important
+2010-09-21T22:26:28  <jmcarthur> nonetheless, i am working with a search algorithm of my own
+2010-09-21T22:26:38  <jimmerton> the value of a planet based on the planets around it
+2010-09-21T22:26:47  <jimmerton> etc
+2010-09-21T22:26:49  <greghaynes> You could definitely turn this into a search problem...
+2010-09-21T22:27:10  <jmcarthur> yeah you just have to have insane pruning, or don't generate moves that you have to prune in the first place...
+2010-09-21T22:27:48  <jmcarthur> it also looks a lot like some sort of linear programming problem to me, but i haven't determined how to go about that approach yet
+2010-09-21T22:28:11  <jmcarthur> the rules are just ever so slightly more complicated than i think straight up linear programming can tackle
+2010-09-21T22:28:20  <jmcarthur> but maybe some generalization...
+2010-09-21T22:28:35  <jmcarthur> might be too computationally expensive if it even exists
+2010-09-21T22:29:11  <jmcarthur> and finding it would probably be thesis-worthy
+2010-09-21T22:30:01  <sigh> I've been trying to nut out some solid maths for this, but failing other than in very simple situations
+2010-09-21T22:30:26  <jmcarthur> my attempts to micro-optimize my simulation code has proven to be surprisingly fruitful in this area
+2010-09-21T22:30:33  <jmcarthur> of understanding the game on a more mathematical level, i mean
+2010-09-21T22:30:57  <sigh> hmmm... any hints? ;)
+2010-09-21T22:31:16  <jmcarthur> that *was* a hint :P
+2010-09-21T22:31:23  <sigh> haha
+2010-09-21T22:31:58  *** antiUni <antiUni!83d90608@gateway/web/freenode/ip.131.217.6.8> has joined #aichallenge
+2010-09-21T22:32:24  <jmcarthur> optimization has the nice property that it's most effective when you can weed out redundant information and distill the problem to its core
+2010-09-21T22:32:41  <jmcarthur> redundant and unnecessary information, that is
+2010-09-21T22:32:54  <sigh> yeah
+2010-09-21T22:32:58  <antiUni> i love going back through and clearing  out crap i originally thought i needed
+2010-09-21T22:33:23  <antiUni> bot has finally made it a bit higher on the official leaderboard agian
+2010-09-21T22:34:48  <Snowplan> less then 4 planets my bot sucks
+2010-09-21T22:34:53  *** hornairs <hornairs!~hornairs@67.55.10.172> has joined #aichallenge
+2010-09-21T22:35:21  *** Appleman1234 <Appleman1234!~Appleman1@131.181.19.146> has joined #aichallenge
+2010-09-21T22:35:28  <jmcarthur> using this purely functional multidimensional array library has really made me think about the problem differently. i didn't quite expect that
+2010-09-21T22:36:08  <sigh> thinking about anything in a purely functional way makes you think about the problem differently
+2010-09-21T22:36:35  <jmcarthur> well yeah, but i have been using haskell as my primary language for 3+ years now
+2010-09-21T22:36:43  <sigh> :)
+2010-09-21T22:36:51  <jmcarthur> but this library is a really fresh look at multidimensional arrays for me, regardless
+2010-09-21T22:37:08  *** SophieB is now known as zz_SophieB
+2010-09-21T22:37:08  <sigh> I keep meaning to get into haskell
+2010-09-21T22:37:27  *** zz_SophieB is now known as SophieB
+2010-09-21T22:38:20  <jmcarthur> i like how it emphasizes cache coherency by offering functions that pretty much exclusively operate on the "inner" dimensions of the arrays
+2010-09-21T22:38:56  <sigh> hmmm... hadn't thought of it that way
+2010-09-21T22:39:05  <sigh> interesting
+2010-09-21T22:39:13  <jmcarthur> and to work on out dimensions you have to transpose the array, which is actually a free operation because it only changes the indexing function, but having to do that explicitly forces you to consider the cache effects you are about to inflict
+2010-09-21T22:39:17  <jmcarthur> *on outer
+2010-09-21T22:40:17  <jmcarthur> and then finally you can balance it all out with a force function that rewrites the array into a cache coherent form for the current index transformation
+2010-09-21T22:40:22  <jimmerton> antiUni: what rank is your bot?
+2010-09-21T22:40:29  <antiUni> 15
+2010-09-21T22:40:33  <antiUni> "youwillfail"
+2010-09-21T22:40:34  <jimmerton> wow, nice
+2010-09-21T22:40:47  <sigh> haha... it's antimatroid1
+2010-09-21T22:41:00  <jimmerton> what sort of strategy are you using at this point?
+2010-09-21T22:41:07  <jimmerton> have you done any machine learning stuff?
+2010-09-21T22:41:22  *** Naktibalda <Naktibalda!~quassel@cpc2-heme6-0-0-cust884.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2010-09-21T22:44:20  <antiUni> no machine learning stuff, still stricly heuristic based off of information
+2010-09-21T22:44:52  <Snowplan> word
+2010-09-21T22:45:29  <antiUni> planning to move beyond that soon though
+2010-09-21T22:45:44  <antiUni> i too need to jump in and play around with haskell sometime, people seem to think it's wonderful
+2010-09-21T22:46:22  <jimmerton> is it possible to enter a haskell bot?
+2010-09-21T22:46:29  <jimmerton> what language are you using currently?
+2010-09-21T22:47:14  <antiUni> i'm using c++, you can use haskell though
+2010-09-21T22:47:18  <antiUni> i believe jmcarthur is
+2010-09-21T22:48:03  *** icky <icky!~ben@adsl-66-218-47-106.dslextreme.com> has quit IRC (Ping timeout: 252 seconds)
+2010-09-21T22:49:23  *** dmj111_ <dmj111_!~user@pool-96-247-178-205.altnpa.east.verizon.net> has joined #aichallenge
+2010-09-21T22:49:33  *** dmj111_ is now known as dmj111
+2010-09-21T22:49:40  <jmcarthur> yeah there are a few using haskell
+2010-09-21T22:49:48  <jmcarthur> the server currently has a super crappy version of ghc though
+2010-09-21T22:50:11  <sigh> jmcarthur: how goes your campaign for binaries?
+2010-09-21T22:50:37  <jmcarthur> sigh: no objections on the mailing list. i think it will go through. i just have to convince an admin to actually take the steps to allow it
+2010-09-21T22:50:45  <sigh> cool
+2010-09-21T22:50:56  <jmcarthur> sigh: i had written a patch for it ages ago. just needs to be merged in and an entry added to the db
+2010-09-21T22:51:57  <sigh> jmcarthur: what is your role in this comp, you seem quite involved, but you aren't an admin?
+2010-09-21T22:52:11  <jmcarthur> no i'm just a contributor
+2010-09-21T22:52:18  <jmcarthur> the project being open source means it's easy to help out :)
+2010-09-21T22:52:23  <sigh> ah, i see... keep up the good work :)
+2010-09-21T22:53:04  <jmcarthur> pretty much the only people who are disqualified from entering are the maintainers (those who have access to the machines running the bots and stuff)
+2010-09-21T22:53:17  <sigh> yeah, that's fair
+2010-09-21T22:53:38  <jmcarthur> some of the maintainers are actually people who were originally going to compete but sacrificed that to assist with the technicals
+2010-09-21T22:53:48  <jmcarthur> i do not envy them, but i am very grateful
+2010-09-21T22:53:53  <sigh> :)
+2010-09-21T22:54:24  <jimmerton> I think it's a great competition
+2010-09-21T22:54:34  <sigh> me too
+2010-09-21T22:54:41  <jimmerton> I'm trying to get more of my friends involved
+2010-09-21T22:55:22  *** SophieB is now known as zz_SophieB
+2010-09-21T22:55:44  <sigh> I've got friends who hassel me when my rank starts dropping too low, but no one I know is participating
+2010-09-21T22:55:50  <sigh> *hassle
+2010-09-21T22:56:10  <jmcarthur> McLeopold beat Arekku
+2010-09-21T22:56:37  <contestbot> Top 10 players: McLeopold(3507), dmj111(3494), kcm1700(3493), adumlah(3366), montanalow(3331), EBraun(3321), Tracer(3266), sighbot(3247), Arekku(3225), Loks1982(3215)
+2010-09-21T22:56:55  <sigh> McLeopold beats everyone :P
+2010-09-21T22:57:02  <jmcarthur> he didn't think he would beat Arekku
+2010-09-21T22:57:21  <sigh> why Arekku specifically?
+2010-09-21T22:57:55  <jmcarthur> watch some of Arekku's games
+2010-09-21T22:58:05  <jmcarthur> they a methodical murders
+2010-09-21T22:58:08  <jmcarthur> *they are
+2010-09-21T22:58:49  <sigh> k, I'll study them tonight
+2010-09-21T23:01:44  *** zz_SophieB is now known as SophieB
+2010-09-21T23:06:39  *** SophieB is now known as zz_SophieB
+2010-09-21T23:10:17  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-28-244.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T23:10:48  *** lemonedo <lemonedo!~lemonedo@110.71.237.198> has joined #aichallenge
+2010-09-21T23:10:57  *** lemonedo <lemonedo!~lemonedo@110.71.237.198> has left #aichallenge
+2010-09-21T23:11:10  *** zz_SophieB is now known as SophieB
+2010-09-21T23:11:13  <Janzert> hey, McLeopold gave Arekku the first loss http://ai-contest.com/visualizer.php?game_id=4628636
+2010-09-21T23:16:02  *** MarcAndrePC <MarcAndrePC!6015a376@gateway/web/freenode/ip.96.21.163.118> has quit IRC (Quit: Page closed)
+2010-09-21T23:21:20  *** SophieB is now known as zz_SophieB
+2010-09-21T23:24:43  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Quit: jimmerton)
+2010-09-21T23:27:20  *** zz_SophieB is now known as SophieB
+2010-09-21T23:31:29  *** pc <pc!~xvinyl@AVelizy-153-1-28-244.w83-199.abo.wanadoo.fr> has joined #aichallenge
+2010-09-21T23:32:06  *** xvinyl <xvinyl!~xvinyl@AVelizy-153-1-28-244.w83-199.abo.wanadoo.fr> has quit IRC (Remote host closed the connection)
+2010-09-21T23:32:11  *** SophieB is now known as zz_SophieB
+2010-09-21T23:34:27  *** duallain <duallain!47dcb9d9@gateway/web/freenode/ip.71.220.185.217> has joined #aichallenge
+2010-09-21T23:35:03  *** Alystair <Alystair!Alystair@bas1-toronto10-1279397903.dsl.bell.ca> has joined #aichallenge
+2010-09-21T23:38:19  *** zz_SophieB is now known as SophieB
+2010-09-21T23:42:51  *** Appleman1234 <Appleman1234!~Appleman1@131.181.19.146> has quit IRC (Quit: Leaving)
+2010-09-21T23:43:23  *** Appleman1234 <Appleman1234!~Appleman1@131.181.19.146> has joined #aichallenge
+2010-09-21T23:44:49  *** SophieB is now known as zz_SophieB
+2010-09-21T23:46:00  *** McLeopold <McLeopold!~scott@c-76-121-152-123.hsd1.wa.comcast.net> has joined #aichallenge
+2010-09-21T23:48:36  *** zz_SophieB is now known as SophieB
+2010-09-21T23:49:06  *** duallain <duallain!47dcb9d9@gateway/web/freenode/ip.71.220.185.217> has quit IRC (Quit: Page closed)
+2010-09-21T23:52:17  *** antiUni <antiUni!83d90608@gateway/web/freenode/ip.131.217.6.8> has quit IRC (Quit: Page closed)
+2010-09-21T23:55:50  *** jmcarthur <jmcarthur!~jake@76.73.220.85> has quit IRC (Quit: WeeChat 0.3.0)
+2010-09-21T23:56:36  <contestbot> Top 10 players: McLeopold(3499), dmj111(3489), kcm1700(3487), adumlah(3341), EBraun(3312), Arekku(3309), montanalow(3298), Tracer(3261), Loks1982(3249), paulus(3222)

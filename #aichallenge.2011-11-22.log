@@ -1,0 +1,1644 @@
+2011-11-22T00:00:09  <bmh> thestinger: make a bayesian model and eliminate those hypotheses (about the number of opponents) that are inconsistent with the data!
+2011-11-22T00:00:12  <BenJackson> bmh: gotta read the engine for that
+2011-11-22T00:00:23  <BenJackson> bmh: re bayes I started working on that
+2011-11-22T00:00:54  <bmh> BenJackson: jawesome!
+2011-11-22T00:01:35  <BenJackson>   `username` varchar(128) NOT NULL,
+2011-11-22T00:01:41  <BenJackson> that's from the DB schema
+2011-11-22T00:01:45  <thestinger> the starting positions and varied bot skills makes testing stuff pretty hard
+2011-11-22T00:01:47  *** delt0r_ <delt0r_!~bob@178-190-193-19.adsl.highway.telekom.at> has joined #aichallenge
+2011-11-22T00:01:57  <thestinger> sometimes I have a branch that improves something, but it takes 3-4 days of running it to be sure
+2011-11-22T00:02:04  <BenJackson> yeah
+2011-11-22T00:02:24  <thestinger> and I don't really trust the ranking on the tcp server
+2011-11-22T00:02:38  <BenJackson> oh hell no
+2011-11-22T00:02:41  <thestinger> because good bots start off with new names and bring my bot way down in ranking if I lose, etc.
+2011-11-22T00:02:50  <thestinger> have to watch so many damn replays
+2011-11-22T00:03:02  <BenJackson> I think my bots are ranked lower on all the tcp servers than on the actual challenge site
+2011-11-22T00:03:18  <thestinger> well, look at the top 30 bots
+2011-11-22T00:03:25  <thestinger> it's like 8 people with different versions
+2011-11-22T00:03:52  <thestinger> maybe more than 8 :P
+2011-11-22T00:04:08  <thestinger> I have suspicions that a lot of the bots are the same people even tho the names are different
+2011-11-22T00:04:22  <BenJackson> just to get in the spirit I'll start a second bot on fluxid
+2011-11-22T00:04:34  <bmh> thestinger: don't worry about starting positions when inferring the number of bots. Just think about the size of the map and how many bots you could actually fit
+2011-11-22T00:04:56  <thestinger> there are some crazy maps though :\
+2011-11-22T00:05:04  <bmh> I should submit my terrible diffusion bot to the game proper
+2011-11-22T00:05:14  <thestinger> http://ants.fluxid.pl/replay.9972
+2011-11-22T00:05:16  <thestinger> this is ridiculous
+2011-11-22T00:05:50  <bmh> That's a bad map. (see a1k0n's rant)
+2011-11-22T00:05:53  <a1k0n> no kidding!
+2011-11-22T00:05:58  <a1k0n> fkn hate that map
+2011-11-22T00:06:01  <thestinger> I like how that's a "maze"
+2011-11-22T00:06:12  <BenJackson> I'm amazed at how many fluxid replays I can see without me appearing in them
+2011-11-22T00:06:20  *** scribble <scribble!~3ead3c@96-28-215-150.dhcp.insightbb.com> has joined #aichallenge
+2011-11-22T00:06:55  <thestinger> the game specification actually says something about minimum distances hills need to be from each other
+2011-11-22T00:06:59  <bmh> I'd like to see a map with long mazy bits and a central 'rumble' chamber. Oh, and make the mazy bits small enough that you can zap eachother through them
+2011-11-22T00:06:59  <a1k0n> this map, OTOH, is kinda cool: http://ants.fluxid.pl/replay.9974 even though there's a ridiculously close start
+2011-11-22T00:07:24  *** TheLinker <TheLinker!~TheLinker@host187.190-225-241.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-11-22T00:07:33  <thestinger> http://ants.fluxid.pl/map/mmaze_02p_01.map I actually like this map the most
+2011-11-22T00:07:53  <a1k0n> my bot is *terrible* at that map
+2011-11-22T00:07:53  <BenJackson> they should do all the starter ants on that map
+2011-11-22T00:07:56  <bmh> I'd like to see a map with four hills, separated by water, where you can see all the hills from the start
+2011-11-22T00:08:12  <BenJackson> the funny thing is that I'm great at mazes and suck at random_walks
+2011-11-22T00:08:16  <a1k0n> it's definitely a "turtle" map
+2011-11-22T00:08:16  <BenJackson> or open spaces in general
+2011-11-22T00:08:38  <thestinger> yeah, my bot is terrible at dealing with open spaces
+2011-11-22T00:08:43  <thestinger> because my foragers sacrifice themselves
+2011-11-22T00:09:06  <thestinger> and I lacked defense before about an hour ago
+2011-11-22T00:09:32  * bmh lacks a working bot, cause he talks on IRC too much
+2011-11-22T00:10:16  *** twymer <twymer!~twymer@d118-75-38-31.try.wideopenwest.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T00:11:39  <thestinger> so now I need to figure out how to estimate the number of players
+2011-11-22T00:11:48  <thestinger> and ofc that changes as people are killed
+2011-11-22T00:11:49  <BenJackson> my newer bot seems to be in a long slow loss on fluxid
+2011-11-22T00:11:56  <BenJackson> it has only had a dozen bots for hundreds of turns now
+2011-11-22T00:14:23  <BenJackson> aaand the game is not showing up?
+2011-11-22T00:16:59  <janzert> btw, pypy support is now fully live on the contest servers
+2011-11-22T00:19:36  *** Areks <Areks!~Areks@rs.gridnine.com> has joined #aichallenge
+2011-11-22T00:19:52  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-11-22T00:20:17  <janzert> @later tell McLeopold not to just take care of that corner case at this point, no
+2011-11-22T00:20:17  <contestbot> janzert: Aye, aye, sir
+2011-11-22T00:20:54  <bmh> very attentive bot you've got there
+2011-11-22T00:21:20  <janzert> yeah but he can be rather impolite too ;)
+2011-11-22T00:21:22  <janzert> @error
+2011-11-22T00:21:23  <contestbot> janzert: You have no gotten any error messages recently, so here's a random one just to let you know that we care.
+2011-11-22T00:21:32  <janzert> heh
+2011-11-22T00:21:35  <thestinger> @fight janzert contestbot
+2011-11-22T00:21:36  <contestbot> thestinger: janzert: 414, contestbot: 379
+2011-11-22T00:22:25  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-11-22T00:24:17  <BenJackson> http://ants.fluxid.pl/replay.10008
+2011-11-22T00:24:26  <BenJackson> that game is a perfect example of how I suck on big open maps
+2011-11-22T00:24:48  <BenJackson> if you just select my fog of war and then drag along you can see I collapse down to nothing near the end
+2011-11-22T00:25:39  *** Jak_o_Shadows1 <Jak_o_Shadows1!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Ping timeout: 276 seconds)
+2011-11-22T00:26:06  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-11-22T00:28:13  <antimatroid> there's another bug squashed
+2011-11-22T00:29:43  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-92-231.neo.res.rr.com> has joined #aichallenge
+2011-11-22T00:32:07  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Quit: popped out)
+2011-11-22T00:38:05  <antimatroid> i dunno if i like the lone survivor bonus
+2011-11-22T00:38:19  <antimatroid> only because it's so random on when a game will or wont be allowed to last that long
+2011-11-22T00:38:23  <bhasker> so if we collect more than 1 food its all stored in the hill is it?
+2011-11-22T00:38:29  <bhasker> and an ant is spawned every turn?
+2011-11-22T00:38:33  <antimatroid> bhasker: yep, that's your hive
+2011-11-22T00:38:39  <antimatroid> although you may have more than one hill
+2011-11-22T00:38:49  <bhasker> can more than one ant spawn on a hill in a single turn?
+2011-11-22T00:38:50  <antimatroid> and there's a possible random tie break on which hill may spawn an ant
+2011-11-22T00:38:55  <antimatroid> makes life complicated
+2011-11-22T00:39:03  <antimatroid> only a single ant can spawn on each hill per turn
+2011-11-22T00:39:13  <a1k0n> BenJackson: well to be fair they ganged up on you
+2011-11-22T00:39:23  <antimatroid> an ant will spawn at the hill that spawned an ant longest ago that can spawn an ant, if there's a tie it breaks it randomly
+2011-11-22T00:39:25  <a1k0n> hard to expand with that kind of pressure
+2011-11-22T00:39:30  <bhasker> ah k
+2011-11-22T00:39:50  <antimatroid> i don't like that, i wish bots had to execute spawn orders and were just told how many ants are in their hive
+2011-11-22T00:40:12  *** peyton <peyton!~peyton@rrdhcp-175-38.redrover.cornell.edu> has quit IRC (Quit: peyton)
+2011-11-22T00:41:28  <a1k0n> that would be cool
+2011-11-22T00:42:09  <a1k0n> especially for those trecherous maps with 500 hills
+2011-11-22T00:42:45  <a1k0n> of course that would give you free information on whether your hive was smashed while it wasn't observed but... oh well
+2011-11-22T00:43:23  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-11-22T00:44:06  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-11-22T00:49:04  <thestinger> a new strcat is born \o/
+2011-11-22T00:49:05  <antimatroid> don't let ants spawn at a hill out of view?
+2011-11-22T00:50:04  <bhasker> so there is no incentive anymore to kill enemy ants unless they are blocking your access to food or hill?
+2011-11-22T00:50:07  <bhasker> or attacking your hill
+2011-11-22T00:55:23  <antimatroid> bhasker: control over territory for new food etc.
+2011-11-22T00:55:36  <antimatroid> and you need to get through ants to get to enemy hills etc.
+2011-11-22T00:55:40  <antimatroid> the ants still need to interact
+2011-11-22T00:55:45  <bhasker> hmm k
+2011-11-22T00:56:12  *** ThatSnail <ThatSnail!~chatzilla@c-98-249-235-171.hsd1.fl.comcast.net> has quit IRC (Ping timeout: 276 seconds)
+2011-11-22T01:13:30  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-11-22T01:14:13  *** peyton <peyton!~peyton@rrdhcp-175-38.redrover.cornell.edu> has joined #aichallenge
+2011-11-22T01:18:40  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T01:22:46  *** Jak_o_Shadows1 <Jak_o_Shadows1!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-11-22T01:24:55  *** nappatak <nappatak!ade407e8@gateway/web/freenode/ip.173.228.7.232> has joined #aichallenge
+2011-11-22T01:25:26  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T01:26:24  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-11-22T01:27:17  *** nappatak <nappatak!ade407e8@gateway/web/freenode/ip.173.228.7.232> has quit IRC (Client Quit)
+2011-11-22T01:27:53  <bhasker> so antimatroid what are you using to explore the map and guide the ants?
+2011-11-22T01:31:30  <antimatroid> bhasker: for food/enemy/hill collection a* with multi sources and multi targets
+2011-11-22T01:31:49  <bhasker> and when nothing is available?
+2011-11-22T01:31:52  <antimatroid> for unseen/not recently seen squares just bfs with multi source
+2011-11-22T01:32:03  <antimatroid> what do you mean nothing available?
+2011-11-22T01:32:09  <bhasker> hmm k
+2011-11-22T01:32:10  <antimatroid> i'll "reuse moved ants" when collecting food too
+2011-11-22T01:32:29  <bhasker> i meant when no food/enemy or hill is around your ants
+2011-11-22T01:32:30  <antimatroid> i've got some battle code going too
+2011-11-22T01:32:46  <bhasker> hmm k
+2011-11-22T01:33:23  <antimatroid> just do all the other stuff
+2011-11-22T01:34:07  <antimatroid> battle code is what's most interesting to me at the moment though
+2011-11-22T01:34:09  <bhasker> hmm k
+2011-11-22T01:34:17  <antimatroid> have you played with that yet?
+2011-11-22T01:34:17  <bhasker> my battle code needs work:-\
+2011-11-22T01:34:23  <antimatroid> what are you doing?
+2011-11-22T01:34:39  <bhasker> well mostly i build adhoc squads then step them one step toward target
+2011-11-22T01:34:44  <bhasker> do the same for the targets
+2011-11-22T01:34:50  <bhasker> then for each new location of the ants in the squad
+2011-11-22T01:34:54  <bhasker> i do a battle resolution
+2011-11-22T01:35:08  <bhasker> each local battle results in 1/0/-1
+2011-11-22T01:35:09  <antimatroid> i'm partitioning ants up into those that could land in battles, then for enemies and friend ants picking a set of "offensive" and a set of "defensive" moves then basically run minimax on that
+2011-11-22T01:35:16  <antimatroid> cause it's a 2x2 game it's quite fast
+2011-11-22T01:35:25  <bhasker> yea i am not doing a full minimax yet
+2011-11-22T01:35:28  <bhasker> need to do that
+2011-11-22T01:35:33  <antimatroid> this isn't a full minimax
+2011-11-22T01:35:35  <bhasker> its just like 1-2 step
+2011-11-22T01:35:38  <antimatroid> i did that and it was fairly slow
+2011-11-22T01:35:45  <antimatroid> even for smaller partitions
+2011-11-22T01:35:48  <bhasker> i just do 1 step of mine and enemy
+2011-11-22T01:35:50  <bhasker> for each ant
+2011-11-22T01:35:52  <bhasker> and sum the battle results
+2011-11-22T01:36:02  <bhasker> the problem is i am not generating all possible paths
+2011-11-22T01:36:07  <bhasker> from my ant totarget
+2011-11-22T01:36:14  <bhasker> so i might get a good result along one path
+2011-11-22T01:36:19  <bhasker> but along another path i might lose
+2011-11-22T01:36:33  <bhasker> so if the enemy picks the other one my bot loses the battle sometimes
+2011-11-22T01:36:39  <bhasker> have to fix that
+2011-11-22T01:36:57  <bhasker> but first trying to get it to explore properly right now my exploration code is broken as hell
+2011-11-22T01:40:39  <antimatroid> bhasker; what are you doing for exploration?
+2011-11-22T01:41:06  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Quit: http://www.cyphase.com/)
+2011-11-22T01:41:36  <bhasker> i tried a few strategies, now i am trying the pledge algorithm
+2011-11-22T01:41:50  <bhasker> basically i pick a random direction and move in that till i hit a wall then i do wall follow
+2011-11-22T01:42:05  <bhasker> so each ant independently does a walk
+2011-11-22T01:42:27  <bhasker> my older strategy was to move only when it increased vision
+2011-11-22T01:42:32  <bhasker> which worked well in the previous ruleset
+2011-11-22T01:42:38  <bhasker> but in this it just ends up blocking the hill
+2011-11-22T01:42:42  <bhasker> and prevents ants from spawning
+2011-11-22T01:44:19  <bmh> bhasker: How about a levy flight?
+2011-11-22T01:44:34  <bhasker> not sure what that is bmh :(
+2011-11-22T01:44:36  *** Euphony <Euphony!1812b80b@gateway/web/freenode/ip.24.18.184.11> has joined #aichallenge
+2011-11-22T01:44:42  <bmh> walking till you *hit* a wall is a dumb strategy. Walking until you *know* you'll hit a wall is smarter.
+2011-11-22T01:44:54  <bhasker> hmm true
+2011-11-22T01:45:01  <bmh> bhasker: wikipedia, man! bhasker: en.wikipedia.org/wiki/Lévy_flight
+2011-11-22T01:45:06  <bhasker> yea just looking it up
+2011-11-22T01:45:19  <bmh> it's probably a bad idea because we know how large the map is
+2011-11-22T01:46:03  <bhasker> let me make that change makes sense no point going edge to edge
+2011-11-22T01:46:06  <bmh> I once wrote a tiny tank AI that used a levy flight. Toward the end of the game bots couldn't find other bots to shoot, while my bot tended to find them and mop up. (other than that it was a rubbish bot and I stole my shooting controls from another bot)
+2011-11-22T01:46:50  <bhasker> levy flight seems a bit too complicated to implement at the moment
+2011-11-22T01:47:06  <bhasker> but implementing a move when i know a wall will be hit should be easier
+2011-11-22T01:47:14  <bmh> and more useful!
+2011-11-22T01:47:22  <bhasker> yes
+2011-11-22T01:47:33  <bmh> Levy Flight is really simple. The only magic is the distribution you're sampling from to get the segment lengths.
+2011-11-22T01:48:28  <bhasker> yea will look into that next, let me see how much of an improvement i can get with simple fixes first
+2011-11-22T01:48:42  <bhasker> i anyway think i might have to rewrite this bot, since i had written it for the previous ruleset
+2011-11-22T01:48:48  <bmh> That's smart :)
+2011-11-22T01:48:48  <bhasker> and it has too many baked in assumptions
+2011-11-22T01:49:20  <bhasker> though i really need to get out of this if then else habit of coding bots
+2011-11-22T01:49:24  <bmh> My bot doesn't even work!
+2011-11-22T01:49:35  <bhasker> and i need to add some defense code
+2011-11-22T01:49:47  <bhasker> though i wonder why hills have no visibility
+2011-11-22T01:49:59  <bhasker> you know one would think a hill should have at least the same visibility as an ant
+2011-11-22T01:50:01  <bhasker> at least
+2011-11-22T01:50:07  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-11-22T01:50:12  <bhasker> right now if your ant is away from hill you don't get vision information around your hill
+2011-11-22T01:50:23  <bhasker> which makes for a messy situation:-\
+2011-11-22T01:50:37  *** Fandekasp <Fandekasp!~Fandekasp@190.14.97.84.rev.sfr.net> has joined #aichallenge
+2011-11-22T01:52:05  *** ALplus <ALplus!~ALplus@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-11-22T01:54:58  *** bmh <bmh!ada4e181@fsf/member/bmh> has quit IRC (Quit: Page closed)
+2011-11-22T01:55:23  <antimatroid> bhasker: yeah i just started a bot pretty much from scratch the other day
+2011-11-22T01:55:42  <antimatroid> i basically stripped my beta bot down to having no strategy and built up from there
+2011-11-22T01:55:50  <bhasker> yea will have to do something like that
+2011-11-22T01:56:01  <bhasker> most of my state stuff is things i can reuse
+2011-11-22T01:56:06  <bhasker> and battle code can be reused too
+2011-11-22T01:56:19  <antimatroid> i didn't  have battle code before
+2011-11-22T01:56:23  <antimatroid> did that over the weekend
+2011-11-22T01:56:25  <bhasker> since i didn't take into account the food in battle in my older code
+2011-11-22T01:56:32  <bhasker> so that doesn't change
+2011-11-22T01:56:44  <bhasker> its mostly the exploration code which needs a better strategy
+2011-11-22T01:56:59  <bhasker> and need to add defense code for hills and attack code for enemy hills
+2011-11-22T01:57:06  <bhasker> also need to add some path caching
+2011-11-22T01:57:11  <bhasker> into my a*
+2011-11-22T01:57:19  <bhasker> so that i can reuse partial path generations
+2011-11-22T01:57:27  <bhasker> and not rebuild complete paths everytime
+2011-11-22T01:57:56  <antimatroid> i was going to store moves between turns but the random tie break rule for hills ruined that plan
+2011-11-22T01:57:58  <antimatroid> it was just too messy
+2011-11-22T01:58:01  <bhasker> esp like when routing alls pare ants to some enemyHill
+2011-11-22T01:58:16  <bhasker> instead of generating all paths over and over again
+2011-11-22T01:58:23  <bhasker> a lot of ants will have a common path after a point
+2011-11-22T01:58:33  <bhasker> so closer ants paths can be reused
+2011-11-22T01:58:39  <bhasker> for longer paths
+2011-11-22T01:58:50  <bhasker> instead of recalculating all of it
+2011-11-22T01:59:00  <bhasker> but my code is not structured that way right now to make use of cached paths
+2011-11-22T01:59:04  <bhasker> will have to rewrite a lot of it
+2011-11-22T02:07:48  *** b0rder <b0rder!~b0rder@123.122.64.179> has quit IRC (Ping timeout: 258 seconds)
+2011-11-22T02:08:07  *** b0rder <b0rder!~b0rder@123.122.64.179> has joined #aichallenge
+2011-11-22T02:09:20  *** Palmik <Palmik!~palmik@man-208-94.pks.muni.cz> has joined #aichallenge
+2011-11-22T02:12:03  *** Jak_o_Shadows1 <Jak_o_Shadows1!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-11-22T02:16:55  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-22T02:18:55  <McLeopold> antimatroid: can you explain your multi A*?
+2011-11-22T02:32:02  *** AntDroid <AntDroid!781c39b6@gateway/web/freenode/ip.120.28.57.182> has joined #aichallenge
+2011-11-22T02:36:50  <antimatroid> McLeopold: hdist(x) = min manhatten distance from x to a target location
+2011-11-22T02:36:52  <antimatroid> McLeopold: anything else?
+2011-11-22T02:38:04  <antimatroid> multi source is easy, just add all ants to the search queue when you start searching
+2011-11-22T02:38:26  <McLeopold> ?
+2011-11-22T02:38:37  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-11-22T02:38:54  <antimatroid> hdist is your heuristic function for a location x, it gives the best case min path length to a target location
+2011-11-22T02:39:16  <McLeopold> so, multiple sources and multiple targets?
+2011-11-22T02:39:20  <antimatroid> yep
+2011-11-22T02:39:57  <antimatroid> say i'm collecting food, i'll add all movable ants to a search queue, with g = turn the ant is available to move (=0 unless the ant has already been "moved")
+2011-11-22T02:39:59  <McLeopold> at once?
+2011-11-22T02:40:09  <antimatroid> yeah all simultaneously
+2011-11-22T02:40:17  <antimatroid> then f = g + h
+2011-11-22T02:40:25  <antimatroid> and the priority queue orders by f
+2011-11-22T02:40:31  <antimatroid> and i think i break the tie with h
+2011-11-22T02:40:39  <McLeopold> okay, I get a* with 1 source and 1 dest
+2011-11-22T02:40:55  <antimatroid> okay, a* with n sources is almost the same
+2011-11-22T02:41:03  <antimatroid> just add all source locations to your search queue at the start
+2011-11-22T02:41:04  <antimatroid> with me?
+2011-11-22T02:41:11  <McLeopold> no...
+2011-11-22T02:41:30  <McLeopold> I understand what you are saying to do, I don't get how it works...
+2011-11-22T02:41:42  <antimatroid> http://en.wikipedia.org/wiki/A*_search_algorithm#Description
+2011-11-22T02:41:50  <antimatroid> i think based on that definition
+2011-11-22T02:42:05  <antimatroid> for 1 target you have h(x) = manhatten distance (x, target)
+2011-11-22T02:42:13  <antimatroid> i just make h(x) the minimum of those distances
+2011-11-22T02:42:29  <McLeopold> so, do you just get 1 source to dest output?
+2011-11-22T02:42:43  <antimatroid> yeah
+2011-11-22T02:42:47  <McLeopold> ah
+2011-11-22T02:42:54  <antimatroid> you find a minimum path from one of the sources to one of the targets
+2011-11-22T02:43:12  <antimatroid> then when i collect food i'll iteratively collect uncollected food
+2011-11-22T02:43:32  <McLeopold> and start over for each food?
+2011-11-22T02:44:08  <antimatroid> you can also get information about how many turns untill say a square could be in the battle range of an enemy and use such information while pathfinding with your g(x) values
+2011-11-22T02:44:17  <antimatroid> yeah i start the search again for each food item
+2011-11-22T02:44:31  <McLeopold> it seems that any open node that was headed to a food node that got picked by a different source would need to be thrown out
+2011-11-22T02:44:43  <antimatroid> what?
+2011-11-22T02:44:55  <McLeopold> okay, I need an example...
+2011-11-22T02:45:53  <antimatroid> i think it's also worth sometimes treating your other ants like water when pathfinding
+2011-11-22T02:46:09  <antimatroid> that should do a poor job of diverting ants around battles to come in from other directions
+2011-11-22T02:46:13  <McLeopold> maybe, but I'm solving a problem for map generations :)
+2011-11-22T02:46:26  <antimatroid> ahhh, just use bfs?
+2011-11-22T02:46:34  <McLeopold> maybe, but I wanted to check
+2011-11-22T02:46:41  <antimatroid> i'm not really sure that this a* is any faster than bfs
+2011-11-22T02:46:46  <antimatroid> but it's cooler so i'm using it anyway :P
+2011-11-22T02:46:58  <McLeopold> http://paste.aichallenge.org/KtWMl/
+2011-11-22T02:47:12  <antimatroid> the problem comes in with calculating the heuristic distance, if you have lots of targets then it might be quite slow i think
+2011-11-22T02:47:36  <antimatroid> McLeopold: wayyyyyyyyyyyyyyy too many hills
+2011-11-22T02:47:38  <McLeopold> so, in that map, every ant/hill is a potential candidate for an actual hill, I want a matrix of distances
+2011-11-22T02:47:41  <antimatroid> awesome otherwise
+2011-11-22T02:47:47  <antimatroid> ahhh okay
+2011-11-22T02:48:14  <McLeopold> I can bfs from each hill until I cover the map.
+2011-11-22T02:48:23  <McLeopold> I was wondering if there was a better way
+2011-11-22T02:48:26  <antimatroid> yeah
+2011-11-22T02:48:29  <antimatroid> i'll think about it
+2011-11-22T02:48:36  <antimatroid> i would probably just do the bfs from each hill
+2011-11-22T02:48:41  <antimatroid> that should still be quite fast
+2011-11-22T02:49:14  <antimatroid> McLeopold: the matrix is going to be symmetric
+2011-11-22T02:49:19  <McLeopold> I was thinking of writing a python coroutine to do it :)
+2011-11-22T02:49:19  <antimatroid> you should be able to use that information?
+2011-11-22T02:49:42  <McLeopold> yeah, so for each hill, I can remove it from the list for the next cycle
+2011-11-22T02:50:12  <antimatroid> and you don't need to do the last cycle?
+2011-11-22T02:50:16  <McLeopold> I guess the best case would be to use the furthest hill from the last cycle as the seed for the next
+2011-11-22T02:50:39  <McLeopold> then you end up with the later cycles being near each other
+2011-11-22T02:50:41  <antimatroid> have you written it up and seen how fast it is?
+2011-11-22T02:50:45  <McLeopold> no
+2011-11-22T02:50:47  <antimatroid> i can't imagine it's going to be much of a problem
+2011-11-22T02:51:19  <antimatroid> what's the plan for picking hill locations?
+2011-11-22T02:51:20  <McLeopold> but...coroutines :D
+2011-11-22T02:51:42  <McLeopold> remove combos out of proper range
+2011-11-22T02:51:51  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has quit IRC (Quit: WeeChat 0.3.6)
+2011-11-22T02:51:54  <antimatroid> maximising the average path to other squares or something might put them further away from the central battle zones in mazes?
+2011-11-22T02:52:25  <antimatroid> although variety there might be good
+2011-11-22T02:52:31  <McLeopold> I need to enforce the 250 max hill-to-hill requirement
+2011-11-22T02:52:41  <McLeopold> and the 100 min
+2011-11-22T02:52:55  <McLeopold> and also proving if 250 and 100 make sense
+2011-11-22T02:53:03  <antimatroid> yep
+2011-11-22T02:53:07  <antimatroid> 100 is quite large?
+2011-11-22T02:53:16  <McLeopold> yeah, that would probably need to be smaller
+2011-11-22T02:53:22  <antimatroid> wont that almost make open maps unfeasible with similar dimensions?
+2011-11-22T02:53:44  <McLeopold> not if they have enough barriers between the hills
+2011-11-22T02:54:06  <antimatroid> shouldn't there be some maps that are almost entirely open?
+2011-11-22T02:54:12  <McLeopold> yep
+2011-11-22T02:54:24  <antimatroid> while i love the maze maps i agree on the need for variety
+2011-11-22T02:54:27  <McLeopold> but we still want some type of min
+2011-11-22T02:54:41  <antimatroid> i would put it somewhere like 30
+2011-11-22T02:54:45  <antimatroid> and consider even reducing that
+2011-11-22T02:54:48  <McLeopold> that sounds good
+2011-11-22T02:55:00  <antimatroid> a1k0n probably has an opinion on that one :P
+2011-11-22T02:55:23  <McLeopold> I think we had talked about view radius * 2 or 3
+2011-11-22T02:56:19  <antimatroid> it's now 7ish yeah?
+2011-11-22T02:56:29  <McLeopold> sqrt(77)
+2011-11-22T02:56:45  <McLeopold> 8ish
+2011-11-22T02:56:49  <antimatroid> yep
+2011-11-22T02:57:04  <McLeopold> so, 24 makes sense to me
+2011-11-22T02:57:19  <antimatroid> sure
+2011-11-22T02:57:25  <McLeopold> the max distance needs to be coordinated with the cutoff rules
+2011-11-22T02:57:46  <antimatroid> are you going to allow them to start in view of each other?
+2011-11-22T02:57:55  <antimatroid> ie. the path between two in view could be greater than 24
+2011-11-22T02:58:17  <McLeopold> yes, just the path, not actual distance
+2011-11-22T02:58:42  <antimatroid> i think it might be nice to also say we'll ensure you can't see enemies hills and vice versa on the first turn?
+2011-11-22T02:58:53  <McLeopold> but that's not true
+2011-11-22T02:59:02  <antimatroid> but we could
+2011-11-22T02:59:10  <antimatroid> just enfore a min starting euclidean distance
+2011-11-22T02:59:16  <antimatroid> up until now that's probably already been the case
+2011-11-22T02:59:28  <McLeopold> yeah, probably
+2011-11-22T02:59:44  <antimatroid> i don't mind too much either way, but we should clarify whichever way we do go
+2011-11-22T02:59:50  <antimatroid> because we haven't said anything about that
+2011-11-22T03:00:22  <McLeopold> we didn't, I can add that to the map specs
+2011-11-22T03:00:46  <McLeopold> can you easily add these checks to your multi-maze code?
+2011-11-22T03:00:59  <antimatroid> which checks?
+2011-11-22T03:01:04  <McLeopold> min/max hill dist
+2011-11-22T03:01:18  <antimatroid> atm it has a min euclidean starting distance greater than view (pretty sure it's greater)
+2011-11-22T03:01:25  <antimatroid> but it doesn't do anything about path lengths
+2011-11-22T03:01:49  <McLeopold> after you generate a new hill location, you could do the bfs to ensure it is within range
+2011-11-22T03:01:54  <rajanaresh> hey guys, how are people exploring. I mean how do you explore the map. I just need some buzz words i can look into.
+2011-11-22T03:02:10  <antimatroid> rajanaresh: path finding
+2011-11-22T03:02:20  <McLeopold> unseen squares and map coverage
+2011-11-22T03:02:26  <rajanaresh> you mean like A*
+2011-11-22T03:02:35  <antimatroid> breadth first search is easiest
+2011-11-22T03:02:36  <McLeopold> I think the diffusion guys do good exploring as well
+2011-11-22T03:02:37  <antimatroid> but i use a*
+2011-11-22T03:02:50  <antimatroid> well not for exploration i don't, target set is too large
+2011-11-22T03:03:59  <rajanaresh> I already do A* for food collection. But this is very specific. I have the target. Suppose I have a free ant. How do I let him explore?
+2011-11-22T03:03:59  <antimatroid> McLeopold: i think amstan has also been playing around with map stuff
+2011-11-22T03:04:18  <McLeopold> he has, he's got some nice cell automation stuff
+2011-11-22T03:04:24  <antimatroid> rajanaresh: bfs until you find something attractive like an enemy/not seen square etc.
+2011-11-22T03:06:02  <antimatroid> i'm most interested in what people are doing for battle code
+2011-11-22T03:06:05  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-11-22T03:16:02  *** janzert1 <janzert1!~janzert@97-83-124-17.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2011-11-22T03:17:09  *** aerique <aerique!310225@xs8.xs4all.nl> has joined #aichallenge
+2011-11-22T03:18:32  *** janzert <janzert!~janzert@97-83-124-17.dhcp.trcy.mi.charter.com> has quit IRC (Ping timeout: 252 seconds)
+2011-11-22T03:19:20  *** speakeasy <speakeasy!5699bb4f@gateway/web/freenode/ip.86.153.187.79> has joined #aichallenge
+2011-11-22T03:32:33  *** kiv <kiv!~kiv@67.93.111.78.ptspb.ru> has quit IRC (Quit: Leaving)
+2011-11-22T03:34:55  *** HaraKiri <HaraKiri!~hara@d184233.adsl.hansenet.de> has joined #aichallenge
+2011-11-22T03:39:24  *** mj41 <mj41!~mj41_nby@195.39.106.218> has joined #aichallenge
+2011-11-22T03:43:09  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-11-22T03:43:54  *** ALplus <ALplus!~ALplus@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 276 seconds)
+2011-11-22T03:58:47  *** waroy <waroy!af88f73a@gateway/web/freenode/ip.175.136.247.58> has joined #aichallenge
+2011-11-22T04:00:40  *** speakeasy2 <speakeasy2!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has joined #aichallenge
+2011-11-22T04:02:20  *** g0llum <g0llum!~g0llum@89.204.155.4> has joined #aichallenge
+2011-11-22T04:14:35  <speakeasy> hi guys
+2011-11-22T04:15:12  <speakeasy> can you help me to understand how to code a depth first or breadth first search into python
+2011-11-22T04:15:16  <speakeasy> ?
+2011-11-22T04:21:28  *** speakeasy2 <speakeasy2!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T04:23:29  *** ikaros <ikaros!~ikaros@studpool-wlan-75-67.fs.fbi.h-da.de> has joined #aichallenge
+2011-11-22T04:24:14  *** Limited10 <Limited10!a47d12a0@gateway/web/freenode/ip.164.125.18.160> has joined #aichallenge
+2011-11-22T04:24:52  *** Surya <Surya!58b273ad@gateway/web/freenode/ip.88.178.115.173> has joined #aichallenge
+2011-11-22T04:25:44  <Limited10> Hi
+2011-11-22T04:25:45  <Limited10> Sir
+2011-11-22T04:25:50  <Limited10> excuse me
+2011-11-22T04:26:03  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has joined #aichallenge
+2011-11-22T04:27:27  <lericson> the floor is yours, Limited10
+2011-11-22T04:30:10  *** speakeasy2 <speakeasy2!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has joined #aichallenge
+2011-11-22T04:32:13  *** avdg1 <avdg1!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-11-22T04:33:06  *** Limited10 <Limited10!a47d12a0@gateway/web/freenode/ip.164.125.18.160> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T04:35:28  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T04:39:04  *** speakeasy2 <speakeasy2!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T04:39:07  <Fluxid> bah, i don't have connection and home and i couldn't push changes to ants-tcp :(
+2011-11-22T04:39:11  *** liberforce <liberforce!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has joined #aichallenge
+2011-11-22T04:44:19  <bqf> speakeasy: what exactly do you not understand about it?
+2011-11-22T04:46:53  <speakeasy> im not terribly good at python yet, i started learning it thismorning lol cos java was annnoying me so much, the wiki pages dont give me much insite, can you just give me a brief explanation that i can understand (not wiki style lol)
+2011-11-22T04:53:34  <delt0r_> speakeasy: start at your "ant"
+2011-11-22T04:54:56  <delt0r_> for each adjacent tile, check to see if you have visited it before. If you have not visited it before, add this to a FIFO que
+2011-11-22T04:55:11  <delt0r_> get the next tile from the que...
+2011-11-22T04:55:15  <delt0r_> rinse and repeat
+2011-11-22T04:55:50  <speakeasy> how do you mean fifo>
+2011-11-22T04:56:09  <speakeasy> first in first out?
+2011-11-22T04:56:15  <speakeasy> sorry im a bit of a noob
+2011-11-22T04:56:47  <delt0r_> yea First in First out
+2011-11-22T04:57:09  <delt0r_> a stack (FILO) will not work properly
+2011-11-22T04:57:34  <delt0r_> well it will then be  a depth first search
+2011-11-22T04:58:15  <delt0r_> speakeasy: you can't really go too far at once if you are starting programing. probably want to get the hang of basic loops and data structures first...
+2011-11-22T04:58:21  <delt0r_> then try a BFS
+2011-11-22T04:58:47  *** mcstar <mcstar!~mcstar@adsl-89-132-12-215.monradsl.monornet.hu> has joined #aichallenge
+2011-11-22T04:58:58  <speakeasy> how do i make a fifo que?
+2011-11-22T04:59:08  <mcstar> ue
+2011-11-22T04:59:35  <speakeasy> ah sorry, my scrolls going funny yea thats probs a good idea
+2011-11-22T05:00:10  *** Euphony <Euphony!1812b80b@gateway/web/freenode/ip.24.18.184.11> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T05:00:16  <delt0r_> speakeasy: i don't know python well but i guess basic lists would work... add to front, take from the back
+2011-11-22T05:00:22  <delt0r_> worry about performance later
+2011-11-22T05:00:23  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-11-22T05:00:37  <speakeasy> take from back?
+2011-11-22T05:00:46  *** waroy <waroy!af88f73a@gateway/web/freenode/ip.175.136.247.58> has quit IRC (Quit: Page closed)
+2011-11-22T05:00:55  <speakeasy> oh ok, i know why
+2011-11-22T05:00:57  <speakeasy> nvm
+2011-11-22T05:00:59  <delt0r_> Linked lists are the typical method of having a fast FIFO or a ring buffer for a bounded size one
+2011-11-22T05:01:02  <mcstar> remove the oldest
+2011-11-22T05:01:05  <speakeasy> thanks so much delt0r
+2011-11-22T05:01:15  <delt0r_> np
+2011-11-22T05:02:03  <mcstar> one implementation detail: you dont actually need to remove anything
+2011-11-22T05:02:14  <mcstar> or add, for that matter
+2011-11-22T05:02:19  <delt0r_> mcstar: don't confuse things!
+2011-11-22T05:02:24  <delt0r_> :P
+2011-11-22T05:02:25  <speakeasy> oh yea, i guys you just go from place to place
+2011-11-22T05:02:28  <speakeasy> lol
+2011-11-22T05:02:34  <mcstar> ok :(
+2011-11-22T05:02:47  <speakeasy> guess*
+2011-11-22T05:02:55  <delt0r_> details come with understanding... understanding comes from getting something working... IMO anyways
+2011-11-22T05:03:20  <speakeasy> and the irony is that to get something working you need understanding
+2011-11-22T05:03:33  <delt0r_> not as much as you think at the start...
+2011-11-22T05:03:45  <delt0r_> just avoid too many details.. keep things simple
+2011-11-22T05:03:58  <mcstar> coffee is brewing
+2011-11-22T05:04:02  <mcstar> thats important
+2011-11-22T05:04:02  <delt0r_> once you have something working ... or not... try to understand why
+2011-11-22T05:04:12  * delt0r_ cooofffeeeee
+2011-11-22T05:04:27  * delt0r_ gets his coffee vac pot out
+2011-11-22T05:04:33  <speakeasy> iv managed to tackle the tutorial and have learnt so much so whoever wrote that thanks a ton
+2011-11-22T05:04:49  <delt0r_> Don't know... perhaps McLeopold?
+2011-11-22T05:04:56  <delt0r_> he is a python man
+2011-11-22T05:04:58  <mcstar> probably
+2011-11-22T05:05:13  <speakeasy> if you talk to him say hes awesom
+2011-11-22T05:05:15  <speakeasy> lol
+2011-11-22T05:05:25  <mcstar> speakeasy: why dont you tell him?
+2011-11-22T05:05:31  <mcstar> leave him a message
+2011-11-22T05:05:35  <delt0r_> McLeopold: speakeasy says your awesome!
+2011-11-22T05:05:35  <speakeasy> i have no idea where to find him
+2011-11-22T05:05:41  <mcstar> here?
+2011-11-22T05:05:44  <speakeasy> lols
+2011-11-22T05:05:45  <speakeasy> ok
+2011-11-22T05:08:44  *** ignite <ignite!c3de0252@gateway/web/freenode/ip.195.222.2.82> has joined #aichallenge
+2011-11-22T05:08:55  <ignite> hi
+2011-11-22T05:09:09  <ignite> is some one here alive?
+2011-11-22T05:09:41  <mcstar> only living dead
+2011-11-22T05:11:00  <ignite> witch distance/radius do you take to see if your ant is in danger?
+2011-11-22T05:12:08  <mcstar> that depends
+2011-11-22T05:12:15  <mcstar> but battle resolution is euclidean based
+2011-11-22T05:12:24  <delt0r_> ignite: I only look ahead one "turn"
+2011-11-22T05:12:49  <mcstar> by which you mean?
+2011-11-22T05:12:49  <delt0r_> so if they are in combat range after both my ant and the enemy ant moves one square
+2011-11-22T05:12:58  <mcstar> attackrad2 or viewrad2?
+2011-11-22T05:13:03  <mcstar> both in a sense
+2011-11-22T05:13:12  <mcstar> really depends on what you doing
+2011-11-22T05:13:17  <mcstar> or want to do
+2011-11-22T05:13:25  *** scribble <scribble!~3ead3c@96-28-215-150.dhcp.insightbb.com> has quit IRC ()
+2011-11-22T05:13:47  *** replore <replore!~replore@203.152.213.161.static.zoot.jp> has quit IRC (Remote host closed the connection)
+2011-11-22T05:14:27  <Garf> you want attackrad2 + 2 euclidian moves
+2011-11-22T05:14:30  <Garf> sorry
+2011-11-22T05:14:33  <Garf> 2 manhattan moves
+2011-11-22T05:14:38  <mcstar> argh
+2011-11-22T05:14:43  <mcstar> argh argh
+2011-11-22T05:14:47  <Zao> mcstar: Well argh'd.
+2011-11-22T05:15:09  <ignite> attackrad2 + 2 yeap
+2011-11-22T05:15:25  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-92-231.neo.res.rr.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T05:15:27  <ignite> but how much is 2 manhattan moves?
+2011-11-22T05:15:56  * mcstar follows the prime directive and doesnt interfere
+2011-11-22T05:16:47  <Garf> ignite: what do you mean?
+2011-11-22T05:18:42  <ignite> well distanca is sqrt(attackRadius2)+2 but i dont want to take sqrt
+2011-11-22T05:19:10  <Garf> ah, I didn't find a good closed formula for that either :P
+2011-11-22T05:19:43  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-11-22T05:31:45  *** kilae <kilae!~chatzilla@cust.static.84-253-11-90.cybernet.ch> has joined #aichallenge
+2011-11-22T05:37:28  *** speakeasy2 <speakeasy2!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has joined #aichallenge
+2011-11-22T05:40:07  <mcstar> #include<iostream>
+2011-11-22T05:40:09  <mcstar> using namespace std;
+2011-11-22T05:40:11  <mcstar> int main(void){
+2011-11-22T05:40:13  <mcstar>     float num=16.0f;
+2011-11-22T05:40:15  <mcstar>     int numrep=*reinterpret_cast<int*>(&num);
+2011-11-22T05:40:17  <mcstar>     numrep>>=23; numrep-=127; numrep/=2; numrep+=127; numrep<<=23;
+2011-11-22T05:40:19  <mcstar>     float sqrtnum=*reinterpret_cast<float*>(&numrep);
+2011-11-22T05:40:21  <mcstar>     cout << "sqrt(" << num << ")=" << sqrtnum << endl;
+2011-11-22T05:40:23  <mcstar>     return 0;
+2011-11-22T05:40:25  <mcstar> }
+2011-11-22T05:40:27  <mcstar> thats the closest i can get
+2011-11-22T05:42:03  <mcstar> (dont consider using this code instead a simple floating point sqrt)
+2011-11-22T05:48:20  <mcstar> wikipedia has a better formula
+2011-11-22T05:48:21  <lericson> use a pastebin like http://pb.lericson.se next time
+2011-11-22T05:48:39  <mcstar> numrep-=1<<23; numrep/=2; numrep+=127; numrep+=1<<29;
+2011-11-22T05:48:50  <mcstar> use this instead
+2011-11-22T05:48:53  <mcstar> lericson: thanks
+2011-11-22T05:48:57  <mcstar> i didnt want to
+2011-11-22T05:49:45  <mcstar> argh, throw that 127 out, doesnt belong there
+2011-11-22T05:49:48  *** ikaros <ikaros!~ikaros@studpool-wlan-75-67.fs.fbi.h-da.de> has quit IRC (Ping timeout: 252 seconds)
+2011-11-22T05:53:15  *** Fandekasp <Fandekasp!~Fandekasp@190.14.97.84.rev.sfr.net> has quit IRC (Ping timeout: 276 seconds)
+2011-11-22T05:54:47  *** ignite <ignite!c3de0252@gateway/web/freenode/ip.195.222.2.82> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T06:01:11  <speakeasy> in python is there anything to have a "list" with 3 collums?
+2011-11-22T06:02:33  <speakeasy> or a sort of list containing mini lists
+2011-11-22T06:07:03  <Garf> [[0, 1], [2, 3], [3, 4]]
+2011-11-22T06:07:37  <mcstar> the inner is the fastest index, i.e. the column
+2011-11-22T06:07:45  <mcstar> thats 3 rows and 2 columns
+2011-11-22T06:07:51  <mcstar> isnt it?
+2011-11-22T06:08:19  <Garf> yes to your first line. line and column are definition-dependant
+2011-11-22T06:08:43  *** mviel_ <mviel_!~mviel@236.227.73.86.rev.sfr.net> has joined #aichallenge
+2011-11-22T06:11:19  *** Fandekasp <Fandekasp!~Fandekasp@190.14.97.84.rev.sfr.net> has joined #aichallenge
+2011-11-22T06:12:00  <mcstar> i think it is best to stick calling that 3 rows and 2 columns
+2011-11-22T06:12:10  <mcstar> why go against numpy?
+2011-11-22T06:12:12  <mcstar> and c?
+2011-11-22T06:12:42  *** mviel <mviel!~mviel@236.227.73.86.rev.sfr.net> has quit IRC (Ping timeout: 260 seconds)
+2011-11-22T06:14:36  *** AntDroid <AntDroid!781c39b6@gateway/web/freenode/ip.120.28.57.182> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T06:18:48  <speakeasy> thanks, that clears lots
+2011-11-22T06:18:51  <speakeasy> up
+2011-11-22T06:19:18  <speakeasy> are there any things i can call to find out if there are obsticals in the way?
+2011-11-22T06:20:35  <Garf> no, routing around obstacles is something you have to write yourself
+2011-11-22T06:21:09  <mcstar> http://imgur.com/ZkTPJ
+2011-11-22T06:21:25  <mcstar> this is the wiki sqrt vs. the normal one
+2011-11-22T06:21:57  <speakeasy> sorry that was badly put, i was wondering if there was any way of telling where water was
+2011-11-22T06:22:48  <Garf> you get told in your input
+2011-11-22T06:22:56  <Garf> although only once, the first time you see it
+2011-11-22T06:23:20  *** Conorach <Conorach!~cono@90.165.56.61> has joined #aichallenge
+2011-11-22T06:24:23  <speakeasy> ah ok thanks
+2011-11-22T06:25:15  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-47-163.dsl.hstntx.swbell.net> has quit IRC (Remote host closed the connection)
+2011-11-22T06:29:03  <Garf> if attackradius2 is 5, then 2 ants that are [3, 1] apart shouldn't fight, correct?
+2011-11-22T06:29:19  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-47-163.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-11-22T06:31:02  <Garf> http://dl.dropbox.com/u/32496746/antsfightbug.png
+2011-11-22T06:31:17  <Garf> the ants that are near the yellow circle
+2011-11-22T06:31:29  <Garf> they're 3,1 apart, yet fighting
+2011-11-22T06:31:35  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has joined #aichallenge
+2011-11-22T06:33:29  <mcstar> they dont
+2011-11-22T06:33:36  <mcstar> they will after you press >
+2011-11-22T06:33:54  <mcstar> >|
+2011-11-22T06:33:54  <Garf> why is that line shown?
+2011-11-22T06:34:04  <mcstar> because they are about to engage
+2011-11-22T06:34:19  <mcstar> if you are unsure about battle scenarios take a look at my resolver
+2011-11-22T06:34:32  <mcstar> https://minus.com/liquid-phynix
+2011-11-22T06:34:38  <mcstar> or build it from git
+2011-11-22T06:34:39  <Garf> so if my ant had backed out, it would have lived?
+2011-11-22T06:34:46  <mcstar> yes
+2011-11-22T06:34:51  <matthewd> Garf: In the next turn, they'll be gone. That's the last time it's possible to show the upcoming engagement.
+2011-11-22T06:34:51  <speakeasy> do you only get told food the first time you see it?
+2011-11-22T06:35:03  <Garf> speakeasy: no
+2011-11-22T06:35:05  <matthewd> speakeasy: No, every turn while it's visible
+2011-11-22T06:35:33  <speakeasy> cool, thanks
+2011-11-22T06:36:47  <Garf> ok, makes sense now
+2011-11-22T06:38:07  <Garf> hmm, wait
+2011-11-22T06:38:53  <Garf> ah darn
+2011-11-22T06:39:01  <Garf> so you can never actually see the battle positions
+2011-11-22T06:39:15  <speakeasy> is there anything else that you are only ever told once?
+2011-11-22T06:39:46  <Garf> speakeasy: the settings?
+2011-11-22T06:40:00  <Garf> but no, only water really, because there's so much of it
+2011-11-22T06:41:03  <speakeasy> ah ok, im just trying to figure out how to read where water is, im getting there
+2011-11-22T06:41:07  <speakeasy> thanks garf
+2011-11-22T06:43:31  *** ikaros <ikaros!~ikaros@studpool-wlan-75-67.fs.fbi.h-da.de> has joined #aichallenge
+2011-11-22T06:44:32  <speakeasy> what is the difference between a variable say var = [] and var = {}?
+2011-11-22T06:44:54  <Garf> list vs hash
+2011-11-22T06:45:07  <Garf> lists are indexed by number. hashes by contents
+2011-11-22T06:45:14  <speakeasy> aha
+2011-11-22T06:45:16  <speakeasy> thanks
+2011-11-22T06:45:41  <Garf> hmm, maybe better, by "key", which can be anything
+2011-11-22T06:46:10  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-11-22T06:46:21  <speakeasy> so for water locations would i want to be looking at a hash or list?
+2011-11-22T06:46:36  <Garf> dunno, thats your call
+2011-11-22T06:46:57  <speakeasy> what are the advantages of lists over hashes>
+2011-11-22T06:47:12  <Garf> indexing a list is slightly faster, but can only be done by a numeric index
+2011-11-22T06:47:24  <Garf> you can sort a list
+2011-11-22T06:47:34  <Garf> (it has an order...a hash doesn't)
+2011-11-22T06:47:35  <mcstar> not because theres so much of it but because they cant possibly change
+2011-11-22T06:47:39  <speakeasy> so do i have to specify the key in a hash for each entry?
+2011-11-22T06:47:56  <Garf> yes
+2011-11-22T06:47:59  *** ikaros <ikaros!~ikaros@studpool-wlan-75-67.fs.fbi.h-da.de> has quit IRC (Client Quit)
+2011-11-22T06:48:00  <mcstar> speakeasy: you want a 2d array
+2011-11-22T06:48:04  <Garf> a list works like a[1] = foo
+2011-11-22T06:48:06  <mcstar> neither hash nor lists
+2011-11-22T06:48:07  <speakeasy> thanks
+2011-11-22T06:48:09  <Garf> a hash works like a["whatever" = bar
+2011-11-22T06:48:27  <speakeasy> ?
+2011-11-22T06:48:43  <Garf> mcstar: imho, thats purely a personal design decision
+2011-11-22T06:48:56  <mcstar> imho it isnt
+2011-11-22T06:49:21  *** flag <flag!~root@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-11-22T06:50:11  <mcstar> Garf: why did you say: so you can never actually see the battle positions
+2011-11-22T06:50:13  <Garf> you can use a 1d list, indexed by r*MAX_COLUMNS+row
+2011-11-22T06:50:25  <Garf> you can use a hash, indexed by location, and set water locations = true
+2011-11-22T06:50:34  <Garf> or you can use a list of lists (2d array)
+2011-11-22T06:50:57  <Garf> or you can use a list of locations
+2011-11-22T06:51:14  <Garf> mcstar: you can't see the actual positions of the ants when they battle
+2011-11-22T06:51:23  <mcstar> of course you can
+2011-11-22T06:52:26  <Garf> how?
+2011-11-22T06:52:44  <mcstar> i alredy told you
+2011-11-22T06:52:46  <mcstar> a*
+2011-11-22T06:52:57  <mcstar> with the |< and >| buttons
+2011-11-22T06:53:26  <mcstar> if you single-step the visualization you can see everything
+2011-11-22T06:55:22  <mcstar> and why did you leave numpy arrays out?
+2011-11-22T06:55:33  <mcstar> i really dont want to nitpick but that is a trivial alternative
+2011-11-22T06:56:41  <Garf> because its an extension :P
+2011-11-22T06:57:11  <Garf> also, functionalitywise its identical to a list of lists, prolly just more memory-efficient
+2011-11-22T06:57:35  <mcstar> Garf: the problem is with types
+2011-11-22T06:57:42  <mcstar> a list can hold anything
+2011-11-22T06:57:50  <mcstar> a numpy array is typed
+2011-11-22T06:58:04  <Garf> yes, so its more memory efficient, and maye save you some unboxing
+2011-11-22T06:58:21  <mcstar> the speed of unboxing is what matters not the memory
+2011-11-22T06:58:29  <Garf> not sure if Pypy does type inference
+2011-11-22T06:58:31  <speakeasy> is the top left corner (0, 0)
+2011-11-22T06:58:34  <speakeasy> ?
+2011-11-22T06:58:43  <mcstar> yes
+2011-11-22T06:58:54  <speakeasy> thanks
+2011-11-22T06:59:29  *** TheLinker <TheLinker!~TheLinker@host187.190-225-241.telecom.net.ar> has joined #aichallenge
+2011-11-22T07:01:11  <pairofdice> coordinates are (y, x), which confused me for a while
+2011-11-22T07:01:25  <mcstar> dont think in terms of x,y
+2011-11-22T07:01:33  <mcstar> use row/col everywhere
+2011-11-22T07:01:39  <pairofdice> Yeah, but that's what it is
+2011-11-22T07:01:54  <mcstar> not really
+2011-11-22T07:01:56  <mcstar> -y,x
+2011-11-22T07:03:25  *** Mystret <Mystret!bc8e25c9@gateway/web/freenode/ip.188.142.37.201> has joined #aichallenge
+2011-11-22T07:03:36  <Mystret> hello
+2011-11-22T07:03:43  <pairofdice> Not that the ants care about map orientation
+2011-11-22T07:04:19  <mcstar> but you can get confused, when taking care of wrapping etc.
+2011-11-22T07:04:58  <mcstar> i had a bug once, the ant couldnt pass the border of the map
+2011-11-22T07:05:11  <mcstar> poor thing was bouncing off of it
+2011-11-22T07:07:32  <speakeasy2> hi, does this make sense:         #find land
+2011-11-22T07:07:32  <speakeasy2>         for landloc in ants.passable():
+2011-11-22T07:07:32  <speakeasy2>             if landloc not in self.land:
+2011-11-22T07:07:32  <speakeasy2>                 self.land.append(landloc)
+2011-11-22T07:07:43  <speakeasy2> ?
+2011-11-22T07:08:24  <pairofdice> Ummm, no
+2011-11-22T07:08:29  <speakeasy2> oh
+2011-11-22T07:08:33  <pairofdice> ants.passable returns true/false
+2011-11-22T07:08:51  <mcstar> isnt that ispassable?
+2011-11-22T07:09:23  <speakeasy2>     def passable(self, loc):
+2011-11-22T07:09:23  <speakeasy2>         'true if not water'
+2011-11-22T07:09:23  <speakeasy2>         row, col = loc
+2011-11-22T07:09:23  <speakeasy2>         return self.map[row][col] != WATER
+2011-11-22T07:09:34  <speakeasy2> thats the part in the ant.py
+2011-11-22T07:09:49  <mcstar> well its a bool than
+2011-11-22T07:10:14  <speakeasy2> is a bool like a boolean?
+2011-11-22T07:10:33  <mcstar> yes?
+2011-11-22T07:11:38  <mcstar> what is the smiley of one eyebrow raised?
+2011-11-22T07:11:42  <mcstar> and looking curious?
+2011-11-22T07:12:37  <speakeasy2> so if i want to get a map of land locations how would i do this?
+2011-11-22T07:13:19  <mcstar> whats wrong with self.map?
+2011-11-22T07:13:26  <mcstar> that already has land
+2011-11-22T07:13:57  <mcstar> are you speakeasy?
+2011-11-22T07:14:46  <speakeasy2> yes
+2011-11-22T07:14:57  <speakeasy2> on my laptop
+2011-11-22T07:15:15  <speakeasy2> will self.map return everything or just land without water?
+2011-11-22T07:15:38  <mcstar> seek for the definition of WATER
+2011-11-22T07:15:48  <mcstar> you will find other kinds as well i think
+2011-11-22T07:15:59  <mcstar> but i have no idea, and pairofdice is lazy to answer
+2011-11-22T07:16:26  <speakeasy2> sorry if im being a bit of a pain
+2011-11-22T07:16:50  <mcstar> youre not a pain, but you should read your bot before you start modding it
+2011-11-22T07:17:42  *** limited107 <limited107!a47d4537@gateway/web/freenode/ip.164.125.69.55> has joined #aichallenge
+2011-11-22T07:17:43  <mcstar> there are many people asking for these basic questions and i just dont understand how can they start adding to their starter bot if they dont actually understand it
+2011-11-22T07:17:44  <limited107> Heelo.
+2011-11-22T07:17:53  <mcstar> everyone whould go through the source
+2011-11-22T07:17:56  <mcstar> should*
+2011-11-22T07:17:58  <limited107> what's mean "Skill" in ranking?
+2011-11-22T07:18:04  <speakeasy2> which files do i need to read?
+2011-11-22T07:18:23  <pairofdice> just ants.py
+2011-11-22T07:18:23  <mcstar> all the files of the python starter bot, if you chose that
+2011-11-22T07:18:52  <pairofdice> And, MyBot.py, but it's empty. Also... the tutorial
+2011-11-22T07:19:45  <mcstar> limited107: try to find the section explaining trueskill on the site
+2011-11-22T07:20:01  <speakeasy2> im just struggling to understand some of the stuff, im getting the hang of it, iv done the tut and understood the steps completely but understanding and recreating are v different
+2011-11-22T07:22:34  <speakeasy2> so in the algorithms on the net where they say graph do i just use self.map?
+2011-11-22T07:22:53  *** ikaros <ikaros!~dlb@studpool-wlan-74-3.fs.fbi.h-da.de> has joined #aichallenge
+2011-11-22T07:25:44  *** xathis <xathis!~xathis@f054014078.adsl.alicedsl.de> has joined #aichallenge
+2011-11-22T07:26:51  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-11-22T07:27:03  *** replore_ <replore_!~replore@ntkngw226116.kngw.nt.ftth.ppp.infoweb.ne.jp> has joined #aichallenge
+2011-11-22T07:29:48  *** praveen <praveen!cf2e371e@gateway/web/freenode/ip.207.46.55.30> has joined #aichallenge
+2011-11-22T07:30:11  *** avdg1 <avdg1!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Ping timeout: 258 seconds)
+2011-11-22T07:30:40  *** g0llum <g0llum!~g0llum@89.204.155.4> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T07:42:58  <speakeasy2> does this make sense?
+2011-11-22T07:43:00  <speakeasy2>     def land(self):
+2011-11-22T07:43:00  <speakeasy2>         land = []
+2011-11-22T07:43:00  <speakeasy2>         for row in self.map:
+2011-11-22T07:43:01  <speakeasy2>             for col in self.map:
+2011-11-22T07:43:01  <speakeasy2>                 if self.map[row][col] != WATER:
+2011-11-22T07:43:01  <speakeasy2>                     land.append(row, col)
+2011-11-22T07:43:01  <speakeasy2>         return land
+2011-11-22T07:43:51  <mcstar> MY_ANT = 0
+2011-11-22T07:43:54  <mcstar> ANTS = 0
+2011-11-22T07:43:56  <mcstar> DEAD = -1
+2011-11-22T07:43:58  <mcstar> LAND = -2
+2011-11-22T07:44:00  <mcstar> FOOD = -3
+2011-11-22T07:44:02  <mcstar> WATER = -4
+2011-11-22T07:44:04  <mcstar> you see there is land in the map
+2011-11-22T07:44:07  <Zao> CATS = -5
+2011-11-22T07:44:35  <mcstar> why do you want a duplicate structure?
+2011-11-22T07:44:44  <mcstar> ZAO=-inf
+2011-11-22T07:44:51  <Zao> \o/
+2011-11-22T07:45:12  *** flag <flag!~root@69-165-173-172.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2011-11-22T07:45:26  <speakeasy2> so i can go and say ants.land as the graph for the pathfinding algorithm
+2011-11-22T07:46:21  <speakeasy2> will that work?
+2011-11-22T07:46:33  <mcstar> i guess you could make a complete copy of the map, and use that for your pathfinding, scribble on it, and rest or dispose  of it
+2011-11-22T07:46:44  <mcstar> reset*
+2011-11-22T07:47:09  <speakeasy2> i was only really looking for the land cells as thats what i think the algorithm needs
+2011-11-22T07:47:09  <mcstar> speakeasy2: i guess map is just a nested list
+2011-11-22T07:47:12  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@117.231.57.55> has joined #aichallenge
+2011-11-22T07:47:12  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-22T07:48:07  <mcstar> [[self.map[x][y]==LAND for y in self.map.size[1]] for x in self.map.size[0]]
+2011-11-22T07:48:18  <mcstar> i guess this could work
+2011-11-22T07:48:28  <mcstar> you get true where land is and false where it isnt
+2011-11-22T07:48:49  <speakeasy2> im not sure im doing this right
+2011-11-22T07:48:53  <speakeasy2> sec
+2011-11-22T07:49:11  <mcstar> i might be off by 1 in the indexing
+2011-11-22T07:49:15  <speakeasy2> 1  procedure BFS(Graph,source):
+2011-11-22T07:49:15  <speakeasy2> 2      create a queue Q
+2011-11-22T07:49:15  <speakeasy2> 3      enqueue source onto Q
+2011-11-22T07:49:15  <speakeasy2> 4      mark source
+2011-11-22T07:49:15  <speakeasy2> 5      while Q is not empty:
+2011-11-22T07:49:16  <speakeasy2> 6          dequeue an item from Q into v
+2011-11-22T07:49:16  <speakeasy2> 7          for each edge e incident on v in Graph:
+2011-11-22T07:49:17  <speakeasy2> 8              let w be the other end of e
+2011-11-22T07:49:17  <speakeasy2> 9              if w is not marked:
+2011-11-22T07:49:17  <mcstar> i dont use python regualrly
+2011-11-22T07:49:18  <speakeasy2> 10                  mark w
+2011-11-22T07:49:18  <speakeasy2> 11                  enqueue w onto Q
+2011-11-22T07:49:28  *** delt0r_ <delt0r_!~bob@178-190-193-19.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T07:49:32  <speakeasy2> thats the psudo code im trying to get in
+2011-11-22T07:49:46  *** u_ <u_!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has joined #aichallenge
+2011-11-22T07:50:33  <speakeasy2> what does it want as the graph in the parenthesis?
+2011-11-22T07:51:05  <mcstar> heh, pythons lists dont have size
+2011-11-22T07:51:09  <mcstar> sorry
+2011-11-22T07:51:24  <mcstar> you have to call len each time
+2011-11-22T07:51:28  <mcstar> and use xrange
+2011-11-22T07:51:51  <speakeasy2> what is that looking for for the graph variable?
+2011-11-22T07:52:09  <mcstar> anything
+2011-11-22T07:52:15  <mcstar> since its a pseudocode
+2011-11-22T07:52:37  <mcstar> its a collection of vertices
+2011-11-22T07:52:42  <speakeasy2> so i could just put a list with land cells in it
+2011-11-22T07:52:45  <mcstar> but it isnt specified what IT is
+2011-11-22T07:52:48  <speakeasy2> ah, that makes sense
+2011-11-22T07:54:19  <speakeasy2> so on the first line where i define a function could i use my bit of code in the ants.py file and say   def pathfind (ants.land, ant_loc)
+2011-11-22T07:55:42  <mcstar> [[sekf.map[row][col]==LAND for col in xrange(len(self.map[row]))] for row in xrange(len(self.map))]
+2011-11-22T07:55:46  *** ikaros <ikaros!~dlb@studpool-wlan-74-3.fs.fbi.h-da.de> has quit IRC (Quit: Verlassend)
+2011-11-22T07:56:00  <mcstar> this code will create your land if you still want
+2011-11-22T07:56:20  <mcstar> depends
+2011-11-22T07:56:36  <speakeasy2> can i put that in the parenthesis in the mybot.py file seeing as self is refering to well self
+2011-11-22T07:56:37  <mcstar> depends on what is the operation you check membership
+2011-11-22T07:57:23  <speakeasy2> how do you mean
+2011-11-22T07:57:42  <mcstar> what is land?
+2011-11-22T07:57:53  <antimatroid> damn my hill protection code is taking a long time to write
+2011-11-22T07:57:54  <mcstar> is it a simple list holding coordinate pairs?
+2011-11-22T07:57:57  <antimatroid> i'm pretty stoked on it though
+2011-11-22T07:58:02  <mcstar> is it a map?
+2011-11-22T07:58:09  <mcstar> or is it a 2d array?
+2011-11-22T07:58:26  <speakeasy2> i think so
+2011-11-22T07:58:29  <antimatroid> lol, i thought nobody had said anything for hours but i was just stuck way up the page :{
+2011-11-22T07:58:29  <mcstar> speakeasy2: these questions are needed to be asnwered by you, its going to be your algorith
+2011-11-22T07:58:31  <mcstar> m
+2011-11-22T07:58:43  <speakeasy2> i think it is a list of coordinate pairs
+2011-11-22T07:58:59  <mcstar> ok, i think you can use python "in" then
+2011-11-22T07:59:03  <mcstar> i think
+2011-11-22T07:59:21  <mcstar> yes
+2011-11-22T07:59:28  <mcstar> but that costs much
+2011-11-22T07:59:44  <mcstar> in needs to travel the whole way
+2011-11-22T07:59:47  <antimatroid> lol, bot.cc is over 1000 lines long and state.cc is over 700 lines long :|
+2011-11-22T08:00:15  <mcstar> antimatroid: im still writing collaboration
+2011-11-22T08:00:21  <mcstar> well, not right now
+2011-11-22T08:00:30  <antimatroid> collaboration with who?
+2011-11-22T08:00:34  <mcstar> why doesnt anybody help this guy???
+2011-11-22T08:00:35  <antimatroid> i don't trust my opponents
+2011-11-22T08:00:38  <mcstar> i dont like python
+2011-11-22T08:00:39  <speakeasy2> how would i use the in?
+2011-11-22T08:00:47  * antimatroid hates python too :P
+2011-11-22T08:01:04  <mcstar> speakeasy2: [0,0] in land
+2011-11-22T08:01:08  <antimatroid> i try to assume my opponents will do what's worst for me
+2011-11-22T08:01:10  <mcstar> if land is a list of pairs
+2011-11-22T08:01:22  <mcstar> land=[[3,4],[6,4],[9,6]...]
+2011-11-22T08:01:29  <mcstar> so
+2011-11-22T08:01:33  <mcstar> [0,0] in land
+2011-11-22T08:01:40  <mcstar> will give you true or false
+2011-11-22T08:01:53  *** Israfel <Israfel!~jeff@99-0-14-82.lightspeed.frokca.sbcglobal.net> has quit IRC (Ping timeout: 260 seconds)
+2011-11-22T08:02:09  *** delt0r_ <delt0r_!~bob@194-166-31-178.adsl.highway.telekom.at> has joined #aichallenge
+2011-11-22T08:02:27  * antimatroid dives back into writing this horrendous function
+2011-11-22T08:02:32  <speakeasy2> thanks
+2011-11-22T08:02:36  <speakeasy2> lol
+2011-11-22T08:02:58  <antimatroid> in the end i'm doing like a bfs inside a bfs inside a bfs
+2011-11-22T08:03:13  <antimatroid> i hope it's going to run alright
+2011-11-22T08:03:15  <antimatroid> i think it should
+2011-11-22T08:03:56  <pairofdice> ^^
+2011-11-22T08:05:16  <mcstar> hah
+2011-11-22T08:05:23  <mcstar> @staticmethod
+2011-11-22T08:05:24  <contestbot> mcstar: User error, it's not my fault.
+2011-11-22T08:05:53  <mcstar> i see how that can be confusing for a newbie
+2011-11-22T08:06:28  <antimatroid> what can?
+2011-11-22T08:06:42  <mcstar> wll, run() is a  @staticmethod
+2011-11-22T08:06:54  <mcstar> it is not a class member, i.e. not Ants's member
+2011-11-22T08:07:04  <mcstar> but you still call it from main like: Ants.run()
+2011-11-22T08:07:20  <mcstar> i dont see whats the point
+2011-11-22T08:07:40  <mcstar> maybe has something to do with member variable access
+2011-11-22T08:07:42  <mcstar> idk
+2011-11-22T08:07:55  <speakeasy2> is it appened or append, my spelling fails
+2011-11-22T08:08:02  <mcstar> append
+2011-11-22T08:08:06  <speakeasy2> cheers
+2011-11-22T08:09:41  <speakeasy2> is it possible to do for all directions?
+2011-11-22T08:09:53  <mcstar> what is?
+2011-11-22T08:10:02  *** Fandekasp <Fandekasp!~Fandekasp@190.14.97.84.rev.sfr.net> has quit IRC (Ping timeout: 245 seconds)
+2011-11-22T08:10:40  <speakeasy2> can i do something similar to "for directions in n, e, s, w
+2011-11-22T08:11:06  <mcstar> for direction in (n,e,s,w):
+2011-11-22T08:11:15  <pairofdice> for direction in directions
+2011-11-22T08:11:18  <mcstar> for direction in ('n','e','s','w'):
+2011-11-22T08:11:52  <speakeasy2> will either of those work?
+2011-11-22T08:11:54  <mcstar> antimatroid: collaboration with each other
+2011-11-22T08:12:15  <mcstar> for my own ants to colaborate
+2011-11-22T08:12:43  <mcstar> or you might call it ant-formations whatever
+2011-11-22T08:13:07  <antimatroid> for battles?
+2011-11-22T08:13:22  <antimatroid> mine ought to do that with my battle code naturally
+2011-11-22T08:13:32  <mcstar> antimatroid: really?
+2011-11-22T08:13:37  <mcstar> from long distance?
+2011-11-22T08:13:45  <mcstar> this is pre-battle colaboration
+2011-11-22T08:13:48  <mcstar> l
+2011-11-22T08:14:05  <antimatroid> oh no, they will collaborate in the battle situation
+2011-11-22T08:14:15  <antimatroid> the rest is me correctly using ants
+2011-11-22T08:14:23  <mcstar> im writing code so that they can chase an enemy togther
+2011-11-22T08:14:23  <antimatroid> ie. funnelling enough ants into battles
+2011-11-22T08:14:33  <mcstar> and when possible ill call the kill shot
+2011-11-22T08:14:48  <antimatroid> mine will do the kill shots when possible
+2011-11-22T08:15:09  <antimatroid> it literally does the minimax thing on partitions of all ants that can land in a battle next turn
+2011-11-22T08:15:15  <mcstar> antimatroid: it is a physical impossibility to do it when it isnt possible
+2011-11-22T08:15:36  <mcstar> ok
+2011-11-22T08:15:43  <mcstar> but i dont want to wait for those to happen
+2011-11-22T08:15:53  <mcstar> i want my ants to create proper battle situations
+2011-11-22T08:15:55  *** speakeasy <speakeasy!5699bb4f@gateway/web/freenode/ip.86.153.187.79> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T08:16:01  <mcstar> when enumeration makes sense
+2011-11-22T08:16:02  <speakeasy2> what is the sintax to do check if something is in something else?
+2011-11-22T08:16:35  <pairofdice> xyz in bleelbooblaa:
+2011-11-22T08:16:37  <antimatroid> speakeasy2: look at the pre existing code for any strategy stuff and work out what that's doing
+2011-11-22T08:18:08  <speakeasy2> thanks
+2011-11-22T08:18:20  *** limited107 <limited107!a47d4537@gateway/web/freenode/ip.164.125.69.55> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T08:18:29  <mcstar> speakeasy2: how about walking through some python tutorials as well?
+2011-11-22T08:19:37  <speakeasy2> that might not be such a bad idea but im not sure which ones, the begginer ones i know the stuff like how to run a python program but more advanced im not sure what to search for
+2011-11-22T08:21:04  *** rexou <rexou!rexou@gateway/shell/bshellz.net/x-qirwwxdqhrkfxvyy> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T08:22:16  <antimatroid> oh god excepting bugs it's running
+2011-11-22T08:22:32  *** rexou <rexou!rexou@gateway/shell/bshellz.net/x-xfborcmvrgkikimj> has joined #aichallenge
+2011-11-22T08:27:25  *** Fandekasp <Fandekasp!~Fandekasp@190.14.97.84.rev.sfr.net> has joined #aichallenge
+2011-11-22T08:28:46  *** mviel__ <mviel__!~mviel@213.163.164.204> has joined #aichallenge
+2011-11-22T08:29:52  *** speakeasy2 <speakeasy2!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T08:32:35  *** mviel_ <mviel_!~mviel@236.227.73.86.rev.sfr.net> has quit IRC (Ping timeout: 252 seconds)
+2011-11-22T08:36:06  *** AntDroid <AntDroid!70c64013@gateway/web/freenode/ip.112.198.64.19> has joined #aichallenge
+2011-11-22T08:38:28  *** knight__ <knight__!803d3130@gateway/web/freenode/ip.128.61.49.48> has joined #aichallenge
+2011-11-22T08:38:46  <mcstar> this is perfectly exciting
+2011-11-22T08:38:57  *** knight__ <knight__!803d3130@gateway/web/freenode/ip.128.61.49.48> has quit IRC (Client Quit)
+2011-11-22T08:39:05  <mcstar> creating something out of ether
+2011-11-22T08:45:13  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-11-22T08:48:54  <mcstar> i cant get to stop repating that stupid lemon tree song in my head
+2011-11-22T08:49:58  <pairofdice> It's just another lemon tree
+2011-11-22T08:50:33  * mcstar is whistling
+2011-11-22T08:50:55  <pairofdice> pie = optimal policy
+2011-11-22T09:05:52  *** antimatroid <antimatroid!~nick@227.303.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T09:06:45  <mcstar> pairofdice: whats that?
+2011-11-22T09:09:07  *** amstan_ <amstan_!~alex@142.222.4.243> has joined #aichallenge
+2011-11-22T09:09:07  *** ChanServ sets mode: +o amstan_
+2011-11-22T09:10:23  *** hacklash <hacklash!~trevor_oa@69.169.187.55.provo.static.broadweavenetworks.net> has quit IRC (Ping timeout: 248 seconds)
+2011-11-22T09:11:22  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T09:11:54  *** g0llum <g0llum!~g0llum@89.204.137.228> has joined #aichallenge
+2011-11-22T09:13:48  <mcstar> hehe
+2011-11-22T09:13:57  <mcstar> my collboration code is sort of working
+2011-11-22T09:14:09  <mcstar> they suicide
+2011-11-22T09:14:16  <mcstar> so im halfway there
+2011-11-22T09:15:45  <mcstar> corrected
+2011-11-22T09:16:40  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-11-22T09:23:10  *** antimatroid <antimatroid!~nick@81.130-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-11-22T09:23:23  <pairofdice> Bot peaked at rank 126, going down again
+2011-11-22T09:23:52  *** mj41 <mj41!~mj41_nby@195.39.106.218> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T09:24:07  <antimatroid> does "before" imply the ordering of events by time?
+2011-11-22T09:24:16  <antimatroid> ie. does it make sense to talk about something existing before time existed?
+2011-11-22T09:24:27  <pairofdice> Yes and no
+2011-11-22T09:24:53  <antimatroid> why?
+2011-11-22T09:25:35  <mcstar> depends on the theory
+2011-11-22T09:26:15  <mcstar> if time was created in the instant of creation, but there are other spaces and times, then it is correct to speak of before
+2011-11-22T09:26:17  <mcstar> i think
+2011-11-22T09:26:33  <mcstar> because a sort of causality can connect multiple time-lines
+2011-11-22T09:26:42  <mcstar> no?
+2011-11-22T09:27:31  <pairofdice> Only if there is a connection
+2011-11-22T09:27:50  <mcstar> well thats what im saying
+2011-11-22T09:27:54  <pairofdice> Yeah
+2011-11-22T09:28:00  <mcstar> if our time/space was created from another one
+2011-11-22T09:29:15  *** twymer <twymer!~twymer@rrcs-96-11-137-56.central.biz.rr.com> has joined #aichallenge
+2011-11-22T09:29:19  <pairofdice> But if there was nothing in between...
+2011-11-22T09:29:42  <mcstar> this sort of sucks
+2011-11-22T09:29:47  <mcstar> because of relativity
+2011-11-22T09:30:37  <mcstar> i mean spec.rel. shows you that simultainity is relative to the observer
+2011-11-22T09:31:00  <mcstar> so what is before for one observer can be after for another
+2011-11-22T09:31:35  <mcstar> im just gald that space/time is close to euclidean where i live
+2011-11-22T09:32:17  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-22T09:33:00  <pairofdice> Your boss would have to be really cool to accept a "there's no simultaneity" argument for you being late for work :)
+2011-11-22T09:34:13  *** Areks <Areks!~Areks@rs.gridnine.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T09:35:13  *** Blkt <Blkt!~user@89-96-199-46.ip13.fastwebnet.it> has joined #aichallenge
+2011-11-22T09:35:48  <mcstar> yeah...
+2011-11-22T09:35:59  <mcstar> btw honey-pancakes arent that bad
+2011-11-22T09:37:29  *** amstan_ <amstan_!~alex@142.222.4.243> has quit IRC (Ping timeout: 252 seconds)
+2011-11-22T09:37:30  <mcstar> antimatroid: so how well does your battle code?
+2011-11-22T09:37:43  <mcstar> is it defensive or can it kill too?
+2011-11-22T09:37:55  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T09:39:43  *** mj41 <mj41!~mj41_nby@195.39.106.218> has joined #aichallenge
+2011-11-22T09:43:42  *** amstan_ <amstan_!~alex@142.222.4.243> has joined #aichallenge
+2011-11-22T09:43:42  *** ChanServ sets mode: +o amstan_
+2011-11-22T09:44:51  *** praveen <praveen!cf2e371e@gateway/web/freenode/ip.207.46.55.30> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T09:51:00  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-22T09:55:23  *** ThatSnail <ThatSnail!~chatzilla@c-98-249-235-171.hsd1.fl.comcast.net> has joined #aichallenge
+2011-11-22T09:56:00  *** amstan_ <amstan_!~alex@142.222.4.243> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T10:02:16  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has joined #aichallenge
+2011-11-22T10:02:41  <antimatroid> mcstar: i think it does alright
+2011-11-22T10:02:56  <mcstar> thats scary
+2011-11-22T10:03:00  <antimatroid> why?
+2011-11-22T10:03:06  <mcstar> i wont let my botnear yours
+2011-11-22T10:03:16  <antimatroid> hehe, i'm not letting it out in public just yet
+2011-11-22T10:03:27  <antimatroid> i'm still working on some other things, then i'll re analyse all my battle stuff
+2011-11-22T10:03:32  <antimatroid> then i'll let it loose on tcp
+2011-11-22T10:03:53  <ikaros> =)
+2011-11-22T10:04:02  <ikaros> sounds dangerous
+2011-11-22T10:04:14  <antimatroid> hopefully i don't hype it too much
+2011-11-22T10:04:26  <antimatroid> i don't expect it to win
+2011-11-22T10:04:44  <antimatroid> top 10 would be nice though
+2011-11-22T10:05:07  <antimatroid> but i don't really have much idea about the competition for this
+2011-11-22T10:16:06  <mcstar> lol
+2011-11-22T10:16:11  <mcstar> i cant see colors
+2011-11-22T10:16:35  <mcstar> after i peek at my debug images, which have red background
+2011-11-22T10:16:40  <mcstar> and i change here to irc
+2011-11-22T10:16:52  <mcstar> i cant see nick-colors for s short while
+2011-11-22T10:38:23  *** raemde is now known as IchBinDasWir
+2011-11-22T10:45:32  *** snthaoeu <snthaoeu!76d08d22@gateway/web/freenode/ip.118.208.141.34> has quit IRC (Quit: Page closed)
+2011-11-22T10:47:37  *** kilae <kilae!~chatzilla@cust.static.84-253-11-90.cybernet.ch> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 8.0/20111104165243])
+2011-11-22T10:49:52  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Quit: popped out)
+2011-11-22T10:50:16  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-22T10:50:50  *** praveen <praveen!7aac01fb@gateway/web/freenode/ip.122.172.1.251> has joined #aichallenge
+2011-11-22T10:56:17  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 245 seconds)
+2011-11-22T11:00:09  *** Hexren <Hexren!~hexren@port-32213.pppoe.wtnet.de> has joined #aichallenge
+2011-11-22T11:00:13  *** Hexren <Hexren!~hexren@port-32213.pppoe.wtnet.de> has left #aichallenge
+2011-11-22T11:04:18  *** zacharyd1nton <zacharyd1nton!~zdenton@130-dcmp2.goeaston.net> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T11:08:28  <praveen> players currently in tcp server are mostly the best. Before I could see my bot perform, they destroy it. Poor bot doesnt even know the enemy exists!
+2011-11-22T11:10:56  <mcstar> :D
+2011-11-22T11:15:29  *** aerique <aerique!310225@xs8.xs4all.nl> has quit IRC (Quit: ...)
+2011-11-22T11:22:21  *** iglo <iglo!~xy@xdsl-92-252-71-12.dip.osnanet.de> has joined #aichallenge
+2011-11-22T11:23:58  *** TheLinker <TheLinker!~TheLinker@host187.190-225-241.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-11-22T11:25:42  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-22T11:39:26  <iglo> hi
+2011-11-22T11:41:54  *** amstan_ <amstan_!~alex@142.222.28.119> has joined #aichallenge
+2011-11-22T11:41:54  *** ChanServ sets mode: +o amstan_
+2011-11-22T11:49:46  <a1k0n> there are enough players constantly on these tcp servers that it would make sense to try to do matchmaking
+2011-11-22T11:53:03  *** mj41 <mj41!~mj41_nby@195.39.106.218> has quit IRC (Ping timeout: 248 seconds)
+2011-11-22T11:55:28  <praveen> Matchmaking is necessary. If I get to play with average bots I would know what has to be improved.
+2011-11-22T11:55:49  <mcstar> praveen: you do know now too
+2011-11-22T11:55:56  <mcstar> => everything
+2011-11-22T11:56:20  <mcstar> praveen: can you link a game?
+2011-11-22T11:57:30  <praveen> mcstar: http://ants.fluxid.pl/replay.10679 Could not figure out what I should focus on - a little help?
+2011-11-22T11:58:26  <mcstar> even at turn 15 you bot has half the food of the others
+2011-11-22T11:59:08  <praveen> Yeah Initial food collection is not efficient I know
+2011-11-22T11:59:15  <mcstar> they engage in situations they cantwin
+2011-11-22T11:59:18  <ikaros> try to get the next food first
+2011-11-22T11:59:24  <ikaros> would be a first step =)
+2011-11-22T11:59:39  <praveen> May be I will start working on this first - yeah next food first
+2011-11-22T11:59:50  *** JorgeB <JorgeB!~textual@209.66.74.34> has joined #aichallenge
+2011-11-22T12:00:03  <mcstar> praveen: add some kind of defensive strategy too
+2011-11-22T12:00:12  <mcstar> its really simple
+2011-11-22T12:00:18  <mcstar> and your bot will last longer
+2011-11-22T12:00:21  <pairofdice> Good offense is the best defense ;)
+2011-11-22T12:00:28  <mcstar> later...
+2011-11-22T12:00:30  <praveen> mcstar: defensive - for hill or for ants not walking directly to the enemy
+2011-11-22T12:00:36  <mcstar> for ants
+2011-11-22T12:00:45  <pairofdice> defence makes your food collections inefficient
+2011-11-22T12:00:49  <mcstar> dont go into 4vs1 battles and alike
+2011-11-22T12:01:00  <mcstar> no
+2011-11-22T12:01:10  <mcstar> thats not my experience
+2011-11-22T12:01:11  <praveen> mcstar: it doesnt know about enemy ants right now, I will add that first
+2011-11-22T12:01:18  <mcstar> k
+2011-11-22T12:02:14  <praveen> mcstar: I feel for the most efficient food collection in the beginning stages, maximum matching in bipartite graph is best. But feel dont need to go to that level. anybody doing this?
+2011-11-22T12:02:33  <mcstar> i did in my common lisp bot
+2011-11-22T12:02:58  <mcstar> but its totally unncessary if you have a good override
+2011-11-22T12:03:02  <praveen> Oh, How good was it?
+2011-11-22T12:03:08  <mcstar> very good
+2011-11-22T12:03:26  <mcstar> but not better on average than this one
+2011-11-22T12:03:39  <praveen> You are using that now in your bots?
+2011-11-22T12:03:45  <mcstar> no
+2011-11-22T12:03:50  <mcstar> thats what im saying
+2011-11-22T12:03:54  <mcstar> it isnt necessary
+2011-11-22T12:04:30  <mcstar> in the beginnig you have food collection + exploration
+2011-11-22T12:04:58  <mcstar> and i think the imperfection that my alg. or other non-perfect alg. bring in, it makes up for that in exploration
+2011-11-22T12:05:12  <praveen> Yeah true
+2011-11-22T12:05:54  <praveen> the reason for not creating defensive strategy is, right now am experimenting exploration. If
+2011-11-22T12:06:03  <praveen> sorry- ignore the prev comment
+2011-11-22T12:07:09  <praveen> I can understand whether my exploration is good, only if it does the exploration part alone. If I do exploration + some defense, I could not figure out which one is going wrong. Anyways I feel I need to add this to make some progress
+2011-11-22T12:07:47  <mcstar> better bots will hunt your lone ants down
+2011-11-22T12:07:55  <mcstar> wo any kind of defense easily
+2011-11-22T12:08:07  <mcstar> if you try to avoid them, you gain a bit of time
+2011-11-22T12:08:18  <mcstar> until you hit water, and you will die then
+2011-11-22T12:08:30  <praveen> mcstar: Yeah exactly the same happening. Thats why I wanted to play with bots of my level.
+2011-11-22T12:09:04  <mcstar> i suggest you maximize exploration + food collection by playing against your bot
+2011-11-22T12:09:04  <praveen> mcstar: Will get coding. Thanks for the pointers
+2011-11-22T12:09:08  <mcstar> in a very defensive mode
+2011-11-22T12:09:29  <praveen> yeah ok
+2011-11-22T12:09:40  <mcstar> if you can beat your defensive bot with the new one every time (i.e. can collect overwhelmingly more food) you can stop
+2011-11-22T12:12:39  <BenJackson> morning
+2011-11-22T12:12:48  <mcstar> hardly
+2011-11-22T12:12:55  <Surya> Hey guys, since you're talking about strategy, I'd like to have an analyse from someone further than I. I've made a "correct" IA which explores well attack hills & rush food. Now I have the (huge) issue of close fight (because I basically lose every single ant against wall of ants)
+2011-11-22T12:13:10  <mcstar> ia?
+2011-11-22T12:13:14  <mcstar> internal affairs?
+2011-11-22T12:13:21  <pairofdice> Infernal Ants
+2011-11-22T12:13:22  <Surya> sorry french there :p
+2011-11-22T12:13:22  <Surya> ai
+2011-11-22T12:13:24  <mcstar> Surya: you need an ai
+2011-11-22T12:13:26  <Surya> héh :)
+2011-11-22T12:13:53  <pairofdice> I'm not going to tell you how to beat my bot :)
+2011-11-22T12:14:00  <mcstar> same here
+2011-11-22T12:14:04  <Surya> anyway, the first step i have in mind is to back off my ants if the situation is bad.
+2011-11-22T12:14:09  <mcstar> Surya: but goo luck
+2011-11-22T12:14:13  <mcstar> d
+2011-11-22T12:14:20  <Surya> But i have no idea for attacking
+2011-11-22T12:14:21  <mcstar> thats excellent
+2011-11-22T12:14:29  <Surya> My question is this one : (wait for it :))
+2011-11-22T12:14:31  <mcstar> thats what i suggested to praveen
+2011-11-22T12:14:56  <Surya> How hard is it? Compared to the rest? Is it like 10 times harder? I'm thinking of a minimax for every dangerous area
+2011-11-22T12:15:00  <Surya> but i will timeout
+2011-11-22T12:15:09  <pairofdice> Basic combat is pretty easy
+2011-11-22T12:15:11  <Surya> I know it
+2011-11-22T12:15:33  <pairofdice> minimax is a bad idea
+2011-11-22T12:15:36  *** amstan_ <amstan_!~alex@142.222.28.119> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T12:15:46  <Surya> ok
+2011-11-22T12:15:56  <Surya> What do you call "basic combat"?
+2011-11-22T12:16:02  <Surya> I'd like to stop losing all my ants 1vs10
+2011-11-22T12:16:13  <mcstar> thats easy
+2011-11-22T12:16:18  <mcstar> avoid them
+2011-11-22T12:16:23  <pairofdice> If your ants are outnumbered, fall back, else close in
+2011-11-22T12:16:34  <pairofdice> basic.
+2011-11-22T12:16:42  <mcstar> visual.
+2011-11-22T12:16:47  <Surya> lol :)
+2011-11-22T12:17:08  <Surya> Ok, i'll do my best
+2011-11-22T12:17:14  <Surya> Thanks for your answers :)
+2011-11-22T12:18:44  <mcstar> Surya: the minimax approach is not a good way, but there are things resembling it
+2011-11-22T12:18:48  <BenJackson> if all my games went this well I'd be #1!  http://aichallenge.org/visualizer.php?game=114769&user=3473
+2011-11-22T12:19:04  <mcstar> you can try that, and see where do you need to change what, and what restrictions apply
+2011-11-22T12:19:50  <mcstar> BenJackson: nice, but you need to spread those ants
+2011-11-22T12:19:54  <BenJackson> Surya: fwiw the combat in my bot there (white) is pretty basic
+2011-11-22T12:19:59  <mcstar> when you hill is not in danger
+2011-11-22T12:20:01  <mcstar> r
+2011-11-22T12:20:15  <BenJackson> mcstar: oh I know, if I could figure out how to integrate THAT with everything else I'd resubmit
+2011-11-22T12:20:40  <BenJackson> bbs, appointment
+2011-11-22T12:22:54  *** AntDroid <AntDroid!70c64013@gateway/web/freenode/ip.112.198.64.19> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T12:27:11  *** ALplus <ALplus!~ALplus@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-11-22T12:36:22  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T12:39:06  *** Blkt <Blkt!~user@89-96-199-46.ip13.fastwebnet.it> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T12:39:30  *** gyc <gyc!42cfdc14@gateway/web/freenode/ip.66.207.220.20> has joined #aichallenge
+2011-11-22T12:40:25  *** liberforce <liberforce!~lmenina@LLagny-156-36-6-198.w80-14.abo.wanadoo.fr> has left #aichallenge
+2011-11-22T12:41:16  *** gyc <gyc!42cfdc14@gateway/web/freenode/ip.66.207.220.20> has quit IRC (Client Quit)
+2011-11-22T12:44:35  <a1k0n> BenJackson: haha nice
+2011-11-22T12:48:20  <mcstar> his ants are very hot
+2011-11-22T12:56:05  <mcstar> http://aichallenge.org/visualizer.php?game=116183&user=12
+2011-11-22T12:56:07  <mcstar> this is nice
+2011-11-22T12:56:30  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-22T13:00:07  <mcstar> if someone would not understand my amusement: i timed out and still won, wtf?
+2011-11-22T13:02:47  <avdg> :-)
+2011-11-22T13:02:57  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 245 seconds)
+2011-11-22T13:03:04  *** Surya <Surya!58b273ad@gateway/web/freenode/ip.88.178.115.173> has quit IRC (Quit: Page closed)
+2011-11-22T13:03:10  *** treeform <treeform!~treeform@108.60.121.46> has joined #aichallenge
+2011-11-22T13:15:35  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-11-22T13:16:36  *** Antvolution <Antvolution!~jacob@p4FF68928.dip0.t-ipconnect.de> has joined #aichallenge
+2011-11-22T13:19:27  <a1k0n> mcstar: you didn't timeout, you crashed
+2011-11-22T13:20:55  <mcstar> whatever :D
+2011-11-22T13:23:05  <BenJackson> strategic crashing
+2011-11-22T13:23:14  <BenJackson> then he waited for purple to throw some ants on his static pile
+2011-11-22T13:25:52  *** kilae <kilae!~chatzilla@catv-161-018.tbwil.ch> has joined #aichallenge
+2011-11-22T13:27:47  *** NightExcessive <NightExcessive!michael@unaffiliated/nightexcessive> has quit IRC (Ping timeout: 255 seconds)
+2011-11-22T13:27:48  <mcstar> i should have not win that
+2011-11-22T13:29:07  *** bergmark <bergmark!~bergmark@cpe-075-189-152-072.nc.res.rr.com> has quit IRC (Read error: Operation timed out)
+2011-11-22T13:30:47  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T13:30:52  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-11-22T13:30:54  <mcstar> BenJackson: have you win a game against x.athis?
+2011-11-22T13:30:55  *** ThatSnail_ <ThatSnail_!~chatzilla@c-98-249-235-171.hsd1.fl.comcast.net> has joined #aichallenge
+2011-11-22T13:31:52  *** ThatSnail_ <ThatSnail_!~chatzilla@c-98-249-235-171.hsd1.fl.comcast.net> has joined #aichallenge
+2011-11-22T13:34:16  *** ThatSnail <ThatSnail!~chatzilla@c-98-249-235-171.hsd1.fl.comcast.net> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T13:34:17  *** ThatSnail_ is now known as ThatSnail
+2011-11-22T13:42:35  *** NightExcessive <NightExcessive!michael@unaffiliated/nightexcessive> has joined #aichallenge
+2011-11-22T13:45:01  *** Dlayne <Dlayne!~qw@95.79.154.129> has joined #aichallenge
+2011-11-22T13:58:11  *** GeorgeSebastian <GeorgeSebastian!~georgeseb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 252 seconds)
+2011-11-22T14:02:18  *** Marce_ <Marce_!546bc4a1@gateway/web/freenode/ip.84.107.196.161> has joined #aichallenge
+2011-11-22T14:02:33  <Marce_> Hello all
+2011-11-22T14:07:56  <IchBinDasWir> hi
+2011-11-22T14:14:19  <ThatSnail> This is a really silly question: How do I get python to output to the console?
+2011-11-22T14:14:26  <ThatSnail> Print() doesn't work
+2011-11-22T14:14:59  <Minthos> you need to write to stderr and configure playgame.py to print stderr output from the bot
+2011-11-22T14:16:37  <ThatSnail> Thanks, I'll try that
+2011-11-22T14:18:42  *** bhasker <bhasker!~bhasker@173-164-245-33-SFBA.hfc.comcastbusiness.net> has joined #aichallenge
+2011-11-22T14:20:24  <ThatSnail> Woot, got it.  Thanks again.
+2011-11-22T14:20:58  <pairofdice> Ahh, -E and -e
+2011-11-22T14:26:16  *** choas <choas!~lars@p4FDC5BA3.dip.t-dialin.net> has joined #aichallenge
+2011-11-22T14:26:59  <mcstar> i reached 64. my bot is almost not very bad now
+2011-11-22T14:27:40  <mcstar> 64 skill, not rank
+2011-11-22T14:27:52  *** NightExcessive <NightExcessive!michael@unaffiliated/nightexcessive> has quit IRC (Quit: Ciao.)
+2011-11-22T14:28:57  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:2ca2:5ebd:b02f:3edc> has joined #aichallenge
+2011-11-22T14:38:17  <BenJackson> somehow I got back to 21st after slipping quite a bit yesterday
+2011-11-22T14:38:31  <BenJackson> skill hovering around 82
+2011-11-22T14:38:37  *** antonh <antonh!antonh@lenin.acc.umu.se> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T14:40:56  *** antonh <antonh!antonh@lenin.acc.umu.se> has joined #aichallenge
+2011-11-22T14:42:36  *** speakeasy <speakeasy!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has joined #aichallenge
+2011-11-22T14:50:36  <Fluxid> @seen amstan
+2011-11-22T14:50:36  <contestbot> Fluxid: amstan was last seen in #aichallenge 19 hours, 30 minutes, and 33 seconds ago: <amstan> mcstar: is this from last week or something? i don't remember it
+2011-11-22T14:50:44  <Fluxid> @seen McLeopold
+2011-11-22T14:50:44  <contestbot> Fluxid: McLeopold was last seen in #aichallenge 11 hours, 46 minutes, and 25 seconds ago: <McLeopold> he has, he's got some nice cell automation stuff
+2011-11-22T14:50:49  <mcstar> woooot?
+2011-11-22T14:51:03  <Fluxid> what timezone are they -_-'
+2011-11-22T14:51:04  <mcstar> Fluxid: why did you wake me?
+2011-11-22T14:51:23  <Fluxid> mcstar: i didn't mean to wake you, sorry!
+2011-11-22T14:51:27  <mcstar> kidding
+2011-11-22T14:51:34  <mcstar> us something
+2011-11-22T14:52:30  <mcstar> amstan probably attends the uni of waterloo
+2011-11-22T14:52:36  <Fluxid> does anyone know: 1. can i upload compiled c extension for python 2. what arch is used, amd64 or x86?
+2011-11-22T14:52:40  <mcstar> i guess, so its us western time?
+2011-11-22T14:52:55  <BenJackson> Fluxid: I don't think so
+2011-11-22T14:53:02  <mcstar> why not?
+2011-11-22T14:53:09  <BenJackson> oh, you mean YOU'd compile
+2011-11-22T14:53:09  <mcstar> you can
+2011-11-22T14:53:12  <mcstar> yes
+2011-11-22T14:53:13  <Fluxid> i remember someone said i can, but i wanted to make sure
+2011-11-22T14:53:15  <BenJackson> and put the .so
+2011-11-22T14:53:19  <Fluxid> BenJackson: yeah, .so
+2011-11-22T14:53:24  <BenJackson> in that case build for both :)
+2011-11-22T14:53:30  <Fluxid> i thought of that
+2011-11-22T14:53:37  <BenJackson> alternatively convert your bot to C or C++
+2011-11-22T14:53:49  <BenJackson> have MyBot.cc exec python on whatever.py
+2011-11-22T14:53:57  <mcstar> Fluxid: speed problems at last?
+2011-11-22T14:54:03  <Fluxid> BenJackson: nah, too much work. i just want time critical part to be rewriten in C (i already have some C code)
+2011-11-22T14:54:09  <BenJackson> well, I guess that way you can't exec python, you'd have to start an interpreter
+2011-11-22T14:54:20  <BenJackson> Fluxid: I don't mean change your code
+2011-11-22T14:54:31  <BenJackson> I mean change your language so the build would compile your C extensino
+2011-11-22T14:54:37  <BenJackson> and then your C would actually run your python bot
+2011-11-22T14:55:03  <mcstar> BenJackson: how?
+2011-11-22T14:55:08  <mcstar> thats another process
+2011-11-22T14:55:10  <Fluxid> BenJackson: wow, i did once python embedding, but... that would be too much work now
+2011-11-22T14:55:16  <mcstar> i think the engine would kill it
+2011-11-22T14:55:28  <BenJackson> exec replaces
+2011-11-22T14:55:29  <BenJackson> hang on
+2011-11-22T14:55:34  <Fluxid> mcstar: no, this would embed python interpreter in C binary
+2011-11-22T14:55:41  <BenJackson> http://docs.python.org/extending/embedding.html
+2011-11-22T14:55:41  <Fluxid> that would be still one process
+2011-11-22T14:55:43  <mcstar> oh
+2011-11-22T14:55:44  <Fluxid> yup
+2011-11-22T14:56:01  <BenJackson> there's an example, even
+2011-11-22T14:56:05  <mcstar> but isnt that large or something?
+2011-11-22T14:56:12  <Fluxid> nah
+2011-11-22T14:56:14  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-11-22T14:56:25  <Fluxid> as long as i don't need to link staticaly
+2011-11-22T14:56:41  <Fluxid> btw, can i make "statically linked shared library"?
+2011-11-22T14:56:48  <BenJackson> no
+2011-11-22T14:56:56  <Fluxid> i thought so
+2011-11-22T14:57:13  <Fluxid> well, i'll compile for both archs and upload
+2011-11-22T14:57:15  <BenJackson> ohhh my embedding idea might fail because you need link flags
+2011-11-22T14:57:54  <Fluxid> then...
+2011-11-22T14:57:59  <Fluxid> dynamic loading~~~~
+2011-11-22T14:58:04  <Fluxid> even more work!
+2011-11-22T14:58:36  <Fluxid> damn, i can't compile for 32-bit with 64-bit python headers
+2011-11-22T15:01:55  <mcstar> Branch/Version Information: epsilon 3b7d6b5 [origin/epsilon] Use the right (64bit) version of pypy
+2011-11-22T15:02:05  <mcstar> so the arch is x86_64
+2011-11-22T15:02:53  <mcstar> Fluxid:
+2011-11-22T15:03:23  <Fluxid> >pypy
+2011-11-22T15:03:27  <Fluxid> holy shit
+2011-11-22T15:03:40  <Fluxid> they finally used pypy?
+2011-11-22T15:03:57  <mcstar> i dont know
+2011-11-22T15:03:58  <Garf> if you submit as MyBot.pypy yes
+2011-11-22T15:04:01  <mcstar> seems so
+2011-11-22T15:04:09  <Fluxid> whoooo
+2011-11-22T15:04:20  <Fluxid> then i'll maybe port from python 3 to pypy?
+2011-11-22T15:04:33  <mcstar> Fluxid: why are you asking?
+2011-11-22T15:05:17  <Fluxid> no idea, this question mark just really wanted to be there
+2011-11-22T15:05:50  <BenJackson> What's so special about pypy&
+2011-11-22T15:06:27  <mcstar> cause its pure python? and fast?(heard)
+2011-11-22T15:06:36  <Fluxid> BenJackson: if code is well written, it can get over 4.7x faster
+2011-11-22T15:06:43  <BenJackson> nice
+2011-11-22T15:06:56  <Fluxid> it's good for number-crunching
+2011-11-22T15:07:23  <BenJackson> I wrote a JIT for a language once which made things like number crunching much faster
+2011-11-22T15:07:31  <mcstar> i guess its mentally pleasing that it stands on its own?
+2011-11-22T15:07:32  <BenJackson> then I realized most of what people did in that language was concatenate strings
+2011-11-22T15:07:41  <BenJackson> which got very little benefit
+2011-11-22T15:07:49  <Fluxid> but JIT needs warmup, at the beginning it can be few times slower :P
+2011-11-22T15:08:13  <Fluxid> BenJackson: pypy actually isn't just python, but interpreter+jit framework, you can implement other languages in it
+2011-11-22T15:09:23  <BenJackson> the holograms on my new DIscover card are cool
+2011-11-22T15:10:25  *** Dlayne <Dlayne!~qw@95.79.154.129> has left #aichallenge
+2011-11-22T15:12:27  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-11-22T15:13:29  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has joined #aichallenge
+2011-11-22T15:14:25  *** grom <grom!~grom@ppp118-208-96-137.lns20.bne4.internode.on.net> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T15:14:47  *** flag <flag!~root@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-11-22T15:14:55  *** ALplus <ALplus!~ALplus@CPE00119552a666-CM001a666bad2c.cpe.net.cable.rogers.com> has quit IRC (Ping timeout: 260 seconds)
+2011-11-22T15:17:08  <Fluxid> c extension worked
+2011-11-22T15:21:05  *** onion42 <onion42!561ba00a@gateway/web/freenode/ip.86.27.160.10> has joined #aichallenge
+2011-11-22T15:21:38  <Fluxid> i've updated tcpclient.py on tcp server
+2011-11-22T15:22:19  <Fluxid> it is compatible with both py2 and py3, forward all content to bot and be nicer to bot processes
+2011-11-22T15:22:28  <Fluxid> forwards*
+2011-11-22T15:22:32  *** AndrewBC <AndrewBC!~andrewbc@scarlet.andrewbc.net> has quit IRC (Ping timeout: 245 seconds)
+2011-11-22T15:23:05  *** krishna <krishna!~krishna@unaffiliated/blazzy> has quit IRC (Ping timeout: 260 seconds)
+2011-11-22T15:23:05  *** a1k0n <a1k0n!~andy@hep.cat> has quit IRC (Ping timeout: 260 seconds)
+2011-11-22T15:30:46  *** AndrewBC <AndrewBC!~andrewbc@scarlet.andrewbc.net> has joined #aichallenge
+2011-11-22T15:31:36  *** a1k0n <a1k0n!~andy@hep.cat> has joined #aichallenge
+2011-11-22T15:33:33  <mcstar> f me hard
+2011-11-22T15:34:06  <mcstar> i copied code from another function, it had a return in it, and im wondering why does it show my debug message at the end
+2011-11-22T15:34:17  <mcstar> doesnt*
+2011-11-22T15:35:21  <iglo> how to get the rows and cols from the state.h into the bot.cc  ? (coding in c++; almost everything is starterpackage)
+2011-11-22T15:35:50  *** krishna <krishna!~krishna@unaffiliated/blazzy> has joined #aichallenge
+2011-11-22T15:35:50  *** smarsh <smarsh!ad4f4fcd@gateway/web/freenode/ip.173.79.79.205> has joined #aichallenge
+2011-11-22T15:36:04  <analyst74> really? they support pypy now?
+2011-11-22T15:36:10  <BenJackson> state.rows
+2011-11-22T15:36:16  *** jstrong <jstrong!~jstrong@189.229.21.108> has joined #aichallenge
+2011-11-22T15:36:29  *** jstrong is now known as roflmao
+2011-11-22T15:37:10  <analyst74> maybe I should ditch my badly written cython extension...
+2011-11-22T15:38:32  <iglo> thanks
+2011-11-22T15:38:41  <iglo> i wrote State.rows ...
+2011-11-22T15:38:43  <iglo> :D
+2011-11-22T15:39:34  <pairofdice> You are a master of the keyboard
+2011-11-22T15:42:39  *** praveen <praveen!7aac01fb@gateway/web/freenode/ip.122.172.1.251> has quit IRC (Quit: Page closed)
+2011-11-22T15:44:53  <thestinger> Fluxid: well, you just need to port to python2 - shouldn't be that hard
+2011-11-22T15:45:10  <thestinger> or give them 60k dollars and they'll code py3 support :)
+2011-11-22T15:45:49  <mcstar> i hope im gonna make that much in a year in the future
+2011-11-22T15:46:25  <BenJackson> I should farm my bot out to topcoder
+2011-11-22T15:46:43  <mcstar> farm out?
+2011-11-22T15:46:57  <mcstar> ah i see
+2011-11-22T15:47:05  <mcstar> make them write it for you?
+2011-11-22T15:49:52  *** delt0r_ <delt0r_!~bob@194-166-31-178.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T15:51:56  <IchBinDasWir> not a bad idea
+2011-11-22T15:53:54  *** amstan <amstan!~alex@142.222.14.96> has joined #aichallenge
+2011-11-22T15:53:54  *** ChanServ sets mode: +o amstan
+2011-11-22T15:56:26  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-11-22T15:57:01  *** onion42 <onion42!561ba00a@gateway/web/freenode/ip.86.27.160.10> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T16:02:14  *** delt0r_ <delt0r_!~bob@178-191-182-15.adsl.highway.telekom.at> has joined #aichallenge
+2011-11-22T16:03:27  <smarsh> epic first game with all starter packages
+2011-11-22T16:07:41  <g0llum> at least you've won ..
+2011-11-22T16:10:06  <g0llum> headbanging being pretty popular among starters
+2011-11-22T16:14:14  <mcstar> i managed to slow down my bot
+2011-11-22T16:14:23  *** amstan <amstan!~alex@142.222.14.96> has quit IRC (Ping timeout: 248 seconds)
+2011-11-22T16:14:24  <mcstar> at least i wont get any tickets
+2011-11-22T16:16:13  *** amstan <amstan!~alex@142.222.14.96> has joined #aichallenge
+2011-11-22T16:16:13  *** ChanServ sets mode: +o amstan
+2011-11-22T16:21:30  *** amstan <amstan!~alex@142.222.14.96> has quit IRC (Remote host closed the connection)
+2011-11-22T16:21:45  <g0llum> mcstar, in berlin, currently, you're much closer to get a ticket for wrong parking, than for speeding..
+2011-11-22T16:22:06  <Fluxid> thestinger: i've already writenn stuff in C so it's too late
+2011-11-22T16:22:16  *** amstan <amstan!~alex@142.222.14.96> has joined #aichallenge
+2011-11-22T16:22:16  *** ChanServ sets mode: +o amstan
+2011-11-22T16:22:22  <mcstar> that must suck, but parking is horrible in bufapest too, i heard
+2011-11-22T16:27:16  <g0llum> mcstar, all i'm saying is, if you slow down your attack front, you'll just stuff a tight maze for all those others pushing to the front
+2011-11-22T16:33:56  *** Palmik <Palmik!~palmik@man-208-94.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-11-22T16:39:07  *** kilae <kilae!~chatzilla@catv-161-018.tbwil.ch> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 8.0/20111104165243])
+2011-11-22T16:40:33  <mcstar> g0llum: by slowed it down i meant now it takes more time to complete a turn
+2011-11-22T16:40:59  <g0llum> ok, ok ;)
+2011-11-22T16:44:12  *** Israfel <Israfel!~jeff@99-0-14-82.lightspeed.frokca.sbcglobal.net> has joined #aichallenge
+2011-11-22T16:44:36  <pairofdice> I really need to get started on my bot again
+2011-11-22T16:47:28  <pairofdice> But c++ is so strange and mysterious
+2011-11-22T16:49:01  *** Lithosphere <Lithosphere!~lithosphe@unaffiliated/lithosphere> has quit IRC (Remote host closed the connection)
+2011-11-22T16:49:26  *** Lithosphere <Lithosphere!~lithosphe@78-21-162-147.access.telenet.be> has joined #aichallenge
+2011-11-22T16:49:26  *** Lithosphere <Lithosphere!~lithosphe@unaffiliated/lithosphere> has joined #aichallenge
+2011-11-22T16:50:40  *** ikaros_ <ikaros_!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has joined #aichallenge
+2011-11-22T17:00:02  *** g0llum <g0llum!~g0llum@89.204.137.228> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T17:00:32  <BenJackson> the latest version of the visualizer ants.py takes a lonnng time at the end of the game
+2011-11-22T17:00:35  <BenJackson> after text got added
+2011-11-22T17:00:44  <BenJackson> ohhh I forgot I am putting out some text
+2011-11-22T17:01:24  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has joined #aichallenge
+2011-11-22T17:04:37  *** amstan <amstan!~alex@142.222.14.96> has quit IRC (Ping timeout: 245 seconds)
+2011-11-22T17:18:16  *** twymer <twymer!~twymer@rrcs-96-11-137-56.central.biz.rr.com> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T17:19:28  *** epicmonkey <epicmonkey!~epicmonke@178.130.5.103> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T17:20:53  *** Mystret <Mystret!bc8e25c9@gateway/web/freenode/ip.188.142.37.201> has quit IRC (Quit: Page closed)
+2011-11-22T17:21:02  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T17:24:50  *** Marce_ <Marce_!546bc4a1@gateway/web/freenode/ip.84.107.196.161> has quit IRC (Quit: Page closed)
+2011-11-22T17:29:00  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-92-231.neo.res.rr.com> has joined #aichallenge
+2011-11-22T17:32:10  <a1k0n> my bot is getting worse and i haven't touched it
+2011-11-22T17:34:40  *** speakeasy <speakeasy!~speakeasy@host86-153-187-79.range86-153.btcentralplus.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T17:35:53  <ikaros_> or the others are getting better :)
+2011-11-22T17:37:23  *** Fandekasp <Fandekasp!~Fandekasp@190.14.97.84.rev.sfr.net> has quit IRC (Ping timeout: 258 seconds)
+2011-11-22T17:39:32  <pairofdice> Did you think others would stay still :)
+2011-11-22T17:42:32  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has joined #aichallenge
+2011-11-22T17:43:26  *** ikaros_ <ikaros_!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-11-22T17:48:38  <mcstar> maybe your bot is reaching maximum entropy
+2011-11-22T18:03:47  <thestinger> I'm just making my code cleaner atm... I think I'm going to be using the C++11 lambdas a lot
+2011-11-22T18:06:09  <Antimony> I wish I could use lambdas
+2011-11-22T18:06:50  <mcstar> labda
+2011-11-22T18:07:01  <mcstar> =ball
+2011-11-22T18:07:04  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2011-11-22T18:07:04  *** ChanServ sets mode: +o amstan
+2011-11-22T18:07:31  <thestinger> gone from ~1500 lines to 1300 in the past 15 mins
+2011-11-22T18:07:53  <mcstar> good for you, im going in the opposite direction
+2011-11-22T18:08:24  <thestinger> and I went through all my code and added const to every non-variable variable just for the hell of it - it's sort of like ugly haskell now
+2011-11-22T18:08:25  <mcstar> i added ~200 lines today
+2011-11-22T18:08:32  <mcstar> >2600
+2011-11-22T18:08:44  <mcstar> :)
+2011-11-22T18:09:07  <mcstar> i read f# to relax a little bit
+2011-11-22T18:09:15  <mcstar> im not sold on it yet
+2011-11-22T18:10:30  <thestinger> meh, it's aimed at C# devs
+2011-11-22T18:10:40  *** bhasker <bhasker!~bhasker@173-164-245-33-SFBA.hfc.comcastbusiness.net> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T18:12:07  <thestinger> clojure looks really nice
+2011-11-22T18:12:13  <thestinger> I haven't tried it yet
+2011-11-22T18:12:17  *** bhasker <bhasker!~bhasker@173-164-245-33-SFBA.hfc.comcastbusiness.net> has joined #aichallenge
+2011-11-22T18:12:29  *** Rav3nsW0rd <Rav3nsW0rd!~Rav3nSw0r@c-24-15-221-27.hsd1.il.comcast.net> has joined #aichallenge
+2011-11-22T18:13:26  <mcstar> i tried it out a bit
+2011-11-22T18:13:34  <mcstar> set it up, did some basic stuff
+2011-11-22T18:14:26  *** Anilm3 <Anilm3!~anil@75.Red-79-159-79.staticIP.rima-tde.net> has joined #aichallenge
+2011-11-22T18:14:42  <Anilm3> Hi guys
+2011-11-22T18:14:47  <thestinger> hey
+2011-11-22T18:15:39  <mcstar> hi
+2011-11-22T18:18:48  <Zannick> hello
+2011-11-22T18:21:53  *** xathis <xathis!~xathis@f054014078.adsl.alicedsl.de> has quit IRC ()
+2011-11-22T18:22:33  <mcstar> ok we can talk freely now
+2011-11-22T18:27:09  *** Harpyon <Harpyon!~Harpyon@ti0031a380-0762.bb.online.no> has quit IRC (Quit: Textual IRC Client: http://www.textualapp.com/)
+2011-11-22T18:30:48  *** grwip <grwip!~grwip@dslb-088-075-159-102.pools.arcor-ip.net> has quit IRC (Quit: Leaving)
+2011-11-22T18:32:19  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-11-22T18:39:52  *** ikaros <ikaros!~ikaros@dslb-188-097-070-062.pools.arcor-ip.net> has quit IRC (Quit: Ex-Chat)
+2011-11-22T18:40:30  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has quit IRC (Ping timeout: 252 seconds)
+2011-11-22T18:43:16  *** eccentric <eccentric!~eccentric@d221-73-103.commercial.cgocable.net> has quit IRC (Remote host closed the connection)
+2011-11-22T18:47:27  *** iglo <iglo!~xy@xdsl-92-252-71-12.dip.osnanet.de> has quit IRC (Remote host closed the connection)
+2011-11-22T18:59:35  *** Anilm3 <Anilm3!~anil@75.Red-79-159-79.staticIP.rima-tde.net> has quit IRC (Quit: Lost terminal)
+2011-11-22T19:01:47  <mcstar> the engine or playgame.py should handle ^C and END the game, not quit
+2011-11-22T19:02:08  * avdg wonders if we spoke in silence for 30 min
+2011-11-22T19:05:52  *** Antvolution <Antvolution!~jacob@p4FF68928.dip0.t-ipconnect.de> has left #aichallenge
+2011-11-22T19:09:22  <mcstar> can somebody explain me scenarios?
+2011-11-22T19:09:36  <mcstar> i just edit a mapfile, run it and thats all?
+2011-11-22T19:09:58  <thestinger> use --scenario when you run play_game.py
+2011-11-22T19:10:05  <mcstar> no _
+2011-11-22T19:10:30  <mcstar> ok,but do i have to leave hills in for example?
+2011-11-22T19:11:15  <thestinger> I dunno, I've just been adding food (*), and ants (a, b, c, etc.) and then running it
+2011-11-22T19:11:59  <mcstar> do i have to provide bots for all players?
+2011-11-22T19:12:08  <mcstar> or are there static ants?
+2011-11-22T19:12:35  <thestinger> well, you can make a hill A and then put a ants, which belong to that player
+2011-11-22T19:13:00  <mcstar> ok, but i gonna need a holdbot for that
+2011-11-22T19:14:43  <mcstar> thestinger: i see numbers
+2011-11-22T19:14:46  <mcstar> not letters
+2011-11-22T19:15:38  <thestinger> replace them with letters
+2011-11-22T19:15:44  <thestinger> 0 -> A etc.
+2011-11-22T19:16:14  <thestinger> that way the starting locations aren't random
+2011-11-22T19:16:25  <thestinger> well, I dunno if that's really what it does
+2011-11-22T19:16:32  <thestinger> but that's how the tutorial map scenario does it
+2011-11-22T19:17:53  <mcstar> thx
+2011-11-22T19:18:43  <mcstar> but this sucks
+2011-11-22T19:19:00  <thestinger> why?
+2011-11-22T19:19:00  <mcstar> i cant call playgame.py from the current directory
+2011-11-22T19:19:16  <mcstar> it needs to be called where it is, cause needs the other files
+2011-11-22T19:19:19  <mcstar> from*
+2011-11-22T19:20:12  <mcstar> i think im gonna need to add that dir to the python path
+2011-11-22T19:20:28  <thestinger> are you sure?
+2011-11-22T19:20:33  <thestinger> calling it from a different directory works for me
+2011-11-22T19:20:39  <thestinger> python2 tools/playgame.py ./MyBot "python LazyBot.py" --map_file scenario.map --log_dir game_logs --player_seed 7 --verbose -e $(options) --turns 100 --food none --scenario -E
+2011-11-22T19:20:40  <mcstar> really?
+2011-11-22T19:20:54  <thestinger> but the bots need to be in the directory I call it from or the sandboxing stuff freaks out
+2011-11-22T19:21:05  <mcstar> ../playgame.py complains that it doesnt see the engine
+2011-11-22T19:22:26  <mcstar> thestinger: i think engine.py is in the directory you are calling playgame from
+2011-11-22T19:22:32  <thestinger> no
+2011-11-22T19:22:44  <thestinger> 'tools' is in the directory
+2011-11-22T19:22:52  <thestinger> look at the command I pasted
+2011-11-22T19:23:00  <mcstar> im not crazy
+2011-11-22T19:23:11  <thestinger> neither am I :P
+2011-11-22T19:23:19  <thestinger> maybe it doesn't work if you're deeper in the directory tree
+2011-11-22T19:23:22  <thestinger> but I'm higher up
+2011-11-22T19:23:23  <mcstar> i cant call playgame.py from anywhere else except from where it is
+2011-11-22T19:23:31  <mcstar> tried that
+2011-11-22T19:23:37  <mcstar> ants/playgame.py same error
+2011-11-22T19:23:49  <thestinger> did you try 'python2 ants/playgame.py'?
+2011-11-22T19:23:55  <mcstar> why?
+2011-11-22T19:24:02  <mcstar> it calls python2
+2011-11-22T19:24:02  <thestinger> dunno, for some reason I'm doing it that way
+2011-11-22T19:24:29  *** Lithosphere <Lithosphere!~lithosphe@unaffiliated/lithosphere> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T19:24:31  <mcstar> same
+2011-11-22T19:24:54  <mcstar> i tried the tools version
+2011-11-22T19:24:58  <mcstar> its working with that
+2011-11-22T19:25:07  <mcstar> the github's structure is different
+2011-11-22T19:25:23  <mcstar> i see
+2011-11-22T19:25:53  <mcstar> in the tools's version playgame.py and engine.py is in the same directory
+2011-11-22T19:26:10  <mcstar> thats why it can find it regardless from where i call playgame.py from
+2011-11-22T19:26:24  <mcstar> but in the github's version they are totally separated
+2011-11-22T19:26:46  <mcstar> playgame.py is in ./ants
+2011-11-22T19:26:56  <mcstar> engine.py is in ./worker
+2011-11-22T19:28:40  *** [1]analyst74 <[1]analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has joined #aichallenge
+2011-11-22T19:29:29  *** HaraKiri <HaraKiri!~hara@d184233.adsl.hansenet.de> has quit IRC ()
+2011-11-22T19:30:10  *** [2]analyst74 <[2]analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has joined #aichallenge
+2011-11-22T19:31:04  <mcstar> Exception: ('Invalid map', 'This map is not symmetric. Player 1 does not have an orientation that matches player 0')
+2011-11-22T19:31:39  <mcstar> amstan: what are the restrictions on scenarios?
+2011-11-22T19:31:49  *** analyst74 <analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T19:31:49  *** [2]analyst74 is now known as analyst74
+2011-11-22T19:31:58  <amstan> mcstar: not sure, i think that's it
+2011-11-22T19:31:59  *** choas <choas!~lars@p4FDC5BA3.dip.t-dialin.net> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T19:32:05  <amstan> you can try removing it
+2011-11-22T19:32:08  <amstan> browse around the code
+2011-11-22T19:32:48  <mcstar> for scenarios it might be helpful to be able to disregard hills
+2011-11-22T19:33:04  *** [1]analyst74 <[1]analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T19:33:38  *** fpcfan <fpcfan!~vincent@80.123.225.55> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T19:34:42  *** JamesMG <JamesMG!jamesg@milkshakes.org> has quit IRC (Quit: leaving)
+2011-11-22T19:34:50  *** JamesMG <JamesMG!jamesg@milkshakes.org> has joined #aichallenge
+2011-11-22T19:35:08  *** fpcfan <fpcfan!~vincent@80.123.225.55> has joined #aichallenge
+2011-11-22T19:35:39  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has joined #aichallenge
+2011-11-22T19:36:16  <mcstar> amstan: do you have some idea from where that error originates?
+2011-11-22T19:36:30  <amstan> mcstar: search will probably help
+2011-11-22T19:36:34  <mcstar> i tried searching engine.py but found no trace of it
+2011-11-22T19:36:47  <amstan> engine.py is supposed to be game agnostic
+2011-11-22T19:36:50  <amstan> it's in ants.py
+2011-11-22T19:36:56  <mcstar> oh
+2011-11-22T19:37:10  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-92-231.neo.res.rr.com> has quit IRC (Ping timeout: 260 seconds)
+2011-11-22T19:37:15  <mcstar> i dont see any imports
+2011-11-22T19:37:31  <amstan> if you're in linux
+2011-11-22T19:37:34  <amstan> cd tools/
+2011-11-22T19:37:44  <amstan> grep -R "map is not symmetric" .
+2011-11-22T19:37:57  <amstan> brb
+2011-11-22T19:37:58  <mcstar> amstan: its me, remember?
+2011-11-22T19:38:02  <mcstar> k
+2011-11-22T19:38:13  <amstan> well.. i forgot, lol
+2011-11-22T19:39:39  *** tobym <tobym!~tobym@pool-71-183-248-125.nycmny.fios.verizon.net> has quit IRC (Remote host closed the connection)
+2011-11-22T19:39:41  *** amstan_ <amstan_!~alex@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2011-11-22T19:39:41  *** ChanServ sets mode: +o amstan_
+2011-11-22T19:40:00  *** Lithosphere <Lithosphere!~lithosphe@78-21-162-147.access.telenet.be> has joined #aichallenge
+2011-11-22T19:40:00  *** Lithosphere <Lithosphere!~lithosphe@unaffiliated/lithosphere> has joined #aichallenge
+2011-11-22T19:47:24  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T19:48:56  *** pairofdice <pairofdice!~pod@dsl-hkibrasgw2-ff67c300-50.dhcp.inet.fi> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T19:50:40  <mcstar> so whats the point of this scenario thing if it aint working?
+2011-11-22T19:51:09  <mcstar> and i cant just disable symmetry checks, the whole thing breaks down
+2011-11-22T19:51:15  <mcstar> not that it shouldnt
+2011-11-22T19:51:32  <mcstar> but either im missing something or this is useless
+2011-11-22T19:52:03  <thestinger> it works for me, but I haven't moved around hills
+2011-11-22T19:52:13  <thestinger> I've just added ants/food
+2011-11-22T19:52:27  <mcstar> thestinger: i cant add ants cause it breaks symmetry
+2011-11-22T19:52:38  <thestinger> it lets me do that :\
+2011-11-22T19:52:44  <mcstar> anywhere?
+2011-11-22T19:53:15  <thestinger> http://paste.pocoo.org/show/511693/
+2011-11-22T19:53:23  <thestinger> that's one of the many working scenarios I have
+2011-11-22T19:53:34  <thestinger> I haven't run into any symmetry errors
+2011-11-22T19:54:00  <mcstar> weird
+2011-11-22T19:54:03  <mcstar> ill try that map
+2011-11-22T19:54:21  <mcstar> i will call it stingersmap.map ok?
+2011-11-22T19:54:30  <thestinger> yeah :)
+2011-11-22T19:55:06  <mcstar> Exception: ('Invalid map', 'This map is not symmetric. Player 1 does not have an orientation that matches player 0')
+2011-11-22T19:55:33  <mcstar> and i just pulled the repo some minutes ago
+2011-11-22T19:56:03  <mcstar> maybe there are some conflicting options
+2011-11-22T19:56:36  <mcstar> maybe i need --food none ?
+2011-11-22T19:57:02  <mcstar> f me hard
+2011-11-22T19:57:04  <mcstar> thats it
+2011-11-22T19:57:12  <a1k0n> yeah
+2011-11-22T19:57:22  <Conorach> =]
+2011-11-22T19:57:24  <mcstar> thestinger: thanks
+2011-11-22T19:57:35  <a1k0n> i was just goibg to point that out.  hi
+2011-11-22T19:58:57  <mcstar> hi
+2011-11-22T19:59:25  *** fpcfan <fpcfan!~vincent@80.123.225.55> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T19:59:34  <roflmao> yeah was about to say it myself
+2011-11-22T19:59:36  <avdg> hmm, I wonder if a vector of object (and not of pointers) is a bad idea in c++ (until I overlook something)
+2011-11-22T19:59:57  <mcstar> no
+2011-11-22T20:00:03  <mcstar> even better in c++11
+2011-11-22T20:00:15  <avdg> my compiler isn't happy atm
+2011-11-22T20:00:16  <mcstar> i read up on this, and its totally ok to return anything
+2011-11-22T20:00:26  <mcstar> i.e. vector of things
+2011-11-22T20:00:37  <mcstar> the move constructor will be called
+2011-11-22T20:01:13  <mcstar> avdg: whats the error/problem?
+2011-11-22T20:01:18  <avdg> aVector.push_back(new Location(x, y))
+2011-11-22T20:01:28  <mcstar> thats an address
+2011-11-22T20:01:43  <mcstar> new something is an address, yo need a pointer to store it
+2011-11-22T20:01:49  <avdg> hmm, so how do I pass the whole object?
+2011-11-22T20:01:53  <mcstar> ?
+2011-11-22T20:02:08  <mcstar> *new Location()
+2011-11-22T20:02:16  <mcstar> but best to omit it lol
+2011-11-22T20:02:21  <mcstar> location()
+2011-11-22T20:02:27  * avdg looks at header file
+2011-11-22T20:02:52  <mcstar> if the elements are references you could do *new
+2011-11-22T20:03:00  <mcstar> but i advise against it
+2011-11-22T20:03:23  *** cyphase <cyphase!~cyphase@unaffiliated/cyphase> has joined #aichallenge
+2011-11-22T20:03:29  <a1k0n> uh, just push_back(Location(x,y))
+2011-11-22T20:03:32  <avdg> the vector is of type std::vector<Location>
+2011-11-22T20:03:48  <mcstar> yep, do it as we said
+2011-11-22T20:03:50  <avdg> so I think that would be the problem
+2011-11-22T20:04:09  <avdg> hmm, why am I so not following the discussion
+2011-11-22T20:04:28  <mcstar> std::vector<Location> mylocvector;
+2011-11-22T20:04:43  <avdg> yeah, its like that atm
+2011-11-22T20:04:44  <mcstar> mylocvector.push_back(Location(row, col));
+2011-11-22T20:04:52  <avdg> ah, omit the new
+2011-11-22T20:04:56  <mcstar> yes
+2011-11-22T20:05:17  <avdg> ty
+2011-11-22T20:05:39  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-53-19.asm.bellsouth.net> has quit IRC (Read error: Connection reset by peer)
+2011-11-22T20:05:59  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-53-19.asm.bellsouth.net> has joined #aichallenge
+2011-11-22T20:06:50  <mcstar> hah, its quite easy to edit maps with vim
+2011-11-22T20:06:56  <avdg> :-) you made my compiler happy
+2011-11-22T20:07:19  <avdg> hmm, visual mode? :-)
+2011-11-22T20:07:21  <mcstar> im glad
+2011-11-22T20:07:25  <mcstar> yes
+2011-11-22T20:07:44  <mcstar> i spent more time in emacs, but vim has its merits
+2011-11-22T20:07:45  <avdg> there is even a vimcast tutorial about that
+2011-11-22T20:08:01  <mcstar> i manly use vim because it loads faster
+2011-11-22T20:08:08  <mcstar> my emacs config is pretty long
+2011-11-22T20:08:20  <mcstar> and the colorthemes slow it down considerably
+2011-11-22T20:08:24  <avdg> http://vimcasts.org/episodes/creating-the-vimcasts-logo-as-ascii-art/
+2011-11-22T20:10:19  *** fpcfan <fpcfan!~vincent@80.123.225.55> has joined #aichallenge
+2011-11-22T20:13:47  <thestinger> actaully, don't even do vec.push_back(Location(row, col))
+2011-11-22T20:13:50  <thestinger> actually*
+2011-11-22T20:14:00  <thestinger> use vec.emplace_back(row, col)
+2011-11-22T20:14:22  <avdg> hmm, I wonder what that does
+2011-11-22T20:14:31  * avdg googles
+2011-11-22T20:14:34  <thestinger> it guarantees that it doesn't construct it then copy it
+2011-11-22T20:14:44  <mcstar> .emplace_back(location(row,col))
+2011-11-22T20:14:58  <mcstar> no?
+2011-11-22T20:15:12  <thestinger> .emplace_back() passes the arguments to the constructor
+2011-11-22T20:15:28  <mcstar> hm
+2011-11-22T20:15:40  <thestinger> .push_back() will make a copy (usually)
+2011-11-22T20:15:46  <mcstar> interesting, i read about emplace but i thouhgt you had to use the same way
+2011-11-22T20:15:48  *** Garf <Garf!~Garf@78-22-80-252.access.telenet.be> has quit IRC (Ping timeout: 276 seconds)
+2011-11-22T20:16:21  <thestinger> ofc the compiler can optimize push_back, but I tested it a bit and it doesn't look like gcc is very good at optimizing that without your help
+2011-11-22T20:16:31  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has quit IRC (Ping timeout: 248 seconds)
+2011-11-22T20:16:47  <mcstar> but emplace is c++11 only
+2011-11-22T20:16:56  <thestinger> yeah
+2011-11-22T20:17:04  <avdg> I hope its build in in gcc already
+2011-11-22T20:17:06  <mcstar> so they added that + move?
+2011-11-22T20:17:14  *** FlyinFish <FlyinFish!~analyst74@199-7-158-33.eng.wind.ca> has joined #aichallenge
+2011-11-22T20:17:20  <avdg> :/
+2011-11-22T20:17:22  <avdg> nope
+2011-11-22T20:17:27  <thestinger> avdg: it is
+2011-11-22T20:17:32  <thestinger> compile with -std=c++0x
+2011-11-22T20:17:35  <avdg> at least for the mac compiler, which is 3 years old
+2011-11-22T20:17:52  <thestinger> OSX uses an ancient gcc because they're scared of GPLv3
+2011-11-22T20:17:57  <mcstar> --version?
+2011-11-22T20:18:02  <thestinger> just download a new version, the server uses 4.5
+2011-11-22T20:18:03  <avdg> 4.2.1
+2011-11-22T20:18:12  <avdg> luckily I have a server
+2011-11-22T20:18:30  <mcstar> i used macports when i had a mac
+2011-11-22T20:18:35  <mcstar> or similar
+2011-11-22T20:18:39  <mcstar> i dont remember its name
+2011-11-22T20:18:48  <mcstar> there was a port commnd
+2011-11-22T20:18:55  <thestinger> C++11 has so many nice things, and gcc/libstdc++ support almost all of it now
+2011-11-22T20:18:56  <avdg> well, I think its better to test it on an ubuntu server anyway
+2011-11-22T20:19:08  <avdg> since the server is running on linux as well
+2011-11-22T20:20:08  <mcstar> thestinger: what can c++ copy-contruct?
+2011-11-22T20:20:11  <thestinger> clang/libc++ support a lot of c++11 too, if you have v3 (which is rc2 or something now, not released)
+2011-11-22T20:20:17  <mcstar> with the default copy-constructor
+2011-11-22T20:20:22  *** analyst74 <analyst74!~analyst74@S0106c84c752ced49.ed.shawcable.net> has quit IRC (Quit:  HydraIRC -> http://www.hydrairc.com <- *I* use it, so it must be good!)
+2011-11-22T20:20:31  <mcstar> lets say i have a complex class and i dont provide one
+2011-11-22T20:20:47  <mcstar> when i copy it like when adding to a vector do i get an incomlete obkect?
+2011-11-22T20:20:49  <mcstar> j
+2011-11-22T20:21:41  <thestinger> if you don't use manual memory allocation and pointers in your classes/structs, I think you'll be fine no matter what
+2011-11-22T20:21:48  *** FlyinFish is now known as analyst74
+2011-11-22T20:22:05  <mcstar> thats what im asking
+2011-11-22T20:22:16  <mcstar> so i get no error whatsoever
+2011-11-22T20:22:24  <mcstar> but im gonna take care of that manually
+2011-11-22T20:22:34  <mcstar> i mean write one for the class
+2011-11-22T20:22:47  <thestinger> ah, well I think it will just copy the pointer
+2011-11-22T20:22:54  <mcstar> is it enough to provide operator= ?
+2011-11-22T20:22:56  <thestinger> so it will point to the same block of memory as the old object
+2011-11-22T20:23:13  <thestinger> not sure, I'm new to C++ too :)
+2011-11-22T20:23:17  <mcstar> oh
+2011-11-22T20:23:28  <mcstar> you sounded like you were the master of it
+2011-11-22T20:23:33  <mcstar> how new?
+2011-11-22T20:23:52  <thestinger> probably as new as you are
+2011-11-22T20:24:14  <mcstar> well, together we make a half-decent c++-er
+2011-11-22T20:24:23  <thestinger> I just learned it for this contest
+2011-11-22T20:24:29  <mcstar> me too
+2011-11-22T20:24:38  <mcstar> well, not FOR the contest
+2011-11-22T20:24:43  <mcstar> but while doing it
+2011-11-22T20:24:49  <thestinger> yeah, that's what I meant
+2011-11-22T20:24:51  <mcstar> but i used c before
+2011-11-22T20:25:01  <thestinger> I have too, so learning C++ was easy
+2011-11-22T20:25:09  <thestinger> it's just the weird subtle things that are tricky
+2011-11-22T20:25:28  <mcstar> yep
+2011-11-22T20:25:36  <mcstar> and im teaching my friend too
+2011-11-22T20:25:44  <mcstar> he was brand new to programming
+2011-11-22T20:25:56  <thestinger> nice
+2011-11-22T20:26:04  <mcstar> he figure he needed some actual knowledge, since he put that into his cv
+2011-11-22T20:26:05  *** Garf <Garf!~Garf@78-22-80-252.access.telenet.be> has joined #aichallenge
+2011-11-22T20:26:10  <mcstar> figured*
+2011-11-22T20:26:39  <analyst74> good work, thestinger, http://ants.fluxid.pl/replay.11208
+2011-11-22T20:26:59  <thestinger> analyst74: thanks :)
+2011-11-22T20:27:07  <avdg> oh well, I just have to find out a way to fix my wrong assumptions with c++, but otherwise, yeah, c++ is quite simple
+2011-11-22T20:27:23  <avdg> at least, if I don't look at the problems of c++
+2011-11-22T20:28:14  <mcstar> i just read today about namespace pitfalls
+2011-11-22T20:28:28  <thestinger> argument dependent name resolution, etc.?
+2011-11-22T20:28:50  <mcstar> yes
+2011-11-22T20:29:05  <mcstar> adl
+2011-11-22T20:29:14  <mcstar> argument dependent lookup?
+2011-11-22T20:29:25  <thestinger> yeah
+2011-11-22T20:29:46  <thestinger> that's one of the causes of the horrible compiler errors
+2011-11-22T20:30:04  <mcstar> i believe you sensei
+2011-11-22T20:30:16  <thestinger> and the way C++ does overloading leads to those horrible errors
+2011-11-22T20:30:28  <thestinger> it just keeps looking for a working overload
+2011-11-22T20:31:05  <thestinger> clang has much saner errors but it doesn't compile my code anymore since the C++11 support is way behind gcc
+2011-11-22T20:31:12  *** bmh <bmh!d8ef2d04@fsf/member/bmh> has joined #aichallenge
+2011-11-22T20:32:13  <thestinger> well, I think if I install the 3.0 release candidate it might be able to compile it again
+2011-11-22T20:32:38  <thestinger> 2.9 can't handle std::unordered_map, std::array, std::unordered_set, etc.
+2011-11-22T20:33:04  <mcstar> why bother?
+2011-11-22T20:33:25  <thestinger> well, I use it for autocompletion in vim
+2011-11-22T20:33:44  <mcstar> well, kdevelop deep-parses my code
+2011-11-22T20:33:48  <thestinger> and it has really nice errors/warnings and static analysis
+2011-11-22T20:33:55  <mcstar> it lets me know about everyhting
+2011-11-22T20:33:58  <thestinger> the g++ errors are ridiculous sometimes
+2011-11-22T20:34:40  <mcstar> well, i compile often, so i always now where the error is
+2011-11-22T20:35:00  <thestinger> yeah
+2011-11-22T20:35:02  <mcstar> and i usually find it quickly except when im really tired
+2011-11-22T20:35:34  <thestinger> the ridiculous errors have just annoyed me after merging in a branch
+2011-11-22T20:35:52  <thestinger> because it's tricky to figure out what the hell is wrong when I didn't just code it
+2011-11-22T20:36:24  <mcstar> what is your main language?
+2011-11-22T20:36:30  <mcstar> are you a progessional?
+2011-11-22T20:36:32  <mcstar> f
+2011-11-22T20:36:44  <thestinger> no, not yet (I'm 19)
+2011-11-22T20:36:53  <thestinger> python is the language I know really well
+2011-11-22T20:37:11  *** antonh <antonh!antonh@lenin.acc.umu.se> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T20:38:00  <mcstar> attending university then?
+2011-11-22T20:38:15  <thestinger> I will be soon, taking some time off for personal reasons
+2011-11-22T20:38:43  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has joined #aichallenge
+2011-11-22T20:39:33  *** antonh <antonh!antonh@lenin.acc.umu.se> has joined #aichallenge
+2011-11-22T20:40:38  <mcstar> since i dont want to see the sun rise, im going to bed now
+2011-11-22T20:40:42  *** mcstar <mcstar!~mcstar@adsl-89-132-12-215.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.6)
+2011-11-22T20:41:13  *** bmh <bmh!d8ef2d04@fsf/member/bmh> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T20:41:49  *** treeform <treeform!~treeform@108.60.121.46> has quit IRC (Remote host closed the connection)
+2011-11-22T20:41:55  <Conorach> hehe
+2011-11-22T20:42:00  <Conorach> I know that feeling
+2011-11-22T20:42:26  <Conorach> should turn in myself :/
+2011-11-22T20:42:37  <Conorach> good examples :)
+2011-11-22T20:42:51  <amstan_> i hate that feeling
+2011-11-22T20:42:58  <amstan_> it's like when you see the sun, game over
+2011-11-22T20:43:02  <amstan_> no point in sleeping anymore
+2011-11-22T20:43:13  <Conorach> haha
+2011-11-22T20:43:24  <Conorach> yeah when the sky turns lighter in the distance you already know you're in for a rough day ;)
+2011-11-22T20:43:36  <Conorach> although I can normally still catch a few hours of sleep at that point.
+2011-11-22T20:43:45  <Conorach> but by the time the people are walking in the street again ...
+2011-11-22T20:49:04  *** amstan_ <amstan_!~alex@69-196-191-75.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-11-22T21:29:48  *** JorgeB <JorgeB!~textual@209.66.74.34> has quit IRC (Quit: Textual IRC Client: http://www.textualapp.com/)
+2011-11-22T21:31:18  *** zzz <zzz!~zzz@201-89-145-3.smace701.dsl.brasiltelecom.net.br> has joined #aichallenge
+2011-11-22T21:34:03  <thestinger> http://ants.fluxid.pl/replay.11374 lol.
+2011-11-22T21:34:37  <thestinger> my bots are cowards now
+2011-11-22T21:35:15  *** rofer <rofer!~rofer@ip-69-162-134-31.static.chi2.systeminplace.net> has quit IRC (Ping timeout: 260 seconds)
+2011-11-22T21:38:28  <smarsh> nice maginot line there
+2011-11-22T21:48:26  *** Jak_o_Shadows <Jak_o_Shadows!~hayden@CPE-144-136-214-52.sa.bigpond.net.au> has quit IRC (Remote host closed the connection)
+2011-11-22T21:51:38  *** bhasker <bhasker!~bhasker@173-164-245-33-SFBA.hfc.comcastbusiness.net> has quit IRC (Quit: bhasker)
+2011-11-22T21:52:37  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:2ca2:5ebd:b02f:3edc> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T21:54:29  *** rofer <rofer!~rofer@ip-69-162-134-31.static.chi2.systeminplace.net> has joined #aichallenge
+2011-11-22T21:56:02  *** rajanaresh <rajanaresh!~rajanares@cpe-66-61-92-231.neo.res.rr.com> has joined #aichallenge
+2011-11-22T21:57:32  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has quit IRC (Ping timeout: 245 seconds)
+2011-11-22T21:58:03  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has joined #aichallenge
+2011-11-22T21:59:44  *** modafinil is now known as WORKSFORME
+2011-11-22T22:00:07  <avdg> I only see 2 islands :p
+2011-11-22T22:02:26  *** Conorach <Conorach!~cono@90.165.56.61> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T22:08:19  *** zzz <zzz!~zzz@201-89-145-3.smace701.dsl.brasiltelecom.net.br> has left #aichallenge
+2011-11-22T22:10:45  *** TheLinker <TheLinker!~TheLinker@host187.190-225-241.telecom.net.ar> has joined #aichallenge
+2011-11-22T22:12:02  *** AntDroid <AntDroid!781c39b6@gateway/web/freenode/ip.120.28.57.182> has joined #aichallenge
+2011-11-22T22:20:58  *** hl <hl!18cd86cd@gateway/web/freenode/ip.24.205.134.205> has joined #aichallenge
+2011-11-22T22:21:29  *** hl <hl!18cd86cd@gateway/web/freenode/ip.24.205.134.205> has left #aichallenge
+2011-11-22T22:24:48  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has quit IRC (Read error: Operation timed out)
+2011-11-22T22:25:10  *** thestinger <thestinger!~strcat@CPE98fc1165cb6f-CM00159a09b2d0.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-11-22T23:01:58  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has quit IRC (Quit: Leaving.)
+2011-11-22T23:02:50  *** AntDroid <AntDroid!781c39b6@gateway/web/freenode/ip.120.28.57.182> has quit IRC (Ping timeout: 265 seconds)
+2011-11-22T23:04:06  *** avdg <avdg!~avdg@78-22-168-200.access.telenet.be> has joined #aichallenge
+2011-11-22T23:09:24  <BenJackson> thestinger: there's a whole forum thread on that map being broken for basically that reason
+2011-11-22T23:09:50  <BenJackson> oh that's hillarious when your pile of ants backs up OVER YOUR HILL
+2011-11-22T23:12:12  <thestinger> I think the rankings on the tcp server are broken again
+2011-11-22T23:13:45  <BenJackson> I never really saw them work
+2011-11-22T23:14:50  *** TheLinker <TheLinker!~TheLinker@host187.190-225-241.telecom.net.ar> has quit IRC (Quit: Bye)
+2011-11-22T23:15:22  <thestinger> my sigma has started going up on all my bots, and the mu just jumps around now
+2011-11-22T23:22:31  *** JorgeB <JorgeB!~textual@c-98-234-188-88.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-22T23:34:49  *** Antimony <Antimony!~chatzilla@adsl-066-156-090-250.sip.asm.bellsouth.net> has quit IRC (Ping timeout: 244 seconds)
+2011-11-22T23:42:31  *** u_ <u_!~u_@adsl-75-57-175-5.dsl.emhril.sbcglobal.net> has quit IRC (Quit: u_)
+2011-11-22T23:45:44  <a1k0n> time to implement a whole-history trueskill
+2011-11-22T23:48:01  <a1k0n> BenJackson: which thread?
+2011-11-22T23:49:40  <BenJackson> not sure if I can find it
+2011-11-22T23:50:39  *** treeform <treeform!~treeform@c-69-181-52-73.hsd1.ca.comcast.net> has joined #aichallenge
+2011-11-22T23:50:57  *** delt0r_ <delt0r_!~bob@178-191-182-15.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-11-22T23:52:01  <BenJackson> a whole part of the forum seems to be missing
+2011-11-22T23:52:06  <BenJackson> the "tools" board

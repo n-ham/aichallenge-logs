@@ -1,0 +1,633 @@
+2011-09-17T00:00:31  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-17T00:26:50  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T00:30:08  *** eashoka <eashoka!70875a92@gateway/web/freenode/ip.112.135.90.146> has quit IRC (Ping timeout: 252 seconds)
+2011-09-17T00:38:39  *** csr20 <csr20!~cesar@unaffiliated/csr20> has joined #aichallenge
+2011-09-17T00:40:29  *** csr20 <csr20!~cesar@unaffiliated/csr20> has left #aichallenge
+2011-09-17T00:42:15  <CIA-24> aichallenge: McLeopold epsilon * r9b725f4 / website/ranking.php : fix function name mismatch - http://git.io/R90PAw
+2011-09-17T00:43:15  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-09-17T00:58:52  <CIA-24> aichallenge: McLeopold epsilon * rc81b0bb / website/sql.php : fix missing value in insert statement - http://git.io/yiY9CQ
+2011-09-17T01:01:00  <McLeopold> @later tell janzert I forgot to commit the sql to match the api_game_result, oops, workers are posting now
+2011-09-17T01:01:00  <contestbot> McLeopold: Yep.
+2011-09-17T01:20:24  <McLeopold> I need a math guy
+2011-09-17T01:20:32  <McLeopold> jmcarthur: ?
+2011-09-17T01:20:43  <McLeopold> delt0r_: ?
+2011-09-17T01:39:38  <jmcarthur> not sure if i count as a math guy, but shoot
+2011-09-17T01:39:43  <jmcarthur> McLeopold: ^^
+2011-09-17T01:40:06  <jmcarthur> wow it's later than i thought
+2011-09-17T01:40:09  <jmcarthur> my time is limited
+2011-09-17T01:40:20  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T01:45:58  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T01:57:03  <McLeopold> jmcarthur: I need a way to prevent trueskill from favoring players
+2011-09-17T02:00:55  <mleise> what do you mean by 'favoring' ? Oo
+2011-09-17T02:01:46  <McLeopold> well, if you have a seed player that can play two other players, trueskill match quality will favor the player with the lower sigma
+2011-09-17T02:01:57  <McLeopold> if there mu's are the same
+2011-09-17T02:02:10  <McLeopold> after they play, they get updated and the sigmas drop more
+2011-09-17T02:02:39  <McLeopold> so a player that gets a few games in will have low sigma and suddenly be picked more for matches than others
+2011-09-17T02:02:56  <McLeopold> just look at the current rankings to see the issue
+2011-09-17T02:11:10  <mleise> I've seen the effect, but I had no idea it was because of equal mu's
+2011-09-17T02:14:12  <delt0r_> Morning
+2011-09-17T02:15:49  <delt0r_> McLeopold: I am a math guy and i read the TrueSkill paper... but i know of no easy way to fix such things. Basically its the model
+2011-09-17T02:15:53  <delt0r_> more or less
+2011-09-17T02:16:39  <delt0r_> Personally i think there is a need for a better model --or at least better inference of "true" parameters from games played
+2011-09-17T02:17:09  <delt0r_> I have pondered this and came up with only a ML idea... that could work --perhaps
+2011-09-17T02:22:50  <McLeopold> delt0r_: I figure we need to make sure each user has about the same number of games in a 24 hour period, so there needs to be some sort of skew to the match quality to pick opponents that may not be the better match
+2011-09-17T02:23:21  <delt0r_> it is a hard problem
+2011-09-17T02:23:31  <McLeopold> yes
+2011-09-17T02:23:36  <delt0r_> esp when we consider new submissions
+2011-09-17T02:23:43  <McLeopold> yep
+2011-09-17T02:23:48  <McLeopold> thus the 24 hour period
+2011-09-17T02:24:07  <McLeopold> new submissions would get some preference at the start
+2011-09-17T02:24:10  <delt0r_> i would probably try to have something that works IIF there are no new submissions
+2011-09-17T02:25:11  <delt0r_> Of course the even harder problem is getting it so others don't complain :D
+2011-09-17T02:25:32  <McLeopold> I usually don't care about that, but right now it isn't good
+2011-09-17T02:25:52  <delt0r_> But if we have the compute power for a lot of games --it should not be to hard right?
+2011-09-17T02:26:02  * delt0r_ looks at how it works now
+2011-09-17T02:26:40  <McLeopold> the more games at once, the smaller the problem becomes
+2011-09-17T02:26:56  <McLeopold> because I restrict matches to those not in a game
+2011-09-17T02:27:08  <delt0r_> good idea
+2011-09-17T02:27:30  <McLeopold> so if everyone is playing at once, then roughly everyone gets one game at the same rate
+2011-09-17T02:27:37  <delt0r_> also what works best for true skill? 2 player, or n player games
+2011-09-17T02:27:42  <McLeopold> but then player rotation would be poor
+2011-09-17T02:27:58  <McLeopold> it depends
+2011-09-17T02:28:44  <McLeopold> generally more players without ties cause bigger updates
+2011-09-17T02:29:00  <delt0r_> mmm
+2011-09-17T02:29:17  <delt0r_> what is the word on going live?
+2011-09-17T02:29:28  <McLeopold> next week
+2011-09-17T02:29:39  <McLeopold> but I got to fix this first
+2011-09-17T02:30:05  <delt0r_> right --is the php trueskill thing working
+2011-09-17T02:30:22  <McLeopold> so, if you have a choice of playing 2 players with match qualities 50% and 51%, right now I always pick 51%
+2011-09-17T02:30:42  <McLeopold> delt0r_: yes, if draw prob is 1.75 or higher it makes a world of difference
+2011-09-17T02:30:58  <McLeopold> 10 players with only 3 ranks is the worst
+2011-09-17T02:31:11  <delt0r_> oh good. that would work with the jskills one too
+2011-09-17T02:31:19  <McLeopold> yeah, same issue
+2011-09-17T02:31:21  <delt0r_> should be higher than 1% anyway IMO
+2011-09-17T02:31:31  <McLeopold> convergence is much faster with a higher draw prob
+2011-09-17T02:31:44  <delt0r_> i think it will match the data better too
+2011-09-17T02:32:02  <McLeopold> well, because the scores are based on minute differences, I figured it would be close to zero
+2011-09-17T02:32:54  <McLeopold> the higher the draw prob, the bigger the update for a win, and I was thinking the game is to noisy for that
+2011-09-17T02:33:53  <delt0r_> I think it would be noise regardless... since it only considers rank--and esp at the start when most player scores are random anyway
+2011-09-17T02:34:08  <delt0r_> noisy
+2011-09-17T02:34:25  <McLeopold> yea, so back to my example, pick the player with 50% or 51%?
+2011-09-17T02:34:30  <delt0r_> do we keep track of who played who?
+2011-09-17T02:34:40  <McLeopold> yes
+2011-09-17T02:34:45  <McLeopold> there is some no repeat logic
+2011-09-17T02:34:51  <delt0r_> cool
+2011-09-17T02:35:15  <delt0r_> well i am i guy who does a lot of stochastic simulations
+2011-09-17T02:35:29  <McLeopold> yeah, so you can help me with this matchmaking then :)
+2011-09-17T02:35:34  <delt0r_> so i would pick the 50% with some p or 51% otherwise
+2011-09-17T02:35:41  <McLeopold> right
+2011-09-17T02:35:50  <McLeopold> if the average bot has 24 games a day
+2011-09-17T02:36:09  <McLeopold> and the 50% guy has only had 20, and the 51% guy has had 22?
+2011-09-17T02:36:15  <delt0r_> the idea is that in the limit all possible games get played... ie after 1 million or so years
+2011-09-17T02:36:23  <delt0r_> ah
+2011-09-17T02:36:30  <delt0r_> k let me work it out
+2011-09-17T02:36:46  <delt0r_> its exponetail
+2011-09-17T02:36:53  <delt0r_> dam my bad english
+2011-09-17T02:37:02  <McLeopold> what is your language? austrian?
+2011-09-17T02:37:31  <delt0r_> no --english
+2011-09-17T02:37:34  <delt0r_> :D
+2011-09-17T02:37:54  <delt0r_> can order beer in german and food --that is about it
+2011-09-17T02:38:04  <McLeopold> oh, I was guessing from the .as uri :)
+2011-09-17T02:38:39  <McLeopold> once we get going, most bots will have 20-30 other bots with a match quality > 90%
+2011-09-17T02:39:19  <McLeopold> the top 20 all have low sigma, the higher sigma bots dont appear until around 20-30 down on the list
+2011-09-17T02:39:25  <McLeopold> even though the mu is closer
+2011-09-17T02:39:55  <McLeopold> so I need to skew the match quality to be higher for bots that haven't had many games
+2011-09-17T02:39:56  <delt0r_> So if we have n games per day with m players --that gives nm slots per day
+2011-09-17T02:40:13  <McLeopold> it would be natural to increase sigma, since that represents uncertainty
+2011-09-17T02:40:38  <delt0r_> oh... you want it not to be memory less... curse my math
+2011-09-17T02:40:49  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-17T02:41:01  <delt0r_> we like ideal universes
+2011-09-17T02:41:37  <delt0r_> McLeopold: doesn't the trueskill think estimate the sigma?
+2011-09-17T02:42:03  <McLeopold> no, mu and sigma are stored in the db for every submission
+2011-09-17T02:42:09  <delt0r_> s/think/thing
+2011-09-17T02:42:29  <delt0r_> ok so now i am confused
+2011-09-17T02:42:32  <McLeopold> http://pastebin.com/N68fAUbM
+2011-09-17T02:42:36  * delt0r_ reads the paper again 
+2011-09-17T02:43:35  <McLeopold> you may need to increase the width to read that table correctly
+2011-09-17T02:44:53  <McLeopold> delt0r_:  or view it raw
+2011-09-17T02:45:01  <delt0r_> yea... big ascii table person myself... xl is for ms slaves ;)
+2011-09-17T02:45:16  <McLeopold> google docs?
+2011-09-17T02:45:32  <delt0r_> but the mu and sigma scores are the current ranks etc correct?
+2011-09-17T02:45:38  <McLeopold> yes
+2011-09-17T02:45:43  <delt0r_> yep--i now use google docs a lot
+2011-09-17T02:46:04  <McLeopold> so on that table, see how the low game_count submissions are down the list?
+2011-09-17T02:46:30  <McLeopold> there is a mu_diff of 0.16, which is the closest mu way down there
+2011-09-17T02:47:52  <delt0r_> i c
+2011-09-17T02:47:53  <McLeopold> I'm thinking scale the sigma by the number of games in the last 24 hours somehow
+2011-09-17T02:48:28  <delt0r_> I really don't follow... should not the trueskills thing take that into account properly...
+2011-09-17T02:48:47  <McLeopold> this is a table of match quality
+2011-09-17T02:49:12  <McLeopold> if everyone is always available to play, it will set you up with the same people over and over
+2011-09-17T02:49:32  <delt0r_> yea... even on the icc that is a problem
+2011-09-17T02:49:42  <McLeopold> icc?
+2011-09-17T02:49:51  <delt0r_> internet chess club
+2011-09-17T02:49:53  <McLeopold> oh
+2011-09-17T02:50:03  <delt0r_> aka where elo got famous
+2011-09-17T02:50:21  <McLeopold> but they use glicko now?
+2011-09-17T02:50:54  <delt0r_> which is still similar --and you still have the match like in "skill" keep matching the same people
+2011-09-17T02:51:07  <McLeopold> yes
+2011-09-17T02:51:31  <McLeopold> I don't care so much about playing the same people, it's just ignoring some people too much
+2011-09-17T02:51:32  <delt0r_> last i heard it was still a problem if you wanted variety
+2011-09-17T02:51:54  <delt0r_> what about like last year with the que system?
+2011-09-17T02:52:23  <delt0r_> oh.. then you get very unlike in skill
+2011-09-17T02:52:25  <McLeopold> well, I wanted each match to calc live
+2011-09-17T02:52:40  <delt0r_> so you still need to sometimes pick folks that have had many games
+2011-09-17T02:52:45  <McLeopold> so new submissions find their rank really fast
+2011-09-17T02:53:04  <delt0r_> I just don't think that is generally possible
+2011-09-17T02:53:15  <McLeopold> yeah, so your idea about probabilites might work somehow
+2011-09-17T02:53:39  <delt0r_> a hack could just be a weighting
+2011-09-17T02:54:01  <delt0r_> the 51% is always picked if games played are the same
+2011-09-17T02:54:02  <McLeopold> 1 / recent games
+2011-09-17T02:54:12  <delt0r_> mm yea
+2011-09-17T02:54:42  <McLeopold> the think is, I'm doing a sql statement with an order by and a limit 1
+2011-09-17T02:55:24  <McLeopold> hmm...
+2011-09-17T02:55:47  <McLeopold> I could limit the field to the top 10% in match quality, then choose from those the ones with the least games?
+2011-09-17T02:55:50  <delt0r_> not sure tbh --i would probably just use some selected to get a range of possibles then use some biased random selection
+2011-09-17T02:56:07  <delt0r_> yea something like that...
+2011-09-17T02:56:10  <McLeopold> we just said the same thing :D
+2011-09-17T02:57:15  <McLeopold> getting a percentage is a pita in sql :(
+2011-09-17T02:57:43  <delt0r_> I would selected a range... and deal with different sized lists
+2011-09-17T02:58:26  <McLeopold> I don't follow you
+2011-09-17T02:58:42  <delt0r_> what would be best is something from trueskill that would tell use what games would have the most "information"
+2011-09-17T02:58:58  <McLeopold> that is match quality, they are the same thing
+2011-09-17T02:59:05  <McLeopold> so we have that
+2011-09-17T02:59:06  <delt0r_> selected players with mu> and mu<
+2011-09-17T02:59:16  <delt0r_> in advanced?
+2011-09-17T02:59:20  <McLeopold> yes
+2011-09-17T02:59:34  <McLeopold> well, each match created calculates it all right there
+2011-09-17T02:59:38  <delt0r_> I really should read the paper again... it seems i missed some details
+2011-09-17T03:00:02  <McLeopold> the higher the match quality, the larger the updates will be, and the faster convergence to the correct mu is
+2011-09-17T03:00:04  <delt0r_> before you play it? perhaps that may be a good way to choose... if it is a fast calc
+2011-09-17T03:00:36  <McLeopold> it is, it's just we can use quality alone, because once you get a low sigma, you just start snowballing into more games
+2011-09-17T03:00:56  <McLeopold> I think the top x% is the way to go
+2011-09-17T03:01:05  <delt0r_> just printed the wrong true skill paper
+2011-09-17T03:01:12  <McLeopold> print!?
+2011-09-17T03:01:41  <delt0r_> i prefer to read from papers from paper
+2011-09-17T03:01:43  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T03:01:52  <delt0r_> even have a laser printer at home
+2011-09-17T03:02:03  <McLeopold> http://www.moserware.com/2010/03/computing-your-skill.html
+2011-09-17T03:02:05  <McLeopold> http://dl.dropbox.com/u/1083108/Moserware/Skill/The%20Math%20Behind%20TrueSkill.pdf
+2011-09-17T03:03:53  <delt0r_> no the orginal paper
+2011-09-17T03:04:03  <delt0r_> that one is to fluffy
+2011-09-17T03:04:29  <McLeopold> :)
+2011-09-17T03:04:35  <delt0r_> but you could have a game q score that includes the number of games played.
+2011-09-17T03:04:43  <McLeopold> I don't understand the A table notation
+2011-09-17T03:05:37  <delt0r_> a table?
+2011-09-17T03:06:08  <McLeopold> page 34 of the fluffy paper
+2011-09-17T03:06:12  <McLeopold> A matrix
+2011-09-17T03:06:58  <McLeopold> if you could provide me with a spread sheet that calcs match quality for more than 2 players, that would be awesome
+2011-09-17T03:07:22  <McLeopold> I have to use an approximation of the 2 player simplified version
+2011-09-17T03:08:09  <McLeopold> antimatroid is always throwing math notation at me, and I'm just too much out of practice
+2011-09-17T03:08:37  <antimatroid> which maths now? :P
+2011-09-17T03:08:58  <McLeopold> see what I mean, he's correcting "math" to "maths"
+2011-09-17T03:09:19  <antimatroid> meh, that's a difference in language :P
+2011-09-17T03:09:27  <McLeopold> antimatroid: let's see an integral in unicode, go!
+2011-09-17T03:09:51  <antimatroid> errr? :P
+2011-09-17T03:10:04  <antimatroid> \int e^x.dx
+2011-09-17T03:10:12  <McLeopold> LaTeX?
+2011-09-17T03:10:15  <antimatroid> sex .dx :P
+2011-09-17T03:10:58  <McLeopold> antimatroid: look at the rankings right now and notice the game count, it is awful
+2011-09-17T03:11:03  <McLeopold> @rankings
+2011-09-17T03:11:04  <contestbot> McLeopold: An error has occurred and has been logged. Please contact this bot's administrator for more information.
+2011-09-17T03:11:10  <antimatroid> @beta
+2011-09-17T03:11:10  <contestbot> antimatroid: beta could be http://aichallengebeta.hypertriangle.com/.
+2011-09-17T03:11:38  <antimatroid> so you restarted it?
+2011-09-17T03:11:44  <antimatroid> my bots rank has varied wildly
+2011-09-17T03:12:07  <McLeopold> kinda, we reset ranks and started counting games, like what we would do for the finals
+2011-09-17T03:12:19  <McLeopold> the game counts are not even
+2011-09-17T03:12:41  <antimatroid> what's the average number of game turns?
+2011-09-17T03:12:51  <antimatroid> my bots profile seems to have games finish within 300 turns
+2011-09-17T03:13:08  <McLeopold> I lowered the max to 255, so I could get a lot of games in
+2011-09-17T03:13:19  <McLeopold> I'm testing rankings right now, not game play
+2011-09-17T03:13:27  <antimatroid> planet wars was 1 second per turn with max 200, so n players will reduce the number of games but you get more players in each game
+2011-09-17T03:13:28  <delt0r_> How about choose a large number of possible games, then rank them according to "quality" and game count..
+2011-09-17T03:13:43  <antimatroid> also, the beta server isn't very good yeah? we don't have ec2 servers up and running yet?
+2011-09-17T03:13:48  <delt0r_> then pop the first game off the sorted list, rinse and repeat
+2011-09-17T03:14:19  <McLeopold> delt0r_: that's kinda what I do, but I add 1 player at a time until I reach the player count
+2011-09-17T03:14:25  <antimatroid> oh, you mean the variation in game counts is awful?
+2011-09-17T03:14:34  <delt0r_> what is the performance of ec2 like... we have gone off virtilized stuff--it is about 2-3 slower than without it
+2011-09-17T03:14:50  <McLeopold> delt0r_: it's the "rank by .. and count" that I need help with
+2011-09-17T03:15:13  <McLeopold> you'' have to ask janzert about that
+2011-09-17T03:15:25  <delt0r_> McLeopold: yea, but i am talking about games here not players... so you can have 10000 possible games that you then sort
+2011-09-17T03:15:33  <antimatroid> i think what janzert had for selecting players last time was good, just pick the first player in the game as the bot with the least number of games played
+2011-09-17T03:15:45  <antimatroid> although that might be an issue with people reuploading? hmmmm
+2011-09-17T03:16:10  <antimatroid> bot with the lowest average number of games per hour/day?
+2011-09-17T03:16:10  <McLeopold> delt0r_: I just need some outer joins to get that
+2011-09-17T03:16:17  <antimatroid> since it was submitted
+2011-09-17T03:16:20  <delt0r_> antimatroid: that does not work quite as well at it looks when one considers that you want to play liked skill folks that may all have played a lot
+2011-09-17T03:16:31  <delt0r_> Oh.. db..
+2011-09-17T03:16:45  <antimatroid> yes, you select the first player in the game, then select the rest of the players weighted towards that players ranking somehow?
+2011-09-17T03:16:59  <McLeopold> yes, the seed player is the last to have played, that is working, it's the opponent matching that is off
+2011-09-17T03:17:13  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-17T03:17:24  <delt0r_> Well for one project we just loaded the whole table into ram, did what we wanted .. then sent it all back.. wrapped in a transaction.
+2011-09-17T03:17:49  <McLeopold> I've got match quality in an sql statment right now
+2011-09-17T03:17:55  <delt0r_> we have a 2 day transaction!
+2011-09-17T03:18:09  <delt0r_> had
+2011-09-17T03:18:54  <McLeopold> even with tons of possible games, I'm still going to get a cluster of opponents with low sigma, and many games
+2011-09-17T03:19:15  <delt0r_> well if you generate a lot of possible games, then first sort on what will bring the player count to more even...
+2011-09-17T03:19:39  <McLeopold> I've got to balance that with the quality though.
+2011-09-17T03:19:40  <delt0r_> well will say 1000000
+2011-09-17T03:19:43  <delt0r_> with
+2011-09-17T03:20:00  <delt0r_> the orginal games are still picked with that criteria
+2011-09-17T03:20:13  <McLeopold> I *know* how to select the player with the least games.  I *know* how to select the best match quality.  I just need to combine the 2 intellegently.
+2011-09-17T03:20:28  <delt0r_> the idea is that there is some games that are good  and help with games played, its just finding them that are hard
+2011-09-17T03:20:45  <delt0r_> its possible that such a game does not exist of course
+2011-09-17T03:21:06  <McLeopold> yes, I follow, but how do we decide which is more important?
+2011-09-17T03:21:24  <delt0r_> complaints weighting ?
+2011-09-17T03:21:33  <McLeopold> right, what's the weighting?
+2011-09-17T03:22:22  <McLeopold> I've got 2 math guys here.  Can I get a formula?
+2011-09-17T03:23:02  <delt0r_> It was a joke... but not really... there is no closed form thing here that would work off the top of my head
+2011-09-17T03:23:12  <delt0r_> ad hoc all the way
+2011-09-17T03:24:10  <McLeopold> :'(
+2011-09-17T03:24:42  <delt0r_> Note i didn't want to pick the player with the least games... just generate a set based on normal criteria.. then sort on fixing played games.. if the set is large enough --i think that should converge
+2011-09-17T03:24:54  <McLeopold> okay, I'm going to go with a percenticle of the best match quality combos and choose the one with the least played games
+2011-09-17T03:25:02  <delt0r_> normal criteria means ignoring played games/
+2011-09-17T03:25:26  <delt0r_> its as good as i can come up with right now...
+2011-09-17T03:25:41  <McLeopold> so, how about the spreadsheet?
+2011-09-17T03:25:51  <delt0r_> ?
+2011-09-17T03:26:03  <McLeopold> for calculating match quality for more than 2 players
+2011-09-17T03:26:20  <delt0r_> oh --that is what you mean by table A
+2011-09-17T03:26:30  <McLeopold> A matrix
+2011-09-17T03:26:32  <McLeopold> no
+2011-09-17T03:26:38  <McLeopold> page 34, fluffy paper
+2011-09-17T03:26:52  <McLeopold> titled "The 'A' Matrix"
+2011-09-17T03:26:54  <delt0r_> I though the trueskill implementations would do it for you? no
+2011-09-17T03:27:04  <McLeopold> uh..
+2011-09-17T03:27:28  <delt0r_> speedsheet ? calculating match q
+2011-09-17T03:27:39  <delt0r_> not following ..
+2011-09-17T03:27:53  * delt0r_ is trying to read the paper at the same time 
+2011-09-17T03:27:54  <McLeopold> so I can look at the formulas and play with them
+2011-09-17T03:28:16  <McLeopold> http://research.microsoft.com/en-us/projects/trueskill/twoteamtrueskill.xls
+2011-09-17T03:28:27  <McLeopold> they just didn't include the match quality
+2011-09-17T03:29:04  <delt0r_> we have only one player per team, so  this makes it a bit easier
+2011-09-17T03:29:22  <McLeopold> yes, without partial play
+2011-09-17T03:29:43  <McLeopold> the implementation does give me the quality
+2011-09-17T03:30:53  <McLeopold> but I'm doing it in sql
+2011-09-17T03:31:57  <delt0r_> oh fun... sql for the win (not!)
+2011-09-17T03:32:05  <McLeopold> :(
+2011-09-17T03:32:25  *** greghaynes <greghaynes!~greghayne@kroker.greghaynes.net> has left #aichallenge ("WeeChat 0.3.4")
+2011-09-17T03:37:07  *** berak <berak!~chatzilla@89.204.153.135> has joined #aichallenge
+2011-09-17T03:40:55  <McLeopold> berak: is a tcpserver running?
+2011-09-17T03:41:48  <McLeopold> delt0r_: do you think you could generate a 10 player game in 4 seconds with the 10000 combos method?
+2011-09-17T03:42:22  <delt0r_> yea.. but with 10 players i don't 10000 is enough
+2011-09-17T03:43:10  <delt0r_> i don't think
+2011-09-17T03:43:34  <McLeopold> ~2.5 for the root
+2011-09-17T03:43:37  <delt0r_> i would expect python to handle that fine too? no?
+2011-09-17T03:44:00  <McLeopold> it's getting the data from the database to the app that I think would be slow
+2011-09-17T03:44:06  <berak> McLeopold: ready to run, but not hosted anywhere
+2011-09-17T03:44:20  <delt0r_> I know why i didn't know about game q scores... the orginal paper does not have them... its a later refinement
+2011-09-17T03:44:33  <McLeopold> game q?
+2011-09-17T03:44:35  <delt0r_> McLeopold: oh
+2011-09-17T03:44:39  <delt0r_> game quality
+2011-09-17T03:44:50  <McLeopold> ok
+2011-09-17T03:46:07  <delt0r_> it uses belief propagation --but is more approximate than i thought...
+2011-09-17T03:46:26  <delt0r_> true draws would need a *lot* of iterations
+2011-09-17T03:47:40  <delt0r_> And xbox thing is biased towards ensuring the top 3 sigma players are ranked well and not to give much of a crap about the rest :/
+2011-09-17T03:48:27  <McLeopold> hm
+2011-09-17T03:48:57  <delt0r_> again orginal paper
+2011-09-17T03:49:15  <delt0r_> also for live games players choose opponents.
+2011-09-17T03:49:32  <McLeopold> in some games
+2011-09-17T03:49:56  <delt0r_> Oh yea... some leaderboards you don't get too... thats right
+2011-09-17T03:50:01  <delt0r_> been a while
+2011-09-17T03:51:10  <delt0r_> match quality is a measure of draw probability
+2011-09-17T03:52:17  <delt0r_> also note that if i have a 3 player game with A>B>C
+2011-09-17T03:52:56  <delt0r_> the possibility of A kicking C arse before even competing with B is not taken into account
+2011-09-17T03:53:49  <McLeopold> you mean b kick c before a?
+2011-09-17T03:55:11  <delt0r_> either or
+2011-09-17T03:55:22  <delt0r_> winning is harder in the cases even for A
+2011-09-17T03:55:31  <delt0r_> yet this is not really taken into account
+2011-09-17T03:55:50  <delt0r_> perhaps extensions do...
+2011-09-17T03:55:57  * delt0r_ looks up more papers
+2011-09-17T03:56:03  <McLeopold> I've got a percentile sql solution, I'm going to try it out
+2011-09-17T03:56:34  <McLeopold> no, trueskill and match quality only take initial skills and a ranking
+2011-09-17T03:59:33  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T04:00:26  <delt0r_> do you keep all game result data? (i think so but it never hurts to ask)
+2011-09-17T04:00:32  <McLeopold> yes
+2011-09-17T04:04:10  <delt0r_> so for shits and giggles I could for example come up with *awesomeness* score and see how that would rank everyone. ;)
+2011-09-17T04:04:29  <McLeopold> we need that for the splash game :)
+2011-09-17T04:04:35  <McLeopold> the game on the front page
+2011-09-17T04:07:21  <delt0r_> thinking of rank statistics only... ie there is no score but only rank
+2011-09-17T04:07:45  <McLeopold> we could store a separate mu and sigma for that in the database
+2011-09-17T04:08:06  <McLeopold> you mean survival order?
+2011-09-17T04:10:32  <delt0r_> well what is the ranking that give A>B>C with the minimum numbers of C>A sort of thing
+2011-09-17T04:11:16  <delt0r_> my thinking is that we only get ranks out of games...
+2011-09-17T04:11:37  <mleise> this is rocket science to mee
+2011-09-17T04:11:50  <delt0r_> even if A beats everyone. It is not really data on how much A beats everyone by
+2011-09-17T04:12:22  <McLeopold> that would be a whole new algorithm
+2011-09-17T04:12:45  <McLeopold> with true skill, you just pair them with better people for the next game and see if they continue to climb
+2011-09-17T04:13:15  <McLeopold> so their sigma stays fairly large until the lose
+2011-09-17T04:13:18  <delt0r_> you still have a total rank, ie there are better people and much better people
+2011-09-17T04:30:13  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has joined #aichallenge
+2011-09-17T04:38:51  *** mcstar <mcstar!~mcstar@adsl-89-132-8-222.monradsl.monornet.hu> has joined #aichallenge
+2011-09-17T05:07:35  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-17T05:13:50  *** eashoka <eashoka!7087431b@gateway/web/freenode/ip.112.135.67.27> has joined #aichallenge
+2011-09-17T05:16:29  *** arlequin <arlequin!58aff739@gateway/web/freenode/ip.88.175.247.57> has joined #aichallenge
+2011-09-17T05:16:41  <arlequin> hi
+2011-09-17T05:17:40  <arlequin> I have a problem signing in to aichallenge, I registrered a week ago, but cannot receive the confirmation mail
+2011-09-17T05:18:02  <arlequin> I checkec my spam box but nothing
+2011-09-17T05:18:15  <arlequin> Do someone know what I should dod ?
+2011-09-17T05:18:22  <arlequin> *do
+2011-09-17T05:24:43  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-17T05:30:38  <mcstar> wait
+2011-09-17T05:33:30  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has joined #aichallenge
+2011-09-17T05:36:46  <eashoka> arlequin: I think this beta version does not send emails yet, even though it says so on the page. u can just login
+2011-09-17T05:38:20  <eashoka> at least that was how it was when I created my account. however, to log in I think you need the link given at the end of the results page you got after the registration. If you have lost that, I guess the best bet is for you to create a new account.
+2011-09-17T05:38:34  <delt0r_> even email registration doesn't stop spam
+2011-09-17T05:39:12  <mcstar> they told me before that they send emails, at least at one time it was turned on
+2011-09-17T05:39:20  <mcstar> but still arlequin just wait
+2011-09-17T05:39:54  <arlequin> eashoka: thank you for your answer. Some friend did receive a mail. I guess I will create a new one.
+2011-09-17T05:40:11  <arlequin> mcstar: doesn't work that well :p
+2011-09-17T05:45:31  <arlequin> Ok, for the information: I registered with another mail accout, and I received the mail. So they still send mail.
+2011-09-17T05:51:21  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-09-17T06:18:22  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 252 seconds)
+2011-09-17T06:19:19  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has quit IRC ()
+2011-09-17T06:48:23  <delt0r_> did some math of the basic ranking problem that true skill attempts to solve.
+2011-09-17T06:49:13  <delt0r_> I have come to the conclusion that true skill is a very good compromise on modeling and tractability. Dont think it can be done much better personall
+2011-09-17T06:49:19  <delt0r_> personaly
+2011-09-17T06:49:23  <delt0r_> whatever
+2011-09-17T06:49:57  <delt0r_> However imperfect matchmaking is not something i was considering
+2011-09-17T06:51:07  <mcstar> delt0r_: give it some time, i think that "model" is a distillation of a couple decades' work
+2011-09-17T06:58:40  <mcstar> i think rich hickey is abusing the big-O notation
+2011-09-17T07:00:43  <delt0r_> ?
+2011-09-17T07:03:23  <mcstar> im just saying maybe you can come up with a better ranking alg. after a couple of years studying the problem
+2011-09-17T07:06:26  <mcstar> haha, ok im watching his video of clojure data structures, and basically it shows a previous version of the clojure site, there was the error, apparently he fixed it since then
+2011-09-17T07:14:08  *** mathis_ <mathis_!55b3e98a@gateway/web/freenode/ip.85.179.233.138> has joined #aichallenge
+2011-09-17T07:24:14  *** delt0r_ <delt0r_!~bob@178-190-195-152.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-09-17T07:36:08  *** delt0r_ <delt0r_!~bob@178-191-187-232.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-17T08:10:42  <eashoka> hmm workers are running  super slow today...
+2011-09-17T08:11:07  <foRei> Somewhat off topic: In game programming (online multiplayer games), which protocol is used on the application layer? http?
+2011-09-17T08:13:01  <mcstar> lol
+2011-09-17T08:13:06  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-17T08:13:08  <mcstar> many
+2011-09-17T08:13:16  <foRei> most common?
+2011-09-17T08:13:40  <mcstar> "online multiplayer game" is too hazy
+2011-09-17T08:13:47  <mcstar> that can be many things
+2011-09-17T08:13:54  <foRei> counter-strike for example
+2011-09-17T08:14:02  <delt0r_> foRei: TCP and UDP custom
+2011-09-17T08:14:07  <delt0r_> WoW is TCP
+2011-09-17T08:14:13  <delt0r_> more FPS are UDP
+2011-09-17T08:14:17  <delt0r_> most
+2011-09-17T08:14:20  <foRei> tcp and udp are transport layer right?
+2011-09-17T08:14:25  <delt0r_> yea
+2011-09-17T08:14:27  <delt0r_> well
+2011-09-17T08:14:29  <delt0r_> wait
+2011-09-17T08:14:30  <mcstar> delt0r_: he deosnt mean that
+2011-09-17T08:14:33  <mcstar> shat
+2011-09-17T08:14:40  <delt0r_> I never remember that 7 layer crap
+2011-09-17T08:14:47  <mcstar> osi
+2011-09-17T08:14:57  <delt0r_> big pile of BS
+2011-09-17T08:14:58  <mcstar> to hell with it, he isnt interested about that
+2011-09-17T08:15:14  <mcstar> foRei: not http that for sure
+2011-09-17T08:15:23  <mcstar> they are all binary protocols
+2011-09-17T08:15:32  <foRei> mcstar I figured that aswell, but the other protocols seem somewhat "not fitting" aswell, like smtp etc
+2011-09-17T08:15:37  <delt0r_> all custom as i said above
+2011-09-17T08:16:15  <mcstar> foRei: why do you care? its just a protocol...
+2011-09-17T08:16:35  <mcstar> its not like one is far superior than the other
+2011-09-17T08:16:39  <foRei> I want to figure out which one to use for my game
+2011-09-17T08:16:44  <foRei> alright so http would be fine?
+2011-09-17T08:16:47  <mcstar> no
+2011-09-17T08:16:55  <mcstar> go with ioquake's
+2011-09-17T08:17:10  <delt0r_> yep
+2011-09-17T08:17:13  <mcstar> not sure what is called, but try to use an opensource one
+2011-09-17T08:17:28  <delt0r_> only UDP is a PITA for a first time network person
+2011-09-17T08:17:38  <delt0r_> its ioquake
+2011-09-17T08:17:53  <delt0r_> art assets are not included..
+2011-09-17T08:18:16  <foRei> Ok, thanks :)
+2011-09-17T08:18:35  <mcstar> foRei: are you making an fps?
+2011-09-17T08:19:07  <foRei> uhm, somewhat :D 2d multiplayer snake/tron with ability to shoot
+2011-09-17T08:19:21  <mcstar> argh, thats what i was afraid of
+2011-09-17T08:19:35  <mcstar> i mean you dont have to be compatible with anything than
+2011-09-17T08:20:00  <mcstar> a protocol that an fps uses is very different from what you need
+2011-09-17T08:20:20  <foRei> I've looked at WCF but im not sure
+2011-09-17T08:21:24  <mcstar> why not stay posix?
+2011-09-17T08:22:26  <foRei> Im not that much into stuff, I dont know posix
+2011-09-17T08:23:15  <mcstar> posix=simple+portable
+2011-09-17T08:23:30  <mcstar> do you really want to stick with windows?
+2011-09-17T08:23:34  <mcstar> not that i really care
+2011-09-17T08:24:00  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-09-17T08:24:26  <foRei> Im just trying to make a multiplayer game, not too concerned about what I use for now. Eventually I'll try them all one by and to learn advance/disadvantage. Is WCF a bad starting point?
+2011-09-17T08:25:21  <mcstar> i only that that it has windows in its name so yes, a bad starting point
+2011-09-17T08:25:30  <foRei> hehe
+2011-09-17T08:25:38  <mcstar> thats something on top of .net right?
+2011-09-17T08:25:51  <foRei> Yeah, Im programming in C# .net
+2011-09-17T08:26:33  <mcstar> i would begin with something on a lower level
+2011-09-17T08:26:50  <delt0r_> mutiplayer tic tac toe
+2011-09-17T08:26:53  <mcstar> and you really shouldnt consider "fps" protocols for your game
+2011-09-17T08:27:20  <mcstar> just imagine that you packets are structs, and you may use udp to send them as delt0r_ mentioned
+2011-09-17T08:27:24  <delt0r_> use plain TCP with nice easy to parse text --then tools like tcpdump can work well
+2011-09-17T08:27:41  <delt0r_> udp is not a good first choice
+2011-09-17T08:27:45  <mcstar> delt0r_: no, why text?
+2011-09-17T08:27:50  <mcstar> thats messy
+2011-09-17T08:28:01  <delt0r_> tools like tcpdump etc can work really well with em
+2011-09-17T08:28:16  <delt0r_> trust me there really is a good reason to keep it human readable
+2011-09-17T08:28:18  <mcstar> you can have packets filters that convert back your binary
+2011-09-17T08:28:26  <delt0r_> you have a bug
+2011-09-17T08:28:40  <delt0r_> where is it... your game, your packets or conversion code
+2011-09-17T08:28:46  <mcstar> but now you have to parse it
+2011-09-17T08:29:06  <delt0r_> its just one more thing that can go wrong and misslead you when bug hunting
+2011-09-17T08:29:16  <mcstar> but ok, it might be better to be able to see it
+2011-09-17T08:29:22  <delt0r_> you can just read with you eyes...
+2011-09-17T08:29:29  <delt0r_> human parsable/readable
+2011-09-17T08:29:29  <mcstar> and dont call me Miss.
+2011-09-17T08:29:36  <delt0r_> lol
+2011-09-17T08:29:44  <delt0r_> well that is my 2c
+2011-09-17T08:29:51  <delt0r_> from experiance...
+2011-09-17T08:30:09  <delt0r_> its all easy peasy till its on real life networks
+2011-09-17T08:30:15  <delt0r_> then it hits the fan
+2011-09-17T08:33:15  <mcstar> my first read of that sentence had the opposite effect on me of what you meant
+2011-09-17T08:36:15  *** mathis_ <mathis_!55b3e98a@gateway/web/freenode/ip.85.179.233.138> has quit IRC (Quit: Page closed)
+2011-09-17T08:48:33  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has joined #aichallenge
+2011-09-17T08:51:26  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has quit IRC (Read error: Connection reset by peer)
+2011-09-17T08:51:58  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has joined #aichallenge
+2011-09-17T09:07:28  *** Palmik <Palmik!~palmik@2002:93fb:d047:a:21f:d0ff:fe5a:66bf> has joined #aichallenge
+2011-09-17T09:08:49  *** Palmik_ <Palmik_!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-17T09:09:07  *** Palmik <Palmik!~palmik@2002:93fb:d047:a:21f:d0ff:fe5a:66bf> has quit IRC (Disconnected by services)
+2011-09-17T09:12:15  *** Palmik_ is now known as Palmik
+2011-09-17T09:12:29  <delt0r_> So when say 2 of my ant move to the same square they are removed without points correct?
+2011-09-17T09:12:50  <delt0r_> yet if they get killed, the killers get points?
+2011-09-17T09:13:21  <delt0r_> so if i see that my ants can't win a given fight, then suicide is in fact a good thing to do?
+2011-09-17T09:15:16  <mcstar> it was discussed several times
+2011-09-17T09:15:26  <mcstar> oyu can minimize the gain of the enemy yes
+2011-09-17T09:16:20  <delt0r_> just checking... does not seem like a winning strat to me... but non the less :interesting
+2011-09-17T09:16:29  <mcstar> i had a suicidal bot some time ago, did pretty well for that
+2011-09-17T09:17:43  *** kaemo0 <kaemo0!~mad5ci@d58-73.icpnet.pl> has joined #aichallenge
+2011-09-17T09:21:50  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-09-17T09:22:00  <stocha> wow could hardly be tcp only could it.
+2011-09-17T09:22:13  <stocha> i'm not sure i will participate to this challenge.
+2011-09-17T09:22:30  <stocha> i mean, games are small and very crowded. The game doesn't appeal to me anymore.
+2011-09-17T09:22:37  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has quit IRC ()
+2011-09-17T09:22:51  <stocha> anyone care to convince me to participate ? :p
+2011-09-17T09:22:54  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-09-17T09:22:57  *** kaemo0 <kaemo0!~mad5ci@d58-73.icpnet.pl> has quit IRC (Quit: *puff*)
+2011-09-17T09:23:14  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has joined #aichallenge
+2011-09-17T09:23:37  <mcstar> stocha: youre right, you really shouldnt participate
+2011-09-17T09:23:47  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-17T09:24:01  <mcstar> in fact, you make the channel crowded, why are you here?
+2011-09-17T09:24:18  <mcstar> and now comes the laughing face
+2011-09-17T09:24:20  <mcstar> :D
+2011-09-17T09:24:30  <mcstar> stocha: hi, we missed you
+2011-09-17T09:24:35  <stocha> mcstar: i didn't finalize my combat solving code. And i'm not very inclined to work on it
+2011-09-17T09:25:01  <stocha> i still have read the logs. Once per month. not all. Very few of them. Just to see if the thing would launch :p
+2011-09-17T09:25:13  <stocha> apparently it's about to go live.
+2011-09-17T09:25:19  <mcstar> very much so
+2011-09-17T09:25:20  <stocha> maybe.
+2011-09-17T09:25:38  <stocha> i still think it should be made a 1vs1.
+2011-09-17T09:26:00  <mcstar> so even before the contest started you sort of "finished" your work on it?
+2011-09-17T09:26:05  <stocha> then maybe i would try to code something. But as it is, i just can't understand anything of what is going on. I find very few fun in that.
+2011-09-17T09:26:18  <mcstar> little
+2011-09-17T09:26:29  <mcstar> fun is uncountable
+2011-09-17T09:27:02  <mcstar> the main point of the game is to write a good fighting alg.
+2011-09-17T09:27:04  <stocha> mcstar: we had a huge amount of time to build a final bot during the beta. The main unknown being the environnement. Maps, food etc. Which may still be unknown until the end really.
+2011-09-17T09:27:20  <mcstar> stocha: no, they will remain unknown
+2011-09-17T09:27:51  <mcstar> ah, you meant end of beta or contest?
+2011-09-17T09:27:53  <mcstar> nvm
+2011-09-17T09:28:02  <stocha> end of contest.
+2011-09-17T09:28:08  <mcstar> yeah, than right
+2011-09-17T09:28:37  <mcstar> i think this was the easy part, now comes the hard one
+2011-09-17T09:28:41  <stocha> did the top bot maker provide feed back about how fun it is to build a bot ?
+2011-09-17T09:28:51  <mcstar> the bots dont really have any ai in them, unless they can fight well
+2011-09-17T09:29:00  <stocha> did they really make a lot of progress ?
+2011-09-17T09:29:12  <mcstar> well, you can see it for yourself
+2011-09-17T09:29:18  <mcstar> revolt has some nice tactics
+2011-09-17T09:29:21  <stocha> my bot had a lot of ai in them. But no fighting code yet.
+2011-09-17T09:29:29  <mcstar> he contracts the regions
+2011-09-17T09:29:36  <stocha> currently the ranking is down. (to few games per bot)
+2011-09-17T09:29:59  <mcstar> yes, its volatile these days, they were reset yesterday even
+2011-09-17T09:30:22  <mcstar> stocha: you know i had a snake bot too
+2011-09-17T09:30:25  <mcstar> have you seen it?
+2011-09-17T09:30:29  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-09-17T09:30:38  <mcstar> now that was almost AI, but otherwise it sucked
+2011-09-17T09:31:03  <stocha> snake bot have poor chance of being top bots :)
+2011-09-17T09:31:10  <mcstar> not really
+2011-09-17T09:31:16  <mcstar> you have to make a smart snake bot
+2011-09-17T09:31:20  <mcstar> many little snakes
+2011-09-17T09:31:23  <stocha> also i'm color blind. So i just have no chance of understanding a multiplayer game. Unless it is very structured :)
+2011-09-17T09:31:33  <mcstar> i forgot that
+2011-09-17T09:31:46  <mcstar> lol, i cant imagine whats that like
+2011-09-17T09:32:16  <mcstar> stocha: the visualizer can put little letters on the ants
+2011-09-17T09:32:39  <stocha> yeah but the letter are even less readable.
+2011-09-17T09:32:51  <stocha> basically, it's like every bot share the same color.
+2011-09-17T09:32:55  <mcstar> project it to a wall
+2011-09-17T09:33:15  <stocha> or half of them one color, and the other half another one. All in all, it's hard to read.
+2011-09-17T09:33:37  <mcstar> do these colors stay the same?
+2011-09-17T09:33:46  <mcstar> or depends on the environmet you see them in
+2011-09-17T09:33:53  <stocha> even when zooming, i had more trouble interpreting the letters.
+2011-09-17T09:34:21  <stocha> it's more a problem of : i c'ant track which ant belongs to the same team.
+2011-09-17T09:34:46  <stocha> 1vs1 would be less of a problem.
+2011-09-17T09:35:03  <stocha> easier to find easy to see colors.
+2011-09-17T09:35:10  <stocha> and less messy overall most probably.
+2011-09-17T09:35:47  <stocha> mm, i guess i'll be going.
+2011-09-17T09:35:49  <stocha> see you :)
+2011-09-17T09:36:08  <stocha> maybe i'll read what's going on up until launch. If it is next week.
+2011-09-17T09:36:28  *** stocha <stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-09-17T09:36:56  <mcstar> http://aichallengebeta.hypertriangle.com/visualizer.php?game=168258
+2011-09-17T09:36:59  <mcstar> noooo
+2011-09-17T09:37:03  <mcstar> why did he go
+2011-09-17T09:37:29  <jmcarthur> McLeopold: "so, if you have a choice of playing 2 players with match qualities 50% and 51%, right now I always pick 51%"  <-- i thought it was supposed to be probabilistic?
+2011-09-17T09:40:23  <jmcarthur> McLeopold: i had suggested a long time ago that at any given time we just have a subset of players that are available for play. each time a player plays a game, he is removed from the candidate list and replaced with whatever player hasn't played a game for the longest time. the matching algorithm may only pick players from the candidate list
+2011-09-17T09:41:22  <jmcarthur> *replaced with a player not already in the candidate list who has not played a game for the longest time
+2011-09-17T09:43:24  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has quit IRC ()
+2011-09-17T09:44:06  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has joined #aichallenge
+2011-09-17T09:49:02  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 6.0.2/20110905175240])
+2011-09-17T10:00:12  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Ping timeout: 240 seconds)
+2011-09-17T10:23:33  <mleise> mcstar: imagines bot looks like little larvae
+2011-09-17T10:23:58  <mcstar> no, its mcstar's bot
+2011-09-17T10:24:20  <mcstar> yeam, looks more like worms than snakes :D
+2011-09-17T10:25:00  <mcstar> stocha was here, but seems he lost his intereset
+2011-09-17T10:32:46  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-09-17T10:33:31  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-17T11:06:32  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 276 seconds)
+2011-09-17T11:22:46  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-17T11:22:47  *** ChanServ sets mode: +o amstan
+2011-09-17T12:17:56  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-09-17T12:24:36  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-17T12:36:52  *** eashoka <eashoka!7087431b@gateway/web/freenode/ip.112.135.67.27> has quit IRC (Ping timeout: 252 seconds)
+2011-09-17T12:46:24  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-09-17T12:55:38  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T13:05:42  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-17T13:07:36  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-17T13:28:49  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Quit: Konversation terminated!)
+2011-09-17T13:29:15  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-17T13:32:29  *** luda <luda!637f8421@gateway/web/freenode/ip.99.127.132.33> has joined #aichallenge
+2011-09-17T13:39:18  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T13:40:30  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-17T13:40:39  *** luda <luda!637f8421@gateway/web/freenode/ip.99.127.132.33> has quit IRC (Quit: Page closed)
+2011-09-17T13:47:27  *** cody__ <cody__!b4972a79@gateway/web/freenode/ip.180.151.42.121> has joined #aichallenge
+2011-09-17T14:23:14  *** olexs <olexs!~Leviathan@drms-590ed14d.pool.mediaWays.net> has joined #aichallenge
+2011-09-17T14:24:20  <olexs> hi guys. is there a tcp server running somewhere for ants where one could test a bot a bit faster than on the beta server?
+2011-09-17T14:29:37  *** berak <berak!~chatzilla@89.204.153.135> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-09-17T14:31:04  <mcstar> theres none i know of
+2011-09-17T14:36:17  <olexs> hm, too bad
+2011-09-17T14:38:06  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has joined #aichallenge
+2011-09-17T14:38:30  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 252 seconds)
+2011-09-17T14:44:08  *** dr- <dr-!~dr-freeno@ble59-1-82-66-133-150.fbx.proxad.net> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T14:44:40  *** dr- <dr-!~dr-freeno@ble59-1-82-66-133-150.fbx.proxad.net> has joined #aichallenge
+2011-09-17T14:56:12  *** xathis <xathis!~Mathis@e179233138.adsl.alicedsl.de> has quit IRC ()
+2011-09-17T15:07:48  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-17T15:15:27  <McLeopold> @later tell janzert how do I check the amazon spot price?  what type of instances do we have?
+2011-09-17T15:15:27  <contestbot> McLeopold: Ready to serve, my lord.
+2011-09-17T15:20:04  <mleise> poor stocha
+2011-09-17T15:21:11  <mleise> little pixels in the colors of the rainbow are not a good presentation when you are color blind
+2011-09-17T15:24:14  *** delt0r_ <delt0r_!~bob@178-191-187-232.adsl.highway.telekom.at> has quit IRC (Ping timeout: 259 seconds)
+2011-09-17T15:27:14  <mcstar> mleise: i dont really understand his point though
+2011-09-17T15:27:52  <mcstar> he says that he lost interest in the game and that doesnt want to write a battle strategy
+2011-09-17T15:28:11  <mcstar> on the contrary, i think this will be the interesting part
+2011-09-17T15:28:45  <mcstar> i think that something similar will happen like in the previous contest
+2011-09-17T15:28:56  <mcstar> the battle strategy will be a bit clearer
+2011-09-17T15:29:10  <mcstar> and the implementation, and the ability to predict will win
+2011-09-17T15:30:09  <mcstar> basically what im saying is that i dont expect some "magic" to happen(i dont think there are deep hidden simplifications) but there will be some tricks on the ai part
+2011-09-17T15:32:53  <mcstar> anyway, when there are many players, even colors dont help
+2011-09-17T15:36:17  *** delt0r_ <delt0r_!~bob@213-33-22-2.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-17T15:37:06  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has quit IRC (Ping timeout: 252 seconds)
+2011-09-17T15:43:42  <mcstar> dumb me, searching for "crystal crack" on youtube
+2011-09-17T15:47:51  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-09-17T15:53:16  <CIA-24> aichallenge: McLeopold epsilon * r577fd39 / website/api_game_result.php : fix cutoff - http://git.io/RhPtcA
+2011-09-17T16:00:05  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-17T16:10:48  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-09-17T16:19:42  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Read error: Connection reset by peer)
+2011-09-17T16:20:46  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-09-17T16:23:12  *** onensora <onensora!c@546B4161.cm-12-4b.dynamic.ziggo.nl> has joined #aichallenge
+2011-09-17T17:49:58  *** mcstar <mcstar!~mcstar@adsl-89-132-8-222.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-09-17T17:57:10  *** JaycobColeman <JaycobColeman!~Jaycob@130-147-42-72.gci.net> has joined #aichallenge
+2011-09-17T18:01:33  <janzert> McLeopold: http://cloudexchange.org/charts/us-east-1.linux.m2.xlarge.html is a graph for the right instance type spot price
+2011-09-17T18:02:11  <janzert> and they're called "high memory extra large" by amazon
+2011-09-17T18:03:45  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-09-17T18:05:14  *** olexs <olexs!~Leviathan@drms-590ed14d.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-09-17T18:25:32  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: quit)
+2011-09-17T18:57:26  *** JaycobColeman <JaycobColeman!~Jaycob@130-147-42-72.gci.net> has quit IRC (Quit: JaycobColeman)
+2011-09-17T19:02:54  *** JaycobColeman <JaycobColeman!~Jaycob@130-147-42-72.gci.net> has joined #aichallenge
+2011-09-17T19:04:46  *** arlequin <arlequin!58aff739@gateway/web/freenode/ip.88.175.247.57> has quit IRC (Quit: Page closed)
+2011-09-17T19:08:07  <McLeopold> @later tell janzert how many worker.py instances per worker server?  I'm seeing a lot of matchup requests, 5 times as many as posted games.
+2011-09-17T19:08:07  <contestbot> McLeopold: Yep.
+2011-09-17T19:09:24  *** antimatroid <antimatroid!~nick@162.129-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2011-09-17T19:12:52  *** cody__ <cody__!b4972a79@gateway/web/freenode/ip.180.151.42.121> has quit IRC (Ping timeout: 252 seconds)
+2011-09-17T19:15:00  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2011-09-17T19:16:43  *** JaycobColeman <JaycobColeman!~Jaycob@130-147-42-72.gci.net> has quit IRC (Quit: JaycobColeman)
+2011-09-17T19:18:09  <janzert> McLeopold: only one
+2011-09-17T19:18:42  <McLeopold> ok, I think a worker is misbehaving, 198, but don't do anything yet, I'm improving the logging until it makes sense for us
+2011-09-17T19:18:59  <janzert> ok
+2011-09-17T19:19:14  <janzert> going for dinner now so out for a while anyway
+2011-09-17T19:19:17  <McLeopold> cya
+2011-09-17T19:31:54  *** antimatroid <antimatroid!~nick@162.129-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-09-17T19:33:18  <CIA-24> aichallenge: McLeopold epsilon * re33a70d / worker/worker.py : allow game to mark submission status - http://git.io/Xpy73w
+2011-09-17T19:41:30  *** amstan_ <amstan_!~amstan@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-17T19:41:30  *** ChanServ sets mode: +o amstan_
+2011-09-17T19:42:36  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has quit IRC (Read error: No route to host)
+2011-09-17T19:55:04  *** amstan_ is now known as amstan
+2011-09-17T19:56:10  <CIA-24> aichallenge: McLeopold epsilon * r0f84e4e / worker/worker.py : only report game compile status if failure - http://git.io/lZxR1A
+2011-09-17T20:00:24  <McLeopold> @later tell janzert it was the go submission again, I've modifed worker to report failure status on games so submission can be turned off, the workers have been restarted
+2011-09-17T20:00:24  <contestbot> McLeopold: OK
+2011-09-17T20:06:55  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-09-17T20:08:01  <CIA-24> aichallenge: Scott Hamilton epsilon * rb2ea67c / (4 files): better php_api logs - http://git.io/dLmQSQ
+2011-09-17T20:13:20  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: FireFly)
+2011-09-17T20:32:03  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-09-17T20:56:25  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-17T20:56:25  *** ChanServ sets mode: +o amstan
+2011-09-17T20:58:06  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has quit IRC (Ping timeout: 252 seconds)
+2011-09-17T21:16:12  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Read error: Connection reset by peer)
+2011-09-17T21:17:18  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-09-17T21:52:09  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-09-17T23:24:12  *** delt0r_ <delt0r_!~bob@213-33-22-2.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-09-17T23:36:52  *** delt0r_ <delt0r_!~bob@213-33-19-244.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-17T23:42:02  *** xathis <xathis!~Mathis@g224150255.adsl.alicedsl.de> has joined #aichallenge
+2011-09-17T23:52:59  *** xathis <xathis!~Mathis@g224150255.adsl.alicedsl.de> has quit IRC ()
+2011-09-17T23:55:01  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge

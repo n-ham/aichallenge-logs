@@ -1,0 +1,1242 @@
+2010-12-13T00:04:54  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-35-225-173.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-12-13T00:11:31  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T00:16:56  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Quit: Page closed)
+2010-12-13T00:22:25  *** Utkarsh <Utkarsh!~admin@117.201.87.110> has quit IRC (Ping timeout: 276 seconds)
+2010-12-13T00:26:50  *** Utkarsh <Utkarsh!~admin@117.201.86.25> has joined #aichallenge
+2010-12-13T00:28:19  *** fmeyer <fmeyer!~fmeyer@189.100.228.254> has joined #aichallenge
+2010-12-13T00:35:07  <antimatroid1> i'm not sure the rotation of the board is necessary
+2010-12-13T00:35:13  <antimatroid1> (i'm back)
+2010-12-13T00:36:29  <sigh> I meant rotation as a symettry
+2010-12-13T00:38:50  <antimatroid1> yeah okay
+2010-12-13T00:38:57  <antimatroid1> so i can remove the rotation at the end?
+2010-12-13T00:39:07  <antimatroid1> i'm going to write that function to scan linear lines between homes
+2010-12-13T00:39:09  <sigh> sure
+2010-12-13T00:39:19  <sigh> what for?
+2010-12-13T00:39:32  <antimatroid1> well, diagonal, vertical and horizontal
+2010-12-13T00:39:37  <antimatroid1> to see how often it aligns
+2010-12-13T00:39:38  <sigh> ah yup
+2010-12-13T00:39:46  <sigh> we only really care if it aligns all the time
+2010-12-13T00:39:58  <sigh> obviously aligning at random times is fine ;P
+2010-12-13T00:40:20  <sigh> but yeah, that function is good... saves having to think through the math
+2010-12-13T00:41:03  <antimatroid1> wait, do i want to rotate the board randomly up to 3 times?
+2010-12-13T00:41:09  <sigh> o_O
+2010-12-13T00:41:29  <antimatroid1> bah, i'm confused, i'll play around :)
+2010-12-13T00:41:56  <sigh> rotations lie in a group so once should be enough :P
+2010-12-13T00:42:14  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T00:42:36  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has joined #aichallenge
+2010-12-13T00:46:32  <janzert> argh, I was going to point you at the good tron map generator http://www.ai-contest.com/forums/viewtopic.php?f=10&t=71
+2010-12-13T00:46:45  <janzert> but apparently the file has been removed from the server
+2010-12-13T00:47:36  <janzert> also it looks like none of them were actually used in the final contest so I can't point you at examples either :(
+2010-12-13T00:48:07  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has joined #aichallenge
+2010-12-13T00:48:33  <sigh> janzert: what was special about the tron generator?
+2010-12-13T00:49:24  <antimatroid1> yeah?
+2010-12-13T00:49:31  <antimatroid1> it didn't have wrapped walls either
+2010-12-13T00:49:48  <janzert> one thing is in addition to the "random" wall maps like anti's current generator makes it also made maze like maps and maps with long straight walls randomly laid out
+2010-12-13T00:49:59  <janzert> antimatroid1: right but it should be easy to adapt that
+2010-12-13T00:50:06  <sigh> ah
+2010-12-13T00:50:25  <antimatroid1> that's easy to do
+2010-12-13T00:50:33  <sigh> I was going to suggest looking at a maze generator, but I think this random approach gives a more natural feels
+2010-12-13T00:50:38  <janzert> antimatroid1: I think maybe your current requirement that *every* non-wall cell be reachable may be too strong
+2010-12-13T00:50:39  <sigh> *feel
+2010-12-13T00:50:52  <antimatroid1> janzert: what do you mean?
+2010-12-13T00:51:09  <janzert> sure, it should all be easy to redo but looking at the other one might have been useful for you
+2010-12-13T00:51:10  <antimatroid1> in fact, you can run into every wall if you want
+2010-12-13T00:51:42  <janzert> it should be fine to generate maps where sections are unreachable so long as the two bases are still connected
+2010-12-13T00:52:00  <antimatroid1> but then it's a waste of space?
+2010-12-13T00:52:08  <janzert> might want to make sure only a certain percentage is unreachable of course
+2010-12-13T00:52:13  <sigh> janzert: thats what he originally had :P
+2010-12-13T00:52:33  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T00:52:38  <antimatroid1> give me a sec
+2010-12-13T00:52:47  <janzert> I think it's fine if say up to 10-15% is unreachable
+2010-12-13T00:53:36  <janzert> doesn't look like I even have any of the good maps saved locally
+2010-12-13T00:53:52  <janzert> from tron that is
+2010-12-13T00:54:04  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has joined #aichallenge
+2010-12-13T00:54:07  <sigh> that's an easy change anyway.... change line 89 to test: squaresVisited == int(dim*dim*min_reachable_factor)
+2010-12-13T00:54:43  <antimatroid1> it's not the simple change i thought, cbf atm
+2010-12-13T00:55:01  <sigh> what I said is not easy
+2010-12-13T00:55:02  <sigh> ?
+2010-12-13T00:55:08  <antimatroid1> hang on, just saw that
+2010-12-13T00:55:23  <sigh> change  == to >
+2010-12-13T00:55:41  <sigh> err... >=
+2010-12-13T00:55:50  <antimatroid1> oh, yeah, i also need to check home bases are connected
+2010-12-13T00:56:06  <sigh> that's also easy
+2010-12-13T00:56:15  <antimatroid1> make sure home2 is painted err
+2010-12-13T00:56:17  <antimatroid1> okay, hold up
+2010-12-13T00:57:30  <sigh> squaresVisited >= int(dim*dim*min_reachable_percentage/100) and nMap[home2[0] ][home2[1] ]
+2010-12-13T00:57:46  <sigh> that should work
+2010-12-13T00:59:24  * sigh codes by randomly typing characters, then slowly mutating the string until it converges to a solution
+2010-12-13T00:59:49  <antimatroid1> oh, it does, i need to paint the closed off regions after adding walls now though
+2010-12-13T00:59:57  <antimatroid1> cause resources get put in closed off regions
+2010-12-13T01:00:40  <janzert> ants see through walls right?
+2010-12-13T01:01:00  <janzert> i.e. visions is strictly limited by distance
+2010-12-13T01:01:09  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has quit IRC (Read error: Operation timed out)
+2010-12-13T01:01:21  <sigh> haha... I had an idea... put nice resources in the closed off areas and allow people to dig
+2010-12-13T01:01:24  <antimatroid1> http://codepad.org/9BKCYLIz
+2010-12-13T01:01:39  <antimatroid1> janzert: i wanted to have them not see through walls, delt0r thinks it's better to
+2010-12-13T01:01:42  <antimatroid1> what are your thoughts?
+2010-12-13T01:02:02  <antimatroid1> it's not hard to paint out each players visible region with walls blocking sight and returning what they can see
+2010-12-13T01:02:06  <janzert> if ants can see through I would go ahead and put resources in the closed off region so ants need to get smart enough to know when the resource is unreachable
+2010-12-13T01:02:32  <janzert> hmm, not really sure which would be more interesting
+2010-12-13T01:02:34  <antimatroid1> yeah, actually that could make it cool, i'll leave it like that
+2010-12-13T01:03:04  <janzert> see through is probably a lot easier to deal with all around
+2010-12-13T01:03:45  <sigh> antimatroid1: your comments are out of date again :P
+2010-12-13T01:03:53  <antimatroid1> sigh: i'll fix them later
+2010-12-13T01:03:58  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has joined #aichallenge
+2010-12-13T01:03:58  <sigh> :)
+2010-12-13T01:04:06  <antimatroid1> what do you think should happen when opponent ants try to move into the same square?
+2010-12-13T01:04:12  <antimatroid1> delt0r and i don't agree on that one
+2010-12-13T01:04:31  <antimatroid1> he wants the engine to resolve those moves and have neither ant move, I say let them fight each other to death there and then
+2010-12-13T01:04:36  <sigh> I think it should segfault and crash the server
+2010-12-13T01:05:19  <janzert> I think a lot of that really should be resolved with playtesting :)
+2010-12-13T01:05:57  <antimatroid1> that's the plan, but i think if people have to consider resolving moves that may not go through, it becomes a lot harder
+2010-12-13T01:07:25  <janzert> I rather like fight to the death, but it might have unforeseen problems. It's really hard to get a good feel for the dynamics without seeing games played :)
+2010-12-13T01:07:46  <antimatroid1> i don't want it to be the only method of fighting, otherwise i don't think many fights will occur
+2010-12-13T01:08:21  <janzert> yeah, I don't really like bullets but there needs to be some method of ranged damage I think
+2010-12-13T01:08:28  <janzert> maybe call it acid spit :P
+2010-12-13T01:08:34  <antimatroid1> it would be good if the game dynamics went along the lines of start: collect resources and build up grains at home base, middle: go explore the map for them and scope things out end: epic battle while trying to charge each others home base
+2010-12-13T01:10:12  <antimatroid1> acid spit is cooler than bullets, another option is you can "hit" another ant that can be reached in x moves
+2010-12-13T01:10:22  <antimatroid1> which gets processed before moves
+2010-12-13T01:10:39  <antimatroid1> with acid spit
+2010-12-13T01:10:45  <janzert> or maybe ranged attack shouldn't just travel in straight lines but be more like a mortar lob that can go to any destination within a certain range and cause a small radius of damage
+2010-12-13T01:11:18  <antimatroid1> i like that
+2010-12-13T01:11:24  <antimatroid1> you give it the distance it travels
+2010-12-13T01:11:29  <antimatroid1> and it has a set blast radius
+2010-12-13T01:11:37  <janzert> but I'll let you guys work it all out, I really should stay out of this one :/
+2010-12-13T01:11:39  <antimatroid1> and distance is capped
+2010-12-13T01:12:09  <delt0r_> Wibble
+2010-12-13T01:12:15  <antimatroid1> and you get hp of 5-distance to centre of blast hp taken off
+2010-12-13T01:12:53  <sigh> wibble?
+2010-12-13T01:13:32  <delt0r_> sigh: you don't watch blackadder?
+2010-12-13T01:13:43  <delt0r_> I though you where from down under
+2010-12-13T01:14:10  <sigh> I haven't seen all of it :P
+2010-12-13T01:14:46  <delt0r_> well the last episode of blackadder goes forth has the wibble reference...
+2010-12-13T01:14:53  <delt0r_> I let you you tube
+2010-12-13T01:14:55  <delt0r_> it
+2010-12-13T01:15:30  <delt0r_> antimatroid1: it sounds like you really just want a RTS rather than "army ants"
+2010-12-13T01:15:49  <antimatroid1> isn't this meant to be an rts like game?
+2010-12-13T01:16:03  <antimatroid1> i really don't like the cancelling of moves
+2010-12-13T01:16:10  <antimatroid1> that makes it way harder to work out what moves you can make
+2010-12-13T01:18:28  <antimatroid1> delt0r_: I'm not overly set on "firing" stuff, just "attack" ant in next square is fine, but i really think oppoents should be able to land in the same square and one (or both) dies off
+2010-12-13T01:19:19  <delt0r_> stacking always results in the same tatics in all RTS games that have it. Stack when ever you can --always
+2010-12-13T01:20:01  <delt0r_> while no stacking permit more interesting formations and less "logic"  (ie 3 way + n way stacks from both temes)
+2010-12-13T01:20:03  <delt0r_> teams
+2010-12-13T01:20:47  <antimatroid1> sigh: i've actually kind of warmed up to krudd since he got the boot, you?
+2010-12-13T01:21:09  <antimatroid1> delt0r_: I expect it to be fairly easy to avoid stacking
+2010-12-13T01:21:23  <antimatroid1> although if large groups come across each other, than can charge into battle which will be over faster
+2010-12-13T01:21:25  <sigh> antimatroid1: well he's saying stuff that makes sense now
+2010-12-13T01:21:33  <sigh> and not running away from the media
+2010-12-13T01:21:35  <antimatroid1> sigh: even before this last week
+2010-12-13T01:22:02  <sigh> honestly haven't been paying attention to him in the meantime
+2010-12-13T01:27:33  <antimatroid1> does anything need to be passed at the very start of the game other than map dimensions, turns in a game and maxt time per turn?
+2010-12-13T01:27:57  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has quit IRC (Quit: Leaving)
+2010-12-13T01:29:18  <sigh> vision radius would be useful
+2010-12-13T01:29:32  <antimatroid1> yep
+2010-12-13T01:30:23  <delt0r_> antimatroid1: But if you permit stacking you can't stop it... so i stack *all* my ants when ever i can
+2010-12-13T01:30:42  <delt0r_> It will always be the better strat... we have seen this many times in other RTS
+2010-12-13T01:30:57  <antimatroid1> delt0r_: i'm saying make two friend ants stacked be an invalid move and loss of game
+2010-12-13T01:31:13  <antimatroid1> if two opponent ants land on the same square, only one (if any) can be there after they battle
+2010-12-13T01:31:23  <delt0r_> well now you have ---stacking kinda with extra rules and logic ... for what?
+2010-12-13T01:31:28  <delt0r_> what does it add?
+2010-12-13T01:31:40  <antimatroid1> it means you don't have to worry about your moves not actually being implemented
+2010-12-13T01:31:49  <delt0r_> ??
+2010-12-13T01:32:08  <antimatroid1> if two oppoent ants try to move into the same square, you want that to not count for either of them?
+2010-12-13T01:32:21  <antimatroid1> but then your ant isn't goint to be where it was expected if it's still alive
+2010-12-13T01:32:23  <delt0r_> yea
+2010-12-13T01:32:29  <delt0r_> so
+2010-12-13T01:32:32  <antimatroid1> which is also more work to handle when working out possible moves
+2010-12-13T01:32:40  <antimatroid1> it's easier if you let them land there and fight to death
+2010-12-13T01:32:56  <delt0r_> if there are *any* invalid moves... then this is something you need *anyway*
+2010-12-13T01:33:18  <antimatroid1> no, you just never move one of your ants to where another one is
+2010-12-13T01:33:18  <delt0r_> and if two freindlys can't stack then that situation happens anyway
+2010-12-13T01:33:20  <antimatroid1> that's easy
+2010-12-13T01:33:41  <antimatroid1> and then you may move an ant to any empty square, and provided it's stil alive next turn, it will be there
+2010-12-13T01:33:49  <delt0r_> really?
+2010-12-13T01:34:02  <antimatroid1> what's complicated?
+2010-12-13T01:34:11  <antimatroid1> you can only ever have two opponent ants land in the same square
+2010-12-13T01:34:14  <delt0r_> (0,0)-> 0,1 <-(0,2)
+2010-12-13T01:34:43  <delt0r_> ops these two ants did not communicate that they both planed to move to the same square
+2010-12-13T01:34:47  <delt0r_> now what happens
+2010-12-13T01:34:54  <antimatroid1> same team or not?
+2010-12-13T01:34:55  <delt0r_> these are on the same team
+2010-12-13T01:34:57  <antimatroid1> they lose
+2010-12-13T01:35:04  <delt0r_> ?? WTF
+2010-12-13T01:35:05  <antimatroid1> if all ants are the one process, they all share the same information
+2010-12-13T01:35:32  <antimatroid1> it shouldn't be hard to make sure you never move where another one of your ants is going to be
+2010-12-13T01:35:40  <delt0r_> no--they only see local info... ant A doesn't know anthing about ant B without some serious pattern matching
+2010-12-13T01:35:40  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 245 seconds)
+2010-12-13T01:35:55  <antimatroid1> delt0r_: how?
+2010-12-13T01:36:01  <delt0r_> each ant only "sees" a friendly... it doesn't know which "ant: that is
+2010-12-13T01:36:37  <antimatroid1> if i am using one process with all information going to there, all my ants know the same thing
+2010-12-13T01:36:47  <antimatroid1> you cannot stop people from doing that
+2010-12-13T01:36:50  <delt0r_> Ant A sees: Ant (0, 2) team=1
+2010-12-13T01:37:06  <antimatroid1> it needs to know its hp and what it can see
+2010-12-13T01:37:10  <delt0r_> ant B sees: Ant (0,-2) team=1
+2010-12-13T01:37:18  <delt0r_> only its HP
+2010-12-13T01:37:22  <delt0r_> not other ants.
+2010-12-13T01:37:30  <antimatroid1> if ants start from the home base
+2010-12-13T01:37:34  <antimatroid1> they all know where they are
+2010-12-13T01:37:35  <delt0r_> I don't even give id;s --but that could be added
+2010-12-13T01:37:57  <delt0r_> good luck with you starter packs...
+2010-12-13T01:38:10  <antimatroid1> it's easy :\
+2010-12-13T01:38:23  <delt0r_> prediction... bottom 2/3 make illegal moves and kill 1/2 there own ants
+2010-12-13T01:38:28  <delt0r_> yea right
+2010-12-13T01:39:01  <antimatroid1> not really, make a vector of ants, go through and make a random valid move for each one (random bot) and return the moves
+2010-12-13T01:39:03  <janzert> delt0r_: I think you're imagining the information being given to the ants in a completely different way that antimatroid1 is doing it
+2010-12-13T01:39:36  <janzert> none of the information is being given from an ants point of view for his proposal
+2010-12-13T01:39:37  <delt0r_> the idea was "agents" --ie close to the ant per process
+2010-12-13T01:39:53  <delt0r_> but in one process for implentation reasons
+2010-12-13T01:40:08  <antimatroid1> so you want to pass each ant relative information?
+2010-12-13T01:40:14  *** tapwater <tapwater!~tapwater@cpe-70-112-195-55.austin.res.rr.com> has quit IRC (Quit: tapwater)
+2010-12-13T01:40:23  <antimatroid1> bbs
+2010-12-13T01:40:26  <delt0r_> however its still very abitary to have "freindies" move onto the same square as illegal but not foes
+2010-12-13T01:40:44  <delt0r_> what if 2 guys try to attack the same ant...
+2010-12-13T01:40:56  <delt0r_> either let stacking happen --or don't
+2010-12-13T01:41:05  <delt0r_> but a mix is worse that either
+2010-12-13T01:41:18  <delt0r_> antimatroid1: I do only pass relative information
+2010-12-13T01:41:20  <janzert> you could instead just always have just the strongest ant survive no matter if they are same team or not :)
+2010-12-13T01:41:59  *** fmeyer <fmeyer!~fmeyer@189.100.228.254> has quit IRC (Ping timeout: 265 seconds)
+2010-12-13T01:42:13  <delt0r_> still seems very lame... "locked" combat is very artifical... i can't retreat or break off the attack... it just doesn't seem to lead to anything interesting
+2010-12-13T01:43:07  <janzert> yeah, there should be a separate /normal/ way of attacking
+2010-12-13T01:45:25  <delt0r_> anyway I have a first cut ready to show people...
+2010-12-13T01:45:45  <delt0r_> its sloppy code... but at least we can "see" how it works...
+2010-12-13T01:48:42  <antimatroid1> delt0r: if two ants attack the same enemy, it loses that many hp, if it goes below 0, the ant dies
+2010-12-13T01:49:31  <antimatroid1> you can't do relative information with the home base idea
+2010-12-13T01:49:46  <antimatroid1> i originally wanted to do that but threw it out when i liked home base
+2010-12-13T01:50:39  <delt0r_> but since they are on the same sqaure--you now have 2 friendlies on the same square
+2010-12-13T01:50:55  <delt0r_> its just seems very inconsitant...
+2010-12-13T01:51:07  <antimatroid1> no, i'm saying don't let two friends go on the same square
+2010-12-13T01:51:22  *** virdo <virdo!virdo@bas9-london14-1279331268.dsl.bell.ca> has quit IRC (Ping timeout: 260 seconds)
+2010-12-13T01:51:35  <antimatroid1> you could do that with ides
+2010-12-13T01:51:37  <delt0r_> antimatroid1: relative info is easy... "collision" stuff is also easy
+2010-12-13T01:51:38  <antimatroid1> ids*
+2010-12-13T01:51:39  <antimatroid1> and relative
+2010-12-13T01:52:28  <antimatroid1> how are you having new ants made atm? and what's the decision rule for where they spawn?
+2010-12-13T01:52:30  <delt0r_> but that will kill friendlys.. seriously.. if I can share space with the enemny why not a friend... its not logical
+2010-12-13T01:52:51  <delt0r_> just spawn everything randomly... good for basic debug
+2010-12-13T01:53:12  <delt0r_> and you get an idea without too many tedious details
+2010-12-13T01:53:58  <antimatroid1> when do you get a new ant?
+2010-12-13T01:56:03  <delt0r_> A new ant is "born" in the same place as the parent. Its an "egg" till the parent leaves the square. Then it spaws..
+2010-12-13T01:56:16  <delt0r_> its a hack, but can be easily changed
+2010-12-13T01:56:24  <antimatroid1> that works
+2010-12-13T01:56:25  <delt0r_> permits easy swaming in random maps
+2010-12-13T01:56:36  <delt0r_> so you can see dynamics better
+2010-12-13T01:56:47  <delt0r_> its not bad... very "alife" like
+2010-12-13T01:57:15  <delt0r_> you can see stratagies that could work well... and see what does not
+2010-12-13T01:57:28  <delt0r_> my current bot ignores walls
+2010-12-13T01:57:31  <antimatroid1> i really like the home base idea though
+2010-12-13T01:57:36  <delt0r_> yea
+2010-12-13T01:57:38  <delt0r_> easy to add
+2010-12-13T01:57:56  <delt0r_> don't thinks it changes the basic dynamics...
+2010-12-13T01:57:57  <antimatroid1> not really, if ants spawn there, they all know the same thing
+2010-12-13T01:58:11  <delt0r_> just adding some comments to the code... then will post
+2010-12-13T01:58:15  <antimatroid1> or do you want ants to not know where their own home is?
+2010-12-13T01:58:28  <delt0r_> no.. thats fine
+2010-12-13T01:58:39  <delt0r_> but tracking state is not as easy as it sounds...
+2010-12-13T01:58:59  <delt0r_> currently ant "ids" are only valid for a round...
+2010-12-13T01:59:10  <delt0r_> so you can't easily know if its the same ant
+2010-12-13T01:59:18  <delt0r_> may fix that before release
+2010-12-13T01:59:21  <antimatroid1> pattern match the walls, easy
+2010-12-13T01:59:48  <delt0r_> well not really... we don't want the starter packs to be a lot of code --just to get started really
+2010-12-13T02:00:01  <antimatroid1> yeah
+2010-12-13T02:00:03  <delt0r_> that way more langs get added faster
+2010-12-13T02:00:15  <delt0r_> A* seems like it would be needed
+2010-12-13T02:00:24  <delt0r_> with walls that is
+2010-12-13T02:00:37  <antimatroid1> i don't think one will get away with just one tree
+2010-12-13T02:01:10  <delt0r_> well if an ant can only see say 10x10... then you only need to do the path finding on that
+2010-12-13T02:01:26  <delt0r_> hell you only really need the "next move" part
+2010-12-13T02:01:26  <antimatroid1> that's easy, paint the grid
+2010-12-13T02:01:32  <delt0r_> yea
+2010-12-13T02:05:37  <antimatroid1> i don't see how you can have relative information be anything other than a tedious annoyance with extra overhead with home bases
+2010-12-13T02:05:48  <delt0r_> ??
+2010-12-13T02:06:00  <delt0r_> you just don't give coords.
+2010-12-13T02:06:19  <antimatroid1> well, each bot is just going to work out where they are relative to home base, then translate everything to the same coordinates
+2010-12-13T02:06:37  <antimatroid1> unless
+2010-12-13T02:06:40  <antimatroid1> you rotate the maps too
+2010-12-13T02:07:11  <delt0r_> well it stops even being "agent" relealted if you give absolute data
+2010-12-13T02:07:42  <antimatroid1> yeah, my point is i think it's impossible to do relative and home bases
+2010-12-13T02:12:56  <delt0r_> I don't
+2010-12-13T02:13:09  <delt0r_> just don't give coords... whats the problem?
+2010-12-13T02:15:04  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has joined #aichallenge
+2010-12-13T02:15:04  <antimatroid1> how do they know where home is without coords?
+2010-12-13T02:15:12  <antimatroid1> where is mcleopold these days
+2010-12-13T02:15:28  <antimatroid1> it would be cool to get him to add revised revisions of an engine to a tcp
+2010-12-13T02:15:30  <delt0r_> thats the point... thats what the "agent" code need to do
+2010-12-13T02:26:15  <antimatroid1> okay, i'm with you, i say have the home hole, but ants get spawned randomly and given a relative coord of home base and spawned ants need to be at least a certain distance from the enemies home base
+2010-12-13T02:26:25  <antimatroid1> i can make the map generator for that quite easily
+2010-12-13T02:26:55  <delt0r_> just wait to you see all this in action.
+2010-12-13T02:27:08  <delt0r_> you may not like it anyway...
+2010-12-13T02:27:14  <delt0r_> or others may not
+2010-12-13T02:27:18  <delt0r_> we will see
+2010-12-13T02:27:20  <janzert> if the ants are given relative coords to the home base that simply becomes the origin for the sides global coord system
+2010-12-13T02:27:26  <delt0r_> or folks can hack the code
+2010-12-13T02:27:54  <delt0r_> janzert: yes.. If you can see the base --you see the base... otherwise you know nothing...
+2010-12-13T02:28:14  <antimatroid1> janzert: yes, but you don't necessarily know the path there
+2010-12-13T02:28:22  <antimatroid1> so your ants at least have to find each other
+2010-12-13T02:28:26  <delt0r_> note that in my current implentation... you can't really "know" that you moved or not wihout checking the terrain
+2010-12-13T02:28:59  <antimatroid1> yeah, home base completely throws out relative coords
+2010-12-13T02:29:17  <antimatroid1> janzert: one option is to make it harder to match by rotating bots relative view
+2010-12-13T02:29:50  <antimatroid1> and inverting etc. then reverting those when receiving its move
+2010-12-13T02:30:13  <janzert> why bother? it seems like it only makes an artificial barrier for newbies
+2010-12-13T02:30:42  <delt0r_> you could be right janzert
+2010-12-13T02:30:54  <delt0r_> giving coords does make it easier
+2010-12-13T02:31:00  <delt0r_> and we want easier
+2010-12-13T02:31:19  <delt0r_> but i remained unconvinced ants is the best idea...
+2010-12-13T02:32:21  <antimatroid1> so agents are incompatible with home bases
+2010-12-13T02:32:40  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-12-13T02:32:55  <antimatroid1> sigh: what do you prefer, individual agent ants or home bases
+2010-12-13T02:33:00  <delt0r_> But can't think of anything else right now
+2010-12-13T02:33:21  <sigh> independent agents doesn't seem feasible
+2010-12-13T02:33:26  <antimatroid1> it is
+2010-12-13T02:33:32  <antimatroid1> with single process
+2010-12-13T02:33:42  <antimatroid1> each ant gets relative information each turn
+2010-12-13T02:33:49  <antimatroid1> with them centred in a grid
+2010-12-13T02:34:10  <janzert> if we wanted to do an optimization/puzzle type contest instead of a head to head game sometime I did think one that might be interesting the other night, basically something based off of manufactoria i.e. basically 2d compiler writing
+2010-12-13T02:34:13  <janzert> http://jayisgames.com/games/manufactoria/
+2010-12-13T02:34:38  <antimatroid1> janzert: actual games are what makes it so interesting :P
+2010-12-13T02:35:41  <janzert> yeah, I don't expect people to jump on it but I do think it could be fun
+2010-12-13T02:36:01  <sigh> single process? so ants can share data?
+2010-12-13T02:36:13  <antimatroid1> yes, but don't know which ones which
+2010-12-13T02:36:32  <delt0r_> janzert: flash fails for me on that one
+2010-12-13T02:36:47  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2010-12-13T02:37:12  <antimatroid1> if you give them a relative location of home, then they can just tranlate to that as a common square
+2010-12-13T02:37:20  <delt0r_> sigh: its really not pratical to have 10-40 odd process per game... and when you want 100 games a min in the server
+2010-12-13T02:37:31  <delt0r_> practical
+2010-12-13T02:37:54  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-12-13T02:37:57  <sigh> antimatroid1: what do you mean you don't know which one's which?
+2010-12-13T02:38:04  <antimatroid1> (6:36:46 PM) antimatroid1: if you give them a relative location of home, then they can just tranlate to that as a common square
+2010-12-13T02:38:04  <antimatroid1> (6:36:54 PM) delt0r_: sigh: its really not pratical to have 10-40 odd process per game... and when you want 100 games a min in the server
+2010-12-13T02:38:04  <antimatroid1> (6:37:05 PM) delt0r_: practical
+2010-12-13T02:38:10  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has joined #aichallenge
+2010-12-13T02:38:45  <antimatroid1> sigh: you will just be passed information for "you have an ant, here's what it can see in it's field of vision"
+2010-12-13T02:39:12  <delt0r_> thats all i send...
+2010-12-13T02:39:15  <antimatroid1> if they are randomly spawned, then they don't know where they are relative to anyone else
+2010-12-13T02:39:47  <antimatroid1> what if we had 2 home bases per team?
+2010-12-13T02:39:53  <sigh> ah, ok... so you debating giving position relative to ant vs relative to home base?
+2010-12-13T02:39:55  <antimatroid1> and each ant was randomly paired to one of the home bases
+2010-12-13T02:40:15  *** Utkarsh <Utkarsh!~admin@117.201.86.25> has quit IRC (Ping timeout: 260 seconds)
+2010-12-13T02:40:21  <antimatroid1> sigh: you can't have relative positions, single process and home bases, it doesn't work
+2010-12-13T02:41:35  <sigh> ok, I'm confused... I'll go read the forum to get familiar with your terminology
+2010-12-13T02:41:42  <Palmik> You guys discussing new challenge? :)
+2010-12-13T02:41:44  <antimatroid1> this isn't in the forums
+2010-12-13T02:41:51  <antimatroid1> Palmik: not necessarily
+2010-12-13T02:41:56  <antimatroid1> it's an option for the new challenge
+2010-12-13T02:42:09  <Palmik> I see :)
+2010-12-13T02:42:39  <sigh> antimatroid1: ok, can you tell me clearly the difference bw individual agent ants and home bases
+2010-12-13T02:42:44  <sigh> pretend I don't know anything
+2010-12-13T02:43:24  <janzert> I have a feeling it doesn't matter if you have home bases or not, each ant will just build an individual map and when it comes within sight of another friendly merge maps
+2010-12-13T02:43:41  <antimatroid1> janzert: i agree
+2010-12-13T02:43:50  <antimatroid1> hence why it might just be easier to drop agents
+2010-12-13T02:43:54  <sigh> yay, I'm not needed
+2010-12-13T02:44:01  <antimatroid1> sigh: hang on
+2010-12-13T02:44:02  <antimatroid1> ants don't really know which one is which if they are fed relative information about their position, so they are sort of like individual agents, but when
+2010-12-13T02:44:27  <antimatroid1> they are given a home base, they can always fill information in on the same map
+2010-12-13T02:44:37  <antimatroid1> before they don't know how far away they are from each other
+2010-12-13T02:45:34  <sigh> ok, so the purpose of the home base is that it gives the ants a common origin?
+2010-12-13T02:46:26  *** Utkarsh <Utkarsh!~admin@117.201.92.17> has joined #aichallenge
+2010-12-13T02:46:26  <antimatroid1> hmmm, it's sort of something you need to protct now, it's not anything near as important as it was
+2010-12-13T02:46:45  <antimatroid1> i prefer my idea, but i'm explaining delt0r's
+2010-12-13T02:46:47  <antimatroid1> which works
+2010-12-13T02:46:59  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-12-13T02:47:09  <sigh> ok, so you are deciding the objective of the game?
+2010-12-13T02:47:23  <antimatroid1> all rules do
+2010-12-13T02:47:29  <antimatroid1> the game is constantly changing at this point
+2010-12-13T02:47:40  <antimatroid1> it's a matter of finding what will result in the most interesting competition
+2010-12-13T02:48:20  <antimatroid1> it needs to be easy enough that people can pick up the rules fairly quickly
+2010-12-13T02:48:21  <sigh> meh... I'm still confused about what you are asking
+2010-12-13T02:48:48  <sigh> I don't know if you are discussing what ants see, or how they communicate, or how they win
+2010-12-13T02:48:58  <sigh> I'll just lurk a bit
+2010-12-13T02:49:53  <antimatroid1> i like having the ants spawn from home and having a collective intelligence
+2010-12-13T02:50:18  <antimatroid1> the other option requires ants to build their own information and match it up with other friend ants when they see them
+2010-12-13T02:50:47  <antimatroid1> the second option just doesn't work with home bases, so it's a forced choice
+2010-12-13T02:51:46  <antimatroid1> with the first option, you may have two ants just outside each others field of vision, and they'd know, with the second option, they wouldn't be able to distinguish between that and being complete opposite sides of the board
+2010-12-13T02:52:33  <sigh> so, what I said before: the purpose of the home base is that it gives the ants a common origin?
+2010-12-13T02:53:07  <antimatroid1> it has more purposes, with the first option, ants are spawned there and you have to take harvest back there, with the second option you just have to make sure an enemy ant doesn't get on it
+2010-12-13T02:53:24  <sigh> ok, i see
+2010-12-13T02:54:07  <antimatroid1> i see a lot of pattern matching being done with the second option instead of implementing cool strategies
+2010-12-13T02:54:20  <sigh> yeah
+2010-12-13T02:54:45  <sigh> also, the first 30 moves of the game will just be bumbling around
+2010-12-13T02:54:56  <antimatroid1> and once you see a friend ant, you will stay together
+2010-12-13T02:55:28  <antimatroid1> both can be tried though
+2010-12-13T02:55:37  <antimatroid1> we need mcleopold for a tcp server once an engine is made
+2010-12-13T02:55:40  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has quit IRC (Ping timeout: 250 seconds)
+2010-12-13T02:55:40  *** perror <perror!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2010-12-13T02:55:46  <sigh> :)
+2010-12-13T02:56:24  <sigh> it seem like individual ants would just result in a tedious initial coordination phase
+2010-12-13T02:56:39  <delt0r_> antimatroid1: we are a long way from having an engine... i like amstan idea to use JSON
+2010-12-13T02:57:04  <sigh> json for what? everything?
+2010-12-13T02:57:14  <janzert> except then you need json libraries for all languages
+2010-12-13T02:57:16  <antimatroid1> i don't like that :\
+2010-12-13T02:57:23  <sigh> not every language has json in the stdlib like python :P
+2010-12-13T02:57:37  <delt0r_> so there need to be a more "formal" spec at some point.. delegated to the organizes who can make executive decisions
+2010-12-13T02:57:42  <antimatroid1> it's good being able to write a bot without any additional libraries
+2010-12-13T02:58:04  <sigh> I think json for the game output for visualiser is a good idea though
+2010-12-13T02:58:13  <delt0r_> its better to be able to change the format a little without breaking backward compatablity
+2010-12-13T02:58:31  <delt0r_> anyway s-expresions or JSON is easy to parse without a lib too
+2010-12-13T02:58:58  <delt0r_> The idea is the server is going to be better set up to support libarays
+2010-12-13T02:59:29  <antimatroid1> i still don't see any reason to move away from standar input/output for communictation with the engine
+2010-12-13T02:59:34  <antimatroid1> standard*
+2010-12-13T02:59:47  <antimatroid1> if you pass game parameters at the start and hardcode that into starter packages
+2010-12-13T02:59:52  <antimatroid1> they can be adjusted without people bitching
+2010-12-13T03:00:18  <delt0r_> you still do that
+2010-12-13T03:00:27  <janzert> json is orthogonal to stdin/out
+2010-12-13T03:00:29  <delt0r_> just with more formally formatted strings
+2010-12-13T03:00:55  <antimatroid1> i just throw all my input into a string stream
+2010-12-13T03:01:07  <antimatroid1> and then read it into whatever variables i like
+2010-12-13T03:01:09  <delt0r_> even if its not JSON (a good idea really) more structure would be good
+2010-12-13T03:01:19  <delt0r_> my format is as hacky as hell
+2010-12-13T03:01:20  <antimatroid1> as long as i can continue doing that, i'm happy
+2010-12-13T03:02:16  <sigh> I like the idea of JSON but I don't think it will be nice for the other languages
+2010-12-13T03:02:48  <janzert> key value pairs with unknown keys specified as being ignored is probably sufficient for our purposes and a whole lot easier to parse than json
+2010-12-13T03:03:08  <sigh> agree ^^
+2010-12-13T03:03:33  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has joined #aichallenge
+2010-12-13T03:03:33  <delt0r_> i had a look .. Every lang i have heard of has a JSON lib for it
+2010-12-13T03:03:44  <delt0r_> including haskell
+2010-12-13T03:03:58  <delt0r_> scheme, lisp
+2010-12-13T03:04:06  <delt0r_> ok --so not ook!
+2010-12-13T03:04:25  <delt0r_> but anyone using ook should be able to write their own
+2010-12-13T03:05:00  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Quit: ChatZilla 0.9.86-rdmsoft [XULRunner 1.9.2.12/20101026210630])
+2010-12-13T03:05:16  <janzert> but it does mean an extra library everyone has to get working (including us on the servers and we better pick the library everyone likes for that language :})
+2010-12-13T03:06:06  <delt0r_> janzert: I understood that the server this time round will support general user libs better.. But yes this was my objection too...
+2010-12-13T03:06:21  <delt0r_> not all langs are late binding like java...
+2010-12-13T03:07:01  <delt0r_> and C/C++ compiler options are not always straightforward...
+2010-12-13T03:07:11  <janzert> so far as I've seen no work has been done on changing the server setup in any way :/
+2010-12-13T03:07:34  <delt0r_> I figured
+2010-12-13T03:07:41  <janzert> but there *is* a lot that could be done there to make things better for sure
+2010-12-13T03:07:43  <delt0r_> we all have day jobs I guess
+2010-12-13T03:07:55  <antimatroid1> to be fair, nobody said they'd do anything by now
+2010-12-13T03:09:03  <janzert> so far as I know I think I'm the only one that has explicitly said what I'll do for the next contest and that is that I won't be doing anything :(
+2010-12-13T03:09:38  <janzert> which is why I should stop butting in :/
+2010-12-13T03:10:34  <antimatroid1> you aren't really butting in
+2010-12-13T03:10:38  <antimatroid1> it's all just ideas atm
+2010-12-13T03:10:40  <antimatroid1> mostly
+2010-12-13T03:12:08  <janzert> probably the biggest need for the next contest is someone willing to step in and "champion" it
+2010-12-13T03:12:57  <antimatroid1> shotgun not :)
+2010-12-13T03:23:52  <antimatroid1> delt0r_: what are your current thoughts on relative vs home base?
+2010-12-13T03:24:01  <delt0r_> none.
+2010-12-13T03:24:07  <antimatroid1> i'm trying to throw together a sample bot, but it sort of depends on that
+2010-12-13T03:24:07  <delt0r_> I am posting now
+2010-12-13T03:24:25  <delt0r_> then i am working like a madman till thursday
+2010-12-13T03:24:38  <delt0r_> give my talk and back to xmass parties
+2010-12-13T03:24:47  <antimatroid1> :)
+2010-12-13T03:28:35  <antimatroid1> i'm not sure about having these blocked off regions on the map
+2010-12-13T03:28:53  <antimatroid1> before there were quite a few times you would see something interesting looking through walls with no easy path to it
+2010-12-13T03:29:55  <antimatroid1> i can increase the density of walls
+2010-12-13T03:31:43  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has quit IRC (Ping timeout: 264 seconds)
+2010-12-13T03:39:47  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has joined #aichallenge
+2010-12-13T03:40:25  *** narnach <narnach!~Narnach@188.203.82.89> has joined #aichallenge
+2010-12-13T03:40:25  *** narnach is now known as narnach_mb
+2010-12-13T04:03:23  <delt0r_> antimatroid1: http://ai-contest.com/forum/viewtopic.php?f=21&t=1205&p=8279#p8279
+2010-12-13T04:10:51  <antimatroid1> delt0r_: :)
+2010-12-13T04:14:18  <antimatroid1> delt0r_: what happens if you move off where an egg is and someone else moves there? does it have to wait before hatching?
+2010-12-13T04:14:24  <antimatroid1> what if someone else tries to then lay an egg?
+2010-12-13T04:14:26  <delt0r_> yes
+2010-12-13T04:14:38  <delt0r_> all "eggs" wait
+2010-12-13T04:14:44  <antimatroid1> okay cool
+2010-12-13T04:14:51  <delt0r_> they then hatch in order they are laied
+2010-12-13T04:15:10  <delt0r_> again this is more of a "easy to implement" than a "good idea"
+2010-12-13T04:15:33  <antimatroid1> i personally think the relative infromation wont give a more interesting game
+2010-12-13T04:15:51  <antimatroid1> but that will become more apparent with time
+2010-12-13T04:15:56  <antimatroid1> well, whichever one is better that is
+2010-12-13T04:16:07  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has quit IRC (Remote host closed the connection)
+2010-12-13T04:16:26  <delt0r_> just "fog of war" would make the bot come much simpler
+2010-12-13T04:16:35  <delt0r_> s/come/code/
+2010-12-13T04:19:22  <antimatroid1> delt0r: hwere is the demoragebot?
+2010-12-13T04:19:31  <antimatroid1> oh wait, nevermind
+2010-12-13T04:19:40  <antimatroid1> i misread the command line argument
+2010-12-13T04:20:30  <antimatroid1> looks cool to me
+2010-12-13T04:21:02  <antimatroid1> can i edit the code of a jar file? or could i look at your code and i'll make a non-relative one
+2010-12-13T04:21:28  <delt0r_> The idea is that you can hack it
+2010-12-13T04:21:42  <delt0r_> compiling java is much easy than C or C++
+2010-12-13T04:22:05  <delt0r_> I don't use reflection so it finds everything it needs and compiles it for you more or less
+2010-12-13T04:22:13  <delt0r_> even if you dont' want to use an ide
+2010-12-13T04:22:47  <antimatroid1> its fun to watch
+2010-12-13T04:23:05  <delt0r_> I liked planet wars more tbh
+2010-12-13T04:23:43  <antimatroid1> can you attack diagonally?
+2010-12-13T04:23:53  <antimatroid1> i think it'd be cool if you can move diagonally, but not attack diagonally
+2010-12-13T04:23:58  <antimatroid1> so hide in sections of walls
+2010-12-13T04:24:12  <delt0r_> yes--diagonal attacks and movement
+2010-12-13T04:24:18  <delt0r_> its was just easier in the end
+2010-12-13T04:26:46  <sigh> wouldn't it make more sense to be able to attack diagonally but not move diagonally?
+2010-12-13T04:26:56  <sigh> than vice versa?
+2010-12-13T04:27:03  <antimatroid1> possibly
+2010-12-13T04:27:11  <antimatroid1> i prefer no diagonal movement
+2010-12-13T04:27:18  <antimatroid1> it makes the maps more cave like
+2010-12-13T04:27:19  <delt0r_> like some kind of pawn
+2010-12-13T04:27:40  <sigh> like stabbing through  a hole in the wall :P
+2010-12-13T04:28:08  <antimatroid1> sigh: have you run some games yet?
+2010-12-13T04:28:36  <sigh> no, my laptop is sucky and doesn't have a correct java version
+2010-12-13T04:29:16  <delt0r_> sigh: dude its java 1.6 --like 4 years old
+2010-12-13T04:29:26  <delt0r_> your on a mac arn't you
+2010-12-13T04:29:34  * sigh hides
+2010-12-13T04:29:37  <delt0r_> even apple doesn't support you IIRC ;)
+2010-12-13T04:30:05  <sigh> well, even if they did, I'm still on os x 10.4 which is also over 4 years old
+2010-12-13T04:30:05  <delt0r_> only ppc macs don't run 1.6 now
+2010-12-13T04:30:45  <delt0r_> you have a mac... you are suppose to upgrade when your told ;)
+2010-12-13T04:30:51  <sigh> haha
+2010-12-13T04:31:51  <sigh> I have absolutely no reason to
+2010-12-13T04:32:27  <sigh> and this contest is the first time I've had to run java 1.6 stuff
+2010-12-13T04:32:30  <delt0r_> this is apple we are talking about... your not suppose to do any thinking... Ok I will stop now... sorry
+2010-12-13T04:32:53  <sigh> yeah... stop making me think ><
+2010-12-13T04:33:25  <delt0r_> I like making fun of my daugters friends who a apple crazy with iPhones etc
+2010-12-13T04:33:36  <delt0r_> and yet don't even know how to use them
+2010-12-13T04:35:13  <sigh> don't know how to use them?
+2010-12-13T04:35:26  <delt0r_> yea
+2010-12-13T04:35:44  <delt0r_> most people here with smart phones, just txt and call
+2010-12-13T04:36:04  <delt0r_> I mean whats the point 500EU for a fashion item...
+2010-12-13T04:36:08  <sigh> ah yeah... I've got a crappy old phone because all I need is to txt and talk :P
+2010-12-13T04:36:27  <delt0r_> "Oh but its free" for just 9.99 per month for 30 years
+2010-12-13T04:36:33  <sigh> :)
+2010-12-13T04:36:41  <sigh> Ok, I've got your thing running
+2010-12-13T04:37:06  <delt0r_> cool
+2010-12-13T04:37:07  <sigh> it's pretty cool :)
+2010-12-13T04:37:50  <delt0r_> its enough to get an idea... i wouldn't push it further than that
+2010-12-13T04:38:15  <sigh> green seems to win a lot
+2010-12-13T04:38:30  <delt0r_> if you use the default its should be 50 50
+2010-12-13T04:38:46  <delt0r_> default cmd line
+2010-12-13T04:38:49  <delt0r_> that is
+2010-12-13T04:39:06  <sigh> yeah, I'm just running whatever it was that you pasted blindly
+2010-12-13T04:39:10  * sigh is smartz
+2010-12-13T04:39:28  <sigh> *has
+2010-12-13T04:40:25  <sigh> yeah... I don't think red has won a single game
+2010-12-13T04:40:46  <antimatroid1> they did for me
+2010-12-13T04:41:10  <sigh> is this using a version of antimatroid1's mapgen or did you roll your own?
+2010-12-13T04:41:17  <delt0r_> 50/50 has a lot of varaiance
+2010-12-13T04:41:21  <antimatroid1> not mine
+2010-12-13T04:41:26  <delt0r_> its a binomial distribution
+2010-12-13T04:41:45  <delt0r_> why dice games are fun for humans --we see whats not really there.
+2010-12-13T04:42:08  <sigh> uh oh... we are being assaulted with a stats lesson
+2010-12-13T04:42:18  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T04:42:32  <sigh> :P
+2010-12-13T04:42:46  <delt0r_> sigh: its my own, just 100% pure random map get
+2010-12-13T04:42:48  <delt0r_> gen
+2010-12-13T04:43:40  <sigh> what is the ragebot algorithm?
+2010-12-13T04:43:43  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2010-12-13T04:44:02  <delt0r_> can I see a evil ant
+2010-12-13T04:44:03  <delt0r_> yes
+2010-12-13T04:44:06  <delt0r_> kill it
+2010-12-13T04:44:09  <delt0r_> no
+2010-12-13T04:44:12  <delt0r_> find food
+2010-12-13T04:44:20  <sigh> :)
+2010-12-13T04:44:27  <delt0r_> if you use a 1 as an argument to the bot
+2010-12-13T04:44:46  <delt0r_> then it only finds food --unless there is evil within a distance of 2
+2010-12-13T04:45:15  <delt0r_> both modes have a random chance of just doing a random move
+2010-12-13T04:46:28  <sigh> the find food strategy is effective
+2010-12-13T04:46:46  <sigh> it finally made red win :)
+2010-12-13T04:46:52  <delt0r_> It is because attack ignores food too much
+2010-12-13T04:47:32  <sigh> what is the benefit of attacking at all?
+2010-12-13T04:47:47  <delt0r_> red just won 3 times in a row for me
+2010-12-13T04:48:04  <delt0r_> sigh: you want to have more ants than the oppenet.
+2010-12-13T04:48:15  <delt0r_> other ants eat your food
+2010-12-13T04:48:20  <delt0r_> and attack you
+2010-12-13T04:48:53  <sigh> but initiating the attack does not have a benefit right?
+2010-12-13T04:49:07  <delt0r_> ??
+2010-12-13T04:49:20  <sigh> hmm... nevermind
+2010-12-13T04:49:20  <antimatroid1> it does seem like there is less point
+2010-12-13T04:49:26  <delt0r_> if i attack --the victium does not need to attack back
+2010-12-13T04:49:31  <antimatroid1> but if they have resources, it's still worth it
+2010-12-13T04:49:37  <sigh> delt0r_: oh, i see
+2010-12-13T04:50:01  <delt0r_> if you have 4 food... runining away is perhaps a good idea
+2010-12-13T04:50:05  *** Utkarsh <Utkarsh!~admin@117.201.92.17> has quit IRC (Ping timeout: 250 seconds)
+2010-12-13T04:50:30  <delt0r_> if you think they have 4 food for some reason .. attaking them is even better
+2010-12-13T04:55:53  *** Utkarsh <Utkarsh!~admin@117.201.90.59> has joined #aichallenge
+2010-12-13T04:58:55  <antimatroid1> delt0r_: it would be a million times easier for me to make a home base version if i could do it based off your code :)
+2010-12-13T04:59:07  <delt0r_> go for it
+2010-12-13T04:59:13  <antimatroid1> how do you get the code for jar?
+2010-12-13T04:59:14  <delt0r_> its just sloppy
+2010-12-13T04:59:20  <delt0r_> unzip
+2010-12-13T04:59:39  <antimatroid1> ah, well that was easy :)
+2010-12-13T04:59:40  <antimatroid1> awesome
+2010-12-13T04:59:53  <delt0r_> jar files are really just zip files
+2010-12-13T05:00:14  <delt0r_> with a little extra specified dir structure
+2010-12-13T05:00:23  <delt0r_> so mkdir src
+2010-12-13T05:00:28  <delt0r_> cd src
+2010-12-13T05:00:38  <delt0r_> unzip HackAnt.jar
+2010-12-13T05:00:42  <delt0r_> edit
+2010-12-13T05:00:43  <delt0r_> cd ..
+2010-12-13T05:01:12  <antimatroid1> :s
+2010-12-13T05:01:13  <antimatroid1> :P
+2010-12-13T05:01:38  <delt0r_> javac -s src -classpath src src/deltor/borgant/AntVisualizer.jara
+2010-12-13T05:01:42  <delt0r_> ops java
+2010-12-13T05:02:33  <delt0r_> java -cp src deltor.borgant.AntViewer width height "bot 1 cmd line" "bot 2 cmd line" 100
+2010-12-13T05:02:54  <delt0r_> AntVisualizer.jara -> AntViewer.java
+2010-12-13T05:03:00  *** Utkarsh <Utkarsh!~admin@117.201.90.59> has quit IRC (Ping timeout: 272 seconds)
+2010-12-13T05:04:09  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has joined #aichallenge
+2010-12-13T05:07:05  *** Utkarsh <Utkarsh!~admin@117.201.83.138> has joined #aichallenge
+2010-12-13T05:07:08  <antimatroid1> typical of me, i don't have java installed fully
+2010-12-13T05:07:23  <delt0r_> yea--you the jdk not just a jre
+2010-12-13T05:07:34  <delt0r_> you need
+2010-12-13T05:07:50  <delt0r_> I only type about half the words i think
+2010-12-13T05:08:16  <sigh> i less
+2010-12-13T05:08:26  <antimatroid1> downloading now
+2010-12-13T05:09:33  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has quit IRC (Read error: Connection reset by peer)
+2010-12-13T05:11:46  <sigh> aww... delt0r doesn't let you attack your own side
+2010-12-13T05:12:03  <delt0r_> no--thats a noop...
+2010-12-13T05:12:16  <delt0r_> the idea is that its easier for learners to get started
+2010-12-13T05:13:00  <antimatroid1> it's hard to debug if you get nothing when making an invalid move too
+2010-12-13T05:13:16  <sigh> well, it's not invalid
+2010-12-13T05:13:17  <antimatroid1> i think an ant should lose if it makes a move into a wall for example
+2010-12-13T05:13:19  <delt0r_> It should warn you when its outright illegal
+2010-12-13T05:13:27  <antimatroid1> ant should die*
+2010-12-13T05:13:33  <delt0r_> but otherwise i just never got round to it
+2010-12-13T05:13:45  <sigh> but I agree... if your attack deals damage then you actually notice that you are doing something wrong
+2010-12-13T05:13:47  <delt0r_> I don't think they should die... but raise a waring
+2010-12-13T05:14:03  <delt0r_> warnnign
+2010-12-13T05:14:06  <delt0r_> whatever
+2010-12-13T05:14:19  <sigh> :)
+2010-12-13T05:16:34  <sigh> haha: "for some reason people think that collision prevention is really hard"
+2010-12-13T05:17:24  <delt0r_> oh dear
+2010-12-13T05:17:32  <delt0r_> sometimes i write odd comments
+2010-12-13T05:17:51  <delt0r_> there was a story about a suasage in one of my projects
+2010-12-13T05:18:09  <sigh> o_O
+2010-12-13T05:19:56  <sigh> but is that collision resolution fair?
+2010-12-13T05:20:02  <delt0r_> yes
+2010-12-13T05:20:20  <delt0r_> in that its 100% deterministic.
+2010-12-13T05:20:35  <delt0r_> and nothing has a "preference" over someone else
+2010-12-13T05:21:15  <sigh> but the order that the ants are processed matters?
+2010-12-13T05:21:23  <delt0r_> No it does not
+2010-12-13T05:21:46  <delt0r_> The collisions from the first part of move are *not* cleared
+2010-12-13T05:21:54  <sigh> hmm... I guess I'll read a bit more closely
+2010-12-13T05:22:21  <delt0r_> once something is moved to its orginal position is left there (the collide map is updated)
+2010-12-13T05:22:58  <delt0r_> so all things that move and then collide are moved back.
+2010-12-13T05:24:23  <sigh> ah, i see
+2010-12-13T05:24:33  <sigh> tricksy
+2010-12-13T05:24:42  <delt0r_> I could have writen it more clearly.
+2010-12-13T05:24:54  <delt0r_> but its a well know method for this sort of problem
+2010-12-13T05:25:17  <sigh> fair enough... I don't know much about this stuff
+2010-12-13T05:26:08  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2010-12-13T05:27:07  <delt0r_> My hashMap implementation is a bit hacky with creating Point Object everywhere...
+2010-12-13T05:27:14  <delt0r_> but you know how it is
+2010-12-13T05:27:39  <sigh> :)
+2010-12-13T05:28:30  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has joined #aichallenge
+2010-12-13T05:28:37  <sigh> the only thing that makes it messy is that Points aren't used consistently throughout
+2010-12-13T05:28:47  <delt0r_> No
+2010-12-13T05:28:50  <delt0r_> they are not
+2010-12-13T05:51:06  *** narnach_mb <narnach_mb!~Narnach@188.203.82.89> has quit IRC (Quit: Leaving.)
+2010-12-13T06:09:49  *** Utkarsh <Utkarsh!~admin@117.201.83.138> has quit IRC (Ping timeout: 260 seconds)
+2010-12-13T06:11:06  *** delt0r___ <delt0r___!~delt0r@188-22-168-40.adsl.highway.telekom.at> has joined #aichallenge
+2010-12-13T06:12:23  *** delt0r_ <delt0r_!~delt0r@188-22-168-44.adsl.highway.telekom.at> has quit IRC (Ping timeout: 245 seconds)
+2010-12-13T06:14:37  *** Utkarsh <Utkarsh!~admin@117.201.95.232> has joined #aichallenge
+2010-12-13T06:22:57  <antimatroid1> suppose we do make it a fight to the death if opposing ants land in the same square, then if you are ajacent, going into the other ants square is never the best move
+2010-12-13T06:23:25  <antimatroid1> whereas it will happen when you guys need to dance around each other trying to avoid landing right next to each toher, where the best option is to fight
+2010-12-13T06:23:32  <antimatroid1> unless surrounded by more people
+2010-12-13T06:29:42  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-12-13T06:37:10  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has joined #aichallenge
+2010-12-13T06:42:27  *** narnach <narnach!~Narnach@188.203.82.89> has joined #aichallenge
+2010-12-13T06:42:27  *** narnach is now known as narnach_mb
+2010-12-13T06:55:46  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Ping timeout: 250 seconds)
+2010-12-13T06:56:03  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2010-12-13T07:05:23  <antimatroid1> lame
+2010-12-13T07:05:23  <antimatroid1> python: -1%5 gives 4
+2010-12-13T07:05:23  <antimatroid1> c++: -1%5 gives -1
+2010-12-13T07:05:40  <delt0r___> python is correct
+2010-12-13T07:05:49  <delt0r___> c++ and java get that wrong
+2010-12-13T07:05:51  <antimatroid1> yes, i would much prefer that
+2010-12-13T07:06:12  <delt0r___> but in c++/java its remainder
+2010-12-13T07:06:31  <delt0r___> while python its a proper modulo operation
+2010-12-13T07:07:08  <sigh> antimatroid1: you'll notice that's why you can get away with updating grid position with (x+dx)%dim
+2010-12-13T07:07:42  <sigh> otherwise it's much more tedious
+2010-12-13T07:08:16  <antimatroid1> sigh: that was why i noticed :P
+2010-12-13T07:08:19  <antimatroid1> writing a start bot for c++
+2010-12-13T07:08:52  <sigh> :)
+2010-12-13T07:09:06  <antimatroid1> for my version of the game i'm considering the following starter strategy.. what do you guys think..
+2010-12-13T07:11:12  <antimatroid1> (store path back to home for each ant)
+2010-12-13T07:11:14  <antimatroid1> 1. if an enemy is adjacent attack or enemy home base
+2010-12-13T07:11:14  <antimatroid1> 2. if on grains and can carry more, harvest
+2010-12-13T07:11:14  <antimatroid1> 3. if can't carry more follow path back to home and deposit
+2010-12-13T07:11:14  <antimatroid1> 4. move in first direction away from home base, otherwise any direction
+2010-12-13T07:11:46  <antimatroid1> path back to home will be the exact path they took to get there, so could be quite inefficient
+2010-12-13T07:13:58  <antimatroid1> i think that bot should actually do something, yet leaves most of the work to get a good bot running up to the user
+2010-12-13T07:14:03  <antimatroid1> but also easy to get started with
+2010-12-13T07:15:13  <delt0r___> i thinks is too early to worry about "starter pack bots"
+2010-12-13T07:15:27  <delt0r___> this is more like --lets hack something up and see what works
+2010-12-13T07:15:31  <antimatroid1> yes, but that's the type of behaviour i want to see it play with
+2010-12-13T07:15:43  <delt0r___> I expect that everything will break a few times
+2010-12-13T07:15:57  <delt0r___> and that the organiser may not go with ants anyways..
+2010-12-13T07:16:07  <delt0r___> must admit I would a better game
+2010-12-13T07:19:44  <antimatroid1> i think the game is cool as
+2010-12-13T07:30:49  <delt0r___> I liked planet wars more
+2010-12-13T07:34:47  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2010-12-13T07:35:46  <antimatroid1> i actually think i'd like this more
+2010-12-13T07:35:54  <antimatroid1> but too early to say fully
+2010-12-13T07:37:43  <delt0r___> yea--fleshed out --it may be ok
+2010-12-13T08:23:03  <antimatroid1> delt0r___: what if friend ants landing on top of each other made them into one ant in my idea?
+2010-12-13T08:23:22  <antimatroid1> ant fusion
+2010-12-13T08:28:16  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (Quit: ERC Version 5.3 (IRC client for Emacs))
+2010-12-13T08:32:11  <delt0r> the problem with these ideas is that one tactic ends up being the only tactic.. ie just fuse till you get UberAnt[tm]
+2010-12-13T08:32:27  <delt0r> we have seen this is other games and some rts games...
+2010-12-13T08:32:33  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has quit IRC (Quit: Leaving)
+2010-12-13T08:35:37  <antimatroid1> i would have expected fusing to be dominated
+2010-12-13T08:35:42  <antimatroid1> because then you are restricted
+2010-12-13T08:36:02  <antimatroid1> so it'd be more of a compramise if people fuck up
+2010-12-13T08:36:38  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Quit: *poof!*)
+2010-12-13T08:40:30  <delt0r> antimatroid1, why are you so keen for "fusing" and other forms of almost stacking antimatroid1 ?
+2010-12-13T08:45:43  <delt0r> oh antimatroid1, you should enable assertions. I would guess there are still a few bugs --in java just add -ea to the command line
+2010-12-13T08:46:43  <antimatroid1> i have a weird c++ error :\
+2010-12-13T08:47:01  <delt0r> is any error in C++ not weird
+2010-12-13T08:47:04  <antimatroid1> when i define operators for [] and << it's claiming i have multiple definitions of <<
+2010-12-13T08:47:14  <delt0r> except for perhaps Segfault ;)
+2010-12-13T08:47:44  <delt0r> I typically avoid operator overloading
+2010-12-13T08:48:15  <delt0r> its one part of C++ I just never used that much... except for >> and <<
+2010-12-13T08:52:07  *** iNtERrUpT <iNtERrUpT!~interrupt@61.74.124.20> has joined #aichallenge
+2010-12-13T08:53:56  <antimatroid1> bleh this is silly :\
+2010-12-13T09:06:46  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2010-12-13T09:26:19  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-12-13T09:30:29  <Frontier> antimatroid1: ftp://marco-leise.homedns.org/ant.zip
+2010-12-13T09:34:43  <delt0r> Frontier, won't work on my browser
+2010-12-13T09:35:21  <delt0r> is it a JS antwars?
+2010-12-13T09:35:39  <Frontier> Yes, are there any error messages?
+2010-12-13T09:35:50  <delt0r> just a nice clear screen
+2010-12-13T09:36:08  <delt0r> FF 3.6.12
+2010-12-13T09:36:25  <Frontier> I'm not a JavaScript Guru, so I guess there is some bug that shows up.
+2010-12-13T09:36:28  <delt0r> linux, SuSE 64 bit
+2010-12-13T09:36:44  <delt0r> mm
+2010-12-13T09:36:51  <delt0r> I think we have chrome
+2010-12-13T09:37:11  <Frontier> "we"?
+2010-12-13T09:37:18  <delt0r> work
+2010-12-13T09:37:27  <delt0r> I don't have root to these machines
+2010-12-13T09:37:35  <Frontier> oh, that's bad :p
+2010-12-13T09:37:50  <antimatroid1> Frontier: :)
+2010-12-13T09:38:12  <antimatroid1> i'm working on a very basic bot atm
+2010-12-13T09:38:19  <antimatroid1> using my version
+2010-12-13T09:39:28  <delt0r> Frontier: its nice to get a clear perspective of linux as a 100% pure use
+2010-12-13T09:39:30  <delt0r> user
+2010-12-13T09:39:48  <delt0r> All complaints at MS with needed admin rights needs to be shot
+2010-12-13T09:40:22  <delt0r> Linux is not really better.  "oh you that... just sudo aptget  whatever"
+2010-12-13T09:40:23  <antimatroid1> Frontier: how do i use it? :P
+2010-12-13T09:40:25  <delt0r> yea right
+2010-12-13T09:40:45  <delt0r> does not work on chrome either
+2010-12-13T09:40:48  <Frontier> Firefox... doesn't know the drawImage function of canvas? wtf?
+2010-12-13T09:40:54  <antimatroid1> that's my issue
+2010-12-13T09:41:34  <delt0r> welcome to the world of web
+2010-12-13T09:41:38  <delt0r> 2.0suck
+2010-12-13T09:43:37  <antimatroid1> it's not loading anything for me in aything?
+2010-12-13T09:43:45  <antimatroid1> am i meant to be doing something other than opening the file?
+2010-12-13T09:47:22  <antimatroid1> Frontier: I think it'd be cool if the ground looked like the inside of a big ant hole, and the walls darker dirt?
+2010-12-13T09:47:54  <antimatroid1> possibly boulders, so there are partial gaps on the visualiser, if we allow diagonal moves
+2010-12-13T09:56:52  *** yasith <yasith!~yasith@112.134.125.158> has joined #aichallenge
+2010-12-13T10:15:38  <Frontier> fixed the bug
+2010-12-13T10:16:48  <Frontier> antimatroid1: It's just a proof of concept with some textures from a free texture site and a stolen foto of an ant :p
+2010-12-13T10:17:58  <Frontier> But it seems Firefox will - in it's default configuration - spit out a security warning because I access the data of the canvas :(
+2010-12-13T10:20:48  <antimatroid1> i've renamed home base
+2010-12-13T10:20:58  <antimatroid1> because harvest and home both start with h
+2010-12-13T10:21:07  <antimatroid1> and attack is fight
+2010-12-13T10:21:19  <antimatroid1> because ant and attack have the same problem
+2010-12-13T10:21:23  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has joined #aichallenge
+2010-12-13T10:21:36  <antimatroid1> fight doesn't really work does it :\
+2010-12-13T10:21:47  <antimatroid1> spit?
+2010-12-13T10:21:53  <antimatroid1> no, i'm using s
+2010-12-13T10:28:25  <Frontier> i should give the ants colors :)
+2010-12-13T10:31:12  <antimatroid1> Frontier: the current stuff i would expect the visualiser to be able to display is
+2010-12-13T10:31:12  <antimatroid1> home base: colour entire square
+2010-12-13T10:31:12  <antimatroid1> ant: has colour for player and hp and harvest
+2010-12-13T10:31:12  <antimatroid1> grains: simple number
+2010-12-13T10:31:12  <antimatroid1> wall: :P
+2010-12-13T10:31:48  <antimatroid1> and i think if we went with something like like delt0rs game it'd be easy to switch out home bases
+2010-12-13T10:34:19  <antimatroid1> i had a good idea
+2010-12-13T10:34:52  <antimatroid1> if we have official tcp and a gui that has easy connection with that, then we could maybe not even allow normal submissions at the start, reducing the number of starter packages at the end
+2010-12-13T10:35:08  <antimatroid1> or heavily emphasise people shouldn't upload their code before it's non starter packageish
+2010-12-13T10:44:03  <antimatroid1> right, i have a map generator, and a completely untested sample bot, now all i need is an engine and a visualiser
+2010-12-13T10:45:20  *** yasith <yasith!~yasith@112.134.125.158> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T10:57:01  *** Azrathud <Azrathud!~Azrathud@173-8-231-181-Colorado.hfc.comcastbusiness.net> has joined #aichallenge
+2010-12-13T10:58:14  *** yasith <yasith!~yasith@112.134.123.249> has joined #aichallenge
+2010-12-13T11:07:58  <delt0r> antimatroid1, is your bot compatible with my code?
+2010-12-13T11:09:43  <antimatroid1> delt0r: no idea, i doubt it
+2010-12-13T11:10:30  <antimatroid1> my bot is for my described game, minus shooting, i just have attack
+2010-12-13T11:14:21  *** politik <politik!~joel@pool-96-237-242-89.bstnma.fios.verizon.net> has quit IRC (*.net *.split)
+2010-12-13T11:18:20  *** politik <politik!~joel@pool-96-237-242-89.bstnma.fios.verizon.net> has joined #aichallenge
+2010-12-13T11:18:42  *** Azrathud <Azrathud!~Azrathud@173-8-231-181-Colorado.hfc.comcastbusiness.net> has quit IRC (Ping timeout: 265 seconds)
+2010-12-13T11:21:52  *** tapwater <tapwater!~tapwater@cpe-70-112-195-55.austin.res.rr.com> has joined #aichallenge
+2010-12-13T11:27:52  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.8/20100722155716])
+2010-12-13T11:30:42  <antimatroid1> Frontier, delt0r: http://codepad.org/RFQUWSvs here is the readme explaining how i am handling input/output
+2010-12-13T11:31:05  <antimatroid1> i expect the bot is far too buggy for it to be wise to post a link to that anywhere atm
+2010-12-13T11:32:12  <antimatroid1> http://codepad.org/krV2gDp9 sorry, that has one extra line added with an extra start parameter
+2010-12-13T11:33:26  <antimatroid1> i can probably condense those input lines into 1, what do you think?
+2010-12-13T11:34:49  <antimatroid1> S row col isWall antPlayer antHP antHarvest squareGrains baseNo
+2010-12-13T11:34:49  <antimatroid1> eg
+2010-12-13T11:34:49  <antimatroid1> S 1 2 1 0 0 0 0 0
+2010-12-13T11:34:49  <antimatroid1> S 2 3 0 1 5 0 4 1
+2010-12-13T11:40:18  <delt0r> well i am just converting some of my work code to use json
+2010-12-13T11:40:29  <delt0r> cleaner than xml
+2010-12-13T11:40:41  <delt0r> almost as nice as s-expressions
+2010-12-13T11:41:13  <delt0r> I think the protocol will need more structure in the end
+2010-12-13T11:42:00  <delt0r> antimatroid1, I would have also started with the engine... then the bot
+2010-12-13T11:42:32  *** narnach_mb <narnach_mb!~Narnach@188.203.82.89> has quit IRC (Quit: Leaving.)
+2010-12-13T11:43:06  <antimatroid1> delt0r: i've worked out specifics, i'll do the engine in the next few days
+2010-12-13T11:43:14  <antimatroid1> going to be pretty busy the next two days though
+2010-12-13T11:43:28  <antimatroid1> pesky graduation :\
+2010-12-13T11:49:00  <Frontier> I added what you needed antimatroid: colors for the ants and hives, replaced the chrystals with numbers and added HP / grain above the ants
+2010-12-13T11:50:01  <antimatroid1> Frontier: <3
+2010-12-13T11:50:17  <antimatroid1> i'll get an engine done in the next few days then we can see what it's like
+2010-12-13T11:50:29  <antimatroid1> Frontier: have you played some of delt0rs games?
+2010-12-13T11:51:34  <Frontier> no, I haven't looked at anything yet.
+2010-12-13T11:53:07  <Frontier> And the performance of the canvas visualizer is already going straight down with the added transparent text. In don't know if I should cache that in additional offscreen canvasses
+2010-12-13T11:54:40  <Frontier> Do you know what's crazy? Some people have actually written complete GameBoy and Super Nintendo Emulators using the html canvas.
+2010-12-13T11:54:52  <antimatroid1> hehe :P
+2010-12-13T11:55:06  <Frontier> You can visit their web site, select Super Mario, and there you go.
+2010-12-13T11:55:32  <Frontier> oh wait, i guess the synthesizer is missing
+2010-12-13T11:57:09  <antimatroid1> Frontier: how are you currently planning to take information?
+2010-12-13T11:57:21  <antimatroid1> S row column isWall antPlayer antHP antHarvest squareGrains baseNo
+2010-12-13T11:57:22  <antimatroid1> that's what i propose
+2010-12-13T11:58:29  <antimatroid1> http://codepad.org/VHkB9yNy that's what i am happy with for input/output with the bots
+2010-12-13T11:58:43  <antimatroid1> and i'm done doing work for tonight
+2010-12-13T12:01:21  <Frontier> I don't care about the playback format, but I would suggest to keep it small like in planet wars.
+2010-12-13T12:02:18  <antimatroid1> if we had max 50x50 maps, then you would have to take in max 2500 lines per turn
+2010-12-13T12:02:53  <antimatroid1> output could be probably no more than that with all the walls
+2010-12-13T12:03:04  <antimatroid1> actually, has to be less,
+2010-12-13T12:04:37  <Frontier> did you take a look at the map size in my visualizer? that's your 32x32 and I think that is already quite large.
+2010-12-13T12:05:19  <Frontier> btw, I like when it mixes up snow and desert textures
+2010-12-13T12:14:58  <antimatroid1> texture mixtures would be cool
+2010-12-13T12:15:06  <Frontier> I would combine the fields grains and isWall (-1 = wall, 0 = empty, +n = grains).
+2010-12-13T12:15:11  <antimatroid1> maybe snow/desert and dirt?
+2010-12-13T12:15:29  <antimatroid1> i couldn't get your visualiser to load anything
+2010-12-13T12:15:32  <Frontier> currently I can only support 2 textures
+2010-12-13T12:15:40  <antimatroid1> that's fine
+2010-12-13T12:15:44  <Frontier> try the version i just uploaded
+2010-12-13T12:15:55  <Frontier> it works in my firefox
+2010-12-13T12:16:02  <antimatroid1> same link?
+2010-12-13T12:16:24  <Frontier> yeah, same link
+2010-12-13T12:16:35  <Frontier> Firefox 3.6.12 Linux that is
+2010-12-13T12:16:51  <antimatroid1> i'm on xp
+2010-12-13T12:17:42  <antimatroid1> got it, awesome
+2010-12-13T12:17:53  <Frontier> antwars reminds me of minesweeper with those bold digits on the squares ^^
+2010-12-13T12:18:00  <delt0r> the link?
+2010-12-13T12:18:10  <antimatroid1> what engine is it using?
+2010-12-13T12:18:25  *** bobng <bobng!~nigg_free@2607:f358:1:fed5:20:0:1767:1> has joined #aichallenge
+2010-12-13T12:18:31  <Frontier> what engine? damn i coded that myself last nicht ;)
+2010-12-13T12:18:36  <Frontier> *night
+2010-12-13T12:19:16  <Frontier> delt0r: ftp://marco-leise.homedns.org/ant.zip
+2010-12-13T12:19:29  <delt0r> oh--was hoping for a live link
+2010-12-13T12:19:59  <antimatroid1> Frontier: are those the home bases specified by my map?
+2010-12-13T12:20:01  <Frontier> i COULD set up a web server on my home dsl. the question is: do i want to ^^
+2010-12-13T12:20:05  <antimatroid1> cause that isn't right if it is
+2010-12-13T12:20:26  <Frontier> antimatroid1: no, I'm just jusing a very basic random placement
+2010-12-13T12:21:18  <antimatroid1> ah, cool, i was worried :)
+2010-12-13T12:21:20  <Frontier> Maybe you can load files in JavaScript, I don't know. Do you have experience with that?
+2010-12-13T12:21:32  <antimatroid1> nope
+2010-12-13T12:22:01  <delt0r> Frontier, works in FF but not chrome
+2010-12-13T12:22:57  <Frontier> :*( looks like i'm going to install all the browsers that possibly run on my box
+2010-12-13T12:23:13  <antimatroid1> chrome and ff are only two that matter :)
+2010-12-13T12:23:30  <Frontier> delt0r: how do you like that the background changes each time?
+2010-12-13T12:23:32  <delt0r> Perhaps give a few weeks to see if ants is what we pick up...
+2010-12-13T12:23:41  <delt0r> Frontier, yea--nice
+2010-12-13T12:27:33  <Frontier> antimatroid1: I was working for a browser game company, so I couldn't resist on replicating the backdrops.
+2010-12-13T12:27:51  <antimatroid1> :P
+2010-12-13T12:29:12  <Frontier> it is all integer math an pixel by pixel, color by color interpolation between two tiled textures based on a third greyscale lookup texture.
+2010-12-13T12:29:52  <antimatroid1> yeah, i did a graphics unit last semester, i have a bit of an idea about textures
+2010-12-13T12:30:04  <Frontier> I replaced "/ 255" with ">> 8", because it was a lot faster. So I guess mixing three or more textures could cause trouble
+2010-12-13T12:30:15  <antimatroid1> when i say did, i did the two assignments on the day, studied for the exam on the day and went to no classes
+2010-12-13T12:30:32  <antimatroid1> so i don't have much of an idea
+2010-12-13T12:31:31  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-12-13T12:32:01  <antimatroid1> can ant colours change up? that would actually be more useful than just aesthetics
+2010-12-13T12:32:13  <antimatroid1> i found with planet wars, i was constantly assuming i was a particular colour
+2010-12-13T12:32:29  <JamesMG> that hurt my head a few times too
+2010-12-13T12:32:34  <Frontier> what does change up mean?
+2010-12-13T12:32:36  <JamesMG> "why is my bot doing that?"
+2010-12-13T12:32:48  <antimatroid1> so use red blue one game, green red another
+2010-12-13T12:33:18  <antimatroid1> JamesMG: have you taken a look at the antwars stuff?
+2010-12-13T12:34:11  <Frontier> hmm... I could change up the colors. If we don't use them for communication anyways.
+2010-12-13T12:34:25  <spz> Maybe the web server can detect when you're logged in, and you're watching your own game, to always use some special color or default always to red / blue / :)
+2010-12-13T12:34:54  <antimatroid1> with my game specification, there is no point in communication, all bots know the same information
+2010-12-13T12:35:05  <Frontier> ah right
+2010-12-13T12:35:08  <antimatroid1> and you can't have base holes with that
+2010-12-13T12:35:18  <antimatroid1> it would make sense with delt0rs specification
+2010-12-13T12:36:17  *** bhasker <bhasker!~bhasker@nat/yahoo/x-rerfbbotlatztztp> has joined #aichallenge
+2010-12-13T12:44:33  <antimatroid1> bhasker: http://codepad.org/n9NUwR30 :)
+2010-12-13T12:44:38  <antimatroid1> read that for me?
+2010-12-13T12:46:38  <bhasker> give me a minute
+2010-12-13T12:46:53  <antimatroid1> sure
+2010-12-13T12:49:35  *** perror <perror!~fleury@aldebaran.labri.fr> has quit IRC (Quit: Bye all !)
+2010-12-13T13:00:48  <bhasker> looks good to me,though question why are we restricting visibility for each ant?
+2010-12-13T13:01:09  <bhasker> to give like a fog of war effect?
+2010-12-13T13:01:18  <antimatroid1> so you don't know what the map looks like at the start
+2010-12-13T13:01:19  <antimatroid1> or where their base is
+2010-12-13T13:01:19  <antimatroid1> yeah
+2010-12-13T13:01:41  <bhasker> though a bot can remember the walls and accessible squares over time
+2010-12-13T13:01:42  <antimatroid1> if you get an ant onto their home base, you win
+2010-12-13T13:01:52  <bhasker> and build a map of its own
+2010-12-13T13:01:56  <antimatroid1> bhasker: yes, although that wont be programmed into the starter package
+2010-12-13T13:02:08  <bhasker> hmm k
+2010-12-13T13:02:10  <antimatroid1> and you will only have old information about some resources
+2010-12-13T13:02:25  <bhasker> i guess so ,but walls will not change.
+2010-12-13T13:02:34  <bhasker> i am concerned about pathfinding though
+2010-12-13T13:02:46  <bhasker> for it to work i guess most will need to remember the map anyway
+2010-12-13T13:02:49  <antimatroid1> walls wont change
+2010-12-13T13:02:57  <delt0r> god i remeber why i avoid library's sometimes... even google doesn't get it right.
+2010-12-13T13:03:07  <bhasker> use search.yahoo.com :)
+2010-12-13T13:03:07  <antimatroid1> delt0r: :)
+2010-12-13T13:03:15  <antimatroid1> bhasker: nice joke :P
+2010-12-13T13:03:27  <delt0r> gson  JSON lib reads a *whole* stream even if you want one json object
+2010-12-13T13:03:38  <delt0r> or *checks* for EOF
+2010-12-13T13:03:44  <delt0r> after one object
+2010-12-13T13:03:55  <delt0r> so much for interleaving
+2010-12-13T13:05:37  <antimatroid1> it sounds like a lot of people will hate on it to me
+2010-12-13T13:07:11  <delt0r> ??
+2010-12-13T13:08:40  <antimatroid1> effort to play around with
+2010-12-13T13:11:41  <delt0r> dude I think you may need some sleep
+2010-12-13T13:11:51  <antimatroid1> there are two options with letting opponent ants land on top of each other
+2010-12-13T13:11:52  <antimatroid1> 1. they can both be on that square, and fight the other ant on that square (with normal fighting)
+2010-12-13T13:11:52  <antimatroid1> 2. they both fight to the death there and then
+2010-12-13T13:11:55  <antimatroid1> probably :P it's 5am
+2010-12-13T13:11:55  <delt0r> you are not making a lot of sens
+2010-12-13T13:12:24  <delt0r> but why do they need to be able to land on one another?
+2010-12-13T13:12:36  <antimatroid1> because i don't like collision resolution :P
+2010-12-13T13:12:38  <delt0r> What does it gain ?
+2010-12-13T13:13:01  <antimatroid1> if i make a move and the ant is still alive, i want it to be where i sent it
+2010-12-13T13:13:13  <delt0r> and when 2 ants are "locked" in combat and another comes along?
+2010-12-13T13:13:21  <antimatroid1> it can also fight
+2010-12-13T13:13:26  <delt0r> ??
+2010-12-13T13:13:35  <delt0r> Oh yea --soo much easier to implement...
+2010-12-13T13:13:56  <delt0r> more edge cases than a 4d hypercube
+2010-12-13T13:14:05  <antimatroid1> :p
+2010-12-13T13:14:31  <antimatroid1> anyway, i'm going to get some sleep
+2010-12-13T13:15:24  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has quit IRC (Remote host closed the connection)
+2010-12-13T13:22:48  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2010-12-13T13:29:47  *** p4p4 <p4p4!~chatzilla@82.113.121.53> has joined #aichallenge
+2010-12-13T13:38:29  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2010-12-13T13:46:57  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Read error: Connection reset by peer)
+2010-12-13T13:48:02  *** smellyhippy <smellyhippy!~asmodean@genkt-058-027.t-mobile.co.uk> has joined #aichallenge
+2010-12-13T13:48:03  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2010-12-13T14:11:10  *** delt0r_ <delt0r_!~delt0r@188-22-30-85.adsl.highway.telekom.at> has joined #aichallenge
+2010-12-13T14:12:48  *** delt0r___ <delt0r___!~delt0r@188-22-168-40.adsl.highway.telekom.at> has quit IRC (Ping timeout: 272 seconds)
+2010-12-13T14:23:13  *** Cold-Phoenix <Cold-Phoenix!~Cold-Phoe@81.174.207.17> has joined #aichallenge
+2010-12-13T14:25:17  *** meneky_ <meneky_!82755de1@gateway/web/freenode/ip.130.117.93.225> has quit IRC (Quit: Page closed)
+2010-12-13T14:25:23  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has joined #aichallenge
+2010-12-13T14:25:29  *** Sylph2 <Sylph2!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has quit IRC (Ping timeout: 272 seconds)
+2010-12-13T14:26:20  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-240-096.pools.arcor-ip.net> has left #aichallenge
+2010-12-13T14:27:43  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Quit: BUT WAIT! What are those penguins up to?!)
+2010-12-13T14:34:59  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-240-096.pools.arcor-ip.net> has joined #aichallenge
+2010-12-13T15:37:48  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-12-13T15:39:36  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2010-12-13T15:45:39  *** yasith <yasith!~yasith@112.134.123.249> has quit IRC (Ping timeout: 260 seconds)
+2010-12-13T15:50:22  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2010-12-13T15:56:43  *** sigh <sigh!~sigh@28.250-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2010-12-13T16:02:28  *** Palmik <Palmik!~Palmik@PalmikPC.sks6.muni.cz> has quit IRC (Ping timeout: 245 seconds)
+2010-12-13T16:05:26  *** medrimonia <medrimonia!~Medrimoni@ABordeaux-158-1-77-83.w90-60.abo.wanadoo.fr> has joined #aichallenge
+2010-12-13T16:07:00  *** medrimonia1 <medrimonia1!~Medrimoni@ABordeaux-158-1-3-60.w90-50.abo.wanadoo.fr> has quit IRC (Ping timeout: 276 seconds)
+2010-12-13T16:23:09  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2010-12-13T16:24:02  *** Rubicon-|-Cross <Rubicon-|-Cross!~RubiconCr@adsl-99-35-225-173.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: Leaving)
+2010-12-13T16:25:43  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has joined #aichallenge
+2010-12-13T16:41:44  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Quit: BUT WAIT! What are those penguins up to?!)
+2010-12-13T16:45:16  *** mega1 <mega1!~quassel@catv4E5CABA2.pool.t-online.hu> has quit IRC (Read error: Operation timed out)
+2010-12-13T16:46:08  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-179-130.qld.bigpond.net.au> has quit IRC (Read error: Connection reset by peer)
+2010-12-13T16:55:40  *** p4p4 <p4p4!~chatzilla@82.113.121.53> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T17:01:09  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2010-12-13T17:02:52  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-acntzihpitlhspkc> has joined #aichallenge
+2010-12-13T17:06:49  *** bhasker <bhasker!~bhasker@nat/yahoo/x-rerfbbotlatztztp> has quit IRC (Ping timeout: 276 seconds)
+2010-12-13T17:29:11  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-12-13T17:53:38  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T17:54:00  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T17:54:01  *** ChanServ sets mode: +o amstan
+2010-12-13T17:58:00  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T17:58:16  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T17:58:16  *** ChanServ sets mode: +o amstan
+2010-12-13T18:20:04  *** JamesMG <JamesMG!~jamesg@38.98.50.162> has quit IRC (Quit: home)
+2010-12-13T18:20:54  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has joined #aichallenge
+2010-12-13T18:22:49  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T18:23:22  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T18:23:22  *** ChanServ sets mode: +o amstan
+2010-12-13T18:27:21  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T18:27:37  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T18:27:37  *** ChanServ sets mode: +o amstan
+2010-12-13T18:33:20  *** amstan <amstan!~amstan@206-248-183-209.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T19:06:51  *** Naktibalda <Naktibalda!~Naktibald@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.8/20100722155716])
+2010-12-13T19:10:42  *** bhasker <bhasker!~bhasker@nat/yahoo/x-mtaueocjufbwrhyh> has joined #aichallenge
+2010-12-13T19:10:43  *** bhasker_ <bhasker_!~bhasker@nat/yahoo/x-acntzihpitlhspkc> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T19:11:17  *** bobng <bobng!~nigg_free@2607:f358:1:fed5:20:0:1767:1> has quit IRC (Quit: ZNC - http://znc.sourceforge.net)
+2010-12-13T20:12:47  *** bhasker <bhasker!~bhasker@nat/yahoo/x-mtaueocjufbwrhyh> has quit IRC (Ping timeout: 250 seconds)
+2010-12-13T20:19:06  *** Appleman1234 <Appleman1234!~Appleman1@203.17.70.52> has joined #aichallenge
+2010-12-13T20:21:30  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2010-12-13T20:22:32  *** meneky <meneky!5535122c@gateway/web/freenode/ip.85.53.18.44> has joined #aichallenge
+2010-12-13T20:27:42  *** Appleman1234 <Appleman1234!~Appleman1@203.17.70.52> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T20:32:44  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T20:42:31  *** Appleman1234 <Appleman1234!~Appleman1@203.17.70.52> has joined #aichallenge
+2010-12-13T20:43:12  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2010-12-13T20:54:17  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T20:54:17  *** ChanServ sets mode: +o amstan
+2010-12-13T20:55:42  *** Appleman1234 <Appleman1234!~Appleman1@203.17.70.52> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T21:05:25  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has joined #aichallenge
+2010-12-13T21:08:16  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has quit IRC (Ping timeout: 250 seconds)
+2010-12-13T21:24:27  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has joined #aichallenge
+2010-12-13T21:52:40  *** yasith <yasith!~yasith@112.134.126.58> has joined #aichallenge
+2010-12-13T21:58:46  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T22:00:03  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T22:00:04  *** ChanServ sets mode: +o amstan
+2010-12-13T22:04:00  *** meneky <meneky!5535122c@gateway/web/freenode/ip.85.53.18.44> has quit IRC (Ping timeout: 265 seconds)
+2010-12-13T22:08:54  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T22:09:31  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T22:09:31  *** ChanServ sets mode: +o amstan
+2010-12-13T22:11:45  *** delt0r___ <delt0r___!~delt0r@188-22-160-136.adsl.highway.telekom.at> has joined #aichallenge
+2010-12-13T22:13:17  *** delt0r_ <delt0r_!~delt0r@188-22-30-85.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2010-12-13T22:14:31  *** yasith <yasith!~yasith@112.134.126.58> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T22:15:23  *** amstan <amstan!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2010-12-13T22:17:17  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T22:17:17  *** ChanServ sets mode: +o amstan_
+2010-12-13T22:21:16  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T22:21:37  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T22:21:37  *** ChanServ sets mode: +o amstan_
+2010-12-13T22:22:44  *** antimatroid <antimatroid!~Nick@126.54-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-12-13T22:24:44  *** antimatroid1 <antimatroid1!~Nick@93.52-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 240 seconds)
+2010-12-13T22:25:36  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T22:27:47  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T22:27:47  *** ChanServ sets mode: +o amstan_
+2010-12-13T22:36:47  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T22:37:19  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T22:37:19  *** ChanServ sets mode: +o amstan_
+2010-12-13T22:46:19  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2010-12-13T22:46:43  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T22:46:43  *** ChanServ sets mode: +o amstan_
+2010-12-13T22:50:11  <Frontier> wow google chrome is blazing fast with the html canvas
+2010-12-13T22:55:54  <antimatroid> :)
+2010-12-13T22:57:27  <Zannick> :)
+2010-12-13T23:02:14  <Frontier> Firefox is actually buggy sometimes and the slowes of the three browsers I tested (including Opera, which I used for development)
+2010-12-13T23:04:54  <Frontier> antimatroid: I am not a big fan of the bullet idea. Couldn't we solve the assymetry with slow turning ants? Say 45° is for free, but every 90° cost you a turn? That way when you attack directly from behind you get a big advantage.
+2010-12-13T23:06:31  <Frontier> I'm not sure though if the walls provide enough cover for a sneak attack and the fov is pretty large, so you can usually always manage to face the enemy
+2010-12-13T23:09:34  <antimatroid> Frontier: i've dropped bullets
+2010-12-13T23:10:37  <antimatroid> i don't allow friend ants to go onto the same square, and if opponent ands land together then they fight to the death, i actually think that fight to the death will make it more interesting
+2010-12-13T23:11:01  <antimatroid> it's never the best move to move onto an ant adjacent if it's just you two there
+2010-12-13T23:12:25  *** Utkarsh <Utkarsh!~admin@117.201.95.232> has quit IRC (Ping timeout: 260 seconds)
+2010-12-13T23:13:32  <Frontier> so... how do you solve the symmetry between battles? There are no neutral planets.
+2010-12-13T23:14:40  <antimatroid> what do you mean?
+2010-12-13T23:14:54  <antimatroid> you can have more than one ant that can fight one of theirs
+2010-12-13T23:15:04  <antimatroid> or both ants don't have to fight each other when next to each other
+2010-12-13T23:15:36  <antimatroid> i only expect opponents to land on the same square when trying to dance around each other, or you are surrounded by more than 1 of them and you can kamakazee into them
+2010-12-13T23:16:05  <Frontier> so when I have to ants on seperate squares around an opponent I deal 2 dmg, while the opponent only deals 1 dmg
+2010-12-13T23:16:18  *** virdo <virdo!virdo@bas9-london14-1279417803.dsl.bell.ca> has joined #aichallenge
+2010-12-13T23:17:06  <antimatroid> Frontier: your ant must make the move
+2010-12-13T23:17:06  <antimatroid> A row col direction
+2010-12-13T23:17:12  <antimatroid> so yes, if all ants decide to fight
+2010-12-13T23:17:49  <antimatroid> Order of processing of moves:
+2010-12-13T23:17:49  <antimatroid> 1. Attacks
+2010-12-13T23:17:49  <antimatroid> 2. Harvests
+2010-12-13T23:17:49  <antimatroid> 3. Spawning of ants
+2010-12-13T23:17:49  <antimatroid> 4. Deposits (deposits to home don't land on an ant first)
+2010-12-13T23:17:49  <antimatroid> 5. Moves
+2010-12-13T23:17:50  <antimatroid> 6. Kill/Fuse (kill/fuse friend ants that land on the same square)
+2010-12-13T23:17:50  <antimatroid> 6. Collision fights (fight enemy ants that are on the same square)
+2010-12-13T23:17:51  <antimatroid> 7. Check win/draw/lose conditions
+2010-12-13T23:17:51  *** Utkarsh <Utkarsh!~admin@117.201.84.36> has joined #aichallenge
+2010-12-13T23:17:57  <antimatroid> that's the order i think moves should be processed with my way
+2010-12-13T23:18:12  <antimatroid> oh wait
+2010-12-13T23:18:19  <antimatroid> i need to do spawning after moves
+2010-12-13T23:23:57  <sigh> antimatroid: are you working off delt0r's impl?
+2010-12-13T23:24:09  <antimatroid> sigh: no, i'm working on my one :P
+2010-12-13T23:24:36  <antimatroid> Order of processing of moves:
+2010-12-13T23:24:37  <antimatroid> 1. Attacks
+2010-12-13T23:24:37  <antimatroid> 2. Harvests
+2010-12-13T23:24:37  <antimatroid> 3. Deposits (deposits to home don't land on an ant first)
+2010-12-13T23:24:37  <antimatroid> 4. Moves
+2010-12-13T23:24:37  <antimatroid> 5. Spawning of ants
+2010-12-13T23:24:37  <antimatroid> 6. Kill/Fuse (kill/fuse friend ants that land on the same square)
+2010-12-13T23:24:37  <Frontier> are yout two competing?
+2010-12-13T23:24:38  <antimatroid> 7. Collision fights (fight opponent ants that are on the same square)
+2010-12-13T23:24:38  <antimatroid> 8. Handle collisions for home bases again
+2010-12-13T23:24:39  <antimatroid> 9. Check win/draw/lose conditions
+2010-12-13T23:24:40  <sigh> sure, but is it a port of delt0r's or completly different?
+2010-12-13T23:24:51  <antimatroid> can any of you think of any problem cases with that order of processing?
+2010-12-13T23:24:57  <antimatroid> Frontier: just exploring both options
+2010-12-13T23:25:09  <antimatroid> sigh: they're quite different games
+2010-12-13T23:25:33  <antimatroid> oh, remove 8
+2010-12-13T23:26:01  <sigh> what if there is no room to spawn?
+2010-12-13T23:26:19  <antimatroid> an ant spawns on the home base if there are grains on it and no ant there
+2010-12-13T23:26:26  <antimatroid> deplenishing grains as it goes
+2010-12-13T23:26:47  <antimatroid> you can deposit grains from the adjacent square, and you have no walls/resources around your base
+2010-12-13T23:27:54  <antimatroid> notice that it handles moves before spawning, and if you deposit a grain there when there is currently none, you will get a new ant the next turn
+2010-12-13T23:28:16  <antimatroid> you can spawn an ant if they are on your base
+2010-12-13T23:28:21  <antimatroid> just not for a friend ant
+2010-12-13T23:28:39  <antimatroid> if we did friend ant fusion, then you could spawn no matter what, you just get mega ants
+2010-12-13T23:29:31  <Frontier> instagib ants so to say
+2010-12-13T23:30:02  <Frontier> and the visualizer would have to be in 3d ^^
+2010-12-13T23:30:09  <antimatroid> ?
+2010-12-13T23:30:11  <antimatroid> why?
+2010-12-13T23:30:27  <Frontier> how would you visualize 10 ants in a stack
+2010-12-13T23:30:45  <Frontier> oh wait... fusiin?!?
+2010-12-13T23:30:54  <antimatroid> what's a site that'll let me post text? codepad seems to be down
+2010-12-13T23:31:15  <antimatroid> Frontier: if you put two friend ants on top of each other, they become 1 ant with combined hp
+2010-12-13T23:31:33  <Frontier> and combined grains i assume
+2010-12-13T23:31:46  <antimatroid> yep, may have to drop some if they go above max carry capacity
+2010-12-13T23:32:04  <antimatroid> or we could remove max carry capacity?
+2010-12-13T23:32:09  <Zannick> antimatroid: pastebin
+2010-12-13T23:32:16  <Frontier> ok, but then they cant deal the same amount of damage. I would always go for a lot of weak ants
+2010-12-13T23:32:25  <Zannick> comes in .com, .org, .ca and many other flavors
+2010-12-13T23:33:43  <Frontier> a max capacity is good i think. it adds to the gameplay.
+2010-12-13T23:33:57  <antimatroid> Frontier: yes, i don't want friend ants to land on top of each other
+2010-12-13T23:34:05  <antimatroid> it's that or kill both if they land on each other though
+2010-12-13T23:34:12  <antimatroid> i don't like cancelling moves
+2010-12-13T23:34:19  <antimatroid> sigh: http://pastebin.com/XQdSxiz3
+2010-12-13T23:34:28  <Frontier> ok, then we could even turn the numbers in the visualizer into health bars
+2010-12-13T23:34:37  <antimatroid> that's input/output format, start pack strategy and order of processing that i suggest currently
+2010-12-13T23:35:01  <antimatroid> Frontier: does that work when hp can go above spawn amount?
+2010-12-13T23:35:06  <Frontier> no
+2010-12-13T23:35:10  <antimatroid> it would work if we killed them
+2010-12-13T23:35:20  <antimatroid> i prefer killing them (like moving onto a wall)
+2010-12-13T23:35:29  <antimatroid> it shouldn't be too hard to make sure you don't land on each other
+2010-12-13T23:37:41  *** contestbot_ <contestbot_!~supybot@69-196-133-132.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T23:37:42  -lindbohm.freenode.net- [freenode-info] please register your nickname...don't forget to auto-identify! http://freenode.net/faq.shtml#nicksetup
+2010-12-13T23:37:42  *** contestbot <contestbot!~supybot@69-196-133-132.dsl.teksavvy.com> has quit IRC (Disconnected by services)
+2010-12-13T23:37:59  *** medrimonia1 <medrimonia1!~Medrimoni@ABordeaux-158-1-77-83.w90-60.abo.wanadoo.fr> has joined #aichallenge
+2010-12-13T23:38:28  <antimatroid> (graduation dress, i don't normally wear dresses aha)
+2010-12-13T23:39:06  *** zerd <zerd!~quassel@tor.zerd.net> has joined #aichallenge
+2010-12-13T23:39:06  *** contestbot_ is now known as contestbot
+2010-12-13T23:39:07  *** ChanServ sets mode: +o contestbot
+2010-12-13T23:40:54  *** ZanniqlcKzxkq <ZanniqlcKzxkq!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has joined #aichallenge
+2010-12-13T23:41:00  *** rabidus_ <rabidus_!~rabidus@85.23.53.152> has joined #aichallenge
+2010-12-13T23:41:07  *** chl_ <chl_!~chl@mtl93-12-88-189-21-185.fbx.proxad.net> has joined #aichallenge
+2010-12-13T23:41:44  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has quit IRC (Disconnected by services)
+2010-12-13T23:41:52  *** ZanniqlcKzxkq is now known as Zannick
+2010-12-13T23:42:10  <antimatroid> Frontier: if we did movement in all 4 directions, what about having ants have heads at both ends?
+2010-12-13T23:43:58  *** _Utkarsh <_Utkarsh!~admin@117.201.84.36> has joined #aichallenge
+2010-12-13T23:45:36  *** politik <politik!~joel@pool-96-237-242-89.bstnma.fios.verizon.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:37  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (*.net *.split)
+2010-12-13T23:45:37  *** tapwater <tapwater!~tapwater@cpe-70-112-195-55.austin.res.rr.com> has quit IRC (*.net *.split)
+2010-12-13T23:45:37  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has quit IRC (*.net *.split)
+2010-12-13T23:45:37  *** Error323 <Error323!~fhuizing@145-116-230-164.uilenstede.casema.nl> has quit IRC (*.net *.split)
+2010-12-13T23:45:38  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has quit IRC (*.net *.split)
+2010-12-13T23:45:38  *** BtbN <BtbN!~btbn@btbn.de> has quit IRC (*.net *.split)
+2010-12-13T23:45:38  *** eburnette <eburnette!95ad0632@gateway/web/freenode/ip.149.173.6.50> has quit IRC (*.net *.split)
+2010-12-13T23:45:38  *** virdo <virdo!virdo@bas9-london14-1279417803.dsl.bell.ca> has quit IRC (*.net *.split)
+2010-12-13T23:45:38  *** antimatroid <antimatroid!~Nick@126.54-134-203.dynamic.dsl.mel.iprimus.net.au> has quit IRC (*.net *.split)
+2010-12-13T23:45:38  *** nann <nann!~apophis@80-219-211-230.dclient.hispeed.ch> has quit IRC (*.net *.split)
+2010-12-13T23:45:39  *** holmar <holmar!~holmar@89-160-163-48.du.xdsl.is> has quit IRC (*.net *.split)
+2010-12-13T23:45:39  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (*.net *.split)
+2010-12-13T23:45:40  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-66-141-23-30.dsl.hstntx.swbell.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:40  *** davidd <davidd!davidd@tinkywinky.stack.nl> has quit IRC (*.net *.split)
+2010-12-13T23:45:40  *** a1k0n <a1k0n!~a1k0n@fear.incarnate.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:41  *** ChanServ <ChanServ!ChanServ@services.> has quit IRC (*.net *.split)
+2010-12-13T23:45:41  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:41  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has quit IRC (*.net *.split)
+2010-12-13T23:45:41  *** pgpaskar_ <pgpaskar_!~phor@nat/uwaterloo/x-czsuycedzmpkgjln> has quit IRC (*.net *.split)
+2010-12-13T23:45:42  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has quit IRC (*.net *.split)
+2010-12-13T23:45:43  *** yellowseed <yellowseed!~yellowsee@linode1.yellowseed.org> has quit IRC (*.net *.split)
+2010-12-13T23:45:43  *** _W_ <_W_!~w@irc.w-wins.com> has quit IRC (*.net *.split)
+2010-12-13T23:45:44  *** wh1teside_ <wh1teside_!~admin@75.5.77.76> has quit IRC (*.net *.split)
+2010-12-13T23:45:44  *** spz <spz!~spz@209.90.138.20> has quit IRC (*.net *.split)
+2010-12-13T23:45:44  *** eregon <eregon!~quassel@94-23-150-63.kimsufi.com> has quit IRC (*.net *.split)
+2010-12-13T23:45:45  *** zerd <zerd!~quassel@tor.zerd.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:45  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:46  *** b0ng01 <b0ng01!~tsama@cpe-173-89-234-50.neo.res.rr.com> has quit IRC (*.net *.split)
+2010-12-13T23:45:46  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:47  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (*.net *.split)
+2010-12-13T23:45:47  *** medrimonia1 <medrimonia1!~Medrimoni@ABordeaux-158-1-77-83.w90-60.abo.wanadoo.fr> has quit IRC (*.net *.split)
+2010-12-13T23:45:47  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (*.net *.split)
+2010-12-13T23:45:47  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has quit IRC (*.net *.split)
+2010-12-13T23:45:47  *** Cold-Phoenix <Cold-Phoenix!~Cold-Phoe@81.174.207.17> has quit IRC (*.net *.split)
+2010-12-13T23:45:48  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:48  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:49  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has quit IRC (*.net *.split)
+2010-12-13T23:45:49  *** j3camero <j3camero!~jeff@207.150.202.47> has quit IRC (*.net *.split)
+2010-12-13T23:45:49  *** Utkarsh <Utkarsh!~admin@117.201.84.36> has quit IRC (*.net *.split)
+2010-12-13T23:45:49  *** medrimonia <medrimonia!~Medrimoni@ABordeaux-158-1-77-83.w90-60.abo.wanadoo.fr> has quit IRC (*.net *.split)
+2010-12-13T23:45:49  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-240-096.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:49  *** rabidus <rabidus!~rabidus@85.23.53.152> has quit IRC (*.net *.split)
+2010-12-13T23:45:50  *** CIA-85 <CIA-85!~CIA@208.69.182.149> has quit IRC (*.net *.split)
+2010-12-13T23:45:50  *** chl <chl!~chl@mtl93-12-88-189-21-185.fbx.proxad.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:50  *** zerd_ <zerd_!~quassel@tor.zerd.net> has quit IRC (*.net *.split)
+2010-12-13T23:45:50  *** jmcarthur <jmcarthur!~jake@76.73.220.99> has quit IRC (*.net *.split)
+2010-12-13T23:45:50  *** delt0r___ <delt0r___!~delt0r@188-22-160-136.adsl.highway.telekom.at> has quit IRC (*.net *.split)
+2010-12-13T23:45:51  *** SmkMnstr <SmkMnstr!~laurdel@onegrandcircle.com> has quit IRC (*.net *.split)
+2010-12-13T23:45:51  *** ulope <ulope!~ulope@eq4.ulo.pe> has quit IRC (*.net *.split)
+2010-12-13T23:45:51  *** rabidus_ <rabidus_!~rabidus@85.23.53.152> has quit IRC (*.net *.split)
+2010-12-13T23:45:51  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has quit IRC (*.net *.split)
+2010-12-13T23:45:52  *** janzert <janzert!~Brian@97-83-37-102.dhcp.trcy.mi.charter.com> has quit IRC (*.net *.split)
+2010-12-13T23:45:52  *** drodil <drodil!~t6hehe01@rhea.oamk.fi> has quit IRC (*.net *.split)
+2010-12-13T23:45:52  *** spacebat <spacebat!~spacebat@ubermonkey.net> has quit IRC (*.net *.split)
+2010-12-13T23:56:01  *** spacebat <spacebat!~spacebat@ubermonkey.net> has joined #aichallenge
+2010-12-13T23:56:01  *** drodil <drodil!~t6hehe01@rhea.oamk.fi> has joined #aichallenge
+2010-12-13T23:56:01  *** janzert <janzert!~Brian@97-83-37-102.dhcp.trcy.mi.charter.com> has joined #aichallenge
+2010-12-13T23:56:01  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has joined #aichallenge
+2010-12-13T23:56:01  *** rabidus_ <rabidus_!~rabidus@85.23.53.152> has joined #aichallenge
+2010-12-13T23:56:01  *** holmar <holmar!~holmar@89-160-163-48.du.xdsl.is> has joined #aichallenge
+2010-12-13T23:56:01  *** nann <nann!~apophis@80-219-211-230.dclient.hispeed.ch> has joined #aichallenge
+2010-12-13T23:56:01  *** antimatroid <antimatroid!~Nick@126.54-134-203.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2010-12-13T23:56:01  *** virdo <virdo!virdo@bas9-london14-1279417803.dsl.bell.ca> has joined #aichallenge
+2010-12-13T23:56:01  *** a1k0n <a1k0n!~a1k0n@fear.incarnate.net> has joined #aichallenge
+2010-12-13T23:56:01  *** davidd <davidd!davidd@tinkywinky.stack.nl> has joined #aichallenge
+2010-12-13T23:56:01  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-66-141-23-30.dsl.hstntx.swbell.net> has joined #aichallenge
+2010-12-13T23:56:01  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2010-12-13T23:56:01  *** politik <politik!~joel@pool-96-237-242-89.bstnma.fios.verizon.net> has joined #aichallenge
+2010-12-13T23:56:01  *** ulope <ulope!~ulope@eq4.ulo.pe> has joined #aichallenge
+2010-12-13T23:56:01  *** SmkMnstr <SmkMnstr!~laurdel@onegrandcircle.com> has joined #aichallenge
+2010-12-13T23:56:01  *** delt0r___ <delt0r___!~delt0r@188-22-160-136.adsl.highway.telekom.at> has joined #aichallenge
+2010-12-13T23:56:01  *** jmcarthur <jmcarthur!~jake@76.73.220.99> has joined #aichallenge
+2010-12-13T23:56:01  *** BtbN <BtbN!~btbn@btbn.de> has joined #aichallenge
+2010-12-13T23:56:01  *** acieroid <acieroid!~acieroid@wtf.awesom.eu> has joined #aichallenge
+2010-12-13T23:56:01  *** Error323 <Error323!~fhuizing@145-116-230-164.uilenstede.casema.nl> has joined #aichallenge
+2010-12-13T23:56:01  *** delt0r <delt0r!~bob@kimura.cibiv.univie.ac.at> has joined #aichallenge
+2010-12-13T23:56:01  *** tapwater <tapwater!~tapwater@cpe-70-112-195-55.austin.res.rr.com> has joined #aichallenge
+2010-12-13T23:56:01  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2010-12-13T23:56:01  *** 13WAAVBXD <13WAAVBXD!~CIA@208.69.182.149> has joined #aichallenge
+2010-12-13T23:56:25  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has joined #aichallenge
+2010-12-13T23:56:25  *** zerd <zerd!~quassel@tor.zerd.net> has joined #aichallenge
+2010-12-13T23:56:25  *** medrimonia1 <medrimonia1!~Medrimoni@ABordeaux-158-1-77-83.w90-60.abo.wanadoo.fr> has joined #aichallenge
+2010-12-13T23:56:25  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T23:56:25  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has joined #aichallenge
+2010-12-13T23:56:25  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has joined #aichallenge
+2010-12-13T23:56:26  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-12-13T23:56:26  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has joined #aichallenge
+2010-12-13T23:56:26  *** Cold-Phoenix <Cold-Phoenix!~Cold-Phoe@81.174.207.17> has joined #aichallenge
+2010-12-13T23:56:26  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-12-13T23:56:26  *** ChanServ <ChanServ!ChanServ@services.> has joined #aichallenge
+2010-12-13T23:56:26  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2010-12-13T23:56:26  *** wh1teside_ <wh1teside_!~admin@75.5.77.76> has joined #aichallenge
+2010-12-13T23:56:26  *** pgpaskar_ <pgpaskar_!~phor@nat/uwaterloo/x-czsuycedzmpkgjln> has joined #aichallenge
+2010-12-13T23:56:26  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has joined #aichallenge
+2010-12-13T23:56:26  *** yellowseed <yellowseed!~yellowsee@linode1.yellowseed.org> has joined #aichallenge
+2010-12-13T23:56:26  *** spz <spz!~spz@209.90.138.20> has joined #aichallenge
+2010-12-13T23:56:26  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2010-12-13T23:56:26  *** b0ng01 <b0ng01!~tsama@cpe-173-89-234-50.neo.res.rr.com> has joined #aichallenge
+2010-12-13T23:56:26  *** _W_ <_W_!~w@irc.w-wins.com> has joined #aichallenge
+2010-12-13T23:56:26  *** eregon <eregon!~quassel@94-23-150-63.kimsufi.com> has joined #aichallenge
+2010-12-13T23:56:26  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2010-12-13T23:56:26  *** j3camero <j3camero!~jeff@207.150.202.47> has joined #aichallenge
+2010-12-13T23:56:26  *** lindbohm.freenode.net sets mode: +oo amstan_ ChanServ
+2010-12-13T23:56:37  *** 13WAAVBXD is now known as CIA-8
+2010-12-13T23:56:49  *** CIA-8 is now known as 13WAAVBXD
+2010-12-13T23:57:20  *** 13WAAVBXD is now known as CIA-24
+2010-12-13T23:57:39  *** eburnette <eburnette!95ad0632@gateway/web/freenode/ip.149.173.6.50> has joined #aichallenge
+2010-12-13T23:57:58  *** ChanServ <ChanServ!ChanServ@services.> has quit IRC (*.net *.split)
+2010-12-13T23:57:59  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has quit IRC (*.net *.split)
+2010-12-13T23:57:59  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has quit IRC (*.net *.split)
+2010-12-13T23:57:59  *** pgpaskar_ <pgpaskar_!~phor@nat/uwaterloo/x-czsuycedzmpkgjln> has quit IRC (*.net *.split)
+2010-12-13T23:58:00  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has quit IRC (*.net *.split)
+2010-12-13T23:58:01  *** yellowseed <yellowseed!~yellowsee@linode1.yellowseed.org> has quit IRC (*.net *.split)
+2010-12-13T23:58:01  *** _W_ <_W_!~w@irc.w-wins.com> has quit IRC (*.net *.split)
+2010-12-13T23:58:02  *** wh1teside_ <wh1teside_!~admin@75.5.77.76> has quit IRC (*.net *.split)
+2010-12-13T23:58:02  *** spz <spz!~spz@209.90.138.20> has quit IRC (*.net *.split)
+2010-12-13T23:58:02  *** eregon <eregon!~quassel@94-23-150-63.kimsufi.com> has quit IRC (*.net *.split)
+2010-12-13T23:58:03  *** zerd <zerd!~quassel@tor.zerd.net> has quit IRC (*.net *.split)
+2010-12-13T23:58:03  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (*.net *.split)
+2010-12-13T23:58:04  *** b0ng01 <b0ng01!~tsama@cpe-173-89-234-50.neo.res.rr.com> has quit IRC (*.net *.split)
+2010-12-13T23:58:04  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has quit IRC (*.net *.split)
+2010-12-13T23:58:04  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (*.net *.split)
+2010-12-13T23:58:05  *** medrimonia1 <medrimonia1!~Medrimoni@ABordeaux-158-1-77-83.w90-60.abo.wanadoo.fr> has quit IRC (*.net *.split)
+2010-12-13T23:58:05  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has quit IRC (*.net *.split)
+2010-12-13T23:58:05  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has quit IRC (*.net *.split)
+2010-12-13T23:58:05  *** Cold-Phoenix <Cold-Phoenix!~Cold-Phoe@81.174.207.17> has quit IRC (*.net *.split)
+2010-12-13T23:58:06  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has quit IRC (*.net *.split)
+2010-12-13T23:58:06  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has quit IRC (*.net *.split)
+2010-12-13T23:58:07  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has quit IRC (*.net *.split)
+2010-12-13T23:58:07  *** j3camero <j3camero!~jeff@207.150.202.47> has quit IRC (*.net *.split)
+2010-12-13T23:59:02  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has joined #aichallenge
+2010-12-13T23:59:03  *** zerd <zerd!~quassel@tor.zerd.net> has joined #aichallenge
+2010-12-13T23:59:03  *** medrimonia1 <medrimonia1!~Medrimoni@ABordeaux-158-1-77-83.w90-60.abo.wanadoo.fr> has joined #aichallenge
+2010-12-13T23:59:03  *** amstan_ <amstan_!~amstan@69-196-191-75.dsl.teksavvy.com> has joined #aichallenge
+2010-12-13T23:59:03  *** Azrathud <Azrathud!~Azrathud@c-75-70-106-60.hsd1.co.comcast.net> has joined #aichallenge
+2010-12-13T23:59:03  *** greghaynes <greghaynes!~irc@2607:f2f8:a490::2> has joined #aichallenge
+2010-12-13T23:59:03  *** iNtERrUpT <iNtERrUpT!~interrupt@61.43.139.4> has joined #aichallenge
+2010-12-13T23:59:03  *** Sylph <Sylph!~x@108-72-94-18.lightspeed.livnmi.sbcglobal.net> has joined #aichallenge
+2010-12-13T23:59:03  *** Cold-Phoenix <Cold-Phoenix!~Cold-Phoe@81.174.207.17> has joined #aichallenge
+2010-12-13T23:59:03  *** dmj111 <dmj111!~user@c-98-235-91-228.hsd1.pa.comcast.net> has joined #aichallenge
+2010-12-13T23:59:03  *** ChanServ <ChanServ!ChanServ@services.> has joined #aichallenge
+2010-12-13T23:59:03  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2010-12-13T23:59:03  *** wh1teside_ <wh1teside_!~admin@75.5.77.76> has joined #aichallenge
+2010-12-13T23:59:03  *** pgpaskar_ <pgpaskar_!~phor@nat/uwaterloo/x-czsuycedzmpkgjln> has joined #aichallenge
+2010-12-13T23:59:03  *** javagamer <javagamer!~javagamer@ool-4356dfec.dyn.optonline.net> has joined #aichallenge
+2010-12-13T23:59:03  *** yellowseed <yellowseed!~yellowsee@linode1.yellowseed.org> has joined #aichallenge
+2010-12-13T23:59:03  *** spz <spz!~spz@209.90.138.20> has joined #aichallenge
+2010-12-13T23:59:03  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2010-12-13T23:59:03  *** b0ng01 <b0ng01!~tsama@cpe-173-89-234-50.neo.res.rr.com> has joined #aichallenge
+2010-12-13T23:59:03  *** _W_ <_W_!~w@irc.w-wins.com> has joined #aichallenge
+2010-12-13T23:59:03  *** eregon <eregon!~quassel@94-23-150-63.kimsufi.com> has joined #aichallenge
+2010-12-13T23:59:03  *** jmpespxoreax <jmpespxoreax!~notauser@unaffiliated/jmpespxoreax> has joined #aichallenge
+2010-12-13T23:59:03  *** j3camero <j3camero!~jeff@207.150.202.47> has joined #aichallenge
+2010-12-13T23:59:03  *** lindbohm.freenode.net sets mode: +oo amstan_ ChanServ

@@ -1,0 +1,458 @@
+2011-07-24T00:01:22  <mleise> bhasker: which browser and version are you using btw?
+2011-07-24T00:06:33  *** mathis_ <mathis_!55b3ea2e@gateway/web/freenode/ip.85.179.234.46> has quit IRC (Quit: Page closed)
+2011-07-24T00:47:55  <bhasker> chrome
+2011-07-24T00:47:56  <bhasker> on the mac
+2011-07-24T00:48:13  <bhasker> frontier how are you calculating fog of war?
+2011-07-24T00:55:28  *** jbrechtel_ <jbrechtel_!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Ping timeout: 252 seconds)
+2011-07-24T00:59:36  <mleise> mmm
+2011-07-24T01:01:09  <mleise> bhasker: like this: http://pastebin.com/qK0FG7xr
+2011-07-24T01:04:05  <antimatroid> i suck at reading other peoples code :\
+2011-07-24T01:04:27  <antimatroid> http://pastebin.com/gqCA8u5N  that's how i do vision, but i think sigh had a faster way
+2011-07-24T01:04:38  <mleise> antimatroid: oh you will soon work for someone and read their code :)
+2011-07-24T01:05:03  <antimatroid> might not, contemplating phd next year :P
+2011-07-24T01:05:26  <antimatroid> ignore all the other people :)
+2011-07-24T01:05:58  <mleise> to be fair i have a call to interpolate in it and render the fog into a huge 32-bit bitmap (120x120 x 20x20 = 5,760,000 Pixels)
+2011-07-24T01:06:59  <mleise> interpolate calculates the properties of an ant at a given time (color, size, position, ...)
+2011-07-24T01:07:07  <antimatroid> i'm still not over the fact that i have to index matrices of bools as visited[loc.row][loc.col] instead of visited[loc], stupid c++ :(
+2011-07-24T01:07:33  <mleise> antimatroid: again, use byte as the datatype and you're done
+2011-07-24T01:07:51  <antimatroid> but doesn't that slow it/take more space whatever? :P
+2011-07-24T01:07:53  <mleise> add a typedef if you want a more fitting name, like bytebool
+2011-07-24T01:08:23  <mleise> antimatroid: it takes 8x the space, but it should be faster (i think)
+2011-07-24T01:08:30  <antimatroid> hmmm
+2011-07-24T01:08:37  <antimatroid> space is generally not really that much of a concern
+2011-07-24T01:09:06  <mleise> it is a simple check for 0, whereas the bit-array includes some bitshifting
+2011-07-24T01:09:46  <antimatroid> is it better to check is/n't 0 rather than is/n't 1?
+2011-07-24T01:09:49  <mleise> at least i don't know how you could check for a set bit without bit shifting
+2011-07-24T01:11:01  <bhasker> let me have a look
+2011-07-24T01:11:27  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-07-24T01:11:28  <mleise> hmm. iirc after an arithmetic operation the result bits are updated (overflow, zero, parity, ...) so the compiler could use those. generally testing for zero or one... I don't know. That might not make a difference
+2011-07-24T01:12:08  <mleise> It has bin some time since I last wrote in assembly
+2011-07-24T01:12:16  <mleise> *been
+2011-07-24T01:12:47  <bhasker> k that code will take some time to make sense of
+2011-07-24T01:13:24  <mleise> antimatroid: I always check for == or != 0, just to be sure ;). It can't hurt anyway.
+2011-07-24T01:13:42  <bhasker> can you explain is simple words how you are building the fog of war
+2011-07-24T01:14:25  <bhasker> one way would be to just do a bfs around each ant and paint each visible square
+2011-07-24T01:14:49  <antimatroid> that's what i do
+2011-07-24T01:15:01  <bhasker> yea i looked at your code and modified it for other stuff that i do
+2011-07-24T01:15:04  <mleise> bhasker: I first set all squares to fog, then I ... seem to prepare some sort of lookup table
+2011-07-24T01:15:15  <antimatroid> another is to make a set of translate amounts that gives the vision squares and paint that around each ant
+2011-07-24T01:15:22  <bhasker> another way would be to do some precalculation upfront
+2011-07-24T01:15:31  <bhasker> just for each location build a set of visible locations up front
+2011-07-24T01:15:41  <bhasker> then just sort + uniq the total
+2011-07-24T01:16:02  <bhasker> then each iteration just extract a list of locations for each ant + sort + uniq it
+2011-07-24T01:16:11  <bhasker> but doubt that will be faster than doing a bfs around each ant
+2011-07-24T01:16:34  <antimatroid> i think my second one would be faster than bfs
+2011-07-24T01:16:37  <mleise> no wait, i first set visible all squares on a + around the ant
+2011-07-24T01:16:40  <antimatroid> it's essentially the same thing but without the bfs
+2011-07-24T01:17:17  <bhasker> look at antimatroids C++ starter bot
+2011-07-24T01:17:26  <bhasker> it has a function to paint the vision of a bot
+2011-07-24T01:17:35  <bhasker> that should work for building a fog of war
+2011-07-24T01:17:45  <mleise> and then there is a lookup for the wrapping, when I reach the top, bottom, left or right side of the map
+2011-07-24T01:18:38  <bhasker> again look at antimatroid's c++ bot it does it without any lookups
+2011-07-24T01:18:46  <bhasker> well not without any lookups
+2011-07-24T01:18:50  <bhasker> there is a small lookup
+2011-07-24T01:19:13  <antimatroid> what's a lookup?
+2011-07-24T01:19:24  <mleise> a translation table
+2011-07-24T01:19:27  <antimatroid> https://github.com/aichallenge/aichallenge/blob/epsilon/ants/dist/starter_bots/cpp/State.cc that has the starter bot updatevision function
+2011-07-24T01:20:29  <mleise> "THE OBVIOUS WAY OF TRYING TO IMPROVE IT BREAKS USING THE EUCLIDEAN METRIC" Oo
+2011-07-24T01:20:56  <antimatroid> i still think it's worth setting it up as a graph and removing neighbour information with water, the visualiser even knows all the water information at the start, so it doesn't need to worry about having to remove edges from the graph
+2011-07-24T01:21:09  <antimatroid> mleise: yeah, i kinda wish we hadn't used euclidean for vision, but we did
+2011-07-24T01:21:31  <antimatroid> it's because of:
+2011-07-24T01:21:31  <antimatroid> a.*
+2011-07-24T01:21:31  <antimatroid> .a.
+2011-07-24T01:21:47  <antimatroid> both ants have the same "walk/search" distance to * but a different euclidean distance
+2011-07-24T01:22:09  <bhasker> so you suggest we should have used manhattan?
+2011-07-24T01:22:09  <antimatroid> and i think there was another problem too, cause my trivial idea to fix that didn't work
+2011-07-24T01:22:10  <mleise> a graph in the visualizer? what are you talking about?
+2011-07-24T01:22:17  <antimatroid> manhatten or chebyshev
+2011-07-24T01:22:25  <bhasker> i have no idea what chebyshev is
+2011-07-24T01:22:29  <mleise> squares?
+2011-07-24T01:22:41  <antimatroid> melise: i store my grid in my actual bot with neighbour locations at each square, so i don't actually need to call get location after the first turn
+2011-07-24T01:23:17  <mleise> so you are practically 'position independent'?
+2011-07-24T01:23:19  <antimatroid> cdist(x,y) := min (|x.row-y.row|, |x.col-y.col|) i think
+2011-07-24T01:23:30  <antimatroid> position independent?
+2011-07-24T01:23:39  <mleise> hmm you still use coordinates -.-
+2011-07-24T01:23:48  <mleise> I though you just have a graph :D
+2011-07-24T01:23:54  <antimatroid> change that to max
+2011-07-24T01:24:06  <antimatroid> i still have a matrix with my squares
+2011-07-24T01:24:24  <antimatroid> and index the locations with that, but each square has a vector of neighbour locations that aren't water which i use for pathfinding etc.
+2011-07-24T01:24:54  <antimatroid> although i've given up on having time to write a proper bot
+2011-07-24T01:26:52  <antimatroid> basically, euclidean "circle" is a circle, manhatten "circle" is a diamond, and chebyshev "circle" is a square
+2011-07-24T01:27:10  <mleise> wow this c++ code looks like it will be *slow* in JavaScript ;)
+2011-07-24T01:27:27  <antimatroid> what from?
+2011-07-24T01:28:09  <mleise> there are so many hash objects generated
+2011-07-24T01:29:00  <antimatroid> mleise: what i think would make it faster is the have a get_translate_loc function, then at the start, generate the translate numbers to get every square within vision of a particular location, then just call that for each ant location and mark it as visible
+2011-07-24T01:29:09  <antimatroid> to* have
+2011-07-24T01:29:36  <mleise> I use that in my bot but what would the maximum memory use be?
+2011-07-24T01:29:55  <antimatroid> what do you mean?
+2011-07-24T01:30:08  <mleise> how much RAM will this consume at max.
+2011-07-24T01:30:08  <antimatroid> i wouldn't store vision information for every location, just the translate amounts to generate it for a location
+2011-07-24T01:30:14  <mleise> ah ok
+2011-07-24T01:30:54  <antimatroid> beyond that, sigh might have a faster way
+2011-07-24T01:31:25  <mleise> how do you know about sigh's method?
+2011-07-24T01:31:55  <sigh> my method for what?
+2011-07-24T01:32:03  <antimatroid> because i was around when he found the error with searching from all ants simultaneously with euclidean and know he did waht the engine is using
+2011-07-24T01:32:08  <antimatroid> sigh: calculating vision information
+2011-07-24T01:32:23  <sigh> ah, i see
+2011-07-24T01:32:28  <sigh> what language?
+2011-07-24T01:32:33  <mleise> JavaScript :D
+2011-07-24T01:33:24  * mleise should really not render full 2400x2400 pixel rgba bitmaps when zoomed in
+2011-07-24T01:33:48  <sigh> you might want to look at how the engine does it, it might be appropriate
+2011-07-24T01:33:57  <sigh> for the visualiser, where you have full state info
+2011-07-24T01:36:24  <mleise> sigh: Deltas... I have a deja vu
+2011-07-24T01:37:13  <mleise> I thought, if I talk about my vision code, people will propose deltas and then I'll have to say that my code is ... too flexible for deltas :p
+2011-07-24T01:37:55  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-07-24T01:38:02  <mleise> I don't imply that ants move exaclty one square per turn in one of 4 directions
+2011-07-24T01:41:07  <antimatroid> i'm interested in people writing code for luring enemy ants to places that you want
+2011-07-24T01:41:41  <antimatroid> either leading them with a lone ant away from your "hive/base/whatever" or luring them in to one ant in the middle of a trap where your ants come in from outside the enemies vision on all sides
+2011-07-24T01:43:29  <mleise> btw, I improved the attack lines a bit. They are now based on the final positions of the ants in the current turn and are visible during the whole turn. Often when one turn ends the lines are immediatly replaced by new ones which makes the ants look really busy.
+2011-07-24T01:45:24  <antimatroid> :)
+2011-07-24T01:45:59  <antimatroid> sigh: we won the tour de france :)
+2011-07-24T01:56:12  <sigh> antimatroid: cool, what do we get?
+2011-07-24T01:56:25  <antimatroid> our anthem played, i guess? :P
+2011-07-24T01:56:42  <sigh> :P
+2011-07-24T01:59:42  <mleise> a doping scandal?
+2011-07-24T01:59:56  <mleise> sorry
+2011-07-24T03:43:50  *** mcstar <mcstar!~mcstar@adsl-89-132-48-130.monradsl.monornet.hu> has joined #aichallenge
+2011-07-24T03:46:28  <mcstar> i dreamt with gene hackman
+2011-07-24T04:06:28  *** berak <berak!~chatzilla@89.204.153.166> has joined #aichallenge
+2011-07-24T04:20:54  *** amstan <amstan!~amstan@69-196-151-239.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-07-24T04:39:22  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has joined #aichallenge
+2011-07-24T05:18:52  *** choas <choas!~lars@p5792C937.dip.t-dialin.net> has joined #aichallenge
+2011-07-24T05:28:46  *** vdp|afk is now known as vdp
+2011-07-24T05:36:30  <antimatroid> yeah fair enough
+2011-07-24T05:36:37  <antimatroid> erm fwrong window :P
+2011-07-24T05:58:52  *** ArchMonkey <ArchMonkey!~ArchMonke@S0106001b63f2b998.ok.shawcable.net> has joined #aichallenge
+2011-07-24T06:01:23  *** humanfromearth <humanfromearth!~sasha@86.104.57.133> has joined #aichallenge
+2011-07-24T06:02:09  <humanfromearth> hi, I read the rules of the contest and it says: Use of multiple processes or threads is prohibited.
+2011-07-24T06:02:38  <humanfromearth> do coroutines(microthreads, fibers..) count as threads?
+2011-07-24T06:03:03  <humanfromearth> specifically goroutines
+2011-07-24T06:21:41  <antimatroid> i don't know much about that kind of stuff, green threads whatever they are are allowed
+2011-07-24T06:21:51  <antimatroid> if that helps, great, otherwise no idea sorry :)
+2011-07-24T06:28:58  <humanfromearth> antimatroid: I don't know about the design of goroutines. Here is a short definition: a function executing in parallel with other goroutines in the same address space.
+2011-07-24T06:29:08  <humanfromearth> Goroutines are multiplexed onto multiple OS threads so if one should block, such as while waiting for I/O, others continue to run. Their design hides many of the complexities of thread creation and management.
+2011-07-24T06:29:29  <antimatroid> i don't really know anything to help you sorry, hopefully someone else will come along at some point who knows more
+2011-07-24T06:29:43  <humanfromearth> thanks
+2011-07-24T06:31:37  *** vdp is now known as vdp|afk
+2011-07-24T06:36:51  <mcstar> Goroutines are multiplexed onto multiple OS threads
+2011-07-24T06:37:09  <mcstar> it wont work if it uses multiple os level threads
+2011-07-24T06:38:34  <mcstar> i guess you can somehow tune your system to not spawn other threads than a main one
+2011-07-24T06:38:50  <mcstar> but you will use any parallel speedups of course
+2011-07-24T06:39:02  <mcstar> will lose*
+2011-07-24T06:48:34  <humanfromearth> mcstar: by default it uses just one. It can be adjusted by setting GOMAXPROCS to something bigger than 1. So if I use the default setting I should be fine?
+2011-07-24T06:49:09  <mcstar> i guess, yes
+2011-07-24T06:49:24  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 258 seconds)
+2011-07-24T06:49:27  <humanfromearth> mcstar: thanks
+2011-07-24T06:52:09  <mcstar> i dont see anything in the Go starter bot that resembles setting such an option
+2011-07-24T06:52:34  <mcstar> my guess is that the go compile script automatically takes care of this so you neednt do anything
+2011-07-24T06:53:16  <mcstar> when you see mcleopold you should talk to him if you need more info
+2011-07-24T07:22:00  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-07-24T07:24:52  <antimatroid> http://www.reddit.com/r/australia/comments/iy9li/streaming_in_australia/ haha
+2011-07-24T07:24:59  <antimatroid> poor bastard
+2011-07-24T07:26:18  *** humanfromearth <humanfromearth!~sasha@86.104.57.133> has quit IRC (Ping timeout: 255 seconds)
+2011-07-24T07:40:06  *** humanfromearth <humanfromearth!~sasha@86.104.57.133> has joined #aichallenge
+2011-07-24T07:47:53  *** choas <choas!~lars@p5792C937.dip.t-dialin.net> has quit IRC (Ping timeout: 250 seconds)
+2011-07-24T07:51:38  *** mathis_ <mathis_!55b3ea2e@gateway/web/freenode/ip.85.179.234.46> has joined #aichallenge
+2011-07-24T08:07:51  *** Lithosphere <Lithosphere!~lithosphe@unaffiliated/lithosphere> has joined #aichallenge
+2011-07-24T08:08:59  *** mcstar <mcstar!~mcstar@adsl-89-132-48-130.monradsl.monornet.hu> has left #aichallenge ("WeeChat 0.3.5")
+2011-07-24T08:15:31  *** chturne <chturne!~user@host86-128-9-193.range86-128.btcentralplus.com> has joined #aichallenge
+2011-07-24T08:27:21  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Read error: Connection reset by peer)
+2011-07-24T08:28:39  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-07-24T08:51:17  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-07-24T09:02:36  *** humanfromearth <humanfromearth!~sasha@86.104.57.133> has quit IRC (Ping timeout: 255 seconds)
+2011-07-24T09:07:57  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-07-24T09:18:57  *** humanfromearth <humanfromearth!~sasha@86.104.57.133> has joined #aichallenge
+2011-07-24T09:32:23  *** jbrechtel_ <jbrechtel_!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has joined #aichallenge
+2011-07-24T09:39:32  <jmcarthur> we could use something like cpulimit to limit the percent of cpu that bots can use. that would mean we don't have to have that rule about threads anymore
+2011-07-24T09:40:47  <jmcarthur> this would mean that a process can only use up to one cpu's worth of resources: cpulimit <pid> -l 100
+2011-07-24T09:41:00  <jmcarthur> hmm, i guess multithreading could still interfere with other bots though
+2011-07-24T09:41:21  <jmcarthur> i guess that shoots down the idea then
+2011-07-24T09:42:25  <jmcarthur> oh, a better alternative:
+2011-07-24T09:42:30  <jmcarthur> taskset
+2011-07-24T09:42:39  <jmcarthur> just assign a process to a particular core
+2011-07-24T09:57:50  <humanfromearth> jmcarthur: I think that running bots on the server should be optional. Someone should be able to use it's own machine to run the bot. Like tcpserver for planet wars last year.
+2011-07-24T10:00:14  <humanfromearth> this reduces a number of security concerns and makes the bot creators more free to use different techniques such as running a bot on a cluster, however that may be unfair for others that don't have a 'cluster'.
+2011-07-24T10:06:42  <jbroman> humanfromearth: This probably gives an unfair advantage to people with more expensive computing hardware.
+2011-07-24T10:07:01  <humanfromearth> jbroman: Yes, I pointed that out
+2011-07-24T10:07:08  <humanfromearth> can someone take a look at my pull request? It solves a number of issues.
+2011-07-24T10:08:42  <jmcarthur> it would also give an unfair advantage to people with really bad internet connections
+2011-07-24T10:08:48  <jmcarthur> err
+2011-07-24T10:08:51  <jmcarthur> disadvantage
+2011-07-24T10:09:28  <jmcarthur> well i guess they could opt for the server if they wanted, but it probably wouldn't be worth it to support *two* ways to compete
+2011-07-24T10:10:33  <humanfromearth> you're right, but then again.. 2mb zip files + 1 process/thread is very limiting in these days
+2011-07-24T10:11:35  <_flag> It's less limiting then ever before. What do you mean?
+2011-07-24T10:12:02  <_flag> It's millions and millions of instructions
+2011-07-24T10:12:40  <humanfromearth> Maybe not all of them are instructions, maybe some are statistical data
+2011-07-24T10:13:01  <_flag> I'm talking about the process/thread thing
+2011-07-24T10:13:46  <_flag> I'm pretty sure you can create files within your directory and collect data on the server anyway (but I'm not 100% sure)
+2011-07-24T10:14:03  <humanfromearth> _flag: you cannot write files on the server
+2011-07-24T10:14:08  <humanfromearth> it's in the rulles
+2011-07-24T10:14:33  <_flag> Then how were people able to create learning algorithms last contest?
+2011-07-24T10:14:47  <humanfromearth> they didn't
+2011-07-24T10:14:49  <humanfromearth> >)
+2011-07-24T10:14:56  <_flag> They did
+2011-07-24T10:15:27  <humanfromearth> maybe locally and then uploaded the results on the server, but you can't write files on the server.. you can just read them.
+2011-07-24T10:15:53  <_flag> Hmmm..., I guess they must've used the tcp server to configure it
+2011-07-24T10:16:17  <humanfromearth> probably, but during the actual contest tcpserver was not used
+2011-07-24T10:16:38  <humanfromearth> see how people won last 2 times
+2011-07-24T10:16:56  <_flag> All the games are played on the server, yes
+2011-07-24T10:17:05  <humanfromearth> no GA, neural nets..
+2011-07-24T10:17:07  <_flag> But everyone used the tcp server to test changes
+2011-07-24T10:17:49  <humanfromearth> maybe people just don't know how to code them, or they didn't apply.. I'm not an expert myself..
+2011-07-24T10:19:16  <_flag> I'm not sure how those would apply to either PlanetWars or Tron
+2011-07-24T10:19:16  <humanfromearth> it still seems rather strange that standard AI stuff didn't help much
+2011-07-24T10:21:38  <humanfromearth> but maybe, just maybe it's related to the fact that you can't really run a massively parallel bot on the contest server
+2011-07-24T10:22:38  <humanfromearth> so that being the limitation people resorted to heuristic stuff
+2011-07-24T10:22:46  <humanfromearth> I'm just speculating here...
+2011-07-24T10:24:46  <_flag> I don't think people are limiting themselves to heuristic stuff
+2011-07-24T10:25:26  <_flag> You couldn't really describe the strategies currently being employed on the server as "heuristic stuff"
+2011-07-24T10:26:00  <_flag> Second, I don't think the idea is to suck as much processing power as possible, it's to be efficiant
+2011-07-24T10:26:34  <_flag> It adds an extra constraint on the competition
+2011-07-24T10:27:31  <jmcarthur> humanfromearth: for the record, zip, tar.gz, tar.bz2, and tar.xz are all supported now
+2011-07-24T10:27:45  <jmcarthur> humanfromearth: so you can squeeze in quite a bit of stuff, especially with xz
+2011-07-24T10:28:35  <jmcarthur> _flag: the learning bots just learned form replays available on the web site
+2011-07-24T10:28:39  <jmcarthur> *from replays
+2011-07-24T10:30:45  <jmcarthur> i'd be fine with allowing multithreading if we divided the time limit by the number of cores and gave each bot relatively exclusive access to machine resources, one at a time
+2011-07-24T10:30:45  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-07-24T10:30:55  <jmcarthur> but then you're disadvantaged if you *don't* use parallelism
+2011-07-24T10:31:18  <jmcarthur> and it turns the contest into a bit more of an efficiency contest, really
+2011-07-24T10:32:20  <jmcarthur> arguably, though, since multicore is the modern thing, there isn't much harm in favoring modern optimizations like parallelism
+2011-07-24T10:32:37  <jmcarthur> it also disadvantages some languages yet further though
+2011-07-24T10:32:48  <jmcarthur> due to global locks and such that some runtimes have
+2011-07-24T10:33:00  <humanfromearth> jmcarthur: you mean python?
+2011-07-24T10:33:35  <jmcarthur> that would be an example, yeah
+2011-07-24T10:33:48  <jmcarthur> i mean, you could always spawn multiple processes, but that kind of sucks
+2011-07-24T10:34:23  <humanfromearth> to be more exact: cpython.. pypy would be a good alternative for that problem
+2011-07-24T10:34:28  <jmcarthur> sure
+2011-07-24T10:34:46  <jmcarthur> ocaml is another example. you can use multiple OS threads in ocaml, but it comes with risks due to the way the GC works
+2011-07-24T10:36:09  <humanfromearth> jmcarthur: I think you're missing the point here.. it's not a language contest.. it's about making clever bots
+2011-07-24T10:36:30  <jmcarthur> exactly
+2011-07-24T10:36:43  <humanfromearth> so if a language is disadvantaged then quite simply.. don't use it
+2011-07-24T10:36:57  <humanfromearth> use something else that does the job
+2011-07-24T10:37:21  <jmcarthur> i agree, but the majority may not
+2011-07-24T10:38:19  <jmcarthur> but to further drive home our mutual agreement, languages *already* impose significant advantages/disadvantages on your, depending on the kind of AI you are writing
+2011-07-24T10:38:24  <jmcarthur> *on you
+2011-07-24T10:39:07  <humanfromearth> jmcarthur: :) true
+2011-07-24T10:39:24  <jmcarthur> also, we want to attract programmers with all kinds of backgrounds
+2011-07-24T10:40:23  <jmcarthur> many might not have much experience with C++. since the *main* point is to write good AI instead of competing in a number crunching contest, it's nice to eliminate language inadequacies when we can, at least
+2011-07-24T10:40:39  <jmcarthur> otherwise we would just make everybody use fortran ;)
+2011-07-24T10:41:03  <humanfromearth> jmcarthur: you wouldn't have a contest then..
+2011-07-24T10:41:24  <jmcarthur> well, you would, but it wouldn't be an AI contest
+2011-07-24T10:41:48  <jmcarthur> or maybe i'm misinterpreting what you are saying
+2011-07-24T10:42:26  <humanfromearth> not many young people know fortran these days...
+2011-07-24T10:42:40  <jmcarthur> my point is that if we design the contest to balance the different languages as much as possible then we will have a much greater turnout, that's all
+2011-07-24T10:42:57  <jmcarthur> i think you are agreeing with me without realizing it
+2011-07-24T10:44:09  <jmcarthur> all that said, i think parallelism is fun and i wish we were allowed to use it
+2011-07-24T10:44:27  <jmcarthur> it's just that i see that there are some good reasons not to allow it
+2011-07-24T10:46:21  <humanfromearth> jmcarthur: and I think that's a big limitation, I guess what I wanted to ask was how decides this?
+2011-07-24T10:48:15  *** onensora <onensora!c@546BF7D5.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-07-24T10:53:01  <jmcarthur> humanfromearth: at this point i'm not sure. normally i'd say jeff, but he seems to never be around
+2011-07-24T10:53:56  <jmcarthur> the leadership around here seems to mostly be de facto nowadays
+2011-07-24T10:54:38  <humanfromearth> jmcarthur: I see
+2011-07-24T10:54:48  *** jbrechtel_ <jbrechtel_!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Ping timeout: 276 seconds)
+2011-07-24T10:54:48  <jmcarthur> overall i see that as a positive, but it does have the downside that you never know who to talk to about various issues, and everybody is afraid to make certain kinds of major decisions
+2011-07-24T10:56:16  <humanfromearth> also my pull request hangs there for 1 week..
+2011-07-24T10:56:48  <jmcarthur> i think that's just because everybody is slowing down and gradually becoming less excited about this next contest :(
+2011-07-24T10:58:09  <jmcarthur> i'll check out your pull request
+2011-07-24T10:58:22  <humanfromearth> thanks
+2011-07-24T11:00:32  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-07-24T11:01:25  <jmcarthur> i'm not a Go programmer, but it looks like there's been a decent amount of review on it, and of course for the most part there aren't any major changes, so i guess i can go ahead merge it
+2011-07-24T11:01:57  <humanfromearth> that's right
+2011-07-24T11:02:22  <humanfromearth> it solves a few python issues as well
+2011-07-24T11:02:31  <CIA-48> aichallenge: Jake McArthur epsilon * rc2da8d8 / (6 files in 2 dirs):
+2011-07-24T11:02:31  <CIA-48> aichallenge: Merge pull request #222 from humanfromearth/epsilon
+2011-07-24T11:02:31  <CIA-48> aichallenge: A few bugs for python package. Formated Go code with gofmt and removed unicode stuff. - https://github.com/aichallenge/aichallenge/commit/c2da8d884ac6006d8aa1c2c0d3a265eb0469a611
+2011-07-24T11:03:16  <jmcarthur> there you go :)
+2011-07-24T11:03:32  <jmcarthur> sorry that took so long, but i think the delay was valuable anyway since it got some review
+2011-07-24T11:03:46  <humanfromearth> thanks.. I think you can close #220 and #221
+2011-07-24T11:05:51  <jmcarthur> done and done
+2011-07-24T11:07:05  <humanfromearth> thanks.. one more thing.. do you happen to know who is maintaining the go starter package?
+2011-07-24T11:07:49  <humanfromearth> I made a few changes to it and maybe I can work out a merge
+2011-07-24T11:10:45  <jmcarthur> i have no idea at all
+2011-07-24T11:10:55  <jmcarthur> nor do i know where to look
+2011-07-24T11:13:48  <humanfromearth> ok.. I'll just make a pull request and see what happens
+2011-07-24T11:20:08  *** chturne <chturne!~user@host86-128-9-193.range86-128.btcentralplus.com> has quit IRC (Remote host closed the connection)
+2011-07-24T11:26:53  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-07-24T11:29:45  *** Parsley <Parsley!5ed00294@gateway/web/freenode/ip.94.208.2.148> has joined #aichallenge
+2011-07-24T11:32:29  <antimatroid> from what i understand, ga and neural networks don't really work very well?
+2011-07-24T11:32:37  <antimatroid> and only really get used when there is no other option
+2011-07-24T11:32:55  <antimatroid> but yeah, in general you need to train any variables locally
+2011-07-24T11:33:06  <antimatroid> there was a ga bot for planet wars, spaceinvaders maybe?
+2011-07-24T11:33:14  <antimatroid> it didn't do all that well
+2011-07-24T11:34:31  <jmcarthur> it did already considering that it didn't have very long to learn
+2011-07-24T11:34:35  <jmcarthur> *did alright
+2011-07-24T11:34:59  *** mathis_ <mathis_!55b3ea2e@gateway/web/freenode/ip.85.179.234.46> has quit IRC (Quit: Page closed)
+2011-07-24T11:37:56  *** ArchMonkey <ArchMonkey!~ArchMonke@S0106001b63f2b998.ok.shawcable.net> has quit IRC (Quit: ArchMonkey)
+2011-07-24T11:38:06  *** mathis_ <mathis_!5ce06004@gateway/web/freenode/ip.92.224.96.4> has joined #aichallenge
+2011-07-24T11:53:10  *** mathis_ <mathis_!5ce06004@gateway/web/freenode/ip.92.224.96.4> has quit IRC (Quit: Page closed)
+2011-07-24T11:57:52  *** savanus <savanus!519c179e@gateway/web/freenode/ip.81.156.23.158> has joined #aichallenge
+2011-07-24T11:58:38  *** savanus <savanus!519c179e@gateway/web/freenode/ip.81.156.23.158> has quit IRC (Client Quit)
+2011-07-24T12:02:24  *** mathis_ <mathis_!5ce06004@gateway/web/freenode/ip.92.224.96.4> has joined #aichallenge
+2011-07-24T12:25:40  *** mcstar <mcstar!~mcstar@adsl-89-132-48-130.monradsl.monornet.hu> has joined #aichallenge
+2011-07-24T12:56:28  *** amstan <amstan!~amstan@69-196-151-239.dsl.teksavvy.com> has joined #aichallenge
+2011-07-24T12:56:28  *** ChanServ sets mode: +o amstan
+2011-07-24T13:03:50  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has quit IRC (Read error: Connection reset by peer)
+2011-07-24T13:05:56  *** nullkuhl <nullkuhl!~nullkuhl@196.221.103.183> has joined #aichallenge
+2011-07-24T13:05:56  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has joined #aichallenge
+2011-07-24T13:13:53  *** antimatroid <antimatroid!~nick@112.245-26-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-07-24T13:14:03  *** antimatroid <antimatroid!~nick@112.245-26-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-07-24T13:34:41  *** Bhaskerh <Bhaskerh!~androirc@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-07-24T13:36:13  *** [airvey] <[airvey]!~herve@obs92-5-88-163-187-42.fbx.proxad.net> has joined #aichallenge
+2011-07-24T14:05:36  *** choas <choas!~lars@p5792C937.dip.t-dialin.net> has joined #aichallenge
+2011-07-24T14:06:47  *** amstan_ <amstan_!~alex@69-196-151-239.dsl.teksavvy.com> has joined #aichallenge
+2011-07-24T14:06:47  *** ChanServ sets mode: +o amstan_
+2011-07-24T14:20:51  *** amstan <amstan!~amstan@69-196-151-239.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-07-24T14:22:06  *** amstan_ <amstan_!~alex@69-196-151-239.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-07-24T14:23:20  *** amstan <amstan!~amstan@69-196-151-239.dsl.teksavvy.com> has joined #aichallenge
+2011-07-24T14:23:20  *** ChanServ sets mode: +o amstan
+2011-07-24T14:24:15  <amstan> mleise: http://www.unixmen.com/software/1834-nvidia-27521-has-been-released-with-installation-instructions
+2011-07-24T14:24:32  <amstan> mleise: will fix that crash thing with maximizing konsole
+2011-07-24T14:29:47  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-07-24T14:31:11  <McLeopold> @later tell amstan I'll have my head back in the contest on Thursday, on vacation
+2011-07-24T14:31:11  <contestbot> McLeopold: As you wish.
+2011-07-24T14:31:32  *** jbrechtel_ <jbrechtel_!~jbrechtel@64.134.176.244> has joined #aichallenge
+2011-07-24T14:32:49  *** Bhaskerh <Bhaskerh!~androirc@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Ping timeout: 240 seconds)
+2011-07-24T14:34:24  <mcstar> hey guys, would it be possible to add ccl to the available languages?
+2011-07-24T14:34:33  <mcstar> (sorry, implementation)
+2011-07-24T14:36:47  <amstan> McLeopold: k
+2011-07-24T14:37:13  *** humanfromearth <humanfromearth!~sasha@86.104.57.133> has left #aichallenge
+2011-07-24T14:43:26  <jmcarthur> mcstar: put together an installation guide and patch the source tree and you should be gold
+2011-07-24T14:43:44  <mcstar> o.O
+2011-07-24T14:44:24  <mcstar> im sure theres an apt command that lets you install it easier
+2011-07-24T14:44:28  <mcstar> or wth do you mean?
+2011-07-24T14:45:47  <mcstar> is clozure cl not among natty's packages? jmcarthur is this what you meant?
+2011-07-24T14:46:46  <mcstar> jmcarthur: can i ask you a big favor? are you near youre arch system?
+2011-07-24T14:47:04  *** jbrechtel__ <jbrechtel__!~jbrechtel@12.108.40.82> has joined #aichallenge
+2011-07-24T14:48:42  <jmcarthur> mcstar: the instructions would be whatever packages need to be installed, etc.
+2011-07-24T14:48:51  <jmcarthur> this would also need to be added to the worker setup script
+2011-07-24T14:48:57  *** jbrechtel_ <jbrechtel_!~jbrechtel@64.134.176.244> has quit IRC (Ping timeout: 258 seconds)
+2011-07-24T14:49:00  <jmcarthur> and you also need to tell the worker how to build and run it
+2011-07-24T14:49:09  <jmcarthur> i am on my arch system, yes
+2011-07-24T14:49:29  <mcstar> it seems i have a problem with my sbcl
+2011-07-24T14:49:49  <mcstar> i was asking around on #lisp, and it seems i dont get the same debugging output as others
+2011-07-24T14:50:04  <mcstar> do you have by any chance sbcl installed?
+2011-07-24T14:50:20  <jmcarthur> no. does it require any configuration?
+2011-07-24T14:50:27  <mcstar> no
+2011-07-24T14:50:34  <mcstar> its 10MB
+2011-07-24T14:50:41  <jmcarthur> i'll install it
+2011-07-24T14:50:50  <mcstar> ah, thx, youre sweet
+2011-07-24T14:51:09  <jmcarthur> so once it's installed what would you like me to do?
+2011-07-24T14:51:18  <jmcarthur> it's installed
+2011-07-24T14:51:25  <mcstar> http://pastebin.com/xrFd4WTF
+2011-07-24T14:51:38  <mcstar> the contents of this paste should go into a file.lisp
+2011-07-24T14:52:14  <jmcarthur> and then?
+2011-07-24T14:52:19  <mcstar> then, in the same directory, type sbcl
+2011-07-24T14:52:26  <mcstar> (load "file.lisp")
+2011-07-24T14:52:31  <mcstar> (fun1 34234234)
+2011-07-24T14:52:44  <mcstar> and i am interested in the full output that it shows
+2011-07-24T14:52:53  <mcstar> so pls pastebin it
+2011-07-24T14:53:57  <jmcarthur> http://pastebin.com/YAZ0SqhC
+2011-07-24T14:54:25  <mcstar> thx god
+2011-07-24T14:54:30  <mcstar> its the same as mine
+2011-07-24T14:54:40  <mcstar> and isnt what it supposed to be
+2011-07-24T14:54:50  <jmcarthur> lovely
+2011-07-24T14:54:55  <mcstar> jmcarthur: thank you very much
+2011-07-24T14:55:00  <jmcarthur> you're welcome
+2011-07-24T14:56:19  *** jbrechtel_ <jbrechtel_!~jbrechtel@64.134.176.244> has joined #aichallenge
+2011-07-24T14:59:29  *** jbrechtel__ <jbrechtel__!~jbrechtel@12.108.40.82> has quit IRC (Ping timeout: 250 seconds)
+2011-07-24T15:14:44  <mleise> amstan: what crash with maximizing konsole? I'm using gnome-terminal anyway :p
+2011-07-24T15:15:07  <amstan> mleise: then it wasn't you
+2011-07-24T15:15:21  <amstan> idk, i was talking to someone in this channel about the nvidia crashes in kde
+2011-07-24T15:15:29  <mcstar> amstan:
+2011-07-24T15:15:31  <mcstar> hello
+2011-07-24T15:15:35  <mcstar> :D
+2011-07-24T15:15:40  <amstan> mcstar: yes, probably you
+2011-07-24T15:15:45  <mcstar> probably
+2011-07-24T15:15:51  <amstan> mcstar: http://www.unixmen.com/software/1834-nvidia-27521-has-been-released-with-installation-instructions
+2011-07-24T15:16:09  <mcstar> yeah, several weeks ago it solved itself
+2011-07-24T15:16:22  <mcstar> but since i dont use kde anymore....
+2011-07-24T15:16:35  <mcstar> i was switching to awesome at that time when we talked about this
+2011-07-24T15:16:46  <mcstar> but thx
+2011-07-24T15:26:05  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-07-24T15:28:31  *** jbrechtel__ <jbrechtel__!~jbrechtel@12.108.40.82> has joined #aichallenge
+2011-07-24T15:31:11  *** jbrechtel_ <jbrechtel_!~jbrechtel@64.134.176.244> has quit IRC (Ping timeout: 240 seconds)
+2011-07-24T15:42:35  <berak> i don't think, i'll ever get that tcp-server running, but have some tron again  in the meantime .. http://tron-game.appspot.com/
+2011-07-24T15:48:22  <mcstar> Bots that caused more than 50 crashes or timeouts will see their source code exposed.
+2011-07-24T15:48:24  <mcstar> huh?
+2011-07-24T15:48:30  <mcstar> why is that good?
+2011-07-24T15:48:32  *** ibdknox <ibdknox!~ibdknox@c-98-210-156-61.hsd1.ca.comcast.net> has joined #aichallenge
+2011-07-24T15:48:38  <mcstar> i dont want to see those sources
+2011-07-24T15:48:40  <mcstar> :D
+2011-07-24T15:55:02  <mcstar> dont break my heart
+2011-07-24T15:55:23  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-07-24T15:59:18  *** [airvey] <[airvey]!~herve@obs92-5-88-163-187-42.fbx.proxad.net> has quit IRC (Read error: No route to host)
+2011-07-24T16:00:29  *** [airvey] <[airvey]!~herve@obs92-5-88-163-187-42.fbx.proxad.net> has joined #aichallenge
+2011-07-24T16:07:52  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-07-24T16:15:17  <berak> mcstar, if u update it, it will start from scratch..
+2011-07-24T16:33:53  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-07-24T16:47:12  <mcstar> gn
+2011-07-24T16:47:14  *** mcstar <mcstar!~mcstar@adsl-89-132-48-130.monradsl.monornet.hu> has left #aichallenge ("WeeChat 0.3.5")
+2011-07-24T17:49:12  <janzert> mleise amstan the output from the scheduler test started a while back http://pastebin.com/w8hc7yHy
+2011-07-24T17:49:34  <janzert> no time stamps though so can't tell if they all happened in one burst or not
+2011-07-24T17:49:47  <mleise> Shame on me.
+2011-07-24T17:50:18  <janzert> I do know when I checked it the first couple times there had been no output though
+2011-07-24T17:50:55  <mleise> At least there are no extreme values. That is good to know.
+2011-07-24T17:51:12  <amstan> janzert: didn't i run it with time?
+2011-07-24T17:51:13  <janzert> also I didn't stop it so it is still running
+2011-07-24T17:51:27  <amstan> janzert: i think i forgot
+2011-07-24T17:51:33  <janzert> doesn't appear to be
+2011-07-24T17:51:41  <janzert> but that wouldn't help anything here anyway
+2011-07-24T17:51:46  <amstan> janzert: can you restart it with time?
+2011-07-24T17:51:58  <amstan> janzert: would be nice to know how many time errors we have in a time period
+2011-07-24T17:52:23  <mleise> I can add time and date to the lines if you want
+2011-07-24T17:52:23  <janzert> a timestamp per line would be much better
+2011-07-24T17:52:28  * janzert nods
+2011-07-24T17:52:29  <amstan> mleise: yes
+2011-07-24T17:52:31  <mleise> :p
+2011-07-24T17:52:39  <mleise> any ideas on the timestamp format?
+2011-07-24T17:52:50  <amstan> mleise: just get the default one
+2011-07-24T17:53:17  <janzert> date and time down to the millisecond would be great
+2011-07-24T17:53:29  <janzert> exact format doesn't matter
+2011-07-24T17:53:48  <mleise> the millisecond after the delay, ok
+2011-07-24T17:53:52  <janzert> just down to the second is really going to be enough of course
+2011-07-24T17:55:08  <mleise> I just have to look up date formatting...
+2011-07-24T18:08:07  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-07-24T18:17:16  *** martinording <martinording!5ab8cc2c@gateway/web/freenode/ip.90.184.204.44> has joined #aichallenge
+2011-07-24T18:18:25  <mleise> 32-bit executable is here: http://marco-leise.homedns.org/scheduler_test
+2011-07-24T18:19:12  <martinording> hey, anyone knows when c# bots will stop failing the tests?
+2011-07-24T18:20:59  *** berak <berak!~chatzilla@89.204.153.166> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-07-24T18:21:28  <janzert> mleise: hmm, could you commit the updated source. the worker doesn't like that binary for some reason
+2011-07-24T18:21:50  <janzert> oh, was it maybe not statically linked?
+2011-07-24T18:21:50  <mleise> kk
+2011-07-24T18:22:14  <mleise> I'll just upload the source
+2011-07-24T18:22:26  <janzert> ok
+2011-07-24T18:23:48  <CIA-48> aichallenge: Marco Leise epsilon * ra39e84b / ants/util/scheduler_test.d : added timestamp to scheduler_test.d - https://github.com/aichallenge/aichallenge/commit/a39e84bca9114bae11b1597a4487d2dc205ec1a6
+2011-07-24T18:24:25  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has quit IRC (Remote host closed the connection)
+2011-07-24T18:28:02  <mleise> I use dmd 2.054 now, but I don't think that I use functions that are non-existent in the server's 2.053 version.
+2011-07-24T18:28:22  <janzert> it compiled and is running fine
+2011-07-24T18:28:50  <janzert> http://pastebin.com/fhrpTiQz
+2011-07-24T18:29:24  <mleise> much better than the previous output :)
+2011-07-24T18:29:33  <janzert> very fancy :)
+2011-07-24T18:29:59  <janzert> ooh, it's up to 508ms now ;)
+2011-07-24T18:32:35  <mleise> I think I'll try my luck and give my bot only a small safety margin. These numbers look good most of the time.
+2011-07-24T18:40:08  <mleise> antimatroid: ping
+2011-07-24T18:53:51  *** choas <choas!~lars@p5792C937.dip.t-dialin.net> has quit IRC (Ping timeout: 276 seconds)
+2011-07-24T19:02:03  *** antimatroid <antimatroid!~nick@112.245-26-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-07-24T19:02:23  *** antimatroid <antimatroid!~nick@112.245-26-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-07-24T19:13:30  *** nux67 <nux67!51b9bee9@gateway/web/freenode/ip.81.185.190.233> has quit IRC (Quit: Page closed)
+2011-07-24T19:19:30  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Ping timeout: 252 seconds)
+2011-07-24T19:21:34  *** martinording <martinording!5ab8cc2c@gateway/web/freenode/ip.90.184.204.44> has quit IRC (Quit: Page closed)
+2011-07-24T19:28:51  *** antimatroid <antimatroid!~nick@112.245-26-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 258 seconds)
+2011-07-24T19:36:27  *** jmreardon <jmreardon!~jmreardon@CPE0026f3271b08-CM0026f3271b05.cpe.net.cable.rogers.com> has quit IRC (Quit: jmreardon)
+2011-07-24T19:38:07  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-07-24T19:48:40  *** [airvey] <[airvey]!~herve@obs92-5-88-163-187-42.fbx.proxad.net> has quit IRC (Quit: [airvey])
+2011-07-24T20:08:34  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 264 seconds)
+2011-07-24T20:08:48  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: if you're bored then you're boring)
+2011-07-24T20:33:04  *** onensora <onensora!c@546BF7D5.cm-12-4d.dynamic.ziggo.nl> has quit IRC ()
+2011-07-24T21:04:35  *** Parsley <Parsley!5ed00294@gateway/web/freenode/ip.94.208.2.148> has quit IRC (Quit: Page closed)
+2011-07-24T21:07:56  *** ibdknox <ibdknox!~ibdknox@c-98-210-156-61.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-07-24T21:16:24  *** nullkuhl1 <nullkuhl1!~nullkuhl@196.221.222.38> has joined #aichallenge
+2011-07-24T21:16:28  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has quit IRC (Ping timeout: 250 seconds)
+2011-07-24T21:16:34  *** nullkuhl1 is now known as nullkuhl
+2011-07-24T21:16:48  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has joined #aichallenge
+2011-07-24T21:50:06  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-07-24T22:19:11  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Ping timeout: 252 seconds)
+2011-07-24T22:24:16  *** jmreardon <jmreardon!~jmreardon@CPE0026f3271b08-CM0026f3271b05.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-07-24T22:43:52  *** ibdknox <ibdknox!~ibdknox@c-98-210-156-61.hsd1.ca.comcast.net> has joined #aichallenge
+2011-07-24T23:04:08  *** mathis_ <mathis_!5ce06004@gateway/web/freenode/ip.92.224.96.4> has quit IRC (Quit: Page closed)
+2011-07-24T23:14:00  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge

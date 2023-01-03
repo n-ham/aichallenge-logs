@@ -1,0 +1,1043 @@
+2011-05-29T00:07:09  <amstan> contestbot: later tell McLeopold when you do some git that replaces index.php, please run setup.py in website/
+2011-05-29T00:07:09  <contestbot> amstan: As you wish.
+2011-05-29T00:09:18  <amstan> :O http://aichallengebeta.hypertriangle.com/visualizer.php?game=5010
+2011-05-29T00:09:26  <amstan> smiley1983: it draws letters???
+2011-05-29T00:10:36  <amstan> Frontier: here's an error: http://aichallengebeta.hypertriangle.com/visualizer.php?game=5009
+2011-05-29T00:11:39  <qacek> another error here: http://aichallengebeta.hypertriangle.com/visualizer.php?game=5023
+2011-05-29T00:12:41  <Frontier> wont fix
+2011-05-29T00:12:56  <amstan> Frontier: but... it doesn't work?
+2011-05-29T00:13:33  <Frontier> McLeopold: some more replays to debug: ^
+2011-05-29T00:14:32  <Frontier> amstan: can I just log into the server, do git pull and then ant deploy?
+2011-05-29T00:14:48  <amstan> Frontier: after you sudo su contest, yes
+2011-05-29T00:15:18  <smiley1983> amstan: yes :)
+2011-05-29T00:15:27  <amstan> smiley1983: any details on that?
+2011-05-29T00:15:29  <Frontier> what was the ant command again, do you have it in your bash history?
+2011-05-29T00:15:47  <amstan> Frontier: try sudo su
+2011-05-29T00:15:49  <smiley1983> I have to leave for work... what details were you curious about?
+2011-05-29T00:15:51  <amstan> might be there
+2011-05-29T00:16:04  <amstan> smiley1983: are they random? any easter eggs?
+2011-05-29T00:17:23  <Frontier> oh someone is working on compiler.py on the server, never mind.
+2011-05-29T00:17:48  <amstan> Frontier: type w
+2011-05-29T00:18:03  <amstan> mcleopold seems to be logged in
+2011-05-29T00:18:17  <Frontier> its ok, I'll copy the files over from my computer
+2011-05-29T00:18:52  <amstan> you could i guess
+2011-05-29T00:20:25  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 248 seconds)
+2011-05-29T00:23:02  <Frontier> So here is the offending ant the replay amstan posted: http://aichallengebeta.hypertriangle.com/visualizer.php?game=5009&debug=true&row=49&col=1&turn=69&config={%22label%22:2}
+2011-05-29T00:23:23  <Frontier> It is not the bot that timed out this time.
+2011-05-29T00:26:32  <Frontier> The replay seems to have some data for a turn 69 that isn't actually played. Only my bot that times out seems to run longer than the others.
+2011-05-29T00:28:08  <Frontier> ah no, the cyan marker is also at "end - 1".
+2011-05-29T00:39:57  <Frontier> Since the game went for 68 turns and the particular ant (0) survived. It should have a command length of 69 instead of 68. And the whole game should be one turn shorter.
+2011-05-29T01:16:26  *** Palmik <Palmik!~palmik@palmikpc.sks6.muni.cz> has joined #aichallenge
+2011-05-29T01:47:38  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-29T01:51:30  <McLeopold> anyone around?
+2011-05-29T01:58:55  <Frontier> m...mm...me..?
+2011-05-29T02:10:51  <McLeopold> Hi Frontier
+2011-05-29T02:11:22  <McLeopold> Any clues on the incorrect game replays?
+2011-05-29T02:11:55  <Frontier> Yes, what I wrote above. It happens when the current game ends by the last opponent crashing/timing out
+2011-05-29T02:12:36  <Frontier> somehow the turn count gets messed up then
+2011-05-29T02:15:07  <Frontier> Let's say we have two players in a game, and player 1 crashes right away in the first turn. What would the resulting replay look like? is there 1 turn or 0 turns?
+2011-05-29T02:15:50  <Frontier> because you can argue that the game was decided /before/ one turn was played
+2011-05-29T02:17:27  *** UncleVasya <UncleVasya!kvirc@46.133.255.192> has joined #aichallenge
+2011-05-29T02:23:02  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Quit: ChatZilla 0.9.86.1-rdmsoft [XULRunner 1.9.0.15/2009101909])
+2011-05-29T02:28:47  <McLeopold> yeah, I saw that a functional test with an ErrorBot would cause the visualizer to error out
+2011-05-29T02:29:35  <McLeopold> Frontier: I would say the game would be 1 turn.  The crashed bots "moves" where all holds.
+2011-05-29T02:31:00  <Frontier> ok, and the score array for player 1 has one entry, and for player 2 it has two entries
+2011-05-29T02:32:28  <McLeopold> Both would have 2
+2011-05-29T02:32:49  <McLeopold> [score after turn 1, bonus at end of game]
+2011-05-29T02:33:40  <Frontier> but player one crashed right at the start, it didn't score anything
+2011-05-29T02:33:54  <McLeopold> so it would have [0,0]
+2011-05-29T02:34:19  <Frontier> in the visualizer you would see player one crash @ turn 1 and player 2 win @ turn 2 (end turn)
+2011-05-29T02:34:22  <McLeopold> I guess it could have just one...
+2011-05-29T02:35:06  <Frontier> if you give both players two score values then the visualizer would never show a crash at the first turn, which would seem right
+2011-05-29T02:35:20  <McLeopold> so, if a player crashes at a turn, they don't get a score
+2011-05-29T02:35:33  <McLeopold> so if you crash right away, you should have a blank score list
+2011-05-29T02:35:36  <Frontier> yes, that would be good
+2011-05-29T02:36:05  <McLeopold> what about the ant lines?  they do have an ant
+2011-05-29T02:36:07  <Frontier> wait, would ther not be at least one element in the list?
+2011-05-29T02:36:55  <Frontier> the score for each player at the start of the match? i.e. [1] if everyone has 1 starting ant
+2011-05-29T02:37:14  <McLeopold> score is accumulated after each turn, so I would say no elements in list
+2011-05-29T02:37:35  <Frontier> but I display something before turn 1
+2011-05-29T02:37:45  <McLeopold> all zeros?
+2011-05-29T02:38:00  <Frontier> right
+2011-05-29T02:38:26  <McLeopold> so, we can put a starting score in, but that would mean the surviving player would have 3 elements in the list
+2011-05-29T02:38:44  <Frontier> ??
+2011-05-29T02:38:52  <McLeopold> [start, after turn 1, end bonus]
+2011-05-29T02:39:33  <Frontier> currently there is no such thing as an additional end bonus in the replay files if i am not mistaken
+2011-05-29T02:40:21  <Frontier> 'after turn 1' and 'end bonus' are simply added
+2011-05-29T02:40:35  <McLeopold> They should be separated
+2011-05-29T02:41:01  <McLeopold> but only surviving players would have the extra list element
+2011-05-29T02:41:43  <McLeopold> the visualizer should also indicate how much bonus each surviving player got
+2011-05-29T02:41:57  <Frontier> how much more can I pack in? :p
+2011-05-29T02:42:18  <McLeopold> :)
+2011-05-29T02:43:20  <Frontier> ok, how about an additional array property 'bonus' next to 'scores'
+2011-05-29T02:43:40  <McLeopold> Now we need to be able to click on a spot on the map, and get the auto-zoom querystring copied to the clipboard. :p
+2011-05-29T02:43:59  <McLeopold> I'm okay with a bonus property
+2011-05-29T02:44:05  <Frontier> and after the last turn i display <running score> + <bonus> in the bar graph
+2011-05-29T02:44:29  <McLeopold> with a slightly darker color for the bonus?
+2011-05-29T02:45:02  <Frontier> McLeopold: We also need to lay waypoints and create automated playbacks with the camera following ants or moving to a row/col
+2011-05-29T02:45:31  <Frontier> ...with a slightly darker color
+2011-05-29T02:45:32  <McLeopold> and then show it in 3d?
+2011-05-29T02:46:04  <Frontier> *sigh* yes, with WebGL and Opera 3D canvas. Using ShaderModel 3.0.
+2011-05-29T02:46:14  <McLeopold> :P
+2011-05-29T02:46:49  <Frontier> and a Java hack for IE
+2011-05-29T02:47:27  <McLeopold> So this is minor, but can you make the text "Scores, #of ants, # of ants | turn" black, and make the rounded boxes grey?  So, reverse the coloring?
+2011-05-29T02:48:09  <Frontier> hmm. would that look better?
+2011-05-29T02:48:39  <McLeopold> I think it might.  You only want black to mean something.  Usually you want to fade dividing lines.
+2011-05-29T02:49:26  <McLeopold> I'm a fan of not using true black on websites
+2011-05-29T02:49:35  <McLeopold> So there is less contrast
+2011-05-29T02:51:32  <Frontier> Now the text is black and looks like you can click on it.
+2011-05-29T02:52:39  <McLeopold> link?
+2011-05-29T02:53:23  <Frontier> http://marco-leise.homedns.org/antgui/work/visualizer.php?game=8
+2011-05-29T02:54:06  <Frontier> It is too heavy in my eyes. I'll keep the old color scheme there.
+2011-05-29T02:55:11  <Frontier> btw the food bonus is going to crazy values on 5000 turn matches that end early.
+2011-05-29T02:56:15  <Frontier> When two ants kill each other, do both players ger 1 score point?
+2011-05-29T02:56:45  <McLeopold> a 1v1?  both would get 1 for the kill, and 1 for having an ant
+2011-05-29T02:57:20  <McLeopold> yeah, the black text is too dark, but I would still lighten the border up
+2011-05-29T02:58:35  <Frontier> 1 for having an ant? but that would only be on turn 1, right?
+2011-05-29T03:00:39  *** UncleVasya <UncleVasya!kvirc@46.133.255.192> has quit IRC (Ping timeout: 260 seconds)
+2011-05-29T03:00:41  <McLeopold> I can't remember when we give the point for gaining an ant?
+2011-05-29T03:01:37  <Frontier> i think i get it now. i just though i once saw a battle 1vs1 where one player would not see a score increment
+2011-05-29T03:10:27  *** chris___0076 <chris___0076!~Chris_007@adsl-98-66-195-197.asm.bellsouth.net> has joined #aichallenge
+2011-05-29T03:13:29  *** _0x47 <_0x47!~slash@p5B12F6EF.dip.t-dialin.net> has quit IRC (Ping timeout: 260 seconds)
+2011-05-29T03:13:38  *** chris__0076 <chris__0076!~Chris_007@adsl-98-66-250-80.asm.bellsouth.net> has quit IRC (Ping timeout: 276 seconds)
+2011-05-29T03:14:18  *** _0x47 <_0x47!~slash@p57B3FC1A.dip.t-dialin.net> has joined #aichallenge
+2011-05-29T03:45:31  *** chris___0076 <chris___0076!~Chris_007@adsl-98-66-195-197.asm.bellsouth.net> has quit IRC (Quit: Leaving)
+2011-05-29T03:52:01  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-05-29T04:02:03  <CIA-48> aichallenge: Marco Leise epsilon * rba8ea5b / (5 files): visualizer: food bonus display; cpu usage is now a config item; fixed some of the garbage on screen when the display size is too small; added +/- key handler to control playback speed - http://bit.ly/jdghDW
+2011-05-29T04:06:00  <Frontier> McLeopold: that should do it
+2011-05-29T04:06:23  <McLeopold> ok
+2011-05-29T04:07:32  <Frontier> a (invalid) sample is here: http://marco-leise.homedns.org/antgui/stable/visualizer.php?game=8&turn=1687
+2011-05-29T04:23:12  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-05-29T04:25:36  <CIA-48> aichallenge: McLeopold epsilon * r3c4de13 / (8 files in 4 dirs): tracking of runtime errors for functional test and during games - http://bit.ly/iZ1hN7
+2011-05-29T04:38:34  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has quit IRC (Quit: WeeChat 0.3.5)
+2011-05-29T04:43:50  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Read error: Connection reset by peer)
+2011-05-29T04:48:50  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-29T05:04:06  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has joined #aichallenge
+2011-05-29T05:04:56  <McLeopold> GreenTea: hi
+2011-05-29T05:06:50  <GreenTea> Hi
+2011-05-29T05:07:05  <McLeopold> I'm trying to find out why your bot crashes on the test server.
+2011-05-29T05:07:18  <McLeopold> I'm hoping to get stderr reported for you
+2011-05-29T05:08:09  <GreenTea> thank you)
+2011-05-29T05:08:51  <GreenTea> It never crash on the middle of the game. only in first move..
+2011-05-29T05:09:09  <McLeopold> I'm guessing a memory issue on JVM startup
+2011-05-29T05:09:34  <McLeopold> The real server will be better after beta
+2011-05-29T05:10:00  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 240 seconds)
+2011-05-29T05:15:18  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has joined #aichallenge
+2011-05-29T05:38:03  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-05-29T05:38:53  *** mcstar <mcstar!mcstar@adsl-89-132-30-27.monradsl.monornet.hu> has joined #aichallenge
+2011-05-29T05:39:51  * mcstar hails jbroman from his shiny win 7 installation
+2011-05-29T05:49:59  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-05-29T05:59:07  <GreenTea> Try to run playgame.py from sources:
+2011-05-29T05:59:08  <GreenTea> Traceback (most recent call last):   File "E:\jFiles\AntWars\sys_sources\aichallenge\ants\playgame.py", line 16, in <module>     from engine import run_game   File "../worker\engine.py", line 3, in <module>     from sandbox import Sandbox   File "../worker\sandbox.py", line 10, in <module>     from Queue import Queue, Empty ImportError: No module named Queue
+2011-05-29T05:59:37  <GreenTea> version of python - 2.5
+2011-05-29T06:04:48  <mcstar> run play_one_game.sh
+2011-05-29T06:07:02  <mcstar> oh ur on win, then theres one with .cmd or something
+2011-05-29T06:09:03  <GreenTea> yes i'rn run play_one_game.cmd
+2011-05-29T06:10:42  <mcstar> i dont think it should use sandbox
+2011-05-29T06:11:11  <mcstar> i remember a similar error, but with play_one_game it disapperared to me
+2011-05-29T06:11:21  <mcstar> as far as i recall
+2011-05-29T06:20:12  <antimatroid1> no idea
+2011-05-29T06:20:18  <antimatroid1> GreenTea: how are your ideas going for strategy? :P
+2011-05-29T06:20:22  <GreenTea> hm. actually my instance of python 3.1 is running..
+2011-05-29T06:21:03  <antimatroid1> i'm fairly good with food collection (not just the trivial breadth first search from all food squares), but i haven't thought of anything good for combat
+2011-05-29T06:21:10  <GreenTea> on 2.5 another error
+2011-05-29T06:21:22  <antimatroid1> i wanted to partition "battle" ants into sets that could affect each other and game tree it, but no way that's happening in a second
+2011-05-29T06:21:23  <GreenTea>   File "playgame.py", line 159     print("Running profile and outputting to %s" % (prof_file,), file=sys.stderr)
+2011-05-29T06:21:50  <GreenTea>  File "playgame.py", line 159    print("Running profile and outputting to %s" % (prof_file,), file=sys.stderr)                                                                     ^
+2011-05-29T06:22:49  <GreenTea> I will start from path finding)
+2011-05-29T06:23:22  *** tomh <tomh!~tomh@unaffiliated/tomh> has joined #aichallenge
+2011-05-29T06:25:36  <GreenTea> if comment line # print("Running profile and outputting to %s" % (prof_file,), file=sys.stderr)                                                                     ^
+2011-05-29T06:26:00  <GreenTea> then error playgame.py:206: Warning: 'with' will become a reserved keyword in Python 2.6   File "playgame.py", line 206     with open(opts.map, 'r') as map_file:
+2011-05-29T06:26:11  <GreenTea> strange
+2011-05-29T06:26:17  <GreenTea> why 2.6
+2011-05-29T06:26:27  <mcstar> 2.7 is the current python version
+2011-05-29T06:26:29  <GreenTea> I run "c:\Program Files (x86)\Python25\python.exe"
+2011-05-29T06:26:37  <mcstar> and as far as i know the developers use this too
+2011-05-29T06:26:42  <GreenTea> oh
+2011-05-29T06:26:46  <GreenTea> ok..
+2011-05-29T06:27:20  <mcstar> antimatroid1, hey havent talked lately
+2011-05-29T06:28:39  <mcstar> have you implemented some kind of path minimization?
+2011-05-29T06:35:42  <GreenTea> cool, works with python 2.7..
+2011-05-29T06:43:21  <antimatroid1> mcstar: hello, yeah, i'm just heading into exam season
+2011-05-29T06:43:26  <antimatroid1> classes ended friday
+2011-05-29T06:43:40  <antimatroid1> path minimization for hwat?
+2011-05-29T06:43:53  <antimatroid1> i did a fairly decent food collection algorithm a while ago
+2011-05-29T06:43:58  <antimatroid1> it was far better than hunterbot
+2011-05-29T06:44:27  <antimatroid1> it would collect all visible food, but also consider ants that I had already moved to collect food, if that makes sense? I expect a lot of people are doing that now?
+2011-05-29T06:45:17  <antimatroid1> it's reasonably costly though, if you have lots of food it can take over 200ms
+2011-05-29T06:45:44  <antimatroid1> but you are also probably planning too far ahead by then, as you collect the closest food first you can just do it for as long as you want each turn and just ignore the rest of the food
+2011-05-29T06:46:33  <antimatroid1> i'm very curious about people's ideas for fighting though
+2011-05-29T06:50:58  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-05-29T06:56:01  <mcstar> by path minimization i meant computing the shortest path between food cubes, obviously but since a food cube becomes an ant i guess this is not that important
+2011-05-29T07:01:13  <antimatroid1> i don't get what you mean? between food cubes?
+2011-05-29T07:02:41  <antimatroid1> i start with all squares containing an ant being available in 0 turns, then do a bfs from all food squares simultaneously until i've found the ant that can make it within the food radius of a food square, then update the availability values of the ants original location, it's target location and the food square location, then repeat that until all food is collected
+2011-05-29T07:02:56  *** UncleVasya <UncleVasya!kvirc@46.133.139.131> has joined #aichallenge
+2011-05-29T07:02:59  <antimatroid1> if you want, you can also pseudo collect food with their ants if you don't want to be going for some food that is closer to them
+2011-05-29T07:03:57  *** delt0r_ <delt0r_!~delt0r@188-22-166-209.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-29T07:05:23  *** delt0r___ <delt0r___!~delt0r@188-22-175-225.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T07:05:34  <antimatroid1> GreenTea: i'm curious about your ideas if you're willing to share :P
+2011-05-29T07:05:56  <antimatroid1> i would be surprised if your food collection isn't similar to above
+2011-05-29T07:07:19  <antimatroid1> mcstar: i don't think i'm doing to manage much better than above, it's not optimal and there's a few little messy things you can tweak to your liking, but basically i expect the top bots to be collecting food like that
+2011-05-29T07:07:33  <antimatroid1> which leaves the real contest being who can battle best and manage a good macro strategy
+2011-05-29T07:08:43  <antimatroid1> my macro strategy will basically be along the lines of assigning a friend ant to every enemy ant and moving in their direction, spreading out and maximising visibility
+2011-05-29T07:09:22  <antimatroid1> somebody with their username starting with k had a neat little spread out function, but they didn't publicise the example games that showed it
+2011-05-29T07:09:47  <GreenTea> now i have no mature ideas) for now it is important to prepare environment..
+2011-05-29T07:10:00  <antimatroid1> yeah, i've mostly done that
+2011-05-29T07:10:17  <antimatroid1> i wrote the c++ bot a lot like an easy version of my normal bots, then made a separate "starter bot" for myself
+2011-05-29T07:10:35  <antimatroid1> i'm not doing more programming for it till after exams though
+2011-05-29T07:11:16  <mcstar> wel i think i will send the ant that seen the given food cube first, and then send it to eat it
+2011-05-29T07:11:53  <antimatroid1> what's a food cube?
+2011-05-29T07:12:01  <mcstar> food tile
+2011-05-29T07:12:04  <antimatroid1> square?
+2011-05-29T07:12:08  <mcstar> whatecer u want to cal it
+2011-05-29T07:12:09  <antimatroid1> a cube is three dimensional :P
+2011-05-29T07:12:12  <mcstar> yes
+2011-05-29T07:12:24  <mcstar> obviously ants cant exist in 2 dimensions
+2011-05-29T07:12:42  <mcstar> im imagining this in 2.5 dimensions
+2011-05-29T07:12:43  <antimatroid1> i'm a mathematician, whatever i say is so in the given context :P
+2011-05-29T07:12:53  <mcstar> 1 pixel in height
+2011-05-29T07:13:17  <antimatroid1> half a dimension doesn't make any sense
+2011-05-29T07:13:27  <mcstar> its a convention
+2011-05-29T07:13:35  <antimatroid1> for what?
+2011-05-29T07:13:45  <mcstar> u havent heard of 2.5D games?
+2011-05-29T07:13:45  <antimatroid1> physicists annoy me to buggery with the way they do maths :P
+2011-05-29T07:13:49  <antimatroid1> no?
+2011-05-29T07:13:58  <antimatroid1> is that a 2d game with a 3d visualiser?
+2011-05-29T07:14:22  <mcstar> u have a 2d map, but u look at it sort of from an angle, and object can shadow one another
+2011-05-29T07:14:27  <mcstar> old strategy games....
+2011-05-29T07:14:27  <antimatroid1> especially their index gymnastics and insistence to call what should be called a tensor field tensors :P
+2011-05-29T07:14:58  <mcstar> ?
+2011-05-29T07:15:07  <antimatroid1> you know what a vector field is yeah?
+2011-05-29T07:15:09  <antimatroid1> and a vector?
+2011-05-29T07:15:11  <sigh> antimatroid1: fraction dimensions are perfectly valid
+2011-05-29T07:15:11  <mcstar> no i dont
+2011-05-29T07:15:13  <mcstar> lol
+2011-05-29T07:15:18  <antimatroid1> sigh: how?
+2011-05-29T07:15:26  <sigh> although 2.5D in games is something else entirly
+2011-05-29T07:15:27  <antimatroid1> mcstar: oh sorry, ignore me then :)
+2011-05-29T07:15:33  <sigh> antimatroid1: every heard of fractals :P
+2011-05-29T07:15:42  <antimatroid1> yes, although i've never studied them
+2011-05-29T07:15:49  <mcstar> antimatroid1, im kidding of course i know what that is
+2011-05-29T07:15:50  <antimatroid1> but keep going...
+2011-05-29T07:16:11  <antimatroid1> mcstar: well physicst call tensors what are pretty much n-dimensional vector fields
+2011-05-29T07:16:21  <antimatroid1> so in my opinion, logically they should be called tensor fields
+2011-05-29T07:16:41  <sigh> fractals are called as such because they have fractional dimentionality
+2011-05-29T07:16:43  <antimatroid1> and mathematicians use of tensor should be standard, a multilinear map, ie. f:R^n->R
+2011-05-29T07:17:03  <sigh> here's a good starting point: http://en.wikipedia.org/wiki/Hausdorff_dimension
+2011-05-29T07:17:11  <mcstar> antimatroid1, a tensor becomes a tensor field when it makes sense for it to be defined pointwise
+2011-05-29T07:18:14  <antimatroid1> mcstar: hmmm okay, i admittedly know very little about the tensors physicists use
+2011-05-29T07:18:18  <mcstar> and physicists have another kind of dimension lol, like a real dimension but we can even write power-series in the dimension
+2011-05-29T07:18:41  <mcstar> as in the value of the dimension
+2011-05-29T07:18:56  <antimatroid1> it just annoys me to no end when they try to tell people online that not just any n-dimensional cube of numbers say isn't a tensor because it doesn't necessarily adhere to some coordinate transformation laws, but that's all bs
+2011-05-29T07:19:50  <mcstar> but its true
+2011-05-29T07:20:10  <mcstar> a matrix isnt a collection of nxn numbers
+2011-05-29T07:20:21  <mcstar> its a representation of a matrix
+2011-05-29T07:20:33  <antimatroid1> sigh: hmmm okay :P
+2011-05-29T07:20:49  <antimatroid1> i can't be bothered reading through all that though :P
+2011-05-29T07:21:02  <antimatroid1> yeah, that gets iffy
+2011-05-29T07:21:17  <mcstar> antimatroid1, you must have heard hausdorff dimensions
+2011-05-29T07:21:17  <antimatroid1> i used to call an mxn table of say chars as a matrix, but it's not really
+2011-05-29T07:21:21  <sigh> antimatroid1: the intro is enough to get an idea :P
+2011-05-29T07:21:23  <antimatroid1> nope?
+2011-05-29T07:21:43  *** sir_macelon <sir_macelon!~sir_macel@78.8.136.33> has joined #aichallenge
+2011-05-29T07:22:00  <mcstar> actually there are several definitions of fractal dimensions
+2011-05-29T07:22:16  <sigh> yeah, the one I linked seems to be the most common, though
+2011-05-29T07:22:39  <mcstar> it might be ahrd to compute
+2011-05-29T07:22:43  <antimatroid1> there is way too much maths, it's both nice and bad
+2011-05-29T07:23:12  <sigh> there was an easier one which only required you to understand what logs were
+2011-05-29T07:23:15  <sigh> I'll try find it
+2011-05-29T07:23:19  <mcstar> antimatroid1, so do you know now what i meant by 2.5D?
+2011-05-29T07:23:58  <antimatroid1> yeah sort of
+2011-05-29T07:24:18  <antimatroid1> an interesting example i can think of was that icpc ai contest earlier in the year
+2011-05-29T07:24:33  <antimatroid1> it could be represented in 2d, but really it was 3d sort of
+2011-05-29T07:24:39  <antimatroid1> there was even a 3d visualiser for it
+2011-05-29T07:24:54  <antimatroid1> http://queue.acm.org/icpc/
+2011-05-29T07:24:59  <mcstar> type it in google 2.5d game
+2011-05-29T07:25:07  <mcstar> first pic is what i meant
+2011-05-29T07:25:21  <sigh> antimatroid1: this page seems to be a good introduction to fractional dimensions, less math the wiki :P http://www.vanderbilt.edu/AnS/psychology/cogsci/chaos/workshop/Fractals.html
+2011-05-29T07:25:43  <UncleVasya> I quess first pic will be a Diablo screnshot :)
+2011-05-29T07:25:44  <antimatroid1> mcstar: yeah okay, like pokemon?
+2011-05-29T07:25:53  <antimatroid1> that should be the obvious trivial example :P
+2011-05-29T07:25:57  <mcstar> what is pokemon :D
+2011-05-29T07:26:02  <sigh> haha
+2011-05-29T07:26:10  <antimatroid1> no, it's "there are only 151 pokemon"
+2011-05-29T07:26:19  <antimatroid1> i refuse to hear otherwise
+2011-05-29T07:26:30  <sigh> no love for missingno? :P
+2011-05-29T07:27:18  <antimatroid1> no idea what that is :P
+2011-05-29T07:27:36  <antimatroid1> oh, yes i do
+2011-05-29T07:27:53  <antimatroid1> i think, i forgot about tht
+2011-05-29T07:27:56  <sigh> I was about to ask if you actual played the originals :P
+2011-05-29T07:27:58  <antimatroid1> and mew was 152 yeah?
+2011-05-29T07:28:07  <sigh> new was 151
+2011-05-29T07:28:12  <sigh> *mew
+2011-05-29T07:28:14  <antimatroid1> i only ever played red
+2011-05-29T07:28:26  <antimatroid1> so mewtwo was 150?
+2011-05-29T07:28:30  <sigh> yes
+2011-05-29T07:28:33  <antimatroid1> ah okay
+2011-05-29T07:28:46  <antimatroid1> okay, there are 152 pokemon
+2011-05-29T07:28:54  <sigh> haha
+2011-05-29T07:29:00  <mcstar> sigh, its easy to calculate hausdorff with recursive patterns, but what do u do with something like julai/mandelbrot?
+2011-05-29T07:29:18  <antimatroid1> ask euler
+2011-05-29T07:29:33  <mcstar> euler know shit bout fractals
+2011-05-29T07:29:50  <antimatroid1> http://benisawesome.files.wordpress.com/2009/10/457x457-missingno-has-anyone-really.jpg errr what?
+2011-05-29T07:29:59  <sigh> mcstar, dunno... I don't know much about this stuff other than the basics
+2011-05-29T07:30:19  <antimatroid1> does that make sense?
+2011-05-29T07:30:34  <mcstar> yes no right soon
+2011-05-29T07:31:09  <sigh> "The Hausdorff dimension of the boundary of the Mandelbrot set equals 2 as determined by a result of Mitsuhiro Shishikura." from wikipedia
+2011-05-29T07:31:34  <mcstar> lol
+2011-05-29T07:31:41  <mcstar> i guess its not easy then
+2011-05-29T07:31:44  <sigh> references Mitsuhiro Shishikura, The Hausdorff dimension of the boundary of the Mandelbrot set and Julia sets, Ann. of Math. 147 (1998) p. 225-267.
+2011-05-29T07:31:54  <sigh> so I guess that's a good place to look :)
+2011-05-29T07:32:00  <mcstar> ok
+2011-05-29T07:32:11  <sigh> http://arxiv.org/abs/math.DS/9201282
+2011-05-29T07:32:54  <sigh> I meant to paste the link before, copied the wrong bit of text :P
+2011-05-29T07:33:19  <sir_macelon> hi, how can i check why my bot crashed on the beta server? i see only replay is available and no err logs
+2011-05-29T07:33:38  <mcstar> i found it
+2011-05-29T07:33:58  <GreenTea> map "world" =))
+2011-05-29T07:34:23  <mcstar> sir_macelon, you should ask sir mcleopold
+2011-05-29T07:35:43  <mcstar> i guess who understands fractals really understands calculus
+2011-05-29T07:35:46  <sir_macelon> seems he;s not around, anyone else?
+2011-05-29T07:36:08  <antimatroid1> sir_macelon: try running your bot locally with the test thing
+2011-05-29T07:36:32  <antimatroid1> i think you want to use your bot in test_bot.sh
+2011-05-29T07:36:40  <antimatroid1> something like "./playgame.py --food none -o viewer -t 30 -v -m submission_test/test.map "python dist/sample_bots/python/LeftyBot.py" "python submission_test/TestBot.py""
+2011-05-29T07:36:59  <sir_macelon> i already did that many times and it never crashed
+2011-05-29T07:37:06  <antimatroid1> hmm, not sure then sorry
+2011-05-29T07:37:30  <sir_macelon> and on this beta server sometimes it crashes and i don't know why
+2011-05-29T07:37:51  <antimatroid1> is it timing out maybe?
+2011-05-29T07:38:12  <sir_macelon> no, the status is crashed and it is always on first turn
+2011-05-29T07:39:21  <antimatroid1> hmmm no idea sorry :)
+2011-05-29T07:39:25  <sir_macelon> for me it is some problem with the running script on the server
+2011-05-29T07:39:39  <sir_macelon> can anyone check that?
+2011-05-29T07:43:10  <mcstar> sigh, that article is very complicated
+2011-05-29T07:43:28  <sigh> mcstar: I can't help you there, it's well over my head :)
+2011-05-29T07:43:34  <mcstar> maybe when brain augmentation becomes possible i will try to understand it
+2011-05-29T07:43:58  <sir_macelon> for example in game 5400 i would like to check what happaned
+2011-05-29T07:44:40  <mcstar> sir_macelon, there was a similar problem in the last couple of days discussed here, maybe u should check irc logs
+2011-05-29T07:46:03  <sigh> or you can message McLeopold
+2011-05-29T07:46:24  <mcstar> hell i cant stand this, my fan annoys me, speedfan cant control my fanspeed
+2011-05-29T07:49:01  <sir_macelon> mcstar: thanks, i'll check that
+2011-05-29T08:01:38  <antimatroid1> ffffffffff
+2011-05-29T08:01:40  *** UncleVasya <UncleVasya!kvirc@46.133.139.131> has quit IRC ()
+2011-05-29T08:01:53  <antimatroid1> i had a 10 minute video loaded in youtube and accidentally closed the wrong tab
+2011-05-29T08:02:36  <mcstar> whoad
+2011-05-29T08:02:55  <mcstar> once it happend to me with a 1 hour video
+2011-05-29T08:03:15  <mcstar> i went like this: wtf
+2011-05-29T08:03:43  <mcstar> enough cinicism for today
+2011-05-29T08:03:58  <mcstar> i must unboot this windows now
+2011-05-29T08:04:03  *** mcstar <mcstar!mcstar@adsl-89-132-30-27.monradsl.monornet.hu> has quit IRC (Quit: Leaving)
+2011-05-29T08:06:22  *** mcstar <mcstar!~mcstar@adsl-89-132-46-51.monradsl.monornet.hu> has joined #aichallenge
+2011-05-29T08:22:17  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-05-29T08:25:39  <sir_macelon> i've checked there are some out of memory errors for java bots, which cause them to crash
+2011-05-29T08:25:48  <sir_macelon> when this will be fixed?
+2011-05-29T08:26:36  <Frontier> haha you are the second to ask. never! this is a limitation of the test environment
+2011-05-29T08:28:53  <sir_macelon> so it shouldn't happen on the real contest?
+2011-05-29T08:29:36  <sir_macelon> guess i'll have to catch those errors in my code.. gosh..
+2011-05-29T08:45:03  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-29T08:56:32  <Frontier> no in the real contest you should be fine
+2011-05-29T08:57:33  <sir_macelon> but is there any way to see the stack trace?
+2011-05-29T09:00:13  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 240 seconds)
+2011-05-29T09:06:19  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-29T09:09:30  <janzert> I think McLeopold just checked in changes a few hours ago to record stderr output from bots during games, it's probably not live on the beta server yet though
+2011-05-29T09:13:42  <sigh> janzert: you seemed to be interested in these things... there's now a solid 5d bot on KGS
+2011-05-29T09:15:33  <smiley1983> sigh: what's the name of the bot?
+2011-05-29T09:15:43  <sigh> Zen19D
+2011-05-29T09:15:57  <smiley1983> thankyou, I'll go and look at it...
+2011-05-29T09:19:28  <janzert> It's 5d, but it has only been around for 2 days
+2011-05-29T09:19:48  <janzert> but yeah, there have been some really nice improvements over the last few months
+2011-05-29T09:20:15  <sigh> I've been watching the games, it's rank seems fair
+2011-05-29T09:20:34  <antimatroid1> sweet
+2011-05-29T09:20:42  <antimatroid1> i can change workspaces with ctrl alt arrow
+2011-05-29T09:20:46  <antimatroid1> this changes everything
+2011-05-29T09:22:05  <janzert> sigh: did you watch the slow bot tournament last week at all?
+2011-05-29T09:22:32  <sigh> janzert: nope, I was out looking for a place to live :P
+2011-05-29T09:22:37  <sigh> anything interesting happen?
+2011-05-29T09:22:46  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@117.231.121.198> has joined #aichallenge
+2011-05-29T09:22:46  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-05-29T09:23:01  <janzert> I only got to watch a few partial games myself
+2011-05-29T09:23:06  <smiley1983> it seems to have a gap in its understanding of ko (game vs gogonuts)
+2011-05-29T09:23:26  <sigh> ko has always been a problem for bots
+2011-05-29T09:23:32  *** yasith_ <yasith_!~yasith@124.43.57.129> has joined #aichallenge
+2011-05-29T09:23:32  *** yasith <yasith!~yasith@124.43.57.129> has joined #aichallenge
+2011-05-29T09:23:38  <sigh> they also seem to like throwing away ko threats :P
+2011-05-29T09:23:56  <janzert> it seems ko brings about a bit of a horizon effect in mcts
+2011-05-29T09:24:00  <mcstar> what is 5d kgs?
+2011-05-29T09:24:00  <sigh> but also, gogonuts is pretty much an expert on playing bots
+2011-05-29T09:24:10  *** yasith_ <yasith_!~yasith@124.43.57.129> has quit IRC (Remote host closed the connection)
+2011-05-29T09:24:10  *** yasith <yasith!~yasith@124.43.57.129> has quit IRC (Remote host closed the connection)
+2011-05-29T09:24:46  <antimatroid1> mcstar: they're talking about go
+2011-05-29T09:24:47  <antimatroid1> if that helps
+2011-05-29T09:24:53  <antimatroid1> otherwise you probably know more than i
+2011-05-29T09:24:58  <smiley1983> mcstar: KGS is a Go server, 5d is a rank 4 away from top
+2011-05-29T09:25:02  <mcstar> you guys play go?
+2011-05-29T09:25:07  <mcstar> i want to learn too
+2011-05-29T09:25:09  <antimatroid1> not i
+2011-05-29T09:25:15  <mcstar> i see
+2011-05-29T09:25:16  <smiley1983> I haven't played in a while, but I have a bit
+2011-05-29T09:25:25  <janzert> mostly just track the state of computer go myself
+2011-05-29T09:25:34  <sigh> I used to play go a lot...
+2011-05-29T09:25:47  <antimatroid1> sigh is the resident go specialist
+2011-05-29T09:25:49  <sigh> now I just keep track of interesting events :P
+2011-05-29T09:25:52  <antimatroid1> at least atm :P
+2011-05-29T09:25:55  <mcstar> i read they gice computers high handicaps
+2011-05-29T09:25:59  <mcstar> give
+2011-05-29T09:26:30  <mcstar> how many moves is that today?
+2011-05-29T09:26:43  <smiley1983> this bot would still probably lose to relatively weak professional players (just judging by its rank)
+2011-05-29T09:27:24  <smiley1983> I mean with handicap
+2011-05-29T09:27:31  <smiley1983> up to 9 stones is normal
+2011-05-29T09:27:57  <mcstar> at least a game computers suck in
+2011-05-29T09:28:33  <mcstar> sigh: did you learn to play against bots or humans?
+2011-05-29T09:28:36  <smiley1983> they're getting better though: this one would slaughter me, and it doesn't play like a monte carlo bot
+2011-05-29T09:28:45  <sigh> mcstar: humans
+2011-05-29T09:29:05  <sigh> when I started playing bots were only about 10k, so it only took about half a year for me to beat them
+2011-05-29T09:29:12  <mcstar> maybe ill get my friends to play this instead of fps
+2011-05-29T09:29:29  <mcstar> i see
+2011-05-29T09:29:40  <janzert> mcstar: good luck ;)
+2011-05-29T09:29:58  <mcstar> im gonna need it :)
+2011-05-29T09:30:24  <sigh> the bots now are at a respectable rank... I wouldn't call you a weak player if you were 5d :)
+2011-05-29T09:30:35  <sigh> but yeah, they will still lose easily to a professional
+2011-05-29T09:30:53  <smiley1983> I see you do not play for rank :)
+2011-05-29T09:31:03  <sigh> me?
+2011-05-29T09:31:05  <smiley1983> I'm guessing that means you're better than me
+2011-05-29T09:31:13  <smiley1983> Assuming it's the same KGS username
+2011-05-29T09:31:27  <sigh> yeah... I'm logged in as pulsar though
+2011-05-29T09:31:49  <sigh> sigh is an admin account, and I haven't done any admin stuff for a while and hate users messing me :P
+2011-05-29T09:32:00  <smiley1983> Right, that makes sense
+2011-05-29T09:32:41  <smiley1983> my account there is jedwardh, but hasn't been used in a while
+2011-05-29T09:33:18  <sigh> still got more recent games than me :P
+2011-05-29T09:33:39  <smiley1983> seeing the mention of the bot made me want to play again
+2011-05-29T09:34:02  *** UncleVasya <UncleVasya!kvirc@46.133.214.239> has joined #aichallenge
+2011-05-29T09:34:58  <sigh> I feel some vague desire try to get better to keep up with the bots, but that's too much effort now :P
+2011-05-29T09:35:20  <sigh> the other option is to invest time into learning how to write one :)
+2011-05-29T09:35:37  <smiley1983> ha, yes, and will get harder as they get closer to professional standard and people throw more processing power at them
+2011-05-29T09:35:54  *** yasith_ <yasith_!~yasith@124.43.57.129> has joined #aichallenge
+2011-05-29T09:35:54  *** yasith__ <yasith__!~yasith@124.43.57.129> has joined #aichallenge
+2011-05-29T09:35:54  *** yasith <yasith!~yasith@124.43.57.129> has joined #aichallenge
+2011-05-29T09:36:13  <sigh> well they are already at or almost at pro level on 9x9
+2011-05-29T09:36:30  *** yasith__ <yasith__!~yasith@124.43.57.129> has quit IRC (Client Quit)
+2011-05-29T09:36:38  *** yasith_ <yasith_!~yasith@124.43.57.129> has quit IRC (Client Quit)
+2011-05-29T09:37:33  <UncleVasya> I have found some student executed in writing his bot for Planet Wars as his course-ending project.
+2011-05-29T09:38:07  <sigh> executed?
+2011-05-29T09:38:10  <smiley1983> I'm not sure I understand...
+2011-05-29T09:38:34  <UncleVasya> arranged
+2011-05-29T09:38:51  <smiley1983> country?
+2011-05-29T09:38:54  <UncleVasya> sorry for my English.
+2011-05-29T09:39:07  <janzert> hope he got a good grade out of it :)
+2011-05-29T09:39:17  <UncleVasya> I'll try to find better words or expalin it.
+2011-05-29T09:39:21  <sigh> :)
+2011-05-29T09:41:27  <UncleVasya> When you're doing a studying project, you're going to give to your teacher not only a program but also many A4 letters. What is properly word for it?
+2011-05-29T09:41:47  <smiley1983> UncleVasya: are you saying that someone's execution (as in death penalty) was arranged, or are you just saying that he wrote such a bot for a final project?
+2011-05-29T09:41:52  <mcstar> essay?
+2011-05-29T09:42:00  <mcstar> documentation?
+2011-05-29T09:42:09  <mcstar> program description?
+2011-05-29T09:42:19  <UncleVasya> yeah
+2011-05-29T09:42:23  <janzert> thesis, possibly?
+2011-05-29T09:42:35  <mcstar> no, thesis is a bigger thing
+2011-05-29T09:42:40  <mcstar> right?
+2011-05-29T09:43:07  <janzert> yes, but could fit what UncleVasya means possibly
+2011-05-29T09:43:18  <mcstar> UncleVasya: means a semester ending assignment
+2011-05-29T09:43:39  <janzert> ahh, then thesis would not fit
+2011-05-29T09:43:59  <mcstar> but ty UncleVasya u made me laugh
+2011-05-29T09:44:07  <mcstar> no offfense
+2011-05-29T09:44:36  <mcstar> i instantly imagined china
+2011-05-29T09:44:45  <mcstar> Student executed For participating in US contest
+2011-05-29T09:44:57  <UncleVasya> I'm glad that you laugh, not being annoyed.
+2011-05-29T09:55:30  <mcstar> lol i just noticed that on the lower part of my favourite glass cup, 42 is printed on it
+2011-05-29T09:56:06  <mcstar> its not printed, its a relief actually
+2011-05-29T10:01:56  <sir_macelon> what happened to the official ai-contest.com web page?
+2011-05-29T10:02:28  <UncleVasya> mcstar, clean it up :)
+2011-05-29T10:04:12  <UncleVasya> <sir_macelon> unchancy installation of minecraft server if I understood it right.
+2011-05-29T10:07:09  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has joined #aichallenge
+2011-05-29T10:07:36  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-29T10:08:12  <hjax> is there a way to test my bot locally without having to specify 8 bots for play_game.py?
+2011-05-29T10:08:47  <sigh> use a map which requires less players?
+2011-05-29T10:09:44  <hjax> which map requires less?
+2011-05-29T10:10:43  <sigh> well the default one used by play_one_game.sh is a 4 player map
+2011-05-29T10:10:51  <sigh> let me see if there's anythign less
+2011-05-29T10:11:36  <hjax> when i didnt specify a map it told me to choose one :/
+2011-05-29T10:13:02  <sigh> I'm talking about the play_one_game.sh script which shows you how to run an example game
+2011-05-29T10:13:12  <sigh> the map that it uses is maps/symmetric_maps/symmetric_10.map which is a 4 player game
+2011-05-29T10:13:35  <hjax> ah, but it wouldnt let me specify my own bot as it said that there was 5/4
+2011-05-29T10:13:38  <sigh> antimatroid1: someone is asking about maps, this is your specialty :P
+2011-05-29T10:14:11  <antimatroid1> you can adjust the min_players parameter in the map generators and generate 2 player maps
+2011-05-29T10:14:12  <sigh> hjax, oh you'll need to actually edit the command it uses... it's only an example :)
+2011-05-29T10:15:12  <hjax> sigh: lets see
+2011-05-29T10:16:33  <sigh> antimatroid1: maybe you should generate some 2 player maps and commit them, some people might find them easier during development
+2011-05-29T10:16:36  <antimatroid1> UncleVasya: did you have a question?
+2011-05-29T10:16:43  <antimatroid1> sigh: they're shit for testing on
+2011-05-29T10:16:49  <sigh> ok :)
+2011-05-29T10:16:49  <antimatroid1> i'd rather people had to do it themselves
+2011-05-29T10:17:01  <antimatroid1> the scoring makes no real sense for 2 player games imo
+2011-05-29T10:17:57  <antimatroid1> lol, what did happen to the contest website?
+2011-05-29T10:18:04  <antimatroid1> jeff didn't let the domain expire did he?
+2011-05-29T10:18:46  <UncleVasya> <antimatroid1> No, I haven't. Why do you think so?
+2011-05-29T10:18:58  <jbroman> antimatroid1: Still registered to "Cameron, Jeffrey  cameron.jp@gmail.com"
+2011-05-29T10:19:11  <antimatroid1> UncleVasya: I wans't sure where you were going?
+2011-05-29T10:19:22  <antimatroid1> wasn't*
+2011-05-29T10:22:38  <antimatroid1> http://www.reddit.com/r/AskReddit/comments/hmiua/my_10_year_old_son_wants_to_learn_a_programming/c1wlbkb :D
+2011-05-29T10:22:51  <antimatroid1> "so is brainfuck" ehehe
+2011-05-29T10:26:04  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T10:27:34  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has joined #aichallenge
+2011-05-29T10:28:03  <hjax> will stderr print to test_bot?
+2011-05-29T10:37:22  <hjax> can anyone help tell me why my bot keeps timing out? :/ as far as i can tell it should work
+2011-05-29T10:38:01  <smiley1983> hjax: print to stderr, and it should record the data in game_logs/0.bot?.error
+2011-05-29T10:38:28  <smiley1983> it's timing out when you run it with test_bot?
+2011-05-29T10:38:56  <hjax> its timing out with test bot
+2011-05-29T10:39:25  <hjax> and ive tried stderr and im yet to get a log of what my bot outputted
+2011-05-29T10:39:30  *** Kingpin13 <Kingpin13!~Kingpin13@cpc24-aztw23-2-0-cust12.aztw.cable.virginmedia.com> has joined #aichallenge
+2011-05-29T10:39:32  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-29T10:39:45  <smiley1983> try adding -E to the args in test_bot
+2011-05-29T10:40:30  <hjax> yay!
+2011-05-29T10:40:36  <smiley1983> it seems the default only logs errors from bot crashes
+2011-05-29T10:40:37  <hjax> theres my log :D
+2011-05-29T10:40:40  <smiley1983> :)
+2011-05-29T10:41:00  *** yasith <yasith!~yasith@124.43.57.129> has quit IRC (Ping timeout: 240 seconds)
+2011-05-29T10:41:22  <hjax> but it doesnt contain what i outputted to stderr :/
+2011-05-29T10:41:31  <aeter> Hi, I know it can be a stupid question - I have created a coffeescript started package, and I'd like to test it - how can I?
+2011-05-29T10:41:59  <smiley1983> have you downloaded the repository from github?
+2011-05-29T10:42:11  <aeter> nope, not yet
+2011-05-29T10:42:15  <hjax> heres all it contains:   turn    1 bot 0 timed out
+2011-05-29T10:42:24  <smiley1983> that's the first step
+2011-05-29T10:42:39  <aeter> ok, thanks - I'll clone it then
+2011-05-29T10:42:57  <smiley1983> hjax: and your bot is supposed to be outputting to stderr?
+2011-05-29T10:44:07  <smiley1983> aeter: once you have the repo, go to aichallenge/ants, and run play_one_game.sh
+2011-05-29T10:44:11  <smiley1983> or .cmd if Windows
+2011-05-29T10:44:26  <aeter> smiley1983: awesome, thanks!
+2011-05-29T10:44:27  <hjax> i told it to output to stderr right before it starts its first move, which never makes it to the log
+2011-05-29T10:44:45  <smiley1983> if that works, try test_bot.sh "command to run/MyBot.ext"
+2011-05-29T10:45:18  <smiley1983> okay, try running your bot directly from the command line, then type "ready" into it
+2011-05-29T10:46:40  <aeter> it actually runs quite ok against the "cat test.txt | coffee mybot.coffee", test.txt being the bot I/O in the wiki - but I'm starting the tests. Thanks!
+2011-05-29T10:47:30  <smiley1983> aeter: sorry, lines crossed, the last line was directed to hjax
+2011-05-29T10:47:37  <aeter> ah, sorry :)
+2011-05-29T10:47:41  <hjax> it crashed
+2011-05-29T10:47:55  <smiley1983> hjax: I now realise "ready" by itself will make the Python bot fail
+2011-05-29T10:48:14  <smiley1983> try pasting the sample input into it
+2011-05-29T10:48:21  <smiley1983> (searching for sample input...)
+2011-05-29T10:49:45  <smiley1983> https://github.com/aichallenge/aichallenge/wiki/Ant-bot-input-output
+2011-05-29T10:50:16  <smiley1983> this gives sample input about half way down
+2011-05-29T10:50:41  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-29T10:50:54  <smiley1983> by feeding that input into your bot, you should be able to see the stderr stream directly
+2011-05-29T10:52:26  <smiley1983> hjax: if you paste the input into test.txt, something like this might work:
+2011-05-29T10:52:34  <smiley1983> python MyBot.py < test.txt
+2011-05-29T10:53:00  <hjax> when i paste that to my bot it spits out another error
+2011-05-29T10:53:08  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-05-29T10:53:25  <hjax> http://pastebin.com/3H0yz0w4
+2011-05-29T10:53:30  <smiley1983> something strange happened when I tried to paste into python
+2011-05-29T10:53:40  <smiley1983> try with the file redirect
+2011-05-29T10:54:08  <smiley1983> yes, you encountered the same thing I did
+2011-05-29T10:54:11  <sir_macelon> game 5649, three bots crashed, this is annoying..
+2011-05-29T10:54:28  <smiley1983> are they all java bots?
+2011-05-29T10:54:34  <smiley1983> on the first turn?
+2011-05-29T10:54:36  <sir_macelon> i suppose yes
+2011-05-29T10:54:40  <sir_macelon> yup
+2011-05-29T10:55:32  *** sir_macelon <sir_macelon!~sir_macel@78.8.136.33> has quit IRC (Quit: sir_macelon)
+2011-05-29T10:56:03  <hjax> it printed "ready to begin" and quit, no error message, it just kindly pointed me back to the cmd prompt
+2011-05-29T10:57:50  <smiley1983> just wait... the plain starter doesn't say "ready to begin"... was that your initial message?
+2011-05-29T10:58:13  <smiley1983> it's definitely being printed on stderr, not stdout?
+2011-05-29T10:58:28  <aeter> a maybe stupid question, is the map round - that is, crossing the top makes ants appear at the bottom of map?
+2011-05-29T10:58:40  <smiley1983> aeter: it wraps, yes
+2011-05-29T10:58:43  <hjax>       print >> sys.stderr, 'ready to begin'
+2011-05-29T10:58:47  <aeter> smiley1983: thanks
+2011-05-29T10:58:49  <smiley1983> toroidal
+2011-05-29T10:59:14  <aeter> that explains why the starter pack crashed :)
+2011-05-29T10:59:22  <smiley1983> hjax: okay, so it can handle the test input without timing out
+2011-05-29T10:59:56  <smiley1983> you've flushed the buffer after printing?
+2011-05-29T11:00:56  <smiley1983> sys.stderr.flush()
+2011-05-29T11:02:55  <hjax> oh whoops
+2011-05-29T11:03:06  <hjax> now its printing it in test bot :/
+2011-05-29T11:03:21  <smiley1983> yay :)
+2011-05-29T11:06:08  <hjax> lets see where its crashing now
+2011-05-29T11:09:43  <hjax> wth? i found where it stops logging, but it makes no sense
+2011-05-29T11:10:54  <hjax> it gives each ant a score based on how far it is away from the food, and if the new score is lower than the old one it knows it has found a closer ant
+2011-05-29T11:11:43  <hjax> its saying that 11 isnt less than 99
+2011-05-29T11:14:41  <hjax> smiley1983, im confused :/
+2011-05-29T11:17:04  *** UncleVasya <UncleVasya!kvirc@46.133.214.239> has quit IRC (Ping timeout: 260 seconds)
+2011-05-29T11:21:33  <smiley1983> in that case I would make it print the two numbers in question to the file, and then double check the comparison sign
+2011-05-29T11:21:46  <hjax> im really confused now
+2011-05-29T11:22:34  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-29T11:22:45  <hjax> i told it to print a variable that should be 999, it printed 11
+2011-05-29T11:23:14  <smiley1983> okay, so that'll be why the comparison wasn't going the way your expected
+2011-05-29T11:23:41  <smiley1983> s/your/you
+2011-05-29T11:24:19  <hjax> wait a second :/ i added more trackers, an if loop is acting weird
+2011-05-29T11:26:53  <hjax> it works right for the first ant, and updates the "bestscore" to the first ants distance to the food
+2011-05-29T11:27:57  <hjax> but the second ant isnt as close, and when it fails the if loop, it *should* move on to the next ant
+2011-05-29T11:37:18  <hjax> also most it working :D
+2011-05-29T11:37:42  <hjax> almost got it working (dont you love spell check?)
+2011-05-29T11:39:32  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Remote host closed the connection)
+2011-05-29T11:40:05  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-29T11:43:50  <aeter> I'm sorry, the starter package I'm preparing is almost always crashing or receiving a timeout. Is there a way to see what error message makes it crashing?
+2011-05-29T11:44:06  <aeter> what does a timeout mean?
+2011-05-29T11:44:10  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T11:48:01  <smiley1983> aeter: add -E to the playgame.py args and the errors should appear in game_logs/0.bot?.error
+2011-05-29T11:48:09  <aeter> awesome! thanks
+2011-05-29T11:52:36  <aeter> wow, now it even seems to work with play_one_game.sh
+2011-05-29T11:52:46  <aeter> How can I make a submit request for a new language?
+2011-05-29T11:57:18  <aeter> btw the code is at https://github.com/aeter/google-ai-2011
+2011-05-29T11:58:28  <smiley1983> standard method is to fork the repo, clone your fork, commit your changes, push your changes, then submit a pull request
+2011-05-29T11:58:50  <smiley1983> I've done all that so I can probably help if you get stuck, though I won't be here much longer
+2011-05-29T11:59:15  <aeter> thanks - I'll try to do it as fast as I;m able to
+2011-05-29T11:59:22  <aeter> btw, the code may be full of bugs...
+2011-05-29T11:59:27  <aeter> :)
+2011-05-29T11:59:40  <smiley1983> the github help pages are very good, though, that's mostly what I used
+2011-05-29T12:00:38  <smiley1983> Based on my experience, I think it's worth pushing the changes and then sleeping on it before submitting a pull request - after just about every request, I thought of something the next morning which should be changed
+2011-05-29T12:01:36  <aeter> thanks - I'm reading the docs - probably will send a pull request in about 24 hours then
+2011-05-29T12:01:39  <aeter> Thanks very much!
+2011-05-29T12:02:08  <smiley1983> no worries :)
+2011-05-29T12:03:13  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-05-29T12:12:47  *** UncleVasya <UncleVasya!kvirc@31.144.215.121> has joined #aichallenge
+2011-05-29T12:13:52  <smiley1983> aeter: coffeescript compiles to javascript, yes? If so, the .js files may be worth zipping and uploading to the test server, to see if that works
+2011-05-29T12:17:28  *** computerwiz_222 <computerwiz_222!~andrew@174-138-219-67.cpe.distributel.net> has joined #aichallenge
+2011-05-29T12:17:50  <UncleVasya> smiley1983:  do you have an expirience in WinXP+OCaml? Or at least Geany+OCaml?
+2011-05-29T12:18:47  <smiley1983> I've had some unrewarding experiences of trying to compile OCamlSDL in WinXP
+2011-05-29T12:18:48  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has joined #aichallenge
+2011-05-29T12:18:52  <smiley1983> No experience of Geany
+2011-05-29T12:18:56  <hjax> my bot works!!!
+2011-05-29T12:19:10  <hjax> its still a bit buggy, but it was doing a grea t job!!
+2011-05-29T12:19:13  <hjax> http://aichallengebeta.hypertriangle.com/visualizer.php?game=5739
+2011-05-29T12:20:07  <smiley1983> hjax: congratulations :)
+2011-05-29T12:20:11  <hjax> i gtg bye
+2011-05-29T12:20:18  <hjax> thanks :D
+2011-05-29T12:22:09  <UncleVasya> smiley1983: And what was your workplace (instrument you had to use)?
+2011-05-29T12:22:23  <smiley1983> Geany looks interesting, though, so I'm downloading it
+2011-05-29T12:22:47  <smiley1983> I'm not sure I understand... I was just trying to compile a personal project which used OCamlSDL under linux
+2011-05-29T12:23:25  <smiley1983> I never got the Windows build to happen, though I know there are ways available now which didn't exist when I last tried
+2011-05-29T12:24:52  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T12:25:24  <antimatroid1> bah, i wish there was 30 hours in a day
+2011-05-29T12:28:25  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 248 seconds)
+2011-05-29T12:32:14  <aeter> smiley1983: sorry, was away for a while. Yes, Coffeescript does compile to javascript. Is the test server for uploading the one at http://aichallengebeta.hypertriangle.com/?
+2011-05-29T12:36:48  <smiley1983> aeter: yes
+2011-05-29T12:39:51  *** berak <berak!~chatzilla@89.204.153.162> has joined #aichallenge
+2011-05-29T12:40:11  <aeter> I have tried to register there; waiting for confirmation e-mail
+2011-05-29T12:41:26  <smiley1983> they're not sending emails yet - there's a "click here" at the bottom of the page which tells you to expect an email
+2011-05-29T12:41:45  <smiley1983> if it won't let you recover it from the cache you may have to make another account
+2011-05-29T12:41:59  <aeter> ok, thanks
+2011-05-29T12:42:02  <aeter> making another
+2011-05-29T12:42:46  <aeter> awesome, it's done
+2011-05-29T12:45:14  <aeter> btw, is mybot.js OK, or should it be changed to MyBot.js?
+2011-05-29T12:46:48  <smiley1983> ... compiler.py seems to be expecting MyBot.js
+2011-05-29T12:48:04  <smiley1983> also, it will fail if the files are inside a directory (unless they've fixed that)
+2011-05-29T12:48:41  <aeter> thanks
+2011-05-29T12:50:01  <aeter> it says it will send e-mails if it failed to compile
+2011-05-29T12:50:46  <smiley1983> I think that's also not true (yet)
+2011-05-29T12:50:55  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Ping timeout: 250 seconds)
+2011-05-29T12:51:26  <aeter> found it -> compiled but failed test cases
+2011-05-29T12:51:39  <aeter> it needs more playing with :)
+2011-05-29T12:52:23  <smiley1983> I think that might be the error people were getting when the files were zipped inside a dir
+2011-05-29T12:55:04  <aeter> it seems to try to move to a blocked squares
+2011-05-29T12:55:10  <aeter> will this fail the test cases?
+2011-05-29T12:55:24  <aeter> turn    1 bot 0 ignored actions: o 1 18 e # move blocked o 3 18 n # move blocked
+2011-05-29T12:55:49  <aeter> My package doesn't (yet) try to avoid moving to water
+2011-05-29T12:56:03  <aeter> or - it does actually, but maybe it's buggy
+2011-05-29T12:56:05  <aeter> :)
+2011-05-29T12:57:17  <aeter> nice there were tests - I'll improve it and resubmit. thanks!
+2011-05-29T13:07:21  <smiley1983> aeter: I believe the test cases are run with --strict, meaning valid moves are enforeced.
+2011-05-29T13:07:53  <smiley1983> However, it must allow attempts to move onto food tiles, because the starter bot logic requires this behaviour
+2011-05-29T13:08:33  <aeter> There was an error with the logic of my package; I'm tyring to move squares which are not ants
+2011-05-29T13:08:50  <aeter> :) which may not be possible
+2011-05-29T13:10:32  <smiley1983> yes, I imagine that would fail the test case :)
+2011-05-29T13:18:24  *** Ttech <Ttech!ttech@botters/staff/ttech> has left #aichallenge ("Leaving")
+2011-05-29T13:20:57  *** yasith <yasith!~yasith@124.43.57.129> has joined #aichallenge
+2011-05-29T13:21:35  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-29T13:22:51  *** UncleVasya <UncleVasya!kvirc@31.144.215.121> has quit IRC ()
+2011-05-29T13:30:07  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-29T13:30:07  *** ChanServ sets mode: +o amstan
+2011-05-29T13:31:21  *** UncleVasya <UncleVasya!kvirc@31.144.172.180> has joined #aichallenge
+2011-05-29T13:33:22  *** yasith <yasith!~yasith@124.43.57.129> has quit IRC (Ping timeout: 250 seconds)
+2011-05-29T13:57:12  *** yasith <yasith!~yasith@124.43.57.129> has joined #aichallenge
+2011-05-29T14:00:01  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has joined #aichallenge
+2011-05-29T14:05:52  *** pgpaskar1 <pgpaskar1!~phor@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-05-29T14:05:59  *** smippy <smippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-05-29T14:06:00  *** smippy <smippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-05-29T14:06:00  *** Zepp_ <Zepp_!~m2ellis@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-05-29T14:06:24  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (*.net *.split)
+2011-05-29T14:06:24  *** gofaz <gofaz!gofaz@86.123.97.248> has quit IRC (*.net *.split)
+2011-05-29T14:06:24  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (*.net *.split)
+2011-05-29T14:06:26  *** davidd <davidd!davidd@tinkywinky.stack.nl> has quit IRC (*.net *.split)
+2011-05-29T14:06:26  *** Zepp <Zepp!~m2ellis@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-05-29T14:06:27  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-05-29T14:06:52  *** gofaz <gofaz!gofaz@86.123.97.248> has joined #aichallenge
+2011-05-29T14:13:12  *** davidd <davidd!davidd@tinkywinky.stack.nl> has joined #aichallenge
+2011-05-29T14:14:02  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-05-29T14:16:20  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-29T14:18:41  <bhasker> morning
+2011-05-29T14:24:44  <bhasker> no one around?
+2011-05-29T14:25:36  <UncleVasya> Hi.
+2011-05-29T14:26:06  <UncleVasya> I can't be useful but I'm here. :)
+2011-05-29T14:29:14  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Quit: ChatZilla 0.9.86.1-rdmsoft [XULRunner 1.9.0.15/2009101909])
+2011-05-29T14:31:40  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-29T14:47:29  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-29T14:50:38  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-05-29T14:55:33  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-05-29T14:57:42  <Frontier> bhasker: well done: http://aichallengebeta.hypertriangle.com/visualizer.php?game=5476
+2011-05-29T14:58:27  <bhasker> haha nice
+2011-05-29T14:58:29  <bhasker> world map
+2011-05-29T14:58:50  <amstan> +1
+2011-05-29T14:58:51  <bhasker> not bad my bot took over the world lol
+2011-05-29T14:59:03  <bhasker> it even went across the trans continental bridge
+2011-05-29T14:59:57  <bhasker> haven't seen this map before who created it
+2011-05-29T15:00:52  <bhasker> its able to go across a 1 square wide corridor not bad without getting blocked
+2011-05-29T15:01:06  <bhasker> some did get blocked but it still somehow made it across
+2011-05-29T15:01:34  <bhasker> i still need to improve the bots tactics, the broad strategy is decent
+2011-05-29T15:01:37  <mcstar> ive seen this map somewhere....
+2011-05-29T15:01:37  <Frontier> I tried to kick off some mapping hype. Maybe when people see my world map they start creating maps on their own that are more recognizable than randomly generated ones
+2011-05-29T15:01:39  <bhasker> but its very poor tectically
+2011-05-29T15:01:48  <bhasker> tactically*
+2011-05-29T15:02:02  <jbroman> I'm pleased to see the famed Cuba-Africa bridge included in this map.
+2011-05-29T15:02:18  *** Zepp_ is now known as Zepp
+2011-05-29T15:02:55  *** delt0r_ <delt0r_!~delt0r@188-22-166-209.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-05-29T15:03:18  <bhasker> still have trouble looking ahead 2 turns
+2011-05-29T15:03:23  <bhasker> it just looks ahead one turn
+2011-05-29T15:03:33  <bhasker> actually 1 ply
+2011-05-29T15:05:15  <Frontier> solifugid likes to write stuff onto asia: http://aichallengebeta.hypertriangle.com/visualizer.php?game=5571&turn=1900
+2011-05-29T15:05:33  *** delt0r_ <delt0r_!~delt0r@188-22-169-103.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-29T15:06:20  <bhasker> oh thats awesome
+2011-05-29T15:06:32  <UncleVasya> I think light-blue color will be more pleasing for eyes as a background. And then water can  be black. It sucks in concept of ground-water coloring but I think eyes comfort is much more important.
+2011-05-29T15:06:33  <bhasker> damn i should build something like that into my bot
+2011-05-29T15:07:12  <bhasker> i want to support bot formations later
+2011-05-29T15:07:25  <bhasker> lets see, i was implementing support for self organizing squads
+2011-05-29T15:07:36  <bhasker> but its not seen much success yet
+2011-05-29T15:12:58  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-05-29T15:16:28  *** GreenTea <GreenTea!55c69c0c@gateway/web/freenode/ip.85.198.156.12> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T15:21:03  *** olexs1 <olexs1!~Leviathan@drms-590edfb1.pool.mediaWays.net> has joined #aichallenge
+2011-05-29T15:22:22  <olexs1> does anyone know what's up with the forums (and the whole old website)? went there to check progress and the whole thing is down
+2011-05-29T15:23:49  *** UncleVasya <UncleVasya!kvirc@31.144.172.180> has quit IRC (Ping timeout: 260 seconds)
+2011-05-29T15:31:25  <computerwiz_222> olexs1: amstan told me that there is an issue with something, can't remember what -- they're working on it at some point
+2011-05-29T15:32:02  *** computerwiz_222 <computerwiz_222!~andrew@174-138-219-67.cpe.distributel.net> has quit IRC (Remote host closed the connection)
+2011-05-29T15:32:21  <amstan> olexs1: yeah, there's something funny with ai-contest.com, only jeff can fix it
+2011-05-29T15:34:23  <olexs1> amstan: ok, thanks. is there any sort of an eta for the ants contest start?
+2011-05-29T15:52:40  *** InsaneMalkavian <InsaneMalkavian!5eb5c03d@gateway/web/freenode/ip.94.181.192.61> has joined #aichallenge
+2011-05-29T15:53:15  <InsaneMalkavian> hey!
+2011-05-29T15:54:25  <InsaneMalkavian> Can anybody help me? I havn't received confirmation email.
+2011-05-29T15:54:56  <InsaneMalkavian> And yes, I check spam folder.
+2011-05-29T15:54:57  <olexs1> in the beta test? neither have I
+2011-05-29T15:55:11  <InsaneMalkavian> yes
+2011-05-29T15:58:07  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-05-29T16:06:43  <amstan> InsaneMalkavian: olexs1: yes, the emails are disabled, but you guys probably missed the link
+2011-05-29T16:06:45  <amstan> i'm on it
+2011-05-29T16:08:19  <amstan> done
+2011-05-29T16:11:36  <olexs1> thanks
+2011-05-29T16:23:32  *** Palmik <Palmik!~palmik@palmikpc.sks6.muni.cz> has quit IRC (Remote host closed the connection)
+2011-05-29T16:33:55  <olexs1> hm. losing a game on a huge map by having a timeout on first turn sucks :) really need to work on performance...
+2011-05-29T16:38:37  *** aeter <aeter!~adr@93-152-185-81.ddns.onlinedirect.bg> has left #aichallenge
+2011-05-29T16:43:32  *** InsaneMalavian <InsaneMalavian!5eb5c03d@gateway/web/freenode/ip.94.181.192.61> has joined #aichallenge
+2011-05-29T16:44:50  *** InsaneMalkavian <InsaneMalkavian!5eb5c03d@gateway/web/freenode/ip.94.181.192.61> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T16:44:51  <InsaneMalavian> thanks amstan
+2011-05-29T16:47:57  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110518052719])
+2011-05-29T16:49:14  *** InsaneMalavian <InsaneMalavian!5eb5c03d@gateway/web/freenode/ip.94.181.192.61> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T16:52:15  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has joined #aichallenge
+2011-05-29T16:52:53  <hjax> my bot is working partially now :D
+2011-05-29T17:05:00  <hjax> anyone here?
+2011-05-29T17:06:23  <hjax> my bot actually isnt bad, it needs a few things (like a way to keep it from timing out)
+2011-05-29T17:14:39  *** hjax_ <hjax_!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has joined #aichallenge
+2011-05-29T17:15:16  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has quit IRC (Disconnected by services)
+2011-05-29T17:37:16  *** hjax_ <hjax_!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T18:03:25  *** berak <berak!~chatzilla@89.204.153.162> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-05-29T18:06:55  *** gofaz <gofaz!gofaz@86.123.97.248> has quit IRC (Ping timeout: 244 seconds)
+2011-05-29T18:07:28  *** gofaz <gofaz!gofaz@86.123.97.248> has joined #aichallenge
+2011-05-29T18:09:48  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-05-29T18:20:43  *** mcstar <mcstar!~mcstar@adsl-89-132-46-51.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-05-29T18:26:09  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-29T18:29:20  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-29T18:31:24  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-05-29T18:37:10  *** delt0r___ <delt0r___!~delt0r@188-22-163-197.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-29T18:37:51  *** delt0r_ <delt0r_!~delt0r@188-22-169-103.adsl.highway.telekom.at> has quit IRC (Ping timeout: 258 seconds)
+2011-05-29T18:38:29  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-05-29T18:45:53  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has joined #aichallenge
+2011-05-29T18:50:57  <hjax> amstan, have you tried writing a good bot yet?
+2011-05-29T18:53:29  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-05-29T18:57:06  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has quit IRC (Quit: L�mnar)
+2011-05-29T18:57:26  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-29T18:58:38  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-05-29T18:58:59  <hjax> hey Frontier :)
+2011-05-29T18:59:23  <amstan> hjax: too busy playing minecraft, lol
+2011-05-29T18:59:34  <Frontier> hi, I see your bot has improved, but it times out often
+2011-05-29T18:59:51  <hjax> amstan, fun game :)
+2011-05-29T19:00:06  <Frontier> amstan: no, I just watch mincraft videos. have you seen the cute dogs?
+2011-05-29T19:00:13  <amstan> yes, they're annoying
+2011-05-29T19:00:16  <amstan> i kill them regularly
+2011-05-29T19:00:23  <hjax> Frontier, i know :/ im not sure if its because my code is too slow or something else random
+2011-05-29T19:00:29  <Frontier> hehe, they can hunt pigs for you
+2011-05-29T19:01:11  <Frontier> hjax, deep are your loops nested?
+2011-05-29T19:01:39  <hjax> for every food i loop through all my ants, which can be time consuming
+2011-05-29T19:03:28  <Frontier> I know, my code is slow because of that as well
+2011-05-29T19:04:31  <hjax> would that be whats casuing my timeout?
+2011-05-29T19:05:01  <hjax> causing*
+2011-05-29T19:07:52  <hjax> btw i love how the site returned the error message if your bot fails to enter contest now :D
+2011-05-29T19:10:04  <bhasker> why would you iterate over every food
+2011-05-29T19:10:09  <bhasker> iterate over every ant
+2011-05-29T19:10:21  <Frontier> but i want to eat all the food, not just one
+2011-05-29T19:10:49  <hjax> i know i did it backwards, but i wanted to see the results
+2011-05-29T19:10:53  <bhasker> well you can't eat all the food
+2011-05-29T19:10:58  <bhasker> if you don't have enough ants?
+2011-05-29T19:11:06  <bhasker> so at start iterating over food is pointless?
+2011-05-29T19:11:22  <bhasker> when ants > food maybe the other way makes sense
+2011-05-29T19:11:22  <Frontier> but i need to know which food is closest to my start ant
+2011-05-29T19:11:33  <bhasker> you can do that with a bfs search from the ant
+2011-05-29T19:12:09  <bhasker> it will give you the shortest path to the closest food as well
+2011-05-29T19:12:10  <Frontier> Oo So you actually walk all the squares around your ant until you find something edible?
+2011-05-29T19:12:17  <bhasker> pretty much
+2011-05-29T19:12:23  <bhasker> within a certain radius
+2011-05-29T19:12:31  <bhasker> you can solve it for all ants/food at the same time
+2011-05-29T19:12:38  <bhasker> a1kon has a way to do that too
+2011-05-29T19:12:42  <hjax> it is more effective to find the closest food to an ant than vice-versa
+2011-05-29T19:14:11  <bhasker> i just do it within the view radius ofthe ant
+2011-05-29T19:14:16  <bhasker> so that i don't go exploring the whole map
+2011-05-29T19:14:22  <hjax> one favors ant population growth, the other favors area of influence
+2011-05-29T19:14:22  <bhasker> so each ant just looks for food close to it
+2011-05-29T19:14:37  <bhasker> cause routing to a food 10 miles away is kinda pointless anyway
+2011-05-29T19:15:00  <bhasker> by the time you get to the food it might be gone
+2011-05-29T19:15:08  <bhasker> my bot's logic is pretty simple
+2011-05-29T19:15:37  <bhasker> its like per ant ( find closest food () route to food, if no food ( find closest enemy ant() route to ant ()) if neither move to the front
+2011-05-29T19:15:57  <bhasker> where front is all the squares which have unseen squares next to them as well as squares with dead ants and enemy ants
+2011-05-29T19:16:08  <bhasker> so it will randomly route to a frontline squares
+2011-05-29T19:17:04  <hjax> thats the basic strategy :)
+2011-05-29T19:17:04  <bhasker> i added some rudiementary logic to a) not suicide b) form adhoc squads out of close by ants and route them as a single unit c) battle resolution to avoid dumb moves ( but it doesn't work very well)
+2011-05-29T19:17:29  <hjax> i want to try flanking enemy lines
+2011-05-29T19:17:46  <bhasker> so i make some moves, do battle resolution, if it looks like i lose more than enemy then i don't make that move
+2011-05-29T19:17:59  <bhasker> right now it doesn't do smarter things ike retreat if in a losing situation etc
+2011-05-29T19:18:40  <hjax> what about flooding one point of the enemies line? do a "Picket's charge"
+2011-05-29T19:19:40  <hjax> but you are still looping through all the foods and ants, and your bot doesnt time out :/
+2011-05-29T19:20:01  <bhasker> for that the bot has to build more awareness of maps spatial layout
+2011-05-29T19:20:05  <bhasker> well my bot is in c++
+2011-05-29T19:20:09  <bhasker> so that alone makes it much faster
+2011-05-29T19:20:17  <bhasker> main reason why i wrote it in c++
+2011-05-29T19:20:43  <bhasker> cause i had these issues when i wrote planetwars bot, speed was a major issue when coding in python
+2011-05-29T19:21:09  <hjax> i agree :/
+2011-05-29T19:21:26  <bhasker> also the fact that in python objets are slow as hell
+2011-05-29T19:21:34  <bhasker> you need to keep using tuples to make it reasonably fast
+2011-05-29T19:21:35  <hjax> but python is the only programming language that im even slightly good at :/
+2011-05-29T19:21:46  <bhasker> and its annnoying as hell to code with indexes all over the place
+2011-05-29T19:21:57  <bhasker> copying python objects is so sloooooow
+2011-05-29T19:22:10  <bhasker> i had the issue when i wanted to copy state of the map and make/unmake moves
+2011-05-29T19:22:32  <bhasker> it took too long to copy maps, then i had to rewrite my whole code without too much object based stuff
+2011-05-29T19:22:37  <hjax> yay my bot did what is was supposed to do!
+2011-05-29T19:22:38  <hjax> http://aichallengebeta.hypertriangle.com/visualizer.php?game=6232
+2011-05-29T19:23:04  <bhasker> hjax your bot is not routing to closest food
+2011-05-29T19:23:05  <bhasker> why is that
+2011-05-29T19:23:26  <hjax> because of what we talked about before
+2011-05-29T19:23:51  <hjax> i routes foods to the ants, so if a farther away food comes up before a closer one...
+2011-05-29T19:23:57  <bhasker> ah
+2011-05-29T19:24:07  <bhasker> also the other thing with this game is that initial growth is exponential
+2011-05-29T19:24:11  <Frontier> hjax, you get 2 extra food items for holding south america -.-
+2011-05-29T19:24:22  <bhasker> not grabbing food on time will slow the bot down too much
+2011-05-29T19:24:23  *** Cyndre__ <Cyndre__!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-29T19:24:42  <bhasker> bots which are efficient and food gathering wil outgrow others really fast
+2011-05-29T19:24:51  <hjax> Frontier lol
+2011-05-29T19:24:57  *** Cyndre__ <Cyndre__!~Cyndre@2002:41ff:b54b::41ff:b54b> has joined #aichallenge
+2011-05-29T19:25:01  <hjax> i know, it will take me 5 min to fix it
+2011-05-29T19:25:39  <hjax> whoa, error message on this battle: http://aichallengebeta.hypertriangle.com/visualizer.php?game=6240
+2011-05-29T19:25:50  <Frontier> like mine outgrows yours bhasker ^^
+2011-05-29T19:25:58  <Frontier> until it times out of course
+2011-05-29T19:26:17  <bhasker> yours outgrows mine because mine is too aggresive in fighting
+2011-05-29T19:26:50  <bhasker> and it depends on the map
+2011-05-29T19:26:55  <olexs1> is there a way to get crash messages from a server game? my bot crashes on the server and I can't reproduce it locally -.-
+2011-05-29T19:26:56  <bhasker> i don't think on symmetric maps
+2011-05-29T19:27:00  <bhasker> my bot will do worse than yours
+2011-05-29T19:27:04  <bhasker> on growth intially
+2011-05-29T19:27:09  <hjax> anyone else seeing an error message here? : http://aichallengebeta.hypertriangle.com/visualizer.php?game=6240
+2011-05-29T19:27:10  <Frontier> load the replay like this: http://aichallengebeta.hypertriangle.com/visualizer.php?game=6240&debug=true  There is a bug in the replay generation when the last enemy times out or crashes
+2011-05-29T19:27:27  <hjax> ah thanks :0
+2011-05-29T19:28:06  <hjax> thats my bots fault, it timed out at the end :/
+2011-05-29T19:28:44  <bhasker> also the food is not spawning symmetrically
+2011-05-29T19:28:48  <bhasker> http://aichallengebeta.hypertriangle.com/visualizer.php?game=6210
+2011-05-29T19:28:51  <bhasker> check this game
+2011-05-29T19:28:57  <bhasker> your bot has food closer than mine
+2011-05-29T19:29:01  <Frontier> i think that is an engine option possibly chosen at random
+2011-05-29T19:29:03  <bhasker> thats what slows my bot down
+2011-05-29T19:29:49  <Frontier> lol, it stands 80:10 and I still lose :p
+2011-05-29T19:29:56  <hjax> Frontiers bot blows it on that one :/
+2011-05-29T19:30:08  <bhasker> http://aichallengebeta.hypertriangle.com/visualizer.php?game=6244
+2011-05-29T19:30:22  <bhasker> yup
+2011-05-29T19:30:27  <bhasker> your bot is too defensive
+2011-05-29T19:30:32  <bhasker> it just shuts down
+2011-05-29T19:31:15  <bhasker> my bot controls over 80% of that map though
+2011-05-29T19:31:21  <bhasker> and thats why its able to grow and recover
+2011-05-29T19:31:34  <bhasker> more map control == more food == more ants
+2011-05-29T19:31:47  <hjax> frontiers bot needs to stand back and maintain land it already owns
+2011-05-29T19:31:55  <bhasker> it loses because of that
+2011-05-29T19:32:00  <bhasker> cause once you start doing that
+2011-05-29T19:32:05  <bhasker> you are not getting enough food to grown
+2011-05-29T19:32:13  <bhasker> unless you control a large proportion of the land
+2011-05-29T19:32:16  <bhasker> you will eventually lose
+2011-05-29T19:32:23  <bhasker> unless you control > 50%
+2011-05-29T19:33:17  <bhasker> this game wil be a lot of territory control as well
+2011-05-29T19:33:36  <hjax> my bot keeps timing out :/
+2011-05-29T19:33:44  <bhasker> write it in c++ :)
+2011-05-29T19:33:54  <hjax> i dont know c++ ;/
+2011-05-29T19:33:58  <bhasker> 2) restrict your bfs search
+2011-05-29T19:34:00  <Frontier> you also need to keep space between your ants if food just spwans randomly on any free square
+2011-05-29T19:34:02  <bhasker> to a view radius around the ant
+2011-05-29T19:34:12  <bhasker> yes  that too frontier
+2011-05-29T19:34:25  <bhasker> all the more reason to spread out
+2011-05-29T19:34:33  <bhasker> that way the central area is used to spawn new food
+2011-05-29T19:34:41  <bhasker> and your bots always have a closer path to the food than others
+2011-05-29T19:34:46  <bhasker> if you spread circularly
+2011-05-29T19:34:53  <bhasker> though are control gets harder
+2011-05-29T19:34:59  <bhasker> as it increases quadratically
+2011-05-29T19:35:29  <bhasker> i think the really good bots though will be the ones which have good tactics
+2011-05-29T19:35:33  <bhasker> than just strategy
+2011-05-29T19:35:46  <bhasker> being able to use formations to minimize losses would be key
+2011-05-29T19:36:25  <bhasker> this bot ain't doing too bad for a week's worth of work on it
+2011-05-29T19:36:58  <_flag> Anyone know what's the ETA until the contest starts?
+2011-05-29T19:37:03  <Frontier> I don't want to use a bfs now, just because YOU do :p
+2011-05-29T19:37:25  <bhasker> well bfs is the easiest way to find shortest path on an unweighted graph
+2011-05-29T19:37:28  <_flag> If it makes you feel any better Frontier, I don't use bfs and my bot > bhaskers bot (hehe)
+2011-05-29T19:37:36  <bhasker> uh flag
+2011-05-29T19:37:39  <bhasker> :p
+2011-05-29T19:37:43  <bhasker> http://aichallengebeta.hypertriangle.com/visualizer.php?game=6239
+2011-05-29T19:37:45  <_flag> It's not on the server yet
+2011-05-29T19:37:50  <_flag> That's a starter pack
+2011-05-29T19:37:56  <bhasker> ah
+2011-05-29T19:37:59  <bhasker> put it up
+2011-05-29T19:38:10  <Frontier> so how do you know it is better than bhasker's?
+2011-05-29T19:38:19  <_flag> "Please do not use to test your newest and most secret bot, since there might be security issues. Have fun testing."
+2011-05-29T19:38:33  <bhasker> meh i am not putting more work on that code anyway
+2011-05-29T19:38:36  <_flag> Although I suppose I should test it
+2011-05-29T19:38:41  <bhasker> i will probably share this version of the code anyway
+2011-05-29T19:39:16  <hjax> im taking out everything that can slow my bot down
+2011-05-29T19:39:25  <Frontier> i *could* just download you submissions from the server, but I keep myself from doing that.
+2011-05-29T19:39:50  <hjax> all the logging and maintaining lists for logging probably at least slows it down some
+2011-05-29T19:40:25  <Frontier> we need a tcp server :)
+2011-05-29T19:40:42  <hjax> anyone skilled enough to make one?
+2011-05-29T19:41:23  <hjax> a tcp would make testing easier by so much
+2011-05-29T19:42:26  <_flag> The problem with making a tcp server is the way all the previous ones were done was by re-implementing the engine, which is a lot of work
+2011-05-29T19:45:22  <hjax> i think i just sped up my bot
+2011-05-29T20:06:34  <bhasker> the number of bots on the server  are increasing
+2011-05-29T20:08:31  <hjax> ive uploaded my code more times than any other person
+2011-05-29T20:08:43  <hjax> yes, can we go back to 1000 turn games?
+2011-05-29T20:12:00  <hjax> grr i want my new bot version to play a game :/, i think timeout is fixed and it should be smarter about gathering food
+2011-05-29T20:23:36  <bhasker> 40 versions hjax
+2011-05-29T20:24:22  <hjax> yes lol
+2011-05-29T20:24:55  <hjax> hmmm i messed something up again, my bot runs in circles but collects no food
+2011-05-29T20:25:04  <bhasker> :)
+2011-05-29T20:25:08  <bhasker> try it locally first
+2011-05-29T20:25:15  <bhasker> against an older version of your bot
+2011-05-29T20:25:20  <bhasker> thats what i do
+2011-05-29T20:25:23  <bhasker> before i upload
+2011-05-29T20:25:33  <bhasker> that way you know its not doing anything stupid
+2011-05-29T20:26:34  <hjax> it takes me a while to do that :/, plus do any maps support 2 plays?
+2011-05-29T20:26:39  <hjax> players*
+2011-05-29T20:29:57  *** computerwiz_222 <computerwiz_222!~andrew@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-29T20:35:35  <bhasker> you can create your own maps
+2011-05-29T20:35:41  <bhasker> just check out the code for the challenge
+2011-05-29T20:35:45  <bhasker> it has the map generator
+2011-05-29T20:35:57  <bhasker> or you can always hand code maps the way frontier did
+2011-05-29T20:36:25  <Frontier> -.- i used an ascii art converter
+2011-05-29T20:36:32  <hjax> did he make the one called world?
+2011-05-29T20:36:55  * Frontier nods
+2011-05-29T20:37:02  <hjax> awesome :F
+2011-05-29T20:37:04  <hjax> :D
+2011-05-29T20:37:30  <Frontier> The map generator is quite awesome, too.
+2011-05-29T20:38:01  <hjax> i showed a friend of mine this game today, he couldnt figure out why someone would make a game that you were supposed to bot
+2011-05-29T20:38:33  <hjax> i also showed him my source code, which he said that i had to have a guide or had copied it from someone else
+2011-05-29T20:39:20  <hjax> i was laughing at him :P
+2011-05-29T20:45:13  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-05-29T20:45:26  <amstan> Frontier: can i have a link to the worldmap?
+2011-05-29T20:46:03  <amstan> or like.. the map id
+2011-05-29T20:46:08  <hjax> i should make one :)
+2011-05-29T20:46:36  <bhasker> frontier you should take some of the maps from RTS games and convert them
+2011-05-29T20:46:42  <bhasker> like sc2 maps or TA maps or something:)
+2011-05-29T20:46:54  <hjax> there should be a map with no water at all, it would be interesting,
+2011-05-29T20:47:18  *** computerwiz_222 <computerwiz_222!~andrew@206-248-186-147.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-05-29T20:49:06  <hjax> now thats how to play ants!!!
+2011-05-29T20:49:19  <hjax> http://aichallengebeta.hypertriangle.com/visualizer.php?game=6339
+2011-05-29T20:50:22  <jbroman> hjax: On a few occasions, about four of your ants will get together and commit suicide.
+2011-05-29T20:50:58  <jbroman> (That said, the other bots are often sitting still or oscillating, so…:))
+2011-05-29T20:50:58  <hjax> i know, my anti suicide code doent appear to work
+2011-05-29T20:51:36  <hjax> but Parsley is a very strong bot, it had a bigger population, i still outscored it
+2011-05-29T20:51:48  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-05-29T20:54:36  <_flag> amstan: Is there an ETA until the contest begins or is that up to Jeff?
+2011-05-29T21:06:04  <hjax> wow my bot is stupid, but it still won :D http://aichallengebeta.hypertriangle.com/visualizer.php?game=6352
+2011-05-29T21:09:52  *** tomh <tomh!~tomh@unaffiliated/tomh> has quit IRC (Quit: tomh)
+2011-05-29T21:15:08  <amstan> _flag: i would say it's readyu
+2011-05-29T21:15:13  <amstan> but it's up to jeff
+2011-05-29T21:15:33  <amstan> j3camero: y u no tell us things?
+2011-05-29T21:15:37  *** computerwiz_222 <computerwiz_222!~andrew@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-29T21:16:23  <computerwiz_222> hello
+2011-05-29T21:18:05  <_flag> amstan: do you think you could convince him to give you control over the site?
+2011-05-29T21:18:40  <amstan> _flag: i do have controll over the site, but i can't do domain, also, i need money for new servers, also, janzert knows more about this
+2011-05-29T21:20:39  <_flag> amstan: So are the servers still up somewhere and the domain just isn't pointing to them?
+2011-05-29T21:20:50  <amstan> server is up, domain points to the ip
+2011-05-29T21:21:07  <amstan> either apache is broken and i didn't point it right
+2011-05-29T21:21:13  <amstan> or there's something else
+2011-05-29T21:21:30  <_flag> Did you update it recently then?
+2011-05-29T21:21:55  <_flag> I thought something might have just expired
+2011-05-29T21:29:28  <amstan> it might be expired, that's what i meant by something else
+2011-05-29T21:29:43  <amstan> idk though, jeff knows more about the host, i don't wanna smell around
+2011-05-29T21:30:31  <amstan> yeah, that's besides the point anyway, we're not even going to keep that server for next contest, since it's an outdated ubuntu
+2011-05-29T21:32:58  <computerwiz_222> _flag: i'm using your C starter package and I'm confused why you have #define DOWN Info->cols and then you have int offset = Game->my_ants[i].row*Info->cols + Game->my_ants[i].col;
+2011-05-29T21:33:37  <computerwiz_222> could that line not have been int offset = Game->my_ants[i].row*DOWN + Game->my_ants[i].col; ?
+2011-05-29T21:33:52  <_flag> It could have, but it doesn't make sense in context
+2011-05-29T21:33:53  <amstan> also, what's info->cols?
+2011-05-29T21:34:11  <_flag> Why would you mutliply the row number by a downwards direction?
+2011-05-29T21:34:34  <computerwiz_222> _flag: fair enough, I was just a little confused, thanks
+2011-05-29T21:34:39  <_flag> The DOWN is just to make it easier to understand how I'm traversing the map
+2011-05-29T21:34:59  <_flag> computerwiz_222: no problem, it always makes more sense when you write it anyway :P
+2011-05-29T21:35:09  <amstan> _flag: why is down defined as such?
+2011-05-29T21:35:15  <_flag> What makes sense to me might confuse someone else
+2011-05-29T21:35:31  <_flag> I have an array of characters that represents the map
+2011-05-29T21:35:59  <_flag> If I want an ant to go down I add DOWN to the current offset
+2011-05-29T21:36:17  <computerwiz_222> ah okay, makes sense
+2011-05-29T21:38:40  <_flag> computerwiz_222: In my bot I have four functions, North, East, South and West which take an offset as their parameter and output a new offset (and handles map wrap arounds). If that's a more convenient abstraction for you you might want to try that.
+2011-05-29T21:41:06  *** hjax <hjax!1802fa8a@gateway/web/freenode/ip.24.2.250.138> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T21:45:38  <Frontier> amstan: it is not ready until McLeopold and I see that there are no more borken replays. You know the ones with the wrong length.
+2011-05-29T21:46:27  <Frontier> Also, there have to be tool downloads to make the contest accessible.
+2011-05-29T21:53:11  *** Eruonen <Eruonen!~Its@e198153.upc-e.chello.nl> has quit IRC ()
+2011-05-29T21:53:27  *** hjax <hjax!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-05-29T21:54:34  <hjax> Why won't my bot run now? It makes no sense, it points at a place in my code where I used the ants.destination() function and says 'ants' is not defined :/
+2011-05-29T21:55:10  <hjax> http://pastebin.com/ivCdhaub
+2011-05-29T21:58:23  *** gofaz <gofaz!gofaz@86.123.97.248> has quit IRC (Ping timeout: 244 seconds)
+2011-05-29T21:58:23  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Ping timeout: 244 seconds)
+2011-05-29T21:58:50  *** gofaz <gofaz!gofaz@86.123.97.248> has joined #aichallenge
+2011-05-29T21:58:55  <hjax> Anyone here?
+2011-05-29T21:59:09  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-05-29T21:59:30  <hjax> ...
+2011-05-29T21:59:31  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: quit)
+2011-05-29T22:02:15  *** computerwiz_222 <computerwiz_222!~andrew@206-248-186-147.dsl.teksavvy.com> has quit IRC (Ping timeout: 252 seconds)
+2011-05-29T22:07:42  *** sixthgear <sixthgear!~sixthgear@sixthgear.ca> has joined #aichallenge
+2011-05-29T22:07:52  <hjax> Hello?
+2011-05-29T22:08:51  <amstan> hjax: do you have the full error? they are much more informative
+2011-05-29T22:09:34  <hjax> I can go get in, but since I'm on my iPhone I'd have to leave irc
+2011-05-29T22:09:46  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-29T22:09:56  <amstan> how are you running your bot on your iphone?
+2011-05-29T22:10:19  <hjax> I'm not, I'm emailing it to myself for on the go editing
+2011-05-29T22:10:48  <smiley1983> amstan: to answer the question from before, no easter eggs in this version, it's all random.
+2011-05-29T22:11:20  <hjax> I could run it if your code worked on python 2.5, but sadly playgame crashes always on 2.5
+2011-05-29T22:11:35  <amstan> yes, it's designed for 2.6/2.7
+2011-05-29T22:11:58  <hjax> 2.5 is the newest version packaged for a jailbroken iPhone
+2011-05-29T22:12:17  <amstan> may i suggest not trying to program on an iphone?
+2011-05-29T22:12:45  <hjax> I don't, most if the time, just when I'm not near my laptop
+2011-05-29T22:13:18  * hjax should type slower to avoid all too common mistakes
+2011-05-29T22:13:38  <amstan> hjax: ok, let's go back on topic, what's your error? where is it?
+2011-05-29T22:13:40  <amstan> line 13?
+2011-05-29T22:13:59  <hjax> Yes it says global name ants is not defined
+2011-05-29T22:14:01  <amstan> you can't use ants over there, as the error says, it's not defined
+2011-05-29T22:14:17  <amstan> ants is only defined in do_turn, since it's an argument to that function
+2011-05-29T22:14:29  <amstan> if you wanna use it in fixeddir you'll have to pass it there too
+2011-05-29T22:14:57  <hjax> Whoops O.O
+2011-05-29T22:15:07  <amstan> or do something smarter
+2011-05-29T22:15:50  <amstan> like make ants a member of the class you're in, and update it in do_turn
+2011-05-29T22:16:56  * hjax would like to remind everyone that he is 14 and should not be confused unless necessary  
+2011-05-29T22:17:26  <amstan> ok, then do what i said the first time
+2011-05-29T22:17:40  <amstan> with passing ants to the smaller function
+2011-05-29T22:18:01  <hjax> Yeah I know, was being stupid >.<
+2011-05-29T22:18:52  <hjax> The good news is my not shouldn't get hung up on water anymore and I might have fixed the suicide problem
+2011-05-29T22:19:13  <hjax> *bot (stupid iPhone)
+2011-05-29T22:24:10  <hjax> I think I'll go add some code to auto attack enemies, my bot is blind to them atm
+2011-05-29T22:25:50  *** hjax <hjax!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has quit IRC (Quit: Rooms • iPhone IRC Client • http://www.roomsapp.mobi)
+2011-05-29T22:30:34  *** computerwiz_222 <computerwiz_222!~andrew@174-138-219-67.cpe.distributel.net> has joined #aichallenge
+2011-05-29T22:31:42  <smiley1983> If a bot times out or crashes, but still gets the highest score, does it win that match or is it ineligible?
+2011-05-29T22:32:02  <amstan> it should be in the specs
+2011-05-29T22:32:24  *** olexs1 <olexs1!~Leviathan@drms-590edfb1.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-05-29T22:46:12  *** klh <klh!62eb89b6@gateway/web/freenode/ip.98.235.137.182> has joined #aichallenge
+2011-05-29T22:46:38  *** klh is now known as Guest19464
+2011-05-29T22:56:24  *** arakyd <arakyd!ad57daf1@gateway/web/freenode/ip.173.87.218.241> has joined #aichallenge
+2011-05-29T22:58:00  *** computerwiz_222 <computerwiz_222!~andrew@174-138-219-67.cpe.distributel.net> has quit IRC (Remote host closed the connection)
+2011-05-29T23:00:48  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-05-29T23:12:45  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-29T23:13:53  *** yasith <yasith!~yasith@124.43.59.21> has joined #aichallenge
+2011-05-29T23:25:28  *** gofaz <gofaz!gofaz@86.123.97.248> has quit IRC ()
+2011-05-29T23:34:03  *** arakyd <arakyd!ad57daf1@gateway/web/freenode/ip.173.87.218.241> has quit IRC (Quit: Page closed)
+2011-05-29T23:40:10  *** Guest19464 <Guest19464!62eb89b6@gateway/web/freenode/ip.98.235.137.182> has quit IRC (Quit: Page closed)
+2011-05-29T23:43:19  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-05-29T23:55:24  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-29T23:59:22  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge

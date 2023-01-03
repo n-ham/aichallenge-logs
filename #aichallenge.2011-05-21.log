@@ -1,0 +1,867 @@
+2011-05-21T00:00:22  <demerzel> oh duh i figured it out
+2011-05-21T00:00:51  *** Nebri <Nebri!cfd2055c@gateway/web/freenode/ip.207.210.5.92> has quit IRC (Quit: Page closed)
+2011-05-21T00:01:19  *** chris___0076 <chris___0076!~Chris_007@adsl-98-66-251-159.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-21T00:09:11  <antimatroid> i'm stuck on ready to be compiled?
+2011-05-21T00:09:22  <amstan> oshit, forgot to turn on the worker
+2011-05-21T00:09:36  <amstan> there
+2011-05-21T00:09:50  <amstan> antimatroid: done compiling
+2011-05-21T00:11:50  <demerzel> bleh i really don't care enough to debug th cs bot
+2011-05-21T00:12:13  <demerzel> would help if i knew for sure it needed to be debugged lol
+2011-05-21T00:12:34  <amstan> demerzel: did you get the local testing going?
+2011-05-21T00:12:43  <demerzel> painfully
+2011-05-21T00:12:49  <demerzel> it's not helping me much since i can barely get it to work
+2011-05-21T00:12:51  *** chris___0076 <chris___0076!~Chris_007@adsl-74-232-18-224.asm.bellsouth.net> has joined #aichallenge
+2011-05-21T00:12:59  <amstan> ?
+2011-05-21T00:13:00  <demerzel> much less use it to pinpoint problems in the bots
+2011-05-21T00:13:11  <antimatroid> my bot fails when i have it collecting food on whatever the tests are
+2011-05-21T00:13:30  <amstan> k, fine
+2011-05-21T00:13:31  <demerzel> where did you see that
+2011-05-21T00:13:36  * amstan looks at what the test thing actually does
+2011-05-21T00:15:38  <amstan> so.. it runs a game against this bot: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/submission_test/TestBot.py
+2011-05-21T00:15:40  *** chris__0076 <chris__0076!~Chris_007@adsl-98-66-195-169.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T00:15:55  <amstan> https://github.com/aichallenge/aichallenge/blob/epsilon/worker/worker.py#L358
+2011-05-21T00:16:06  <amstan> as long as your bot does not "if result['status'][0] in ('crashed', 'timeout', 'invalid'):"
+2011-05-21T00:16:09  <amstan> you pass
+2011-05-21T00:16:43  <demerzel> hmm
+2011-05-21T00:17:00  <amstan> antimatroid:  i could try pause the worker, and see what problem you have
+2011-05-21T00:17:03  <demerzel> also i pulled replay data for 2938 and it has matchupid:2950 in the json dat
+2011-05-21T00:17:10  <demerzel> is that right
+2011-05-21T00:17:23  <amstan> demerzel: matchupid is not the same as gameid
+2011-05-21T00:17:31  <demerzel> ok juts checking
+2011-05-21T00:18:03  <antimatroid> i tried playing with that testbot.py locally and it crashed
+2011-05-21T00:18:18  <amstan> antimatroid: who did? your bot?
+2011-05-21T00:18:42  <antimatroid> no, TestBot.py crashed
+2011-05-21T00:18:47  <amstan> hmm
+2011-05-21T00:18:48  <amstan> interesting
+2011-05-21T00:19:50  <demerzel> haha
+2011-05-21T00:19:53  <demerzel> vindicatino
+2011-05-21T00:20:16  <amstan> antimatroid: testbot works fine for me
+2011-05-21T00:20:16  <antimatroid> http://pastebin.com/MjfNULrY
+2011-05-21T00:20:42  <amstan> antimatroid: do you have latest version?
+2011-05-21T00:20:49  <antimatroid> not where i ran that
+2011-05-21T00:20:53  <antimatroid> :P
+2011-05-21T00:21:04  <antimatroid> it takes me some effort to copy new stuff over to where i test
+2011-05-21T00:21:08  <amstan> so, why do you expect it to work?
+2011-05-21T00:21:17  <amstan> copy? you just do git pull
+2011-05-21T00:21:28  <antimatroid> no, i have a local copy of everything i can mess around with
+2011-05-21T00:21:36  <antimatroid> without having git bitch at me for my local copy being different
+2011-05-21T00:21:42  <amstan> ...
+2011-05-21T00:21:44  <amstan> you're doing it wrong
+2011-05-21T00:22:04  <antimatroid> :p
+2011-05-21T00:22:21  <demerzel> this is all natural only if you are a linux python person
+2011-05-21T00:22:33  <demerzel> .cmd to run python is so against my normal usage pattern
+2011-05-21T00:22:51  <amstan> demerzel: that .cmd file was made by a windows user as well
+2011-05-21T00:23:18  <antimatroid> it runs now
+2011-05-21T00:23:35  <demerzel> amstan: they only work if .py files are associated with python and the paths are set
+2011-05-21T00:23:41  <demerzel> which in my case neither was true
+2011-05-21T00:23:56  <demerzel> plus who uses .cmd for batch files sheesh
+2011-05-21T00:24:07  <demerzel> linux users is the answer
+2011-05-21T00:24:31  <amstan> normal programs should have paths set
+2011-05-21T00:24:41  <demerzel> you know what play_one_game.cmd did
+2011-05-21T00:24:48  <amstan> the fact that 99% of windows programs don't do it... that's just sad
+2011-05-21T00:24:52  <demerzel> opened playgame.py in notepad++ lol
+2011-05-21T00:25:09  <amstan> when i installed python in my windows system, i had to do it
+2011-05-21T00:25:19  <demerzel> they don't need to they rely on other variables
+2011-05-21T00:25:28  <demerzel> %USERENV% %WINDOWS% etc
+2011-05-21T00:25:33  <amstan> and i had to navigate through like 10 menu systems until i got to do it
+2011-05-21T00:26:49  <amstan> woah! this is major: http://rss.slashdot.org/~r/Slashdot/slashdot/~3/e19caWJdUtg/Confirmed-Microsoft-Says-It-Will-Open-Source-VB-6
+2011-05-21T00:26:53  <antimatroid> ergh, no it didn't, i'm confused
+2011-05-21T00:27:20  <demerzel> amstan: bottom line nobody runs command line anything any more in windows
+2011-05-21T00:27:33  <demerzel> not even developers most of the time
+2011-05-21T00:27:48  <amstan> demerzel: yes, that's why you need an IDE most of the time in windows
+2011-05-21T00:28:00  <demerzel> yes they are quite handy
+2011-05-21T00:28:01  <amstan> or else it's suicide to dev on it
+2011-05-21T00:28:10  <demerzel> are you anti-ide lol]
+2011-05-21T00:28:44  <demerzel> at some point you just gotta say 'well i /could/ control every aspect of my computer but that's a huge waste of time for minimal gain'
+2011-05-21T00:28:49  <amstan> i didn't say that, i said that windows makes it impossible to code without an ide
+2011-05-21T00:28:56  <demerzel> nah its not impossible
+2011-05-21T00:29:01  <amstan> painful*
+2011-05-21T00:29:05  <demerzel> i coded C last year in notepad++
+2011-05-21T00:29:24  <amstan> demerzel: and how did you compile?
+2011-05-21T00:29:27  <demerzel> gcc
+2011-05-21T00:29:33  <demerzel> just a batch file
+2011-05-21T00:29:38  <amstan> didn't you need to set paths for that?
+2011-05-21T00:29:39  <demerzel> doubleclicked it
+2011-05-21T00:29:40  <demerzel> OHNO
+2011-05-21T00:29:42  <demerzel> haha
+2011-05-21T00:29:48  <demerzel> no just used absolute
+2011-05-21T00:29:49  <amstan> so you had the gcc location hardcoded?
+2011-05-21T00:29:59  <amstan> now.. what if you need to give your program to another person?
+2011-05-21T00:30:06  <amstan> do they have to install gcc in the same location as you?
+2011-05-21T00:30:10  <demerzel> no
+2011-05-21T00:30:13  <amstan> what if they have a different letter for the drive?
+2011-05-21T00:30:14  <demerzel> if they wanted to use the batch file yes
+2011-05-21T00:30:23  <demerzel> but hopefully if they are getting my code they know how to compile
+2011-05-21T00:30:43  <amstan> yes, this breaks down if you have more than 3 source files
+2011-05-21T00:30:52  <amstan> your bash script gets more complex
+2011-05-21T00:31:02  <amstan> and nobody will have to go through it to replace all your hardcoded paths
+2011-05-21T00:31:03  <demerzel> yea well its more useful in windows to do it that way
+2011-05-21T00:31:06  <demerzel> as opposed to trying to command line it
+2011-05-21T00:31:18  <amstan> bash files are command line..
+2011-05-21T00:31:30  <demerzel> bash files are essentially the same thing as batch files
+2011-05-21T00:31:37  <demerzel> .cmd or whatever
+2011-05-21T00:31:39  <amstan> batch*
+2011-05-21T00:31:45  <demerzel> batch = windows
+2011-05-21T00:31:50  <demerzel> oh oh
+2011-05-21T00:31:51  <amstan> batch files are command line..
+2011-05-21T00:31:52  <antimatroid> i get the same error with the current copy of everything
+2011-05-21T00:32:01  <demerzel> yea but the point is you can double click a batch file
+2011-05-21T00:32:02  <amstan> antimatroid: the testbot works for me just fine
+2011-05-21T00:32:11  <demerzel> rather than typing it out
+2011-05-21T00:32:14  <amstan> demerzel: you can double click a .sh file, what's your point?
+2011-05-21T00:32:23  <antimatroid> i can run the games with hunter and lefty
+2011-05-21T00:32:25  <demerzel> i dont even remember what we're talking about any more i am going t back to decoding replays
+2011-05-21T00:32:30  <antimatroid> but when i add testbot, it crashses :\
+2011-05-21T00:32:53  <amstan> antimatroid: and by it you mean ...
+2011-05-21T00:33:01  <antimatroid> TestBot.py
+2011-05-21T00:33:05  <antimatroid> i'm not even running my bot in the game
+2011-05-21T00:33:13  <amstan> antimatroid: can you send me your command?
+2011-05-21T00:33:40  <antimatroid> http://pastebin.com/Z9pBErhE
+2011-05-21T00:34:14  <amstan> supposed to be submission_test/TestBot.py
+2011-05-21T00:34:30  <antimatroid> i just copied the file you linked to, hang on
+2011-05-21T00:34:41  <amstan> antimatroid: i linked the one from submission_test
+2011-05-21T00:34:55  <amstan> ./playgame.py --seed 42 --end_wait=0.25 --verbose --log_dir game_logs --turns 100 --map_file maps/symmetric_maps/symmetric_10.map "$@" "python submission_test/TestBot.py" "python dist/sample_bots/python/LeftyBot.py" "python dist/sample_bots/python/HunterBot.py" "python dist/sample_bots/python/LeftyBot.py"
+2011-05-21T00:35:17  <antimatroid> okay, that runs
+2011-05-21T00:35:50  <amstan> antimatroid: there is no dist/sample_bots/python/TestBot.py
+2011-05-21T00:35:50  <demerzel> wait food is generated dynamically
+2011-05-21T00:35:54  <amstan> demerzel: yes
+2011-05-21T00:35:58  <demerzel> and has a dynamic shelf-life
+2011-05-21T00:35:59  <antimatroid> there is when i make it
+2011-05-21T00:36:01  <demerzel> man this is gonna be rough
+2011-05-21T00:36:03  <amstan> demerzel: part of it is made from start too
+2011-05-21T00:37:48  <antimatroid> my bot plays fine against it locally :\
+2011-05-21T00:38:44  <amstan> antimatroid: ugh.. can you send me your bot?
+2011-05-21T00:38:56  <amstan> antimatroid: make sure it includes a makefile or something
+2011-05-21T00:38:59  <amstan> so i can easily compile it
+2011-05-21T00:40:53  <antimatroid> what email do you want it to? :P
+2011-05-21T00:41:00  <amstan> amstan@ai-contest is good
+2011-05-21T00:41:02  <antimatroid> this is my food collection algo, i'm not just uploading the code
+2011-05-21T00:41:10  <amstan> i'll keep it safe
+2011-05-21T00:41:13  <amstan> don't worry
+2011-05-21T00:43:08  <demerzel> send it to me
+2011-05-21T00:43:13  <demerzel> oh you already did ty
+2011-05-21T00:43:20  <antimatroid> sent
+2011-05-21T00:43:24  <demerzel> lol
+2011-05-21T00:43:25  <amstan> demerzel: you wish
+2011-05-21T00:43:27  <demerzel> like i can read haskell
+2011-05-21T00:43:33  <antimatroid> it's c++
+2011-05-21T00:43:38  <demerzel> oh ok yea then send it
+2011-05-21T00:43:39  <amstan> demerzel: fail
+2011-05-21T00:44:51  <antimatroid> bbiab, gotta finish cooking lunch
+2011-05-21T00:45:19  <amstan> antimatroid: is it supposed to go for food, then stop moving?
+2011-05-21T00:45:21  <amstan> it does that
+2011-05-21T00:45:29  <amstan> against testbot too
+2011-05-21T00:45:33  <amstan> me is confused...
+2011-05-21T00:45:42  <demerzel> ugh you gave away the secrets
+2011-05-21T00:46:33  * amstan advises for everyone to wait until https://github.com/aichallenge/aichallenge/issues/114 is fixed
+2011-05-21T00:46:49  * amstan has a feeling that the test games and the actual games are mixed up
+2011-05-21T00:46:51  <antimatroid> amstan: yeah
+2011-05-21T00:47:09  <demerzel> is dhartmei gonna host again this year
+2011-05-21T00:47:09  <amstan> antimatroid: oh yeah, what happens to your bot with no food
+2011-05-21T00:47:16  * amstan is testing
+2011-05-21T00:47:21  <antimatroid> it should just do nothing
+2011-05-21T00:47:22  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-05-21T00:47:51  <demerzel> energy conservation, brilliant
+2011-05-21T00:47:58  <demerzel> like a coiled snake
+2011-05-21T00:48:01  <amstan> status survived survived survived survived
+2011-05-21T00:48:03  <amstan> all good
+2011-05-21T00:50:37  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-21T00:51:04  <amstan> antimatroid: oh.. got something interesting
+2011-05-21T00:52:00  <amstan> antimatroid: your bot timed out on this
+2011-05-21T00:52:14  <amstan> ./playgame.py --seed 42 --food none --end_wait=0.25 --verbose --log_dir game_logs --turns 30 --debug --map_file submission_test/test.map "$yourbot" "python submission_test/TestBot.py"
+2011-05-21T00:52:20  <amstan> doesn't work, it times out
+2011-05-21T00:54:54  <amstan> try seeing if it works with 2 players
+2011-05-21T00:54:57  <amstan> instead of 4
+2011-05-21T01:01:14  <antimatroid> hmmm okay, shouldn't make a difference but i'll have a play later
+2011-05-21T01:01:19  <antimatroid> eating atm then i need to go out for a little while
+2011-05-21T01:01:27  *** amstan_ <amstan_!~alex@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-21T01:01:27  *** ChanServ sets mode: +o amstan_
+2011-05-21T01:05:44  *** choas <choas!~lars@p5792CC77.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-05-21T01:32:38  *** Que__ <Que__!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-21T01:35:49  *** amstan_ <amstan_!~alex@206-248-186-147.dsl.teksavvy.com> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T01:40:31  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-21T02:02:05  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-21T02:36:19  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-21T02:38:28  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T02:50:38  *** mcstar <mcstar!~mcstar@adsl-89-132-14-206.monradsl.monornet.hu> has quit IRC (*.net *.split)
+2011-05-21T02:53:36  *** chris__0076 <chris__0076!~Chris_007@adsl-74-176-225-159.asm.bellsouth.net> has joined #aichallenge
+2011-05-21T02:56:19  *** chris___0076 <chris___0076!~Chris_007@adsl-74-232-18-224.asm.bellsouth.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T03:22:47  *** berak <berak!~chatzilla@89.204.153.228> has joined #aichallenge
+2011-05-21T03:22:58  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-21T03:46:06  *** demerzel <demerzel!63759e37@gateway/web/freenode/ip.99.117.158.55> has quit IRC (Ping timeout: 252 seconds)
+2011-05-21T03:55:24  *** delt0r___ <delt0r___!~delt0r@188-22-163-77.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-21T03:56:37  *** delt0r_ <delt0r_!~delt0r@188-22-167-49.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-05-21T03:59:21  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-21T04:04:51  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-21T04:41:17  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-21T04:42:57  <smiley1983> When installing Ubuntu server as a base for setting up the contest code, should I allow tasksel to install LAMP server software, or will server_setup do this?
+2011-05-21T04:58:43  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-05-21T05:00:31  *** mcstar <mcstar!~mcstar@adsl-89-132-14-206.monradsl.monornet.hu> has joined #aichallenge
+2011-05-21T06:04:23  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has joined #aichallenge
+2011-05-21T06:25:42  *** yasith_ <yasith_!~yasith@124.43.57.145> has quit IRC (Read error: Operation timed out)
+2011-05-21T06:25:56  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-21T06:43:18  *** yasith_ <yasith_!~yasith@124.43.60.202> has joined #aichallenge
+2011-05-21T06:57:29  *** olexs <olexs!~Leviathan@drms-590ece47.pool.mediaWays.net> has joined #aichallenge
+2011-05-21T07:07:41  *** olexs <olexs!~Leviathan@drms-590ece47.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-05-21T07:07:57  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-21T07:17:38  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Ping timeout: 276 seconds)
+2011-05-21T07:17:46  *** berak <berak!~chatzilla@89.204.153.228> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T07:59:43  *** janzert <janzert!465a26ad@gateway/web/freenode/ip.70.90.38.173> has joined #aichallenge
+2011-05-21T08:06:56  <janzert> contestbot: later tell amstan no, compilation has not been sandboxed yet.
+2011-05-21T08:06:56  <contestbot> janzert: Aye, aye, sir
+2011-05-21T08:09:32  <janzert> contestbot: later tell amstan also I'm working out of town until Thursday so so probably won't be coding anything until after that
+2011-05-21T08:09:32  <contestbot> janzert: As you wish.
+2011-05-21T08:10:06  *** janzert <janzert!465a26ad@gateway/web/freenode/ip.70.90.38.173> has left #aichallenge
+2011-05-21T08:11:18  <mcstar> contestbot: self-destruct!
+2011-05-21T08:11:19  <contestbot> mcstar: User error, it's not my fault.
+2011-05-21T08:11:35  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-21T08:20:40  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-05-21T08:22:02  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-88-234-237.dsl.hstntx.swbell.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-21T08:24:15  <smiley1983> I've set up a VM with Ubuntu and the contest code, completed the install instructions - I can access the website, create users, upload code and so on. Can anyone tell me how to set the contest code running so it plays matches, updates rankings and so on?
+2011-05-21T08:37:52  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110504060726])
+2011-05-21T08:38:13  *** olexs <olexs!~Leviathan@drms-590ece47.pool.mediaWays.net> has joined #aichallenge
+2011-05-21T08:39:33  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.100.103> has quit IRC (Read error: Connection reset by peer)
+2011-05-21T09:04:01  *** mcstar <mcstar!~mcstar@adsl-89-132-14-206.monradsl.monornet.hu> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T09:08:40  *** mcstar <mcstar!~mcstar@adsl-89-132-14-206.monradsl.monornet.hu> has joined #aichallenge
+2011-05-21T09:17:07  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T09:18:14  *** Nebri <Nebri!cfd2055c@gateway/web/freenode/ip.207.210.5.92> has joined #aichallenge
+2011-05-21T09:20:09  *** Boom <Boom!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-21T09:21:06  <Nebri> *yawns and waves*
+2011-05-21T09:21:43  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-05-21T09:22:30  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-05-21T09:24:36  <smiley1983> I'm running setup_worker.py on my virtual machine, hoping it will make it run the contest code, but I'm beginning to think I've made a mistake, that this is actually for doing the entire OS install and other setup... somewhere
+2011-05-21T09:26:31  *** Nebri <Nebri!cfd2055c@gateway/web/freenode/ip.207.210.5.92> has quit IRC (Quit: Page closed)
+2011-05-21T09:26:42  *** Nebri <Nebri!Nebri@dhcp-0-22-b0-b2-4a-fb.cpe.quickclic.net> has joined #aichallenge
+2011-05-21T09:28:45  *** choas <choas!~lars@p5792CC77.dip.t-dialin.net> has joined #aichallenge
+2011-05-21T09:29:01  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T09:30:25  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-21T10:04:02  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-21T10:36:01  *** berak <berak!~chatzilla@89.204.137.224> has joined #aichallenge
+2011-05-21T10:53:20  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-21T10:55:55  <McLeopold> antimatroid: how goes it?
+2011-05-21T10:57:13  <smiley1983> McLeopold: when setting up the contest code inside a virtual machine for testing, do you know if I should run worker_setup.py?
+2011-05-21T10:58:18  <smiley1983> To clarify: when I say "for testing", I mean including use of website, trueskill and so on, not just for running local matches.
+2011-05-21T10:59:35  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-21T10:59:55  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-05-21T11:07:34  <McLeopold> smiley1983: you need both server_setup and worker_setup.  I would suggest without the jails.
+2011-05-21T11:08:29  <smiley1983> If I've already set it running with jails, I would probably need to redo most of it in order to run without, am I right?
+2011-05-21T11:11:07  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Quit: Leaving)
+2011-05-21T11:19:50  <McLeopold> smiley1983: no, just turn them off
+2011-05-21T11:20:03  <McLeopold> you can run everything without running any of the setup stuff
+2011-05-21T11:20:20  <McLeopold> you just need to setup the server_info.py files yourself and create directories
+2011-05-21T11:20:54  <smiley1983> dmd just failed compiling... what directories do I need to create? Is it documented somewhere?
+2011-05-21T11:21:09  <McLeopold> put this key in worker/server_info.py, "secure_jails": False
+2011-05-21T11:21:21  <McLeopold> dmd is hard, as janzert about htat
+2011-05-21T11:22:07  <smiley1983> I don't need it myself if I can get everything running without completing worker_setup
+2011-05-21T11:22:39  <McLeopold> what language are you going to write in?
+2011-05-21T11:22:43  <smiley1983> Once secure_jail is set, is there some command I should run to set the contest code running?
+2011-05-21T11:22:46  <smiley1983> OCaml
+2011-05-21T11:23:04  <smiley1983> probably, unless I decide to learn haskell in time :)
+2011-05-21T11:23:07  <McLeopold> OCaml is working good on the test server
+2011-05-21T11:23:35  <smiley1983> Yes, I was happy to see the starter pack compiling and playing games :)
+2011-05-21T11:33:07  *** Eruonen <Eruonen!Its@546B3D94.cm-12-4a.dynamic.ziggo.nl> has joined #aichallenge
+2011-05-21T11:33:07  *** Eruonen <Eruonen!Its@546B3D94.cm-12-4a.dynamic.ziggo.nl> has left #aichallenge
+2011-05-21T11:49:16  *** mcstar <mcstar!~mcstar@adsl-89-132-14-206.monradsl.monornet.hu> has quit IRC (Remote host closed the connection)
+2011-05-21T11:52:15  <smiley1983> I've seen mention of a start_worker.sh script, but it doesn't seem to exist in any of my clones - is it generated during worker_setup.py?
+2011-05-21T11:53:24  *** amriedle <amriedle!~amriedle@CPEc03f0edad5d1-CM001868326e60.cpe.net.cable.rogers.com> has quit IRC (Quit: Lost terminal)
+2011-05-21T11:55:52  *** delt0r_ <delt0r_!~delt0r@188-22-31-247.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-21T11:57:11  *** delt0r___ <delt0r___!~delt0r@188-22-163-77.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-05-21T12:00:03  *** stride is now known as dominictarr
+2011-05-21T12:00:10  *** dominictarr is now known as stride
+2011-05-21T12:05:25  <smiley1983> I've now persuaded worker_setup.py to get up to the point where it complains about the lack of start_worker.sh - if anyone knows what the script is meant to do, or why it isn't there (in my clone or on github) I'd like to know :)
+2011-05-21T12:07:44  <smiley1983> for context, if it's relevant: running python worker.py -t -n 0 gives endless "Get task error: [Errno http error] no host given"
+2011-05-21T12:08:04  *** demerzel <demerzel!63759e37@gateway/web/freenode/ip.99.117.158.55> has joined #aichallenge
+2011-05-21T12:10:42  *** bbitmaster <bbitmaster!bbitmaster@c-71-236-48-27.hsd1.tn.comcast.net> has quit IRC ()
+2011-05-21T12:17:57  <McLeopold> smiley1983: you need an http server runing for worker to pull tasks
+2011-05-21T12:21:30  <smiley1983> I have apache2 installed - is there any special setup, and is it automated somewhere?
+2011-05-21T12:22:51  <McLeopold> it is
+2011-05-21T12:23:07  <McLeopold> look at apache.template
+2011-05-21T12:25:34  <smiley1983> Hm. I just restarted, and now my virtual machine won't boot. I'm going to have to do some more setup before I can proceed. Thankyou for your help, and sorry to have drawn you away from your other tasks.
+2011-05-21T12:28:08  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-21T12:37:07  *** olexs <olexs!~Leviathan@drms-590ece47.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-05-21T12:40:45  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-21T12:40:45  *** ChanServ sets mode: +o amstan
+2011-05-21T12:41:14  <McLeopold> amstan: what happened to our test server?
+2011-05-21T12:41:20  <amstan> McLeopold: it's off, hold on
+2011-05-21T12:41:48  <demerzel> where is the ants i need the ants
+2011-05-21T12:42:02  <amstan> McLeopold: have you seen my recent bug reports?
+2011-05-21T12:42:05  <McLeopold> in your pants
+2011-05-21T12:42:09  <demerzel> ty
+2011-05-21T12:42:11  <amstan> lol
+2011-05-21T12:42:12  <McLeopold> no, on github?
+2011-05-21T12:42:14  <amstan> yes
+2011-05-21T12:42:26  <amstan> most of the games are with 30 turns and no food
+2011-05-21T12:42:27  <amstan> idk why
+2011-05-21T12:42:38  <amstan> https://github.com/aichallenge/aichallenge/issues?sort=created&direction=desc&_pjax=true&state=open
+2011-05-21T12:42:40  <amstan> top 3
+2011-05-21T12:42:44  <McLeopold> that's the functional test settings...
+2011-05-21T12:42:50  <amstan> yes, i know
+2011-05-21T12:42:57  <amstan> also, some bots fail functional testing
+2011-05-21T12:42:59  <McLeopold> I'll take a look
+2011-05-21T12:44:18  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-21T12:44:47  <amstan> there, it's up
+2011-05-21T12:44:51  <demerzel> mine does
+2011-05-21T12:44:52  <McLeopold> k
+2011-05-21T12:44:55  <amstan> index.php page is annoying though
+2011-05-21T12:44:59  <amstan> since memcached is empty
+2011-05-21T12:44:59  <demerzel> but it might be because i rewrote it
+2011-05-21T12:45:08  <demerzel> i still can't fidn anything wrong with it tho
+2011-05-21T12:45:08  <amstan> let me bring the daemons up
+2011-05-21T12:45:15  <demerzel> is the server set up for C#
+2011-05-21T12:45:23  <demerzel> i assume so since it says compiled but who knows
+2011-05-21T12:45:32  <amstan> demerzel: it is
+2011-05-21T12:45:55  <amstan> http://pastebin.com/N7LBTc8D
+2011-05-21T12:46:09  <demerzel> i dont even wanna make my botto in c# i thought it could be quick to make one for starter lol
+2011-05-21T12:47:09  <amstan> McLeopold: http://hypertriangle.com:13080/ they're starving man!
+2011-05-21T12:47:39  <McLeopold> they have food
+2011-05-21T12:47:48  <McLeopold> I see food being created
+2011-05-21T12:47:57  <amstan> oh, wait then for other games
+2011-05-21T12:48:31  <amstan> McLeopold: well, still: https://github.com/aichallenge/aichallenge/issues/114
+2011-05-21T12:48:39  <amstan> it gives you an example and the debug from the worker
+2011-05-21T12:49:17  *** Frontier <Frontier!~Marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-05-21T12:49:49  <McLeopold> amstan: I bet it is a global variable that was set after a functional test, and didn't get set back
+2011-05-21T12:50:08  <amstan> we shouldn't be using global variables
+2011-05-21T12:50:15  <McLeopold> no, we shouldn't
+2011-05-21T12:50:19  <amstan> there
+2011-05-21T12:50:23  <amstan> wait.. nvm
+2011-05-21T12:50:24  <amstan> it has food
+2011-05-21T12:50:46  <amstan> also, why is it that sometimes the worker outputs all the orders, and sometimes it just outputs the turn lines?
+2011-05-21T12:51:03  <McLeopold> probably same issue
+2011-05-21T12:51:18  <amstan> in the same game though
+2011-05-21T12:51:20  <McLeopold> the worker code got a little complicated, it's kind of messy
+2011-05-21T12:51:23  <amstan> it just switches randomly
+2011-05-21T13:01:25  *** Cyndre <Cyndre!~Cyndre@2002:41ff:b54b::41ff:b54b> has joined #aichallenge
+2011-05-21T13:07:01  *** yasith__ <yasith__!~yasith@124.43.62.156> has joined #aichallenge
+2011-05-21T13:09:43  *** yasith_ <yasith_!~yasith@124.43.60.202> has quit IRC (Ping timeout: 244 seconds)
+2011-05-21T13:10:47  <demerzel> the replays are odd - so basically all food/ants are 'b' but then when the game starts it just randomly picks some of them to be real ants and others to be food?
+2011-05-21T13:36:09  *** olexs <olexs!~Leviathan@drms-590ece47.pool.mediaWays.net> has joined #aichallenge
+2011-05-21T13:45:50  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-21T13:50:42  *** yasith__ <yasith__!~yasith@124.43.62.156> has quit IRC (Read error: Operation timed out)
+2011-05-21T14:01:51  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-21T14:03:39  *** yasith__ <yasith__!~yasith@124.43.62.214> has joined #aichallenge
+2011-05-21T14:13:12  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-21T14:15:11  <smiley1983> Can anyone suggest sane values for api_base_url and api_key in server_info.py? This is on a VM where the server will only be accessed locally (browser localhost)
+2011-05-21T14:15:58  <smiley1983> I have apache2 running, website is accessible. Running worker.py fails, and I think it's because I left those two values mentioned above blank
+2011-05-21T14:18:08  <amstan> smiley1983: are you using setup/setup_worker.py?
+2011-05-21T14:18:54  <amstan> api_base_url should be where the worker can access the apache stuff, like http://localhost/api_something_somethin.php
+2011-05-21T14:19:18  <amstan> and the key you get when you access api_server_setup.php
+2011-05-21T14:19:21  <smiley1983> yes, I've run setup_worker.py successfully
+2011-05-21T14:19:21  <amstan> from the worker
+2011-05-21T14:19:37  <amstan> ignore everything except the key in there, the other stuff that the php outputs is out of date
+2011-05-21T14:27:33  <smiley1983> okay... I think that fixed the problem, so now I've encountered the next problem: "file not returned by server" - but I'll have to look into that tomorrow after work, because it's time for sleep now. Thank you for your help in getting this far.
+2011-05-21T14:27:48  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-05-21T14:32:30  <Nebri> amstan: how many hours have you put into this so far?
+2011-05-21T14:32:38  <amstan> Nebri: lost count
+2011-05-21T14:32:45  <amstan> the logs might be an indication
+2011-05-21T14:35:54  <Nebri> well now I know where you guys got your practice from for Mohawk. PathFinder did a great job on the mazes it did solve :)
+2011-05-21T14:36:14  <Nebri> real shame that bug affected ya during the competition :(
+2011-05-21T14:36:21  <Nebri> complete heartbreaker
+2011-05-21T14:36:21  <amstan> i could have done better if it wasn't java
+2011-05-21T14:36:32  <amstan> it was a pain to debug
+2011-05-21T14:36:40  <amstan> i think i'll use jython next
+2011-05-21T14:37:05  <Nebri> haven't played around with python yet
+2011-05-21T14:37:21  <Nebri> procedural or oop for python?
+2011-05-21T14:37:38  <amstan> opp probably
+2011-05-21T14:37:53  <amstan> and i'll implement all thoes objects for compass and turn properly
+2011-05-21T14:37:58  <amstan> so you can add them, and compare them
+2011-05-21T14:38:07  <amstan> since java doesn't have operator overloading
+2011-05-21T14:38:21  <Nebri> yea that is definitely a short coming of java :(
+2011-05-21T14:38:30  <amstan> if it was up to me, that stuff should have been numbers, not objects
+2011-05-21T14:38:42  <amstan> 0 for north, 1 for east up to 3
+2011-05-21T14:38:50  <amstan> -1 for left, +1 for right
+2011-05-21T14:38:53  <Nebri> you could have done that if you wanted to in your own class :)
+2011-05-21T14:39:14  <amstan> yeah, but i already had some code dependent on it
+2011-05-21T14:39:21  <Nebri> ah I see
+2011-05-21T14:39:33  <amstan> i spent like 10 hours in total on it, i should have done more
+2011-05-21T14:39:42  <Nebri> so how did you get involved with the google AI challegne that waterloo is running?
+2011-05-21T14:39:54  <amstan> well, i used to be a student at waterloo
+2011-05-21T14:40:08  <Nebri> comp science or other program?
+2011-05-21T14:40:11  <amstan> cs yeah
+2011-05-21T14:40:15  <amstan> i won the RPS competition
+2011-05-21T14:40:22  <Nebri> RPS?
+2011-05-21T14:40:23  <amstan> and i became an organizer for tron
+2011-05-21T14:40:26  <amstan> rock paper scissors
+2011-05-21T14:40:36  <Nebri> ah, didn't hear about that one. :)
+2011-05-21T14:40:47  <amstan> i had like 100 ppl, mostly waterloo students
+2011-05-21T14:40:56  <amstan> only in tron we became more popular
+2011-05-21T14:41:11  <Nebri> the tron one looks really fun. I'm considering make a tron bot since all the materials needed are still available, just for the fun of it
+2011-05-21T14:41:30  <amstan> we might run that again
+2011-05-21T14:41:36  <amstan> maybe with 3vs3
+2011-05-21T14:41:57  <Nebri> one AI controlling 3 lightcycles?
+2011-05-21T14:42:08  <amstan> yes
+2011-05-21T14:42:20  <amstan> or teams? that could work too
+2011-05-21T14:42:33  <Nebri> teams would be harder to cordinate like that though'
+2011-05-21T14:42:47  <Nebri> I think your better off with one AI controlling all three bots.
+2011-05-21T14:42:53  <amstan> i guess
+2011-05-21T14:43:09  <amstan> we were contemplating making future contests with communication in between bots
+2011-05-21T14:43:17  <amstan> let them decide on a protocol, see what happens
+2011-05-21T14:43:20  <Nebri> if nothing else, it'd go a long way in debugging cause three programmers and theres a bug, that'd be a nightmare to find and lots of finger pointing :P
+2011-05-21T14:43:34  <amstan> by teams i mean random pairs
+2011-05-21T14:43:52  <Nebri> kk
+2011-05-21T14:43:52  <amstan> so you have to play nice with the others, even though you don't know who they are
+2011-05-21T14:44:01  <Nebri> yea that could be interesting.
+2011-05-21T14:44:53  <amstan> Nebri: how did you hear about the contest? my forum post?
+2011-05-21T14:45:12  <Nebri> amstan: nah, good ol Google :)
+2011-05-21T14:45:31  <Nebri> I stumbled upon it in the last couple weeks post amazebot. Started searching for other AI competitions
+2011-05-21T14:49:03  <Nebri> love stuff like this, and currently unemployed at the moment. So looking for something fun to work on.
+2011-05-21T14:49:14  <amstan> Nebri: yeah.. i know the feeling
+2011-05-21T14:49:18  <amstan> Nebri: what program are you in?
+2011-05-21T14:50:09  <Nebri> amstan: Software Development, and I just graduated from the Network Engineering & Security Analyst program at the end of 2009
+2011-05-21T14:50:21  <amstan> cool
+2011-05-21T14:50:24  <amstan> i'm doing comp eng
+2011-05-21T14:50:39  <Nebri> is that more hardware related?
+2011-05-21T14:50:43  <amstan> yeah
+2011-05-21T14:50:47  <amstan> we have 1 programming class
+2011-05-21T14:51:08  <amstan> i picked it because i wanted to stay away from c#
+2011-05-21T14:51:56  <Nebri> heh :P. The new AI contest that me and aravin are discussing we're choosing C# as our language for development, to get students more exposure to whats out there in software development
+2011-05-21T14:53:16  <amstan> what's it about?
+2011-05-21T14:53:58  *** olexs1 <olexs1!~Leviathan@drms-590cf79d.pool.mediaWays.net> has joined #aichallenge
+2011-05-21T14:53:59  <Nebri> no idea, he only approached me to ask if I would be interested in venturing into this with him and we tossed a couple game ideas for the AI's to play. As for right now I'm waiting for him to toss up a repo and get coding on a platform that we could use.
+2011-05-21T14:54:37  <Nebri> absolutely nothing has been decided except for that I volunteered to help out the engine development.
+2011-05-21T14:54:47  <amstan> cool
+2011-05-21T14:54:47  <jbroman> amstan: You left CS?
+2011-05-21T14:54:58  <amstan> jbroman: yeah, i was doing rather poor
+2011-05-21T14:55:11  <amstan> might come back in a few years
+2011-05-21T14:55:16  <jbroman> amstan: CompEng at ___?
+2011-05-21T14:55:24  <amstan> mohawk college, hamilton
+2011-05-21T14:55:33  <jbroman> I see. How's Hamilton?
+2011-05-21T14:55:38  <Nebri> that's where I'm attending as well :)
+2011-05-21T14:55:38  <amstan> good, home
+2011-05-21T14:56:37  *** olexs <olexs!~Leviathan@drms-590ece47.pool.mediaWays.net> has quit IRC (Ping timeout: 246 seconds)
+2011-05-21T14:58:02  * amstan wonders where jeff is
+2011-05-21T14:58:42  <Nebri> any particular reason why you guys decided to go with ANTS for the next AI Challenge?
+2011-05-21T14:58:57  <amstan> we like changing the contest every term
+2011-05-21T14:59:07  <amstan> or else it wouldn't be fun, the barrier of entry would go higher and higher
+2011-05-21T14:59:26  <Nebri> obviously :), but ants seems to be considerably more complex to me
+2011-05-21T14:59:29  <amstan> there were lots of suggestions(http://ai-contest.com/forums/viewforum.php?f=21), we eventually went with ants
+2011-05-21T14:59:37  <amstan> you should have seen the first proposal
+2011-05-21T14:59:59  <amstan> one process per ant, and they had to communicate using scents
+2011-05-21T15:00:05  <amstan> but that's not a lot of bandwidth
+2011-05-21T15:00:28  <amstan> we eventually ditched it because of the computational power to run such a game
+2011-05-21T15:01:00  <jbroman> I think ants is straining the boundaries of what the complexity should be. But on the other hand you don't want something for which excellent algorithms exist and can easily be found (e.g. chess).
+2011-05-21T15:01:08  <Nebri> yea no kidding, one thread per ant? HA! :P
+2011-05-21T15:01:36  <amstan> yeah, we even have docs for picking a contest subject: https://github.com/aichallenge/aichallenge/wiki/Game-Criteria
+2011-05-21T15:03:09  <Nebri> very nice :)
+2011-05-21T15:03:35  <Nebri> I'm very impressed with how you guys are running this contest so far. What kind of back end server do you have running this?
+2011-05-21T15:03:53  <amstan> for tron we used the csclub resources at uwaterloo
+2011-05-21T15:04:03  <amstan> we moved to amazon ec2 for planet wars
+2011-05-21T15:04:20  <amstan> we'll probably stay with ec2, they're cheap
+2011-05-21T15:04:54  <Nebri> yea and cloud computing is awesome no matter how you look at it :)
+2011-05-21T15:04:57  <amstan> but pretty much any comp(with default ubuntu natty install) can become a worker
+2011-05-21T15:05:09  <jbroman> Nice thing about EC2 is uniformity (= fairness).
+2011-05-21T15:05:40  <Nebri> oh? so you guys are using a distrubted computing software to create a cloud on user/volunteer resources?
+2011-05-21T15:05:55  <amstan> Nebri: we rolled our own
+2011-05-21T15:06:04  <amstan> oh.. wait, no, nvm
+2011-05-21T15:06:14  <Nebri> lol, I was gunna say! :P
+2011-05-21T15:06:17  <amstan> we don't have volunteers for workers, security concerns
+2011-05-21T15:06:36  <amstan> you don't want contestants to run their own bots on their hardware then send back the results
+2011-05-21T15:07:14  <amstan> the rule is that anyone with system access on the live contest cannot compete
+2011-05-21T15:07:22  <Nebri> which makes sense
+2011-05-21T15:07:41  <Nebri> but you guys did roll out some software to create distrubuted computing cloud, but the contestants can't set up a worker pc?
+2011-05-21T15:08:07  <Nebri> only organizers/volunteers who don't wish to compete?
+2011-05-21T15:08:15  <jbroman> Nebri: The worker software runs on multiple machines. If you want to call that a cloud, sure.
+2011-05-21T15:08:39  <amstan> Nebri: so far we only used ec2 for workers for uniformity, as jbroman said
+2011-05-21T15:09:27  <Nebri> ah gotcha, so no cloud, just multiple machines running multiple instances
+2011-05-21T15:09:40  <Nebri> with all the results being collected and displayed online?
+2011-05-21T15:09:40  <amstan> yes
+2011-05-21T15:09:50  <Nebri> makes much more sense now :)
+2011-05-21T15:10:06  <amstan> Nebri: this might help: https://github.com/aichallenge/aichallenge/wiki/Beginner%27s-guide
+2011-05-21T15:10:19  <amstan> i wrote that for a friend wanting to roll his own contest
+2011-05-21T15:12:26  <Nebri> it's just such a good idea, and the turn out you guys got for tron was amazing. I'm sure planetwars was just as well (didn't look too much at planet wars)
+2011-05-21T15:12:42  <amstan> we had 7 times more ppl for pw
+2011-05-21T15:13:02  <Nebri> WHAT!?
+2011-05-21T15:13:16  <Nebri> that is absolutely incredible :)
+2011-05-21T15:13:36  <amstan> for tron we had 708 contestants
+2011-05-21T15:13:39  <Nebri> funding must be a pain to get something of thise scope up and running though
+2011-05-21T15:13:47  <amstan> and for planet wars we had 4600
+2011-05-21T15:13:58  <amstan> not really, i think we spent like 500 bucks
+2011-05-21T15:14:13  <jbroman> amstan: Only because of the immense amount of free labour. :P
+2011-05-21T15:14:17  <amstan> yes
+2011-05-21T15:15:07  <Nebri> yea, volunteers are awesome
+2011-05-21T15:16:49  <amstan> Nebri: were you the bot that was going backwards the whole time?
+2011-05-21T15:16:56  <Nebri> are all the games selected purely at random? or do you guys have some match making solution in the background?
+2011-05-21T15:17:16  <amstan> some match making, the bots that didn't play against eachother
+2011-05-21T15:17:19  <amstan> so we can rank them better
+2011-05-21T15:17:25  <amstan> because we're not playing all vs all
+2011-05-21T15:17:28  <amstan> that would be impossible
+2011-05-21T15:17:56  <Nebri> right due to CPU power needed to make that happen.
+2011-05-21T15:18:02  <Nebri> how many games then to establish elo?
+2011-05-21T15:18:30  <amstan> the more you have the more accurate the results are
+2011-05-21T15:18:50  <amstan> i don't remember how many games we had for planetwars at the end(for each submission)
+2011-05-21T15:30:59  *** yasith__ <yasith__!~yasith@124.43.62.214> has quit IRC (Ping timeout: 276 seconds)
+2011-05-21T15:36:48  <antimatroid> McLeopold: pong :P
+2011-05-21T15:37:02  <McLeopold> antimatroid: dong
+2011-05-21T15:37:57  <McLeopold> My son is holding a remote to his ear and babbling into it...
+2011-05-21T15:38:10  *** demerzel <demerzel!63759e37@gateway/web/freenode/ip.99.117.158.55> has quit IRC (Ping timeout: 252 seconds)
+2011-05-21T15:39:04  <McLeopold> antimatroid: either you forgot you pinged me or you are typing a novel...
+2011-05-21T15:40:51  <antimatroid> (00:55:30) McLeopold: antimatroid: how goes it?
+2011-05-21T15:40:52  <antimatroid> :p
+2011-05-21T15:41:03  <antimatroid> you also said yesterday you wanted my maths :P
+2011-05-21T15:41:10  <McLeopold> oh yeah
+2011-05-21T15:41:30  <McLeopold> I implemented a food rate function, but wanted to make it cooler
+2011-05-21T15:42:04  <antimatroid> is that why there is no food? :p;
+2011-05-21T15:42:18  <Nebri> that would make a lot of sense :P
+2011-05-21T15:42:41  <antimatroid> also, i think the server should show people the "test game" if they fail it
+2011-05-21T15:42:47  <antimatroid> or at least be told why they failed it
+2011-05-21T15:42:50  <McLeopold> given 2 numbers (#players, food per turn) can you make a function to return whole numbers of food for each player?  food_amount_per_player( turn#)
+2011-05-21T15:44:12  <McLeopold> so, for a rate of 3 with 4 players, it should return 0,1,1,1,0,1,1,1,... for increasing values of turn#
+2011-05-21T15:46:06  <antimatroid> i don't quite get that?
+2011-05-21T15:46:20  <antimatroid> does it work for symmetric spawning?
+2011-05-21T15:46:36  <antimatroid> i really don't care for asymmetric, i thought they'd suck, and any games i've seen on them suck :P
+2011-05-21T15:47:13  <McLeopold> so if the rate is 3, then there should be 3 new foods per turn, but you only want to spawn food when you have enough for everyone
+2011-05-21T15:47:38  <McLeopold> so at a rate of 3, the total amount spawned would be : 3,6,9,...
+2011-05-21T15:47:39  <antimatroid> oh okay, yeah that's sick :)
+2011-05-21T15:48:10  <McLeopold> the total amount handed out each turn would be: 0,4,4,4,0,4,4,4,...
+2011-05-21T15:48:32  <McLeopold> so you just bank the food until you have enough to hand out evenly to all players
+2011-05-21T15:48:38  <antimatroid> yep
+2011-05-21T15:48:47  <McLeopold> I wanted that as a function
+2011-05-21T15:49:03  <antimatroid> i didn't know it, but so did i, i was affraid of the amount of ants
+2011-05-21T15:49:49  <McLeopold> I want that as a function.  I wrote it with an extra variable to keep track of left over food, but a function would be nicer, since you can calculate it.
+2011-05-21T15:51:05  <McLeopold> btw, I turned the rate down to 1 food every 2 turns, so for a 5 player game, food spawns for everyone once every 10 turns.
+2011-05-21T15:51:24  <antimatroid> there were a lot of 30 turn games yesterday with no food at all?
+2011-05-21T15:51:34  <McLeopold> I've got that fixed.
+2011-05-21T15:51:40  <McLeopold> It was bad code.
+2011-05-21T15:51:58  <McLeopold> A case of oop done poorly.
+2011-05-21T15:52:01  <antimatroid> my bot fails the test for some reason, amstan managed to break it yesterday but then i had to go out
+2011-05-21T15:52:06  <antimatroid> so i need to work out what's causing that later
+2011-05-21T15:52:11  <McLeopold> score one for the functional programmers.
+2011-05-21T15:52:32  <McLeopold> I got your bot running on my system just fine.
+2011-05-21T15:52:47  <amstan> McLeopold: it works on 4 players, but breaks on 2 players
+2011-05-21T15:52:54  <McLeopold> oh
+2011-05-21T15:53:35  <antimatroid> i don't get that still, i will play later though
+2011-05-21T15:53:40  <antimatroid> the bot doesn't know how many players there are :\
+2011-05-21T15:54:12  <McLeopold> antimatroid: so, can you solve my math question?
+2011-05-21T15:54:42  <amstan> McLeopold: test_bot.sh is broken btw
+2011-05-21T15:54:59  <McLeopold> feel free to fix it
+2011-05-21T15:56:10  <McLeopold> I have a feeling it will include the lcm
+2011-05-21T15:56:41  <CIA-48> aichallenge: Alexandru Stan fix_test_bot * rf7e9323 / ants/test_bot.sh : copied the options from play_one_game.sh - http://bit.ly/kOC4K4
+2011-05-21T15:57:37  <amstan> oh!
+2011-05-21T15:57:39  <amstan> it does work
+2011-05-21T15:57:44  <amstan> i forgot python in this test
+2011-05-21T16:04:56  <antimatroid> mcleopold: i can't make sense of what you want :P
+2011-05-21T16:05:09  <antimatroid> "whole numbers of food for each player?  food_amount_per_player( turn#)"?
+2011-05-21T16:05:33  <McLeopold> the food functions take a whole number, and multiply it by the number of players
+2011-05-21T16:05:57  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-05-21T16:06:10  <McLeopold> if I want a rate of 1 food spawned per turn, I should only call the food function once every x turns
+2011-05-21T16:06:23  <McLeopold> where x in number of players
+2011-05-21T16:06:39  <antimatroid> oh, i think i get it
+2011-05-21T16:07:05  *** demerzel <demerzel!63759e37@gateway/web/freenode/ip.99.117.158.55> has joined #aichallenge
+2011-05-21T16:07:18  <antimatroid> you want to call "food_amount_per_player( turn#)" and get how many squares to spawn that turn for each player?
+2011-05-21T16:07:35  <McLeopold> so for a rate of 1 with 4 players, the function would be: f(1)=0, f(2)=0, f(3)=0, f(4)=1, ...
+2011-05-21T16:08:02  <McLeopold> so the function would take turn#, #players and rate
+2011-05-21T16:08:05  <antimatroid> do you want the engine to store an array of these values already calcualted? or to recalculate every turn?
+2011-05-21T16:08:23  <McLeopold> I was hoping for a math answer, not a code answer
+2011-05-21T16:08:33  <antimatroid> i could probably do the maths
+2011-05-21T16:08:45  <antimatroid> but i don't think it'll be as fast as just storing the info in one sweep
+2011-05-21T16:09:03  <CIA-48> aichallenge: Alexandru Stan epsilon * rf7e9323 / ants/test_bot.sh : copied the options from play_one_game.sh - http://bit.ly/kOC4K4
+2011-05-21T16:09:03  <CIA-48> aichallenge: Alexandru Stan epsilon * rb204515 / ants/test_bot.cmd : fixed the windows one too - http://bit.ly/l1qvgu
+2011-05-21T16:09:14  <McLeopold> yeah, probably
+2011-05-21T16:09:30  <McLeopold> I could find the lcm, generate a schedule and loop through it
+2011-05-21T16:09:30  <amstan> McLeopold: can you test if test_bot.cmd works on windows? i don't ahve access to one
+2011-05-21T16:09:31  <antimatroid> anyway, i'll work it out
+2011-05-21T16:09:43  <amstan> antimatroid: then use it on your bot, it'll time out
+2011-05-21T16:09:45  <McLeopold> I'd have to use my win machine then...
+2011-05-21T16:09:48  <amstan> antimatroid: it works for other bots
+2011-05-21T16:10:22  <McLeopold> amstan: yes, I'll test, give me a few
+2011-05-21T16:10:32  <amstan> or antimatroid could
+2011-05-21T16:11:25  <antimatroid> i have windows installed, but it'd mean closing everything and restarting
+2011-05-21T16:11:47  *** mcstar <mcstar!~mcstar@adsl-89-132-27-148.monradsl.monornet.hu> has joined #aichallenge
+2011-05-21T16:13:35  <amstan> antimatroid: then do it in linux
+2011-05-21T16:13:38  <antimatroid> i think you might be able to do it somewhat cheaply
+2011-05-21T16:13:44  <amstan> antimatroid: it'll still demonstrate how your bot fails
+2011-05-21T16:15:48  <antimatroid> i got it to time my bot out
+2011-05-21T16:16:18  <antimatroid> hmm, okay cheers :)
+2011-05-21T16:16:25  <antimatroid> at least i have something to test locally now
+2011-05-21T16:18:02  <amstan> McLeopold: +1 for that thing btw, people can functionally test their bot now
+2011-05-21T16:18:06  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-05-21T16:18:09  <antimatroid> McLeopold: would this work... where N = players, R = rate, t = turn, food = floor(t.R/N) - floor((t-1)R/N)?
+2011-05-21T16:18:25  <McLeopold> let me try...
+2011-05-21T16:19:11  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110504060726])
+2011-05-21T16:20:04  <antimatroid> it requires floor(4(3)/4) == 4, not 3
+2011-05-21T16:20:10  <antimatroid> ie. rounding could break it?
+2011-05-21T16:24:42  <demerzel> whats teh average row/col
+2011-05-21T16:24:52  <demerzel> for a visualizer just trying to get a feel for it
+2011-05-21T16:24:55  <demerzel> 2938 is 80x104
+2011-05-21T16:24:55  <antimatroid> what do you mean?
+2011-05-21T16:25:07  <demerzel> i mean what are the bounds of map row/col
+2011-05-21T16:25:13  <demerzel> and/or average/set amount
+2011-05-21T16:25:18  <antimatroid> oh, that's completely undecided yet
+2011-05-21T16:25:23  <antimatroid> the max is 256x256
+2011-05-21T16:25:27  <demerzel> ah cool ty
+2011-05-21T16:25:34  <antimatroid> but we wont every be able to feasibly use that
+2011-05-21T16:25:42  <antimatroid> ever* (it's 6 30am :P)
+2011-05-21T16:25:52  <demerzel> just trying to figure out if this 80x104 is an average size map or not
+2011-05-21T16:26:04  <demerzel> leaves about 15pixels per at fullscreen
+2011-05-21T16:26:34  <demerzel> also why the hell did we call them row/col i knwo i'm gonna be debugging that later
+2011-05-21T16:26:38  <demerzel> already have to mentally switch x/y
+2011-05-21T16:26:54  <antimatroid> don't use x/y
+2011-05-21T16:27:11  <demerzel> i think that way i do call them row/col in code
+2011-05-21T16:27:11  <antimatroid> then you have to mentally remember when you need to transpose the map for reading/writing information
+2011-05-21T16:27:24  <antimatroid> if you use row/col, you never have to think about that again
+2011-05-21T16:27:31  <antimatroid> it's how we index writing on pages
+2011-05-21T16:27:37  <antimatroid> and it's how mathematicians index matrices
+2011-05-21T16:27:43  <demerzel> hmm
+2011-05-21T16:27:46  <antimatroid> programmers are silly for using x,y :P
+2011-05-21T16:27:49  <demerzel> i am so used to plot points i guess
+2011-05-21T16:27:54  <demerzel> i will buy that
+2011-05-21T16:28:04  <demerzel> hey while you're talkative have you looked at replays
+2011-05-21T16:28:06  <antimatroid> it was x,y
+2011-05-21T16:28:11  <demerzel> it looks like maps are just 'b' for every possible food/ant
+2011-05-21T16:28:17  <antimatroid> but i eventually convinced people it actually is annoying to do it that way :P
+2011-05-21T16:28:18  <demerzel> and you have to decode the ants object to determine which turn which
+2011-05-21T16:28:21  <demerzel> on turn 1 that is
+2011-05-21T16:28:29  <demerzel> unless my map decoder is wrong
+2011-05-21T16:28:36  <antimatroid> 'b'?
+2011-05-21T16:28:56  <demerzel> yea looking at this
+2011-05-21T16:28:57  <demerzel> http://hypertriangle.com:13080/game/2938
+2011-05-21T16:29:24  <antimatroid> i have no idea about the replay format :P
+2011-05-21T16:29:28  <demerzel> oh poo
+2011-05-21T16:29:29  <demerzel> ok then
+2011-05-21T16:29:50  <antimatroid> McLeopold?
+2011-05-21T16:29:52  <antimatroid> Frontier?
+2011-05-21T16:30:06  <demerzel> mcleopold: playercolors <array of html color codes>  = playerinfo?
+2011-05-21T16:30:21  <demerzel> since playerinfo doesn't exist on the wiki and playercolors doesn't exist in the json
+2011-05-21T16:31:01  <demerzel> if playerinfo wasn't a blank array i could probably answer that myself
+2011-05-21T16:34:22  <McLeopold> what?
+2011-05-21T16:37:47  *** berak <berak!~chatzilla@89.204.137.224> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-05-21T16:38:10  <McLeopold> demerzel: we haven't fully decided what to stuff in player_info yet
+2011-05-21T16:38:27  <McLeopold> the wiki will always be the description that is out of date
+2011-05-21T16:39:20  <McLeopold> I don't know where the b's came from, it looks like an issue
+2011-05-21T16:39:28  <McLeopold> ending map state?
+2011-05-21T16:42:25  <demerzel> i didn't look yet i was decodingt he initial map
+2011-05-21T16:43:21  <demerzel> the weird thing is the initial map state has a billion ants 'b' and also food '*'
+2011-05-21T16:43:25  <demerzel> it's just odd iand i'm not sure why
+2011-05-21T16:43:48  <McLeopold> it would seem it's an end game state where player b won
+2011-05-21T16:43:52  <demerzel> like if the ants turned into food on turn 1 that would make sense
+2011-05-21T16:44:07  <demerzel> ohhhh so the map->data is endstate map?  that is news to me
+2011-05-21T16:44:24  <McLeopold> I don't think it should be, but it wouldn't matter
+2011-05-21T16:44:28  <demerzel> weird so basically to get the intiial state of a map you ignore anything but water
+2011-05-21T16:44:31  <demerzel> that is odd
+2011-05-21T16:44:45  <demerzel> or food i guess but that's covered in ants[]
+2011-05-21T16:44:50  <demerzel> does that sound right?
+2011-05-21T16:44:53  <McLeopold> it should be starting state, otherwise you don't know the start positions
+2011-05-21T16:44:55  <antimatroid> McLeopold: did that food calc thing work?
+2011-05-21T16:45:04  <demerzel> wouldn't you know from ants[]
+2011-05-21T16:45:12  <McLeopold> antimatroid: I was hoping for something more cleaver
+2011-05-21T16:45:15  <McLeopold> clever
+2011-05-21T16:45:25  <antimatroid> that's cheap and easy :P
+2011-05-21T16:46:24  <antimatroid> i'll try to work out something cooler
+2011-05-21T16:46:31  <antimatroid> but i don't think it'll be as cheap
+2011-05-21T16:46:58  <demerzel> mcleopold: look at this http://hypertriangle.com:13080/game/2938
+2011-05-21T16:47:07  <demerzel> there are 628 'b' in the map->data
+2011-05-21T16:47:26  <demerzel> on last turn http://hypertriangle.com:13080/visualizer.php?game=2938 there are 318 living ants
+2011-05-21T16:48:09  <demerzel> i am not sure what that corresponds to
+2011-05-21T16:49:46  <demerzel> there are 797 ants in the ants[] object
+2011-05-21T16:50:06  <demerzel> only thing that it /might/ be is unique starting positions for those ants since i assume food can appear in teh same spot as an ant or other food has previously
+2011-05-21T16:50:19  <demerzel> otherwise i am completely stumped as to why there are 628 'b' in teh initial map data
+2011-05-21T16:52:43  <antimatroid> McLeopold: hmmmm :P
+2011-05-21T16:52:53  <McLeopold> ?
+2011-05-21T16:53:01  <antimatroid> if you do n = 5, r = 3, then you get food like 0 1 0 1 1 0 1 0 1 1 ..
+2011-05-21T16:53:11  <antimatroid> i'm not sure how to calculate that nicer
+2011-05-21T16:53:30  <demerzel> where is the thing that makes the replay data JSON
+2011-05-21T16:53:31  <McLeopold> or r = 5, n = 3, 1,2,2,1,2,2
+2011-05-21T16:53:35  <demerzel> i can just go look at that
+2011-05-21T16:53:57  <McLeopold> demerzel: ants/ants.py look in get_state or get_replay
+2011-05-21T16:54:02  <demerzel> ty
+2011-05-21T17:00:43  <antimatroid> McLeopold: meh, just use floor :P
+2011-05-21T17:08:51  <antimatroid> ""oh, but you don't have enough stat."Bitch. I can derive fucking stats right here right now." ahaha
+2011-05-21T17:09:21  <demerzel> is this python for power of 2? d_col**2
+2011-05-21T17:10:45  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-05-21T17:10:51  <demerzel> oh god its not that simple
+2011-05-21T17:11:08  <demerzel> leftover keywords jesus i hate python
+2011-05-21T17:11:36  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-05-21T17:27:50  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: this used to be the life, but I don't need another one)
+2011-05-21T17:31:46  <Nebri> lol, rapture's at 6 pm, not sure why you guys are even bothering with coding :P. XD XD
+2011-05-21T17:37:05  <antimatroid> dude, it's 7 36am in australia, 22nd :P
+2011-05-21T17:37:32  <Nebri> I know but it's 5:42 pm 21st here where we live :P
+2011-05-21T17:37:36  <antimatroid> i was out riding at 6pm, no earthquakes, sorry :P
+2011-05-21T17:37:36  <Nebri> the jokes still runnin
+2011-05-21T17:38:10  <antimatroid> i wish i could have been there for the people who actually expected it
+2011-05-21T17:38:14  <antimatroid> i am hoping for a video
+2011-05-21T17:38:52  <Nebri> me too! :D
+2011-05-21T17:41:25  *** AlliedEnvy_ <AlliedEnvy_!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has quit IRC (Remote host closed the connection)
+2011-05-21T17:42:36  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.159.128> has joined #aichallenge
+2011-05-21T17:44:14  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-05-21T17:48:24  <demerzel> oh shit rapture already i'm still translating python
+2011-05-21T17:48:29  <demerzel> hell of a way to go out
+2011-05-21T17:49:27  <demerzel> gosh yea python is so readable this.revealed = [[[False for col in range(this.width)]
+2011-05-21T17:49:37  <demerzel> oh mcleopold isn't here
+2011-05-21T17:49:42  <Nebri> lol
+2011-05-21T17:53:00  <demerzel> tbf i didn't have to do a line by line translation but i want my engine to be as close to the original as possible
+2011-05-21T17:58:17  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has joined #aichallenge
+2011-05-21T17:59:09  <demerzel> does anybody know what this actually does
+2011-05-21T17:59:09  <demerzel> score = [Fraction(0,1)]*this.num_players
+2011-05-21T17:59:36  <demerzel> i really don't understand, it does an (0/1) = 0 * num_players but i'm not sure wtf the brackets do
+2011-05-21T18:02:38  <okayzed> its a list builder: makes a list of size this filled with Fraction instances
+2011-05-21T18:02:51  <demerzel> wait is that a really convoluted way of declaring an int array with all 0s
+2011-05-21T18:03:09  <demerzel> granted there is no such thing as int in python afaik but for my mind thats how i think of it
+2011-05-21T18:03:11  <okayzed> its not convoluted, if you know what it means
+2011-05-21T18:03:34  <demerzel> so i will have an array with a length of num_players all 0'd right?
+2011-05-21T18:03:53  <demerzel> assuming fraction(0, 1) isn't some kind of magic number in python
+2011-05-21T18:11:02  <mcstar> i just hand-coded 586 coordinate indices
+2011-05-21T18:12:40  <mcstar> and vim has trouble matching parantheses
+2011-05-21T18:12:46  <mcstar> and indenting too
+2011-05-21T18:14:18  <demerzel> coding in vim
+2011-05-21T18:14:19  <demerzel> damn
+2011-05-21T18:15:07  <mcstar> what?
+2011-05-21T18:15:19  <mcstar> u swear emacs?
+2011-05-21T18:15:24  <mcstar> (by)
+2011-05-21T18:17:57  <okayzed> why did you hand code it?
+2011-05-21T18:19:45  <mcstar> its fun to see a dense half page of parantheses
+2011-05-21T18:20:08  <mcstar> i dont want to generate them at runtime
+2011-05-21T18:20:29  <mcstar> its the indices of the radii that an ant can see
+2011-05-21T18:20:49  <mcstar> and the spawn and the attack radii
+2011-05-21T18:21:57  <demerzel> btw ty okayzed i would have had no idea what that was
+2011-05-21T18:23:58  <mcstar> isnt it like multiplying a string?
+2011-05-21T18:24:05  <mcstar> "something"*10000000
+2011-05-21T18:24:20  <mcstar> then u get a lot of something which is almost anything
+2011-05-21T18:26:07  <mcstar> talk to me people im bored :(
+2011-05-21T18:26:30  <mcstar> im at the phase when programming is a chore
+2011-05-21T18:28:50  <demerzel> havent gotten that far
+2011-05-21T18:29:27  <mcstar> how far have u gotten? what is ur logic based on?
+2011-05-21T18:31:00  <mcstar> im not asking you to reveal state secrets
+2011-05-21T18:31:15  <mcstar> heuristics? genetic something?
+2011-05-21T18:32:18  <mcstar> come on ppl, install a voice recognition software so that you can use irc while you code
+2011-05-21T18:45:35  <demerzel> i am dissecting the engine atm
+2011-05-21T18:45:42  <demerzel> only known about it for like 2 days
+2011-05-21T18:54:32  <mcstar> really? why?
+2011-05-21T18:55:01  <mcstar> i mean why do you want to see whats behind the engine?
+2011-05-21T18:58:48  *** choas <choas!~lars@p5792CC77.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-05-21T19:02:26  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has quit IRC (Remote host closed the connection)
+2011-05-21T19:05:04  *** AlliedEnvy <AlliedEnvy!~AlliedEnv@adsl-68-90-62-189.dsl.hstntx.swbell.net> has joined #aichallenge
+2011-05-21T19:06:21  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-21T19:07:54  <demerzel> why wouldn't i?
+2011-05-21T19:08:12  <demerzel> specifically though i'm making a debugger so it's vital i can replicate the engine
+2011-05-21T19:14:52  <mcstar> a debugger for what?
+2011-05-21T19:15:02  <mcstar> for the official game engine?
+2011-05-21T19:15:53  <mcstar> but to develop your own bot i dont see why would you need to know how the engine works
+2011-05-21T19:16:15  <mcstar> if it interests you thats ok, im just saying that it consumes your time
+2011-05-21T19:18:48  <demerzel> so does writing an ai bot
+2011-05-21T19:28:28  <mcstar> ill be outside if anyone needs me just shout
+2011-05-21T19:31:36  *** Frontier <Frontier!~Marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-21T19:37:01  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-05-21T19:44:04  *** akranis <akranis!~akranis@u193-11-163-114.studentnatet.se> has quit IRC (Remote host closed the connection)
+2011-05-21T19:49:31  *** Frontier <Frontier!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-05-21T19:55:50  *** delt0r___ <delt0r___!~delt0r@188-22-168-98.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-21T19:58:08  *** delt0r_ <delt0r_!~delt0r@188-22-31-247.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-05-21T20:04:27  <demerzel> are the coordinates received absolute or relative?
+2011-05-21T20:04:42  <demerzel> ie if i get an ant coord at 8, 9 then is that absolute 8,9 or relative to what i can see
+2011-05-21T20:04:47  <demerzel> or have seen
+2011-05-21T20:04:50  <olexs1> absolute
+2011-05-21T20:04:56  <demerzel> awesome ty
+2011-05-21T20:05:09  <olexs1> at least I handle them as such and it seems to work :)
+2011-05-21T20:05:30  <mcstar> i cant imagine relative coordinates in this context
+2011-05-21T20:05:31  <demerzel> just setting up search trees and if it was relative it juts got a lot more complex
+2011-05-21T20:05:42  <demerzel> you would be surprised at the shit in the engine
+2011-05-21T20:05:53  <demerzel> i don't know if it uses it but it's got bfs, tracking per player of explored etc
+2011-05-21T20:06:01  <mcstar> did you mean shift?
+2011-05-21T20:06:01  <demerzel> i haven't fully translated it yet so i wasn't sure
+2011-05-21T20:06:04  <mcstar> (joke)
+2011-05-21T20:21:51  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-05-21T20:26:29  *** amstan <amstan!~amstan@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-21T20:26:29  *** ChanServ sets mode: +o amstan
+2011-05-21T20:29:53  <amstan> antimatroid: how's your bot?
+2011-05-21T20:32:02  *** mcstar <mcstar!~mcstar@adsl-89-132-27-148.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-05-21T20:44:02  *** Nebri <Nebri!Nebri@dhcp-0-22-b0-b2-4a-fb.cpe.quickclic.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-21T20:44:25  *** Nebri <Nebri!Nebri@dhcp-0-22-b0-b2-4a-fb.cpe.quickclic.net> has joined #aichallenge
+2011-05-21T21:04:04  <demerzel> amstan: do you guys know the problem behind the 30 turn no food games?
+2011-05-21T21:08:54  *** No <No!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Ping timeout: 252 seconds)
+2011-05-21T21:09:18  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-21T21:13:01  *** Redgis <Redgis!~Nex@2a01:e34:ee3b:aa40:214:22ff:feec:c2> has quit IRC (Quit: ... mains libres)
+2011-05-21T21:13:11  <amstan> demerzel: mcleopold might
+2011-05-21T21:13:27  <demerzel> ah just noticed it was still there and i know you talked about it last night
+2011-05-21T21:52:36  *** olexs1 <olexs1!~Leviathan@drms-590cf79d.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-05-21T22:00:05  *** amstan_ <amstan_!~alex@206-248-186-147.dsl.teksavvy.com> has joined #aichallenge
+2011-05-21T22:00:05  *** ChanServ sets mode: +o amstan_
+2011-05-21T22:30:11  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-21T22:33:01  <demerzel> amstan: is worker down?
+2011-05-21T22:33:26  <demerzel> was putting in a glorified go-bot just to see if it would take it
+2011-05-21T22:35:54  <demerzel> and it did not
+2011-05-21T22:36:13  <demerzel> i have to officially say i think the test is not right because that bot worked fine using ants.py locally
+2011-05-21T22:42:25  <amstan_> demerzel: should be up
+2011-05-21T22:42:31  <demerzel> worker is up yes
+2011-05-21T22:42:39  <demerzel> but bot failed despite working fine locally
+2011-05-21T22:42:44  <amstan_> how did it fail?
+2011-05-21T22:43:07  <amstan_> you should try testing it with ants/test_bot.sh
+2011-05-21T22:43:10  <amstan_> git pull first
+2011-05-21T22:43:19  <amstan_> i just fixed that script today
+2011-05-21T22:43:30  <amstan_> antimatroid had it fail with it
+2011-05-21T22:43:32  <amstan_> so..
+2011-05-21T22:43:45  *** amstan_ <amstan_!~alex@206-248-186-147.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-05-21T22:43:54  <demerzel> yea i get an error with test_bot.bat
+2011-05-21T22:44:06  <demerzel> it works when doing play_one_game
+2011-05-21T22:44:12  <demerzel> i mean it doesn't do jack but it doesn't break either
+2011-05-21T22:44:20  <demerzel> just my test case to see if i could get anything to upload period
+2011-05-21T22:45:22  <demerzel> amstan: i get this error (sorry windows) running it http://pastebin.com/ABMCXd5L
+2011-05-21T22:45:56  <demerzel> i had to take out the -o viewer part too otherwise i got 'got 3 bots expected 2' error
+2011-05-21T22:46:22  <amstan> demerzel: as i said, git pull first
+2011-05-21T22:46:32  <demerzel> i am not working with a clone atm i have too many repos already
+2011-05-21T22:46:36  <demerzel> but i will pull the latest
+2011-05-21T22:46:46  <amstan> you only need one..
+2011-05-21T22:46:52  <demerzel> this is yesterday
+2011-05-21T22:47:02  <demerzel> have you changed play_game or test_bot.sh since then?
+2011-05-21T22:47:05  <amstan> i have one, and i merge like daily, maintain a test server and so on
+2011-05-21T22:47:38  <demerzel> ah yea you have
+2011-05-21T22:47:39  <demerzel> ok
+2011-05-21T22:48:13  <demerzel> i recommend adding a pause to the end of the .cmd
+2011-05-21T22:48:25  <demerzel> in windows it doesn't keep the command window open after an error if you do that
+2011-05-21T22:48:38  <demerzel> probably less problems with people asking why it broke down the ilne if you add pause to the end lol
+2011-05-21T22:48:39  <amstan> isn't there like a right click option for that?
+2011-05-21T22:48:54  <demerzel> if there is i've missed it for the last ~10 years
+2011-05-21T22:50:26  <demerzel> actually when i get this done i'll give you a windows version
+2011-05-21T22:50:36  <demerzel> moving the %1 to a variable to set
+2011-05-21T22:50:53  <demerzel> it's much less of a pain in the ass to just edit that variable than open a command window and navigate wherever the hell
+2011-05-21T22:51:10  <amstan> as i said before.. you're doing it wrong
+2011-05-21T22:52:59  <demerzel> no you just refuse to consider that people don't use unix-based :P
+2011-05-21T22:53:17  <demerzel> some* people
+2011-05-21T22:53:23  <demerzel> most afaik
+2011-05-21T22:54:06  <demerzel> hmm now it times out
+2011-05-21T22:54:27  <demerzel> is the --end-wait 0.25 giving it 0.25 before a timeout?  does that include initial?  it might take more than 250ms for it to spin up
+2011-05-21T22:56:59  *** delt0r___ <delt0r___!~delt0r@188-22-168-98.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-05-21T23:04:09  <demerzel> amstan i really have no damn idea - i yanked the parsing code straight out of my pw bot and it's still saying timed out
+2011-05-21T23:05:34  <demerzel> oh well guess it's verbose logging to file time
+2011-05-21T23:20:50  <demerzel> omfg i think i figured it out haha
+2011-05-21T23:21:02  <demerzel> i missed that we have to send go prior to turn 1
+2011-05-21T23:31:39  <demerzel> ok what am i doing wrong here
+2011-05-21T23:31:41  <demerzel> http://pastebin.com/Sa76Yqsi
+2011-05-21T23:31:44  <demerzel> i am now getting to turn 1
+2011-05-21T23:31:52  <demerzel> 2 ms processing inital settings
+2011-05-21T23:31:57  <demerzel> then 14 ms processing turn 1 data
+2011-05-21T23:32:02  <demerzel> at 16 ms i send 'go\n'
+2011-05-21T23:32:07  <demerzel> and play_game times me out
+2011-05-21T23:32:40  <demerzel> amstan: i would greatly appreciate iti you could look at that log, it logs everything i send/receive and has a turnelapsed ms timer
+2011-05-21T23:32:53  <demerzel> i have no idea why its timing out on turn 1 unless i am missing something
+2011-05-21T23:33:17  <amstan> demerzel: i don't actually know anything more about the bots
+2011-05-21T23:33:22  <amstan> idk anything about the protocol
+2011-05-21T23:33:37  <demerzel> crap
+2011-05-21T23:33:52  <demerzel> i have it logging everything and i see zero problem with it (after i figured out i was suppsoed to send a go on turn 0)
+2011-05-21T23:34:11  <amstan> demerzel: did you flush the outputs and inputs after every read?
+2011-05-21T23:34:36  <demerzel> i've done both ways but it accepted the first 'go\n'
+2011-05-21T23:34:45  <demerzel> last yeari  didn't need to but i will ptu it back in to see if it helps since i am further along now
+2011-05-21T23:35:39  <demerzel> nope same thing :(
+2011-05-21T23:36:47  <demerzel> tried making it wait 100ms before sending go
+2011-05-21T23:36:50  <demerzel> didn't work either
+2011-05-21T23:37:13  <amstan> demerzel: so you did flush the outputs?
+2011-05-21T23:37:28  <demerzel> i took it out but put it back in when you said something jic
+2011-05-21T23:37:32  <demerzel> didn't make a diff
+2011-05-21T23:37:46  <demerzel> manual flushing is back in there
+2011-05-21T23:38:05  <demerzel> it takes the first 'go\n' becuase it was stopping there before
+2011-05-21T23:38:20  <demerzel> maybe i have to move or it kills it
+2011-05-21T23:38:31  <demerzel> i'll put in a 'move north' every turn lol
+2011-05-21T23:38:48  <amstan> demerzel: try doing the same type of debugging on another bot
+2011-05-21T23:38:49  <amstan> that works
+2011-05-21T23:38:51  <amstan> see what they output
+2011-05-21T23:39:11  <demerzel> well problem is other bots are other languages
+2011-05-21T23:39:24  <demerzel> i'm almost positive it's a .NET stdio problem or i'm just missing something
+2011-05-21T23:39:25  <amstan> so?
+2011-05-21T23:39:47  <amstan> well, i have a feeling you're not compliant to the protocol
+2011-05-21T23:39:51  <amstan> see what the other bots do
+2011-05-21T23:40:05  <demerzel> you mgiht be right i'll look if this doesn't work
+2011-05-21T23:42:06  <demerzel> oh thank god i found it
+2011-05-21T23:42:07  <demerzel> extra newline
+2011-05-21T23:42:17  <demerzel> floating out in the ether
+2011-05-21T23:44:23  <demerzel> May 21st 23:43:59 	successfully entered into contest 	C#
+2011-05-21T23:44:24  <demerzel> woop
+2011-05-21T23:44:37  <demerzel> i've got your starter package haha just needed 1 damn line
+2011-05-21T23:47:45  <demerzel> You can upload your code as often as you want.
+2011-05-21T23:47:46  <demerzel> Sorry, you have to wait at least 10 minutes between submissions.

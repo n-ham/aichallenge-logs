@@ -1,0 +1,745 @@
+2011-03-23T00:19:58  *** phirenz <phirenz!~phire@142.248.69.111.dynamic.snap.net.nz> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T00:42:33  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-03-23T00:43:37  *** Whalefreezer <Whalefreezer!~Robert@124-197-25-104.callplus.net.nz> has joined #aichallenge
+2011-03-23T01:20:37  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-23T01:27:50  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-23T01:30:50  *** num1_ is now known as num1
+2011-03-23T01:37:29  *** chris___0076 <chris___0076!~Chris_007@adsl-66-196-9.asm.bellsouth.net> has joined #aichallenge
+2011-03-23T01:40:05  *** chris__0076 <chris__0076!~Chris_007@adsl-190-131-145.asm.bellsouth.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-23T01:57:29  <antimatroid> ergh
+2011-03-23T01:57:36  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-23T01:57:36  <antimatroid> anyone around with some c++ knowledge?
+2011-03-23T01:57:54  <McLeopold> how little knowledge?
+2011-03-23T01:58:44  <antimatroid> i can't work out how to write my virtual io functions
+2011-03-23T01:59:58  <McLeopold> do you have something in your github?
+2011-03-23T02:00:17  <antimatroid> no, i have a smaller sample file
+2011-03-23T02:00:24  <antimatroid> i'm just cleaning it into 1 file so i can pastebin it
+2011-03-23T02:03:29  <McLeopold> I assume you're doing your fancy << and >> operator stuff in an abstract class?
+2011-03-23T02:03:53  <antimatroid> i want them to be virtual functions
+2011-03-23T02:04:03  <antimatroid> but i can't have virtual friend functions
+2011-03-23T02:04:55  <antimatroid> ergh, codepad is annoying about where it wants ';'s
+2011-03-23T02:05:04  <antimatroid> http://codepad.org/thV6Nk9a
+2011-03-23T02:05:17  <antimatroid> there we go, i want the output at the bottom to be 1 1 1 twice
+2011-03-23T02:06:22  <janzert> operator<<(std::ostream &os, NGame<I> &game) != operator<<(std::ostream &os, Game &game)
+2011-03-23T02:06:46  <antimatroid> janzert: how do i make them virtual?
+2011-03-23T02:07:00  <antimatroid> i can't work out how to do the operator<< inside the class without friend
+2011-03-23T02:07:02  <antimatroid> basically
+2011-03-23T02:07:11  <antimatroid> normally I do it outside the class
+2011-03-23T02:07:14  <janzert> it won't let you add virtual keyword?
+2011-03-23T02:07:41  <antimatroid> claims you can't have a function that is a virtual and a friend function
+2011-03-23T02:07:50  <antimatroid> or claims << needs to take exactly one parameter
+2011-03-23T02:07:55  <antimatroid> and doesn't like me just passing os :\
+2011-03-23T02:08:24  <janzert> actually yeah, how are you going to pass a second argument to it?
+2011-03-23T02:08:34  <janzert> it's a binary operator
+2011-03-23T02:09:15  <antimatroid> normally i do "ostream& operator<<(ostream &os, const Game &game);"
+2011-03-23T02:09:30  <antimatroid> then "os << game" puts game into os and returns a reference to os
+2011-03-23T02:09:34  <antimatroid> so you can compose them
+2011-03-23T02:09:55  <antimatroid> similarly with input streams
+2011-03-23T02:10:03  <janzert> ok, obviously I don't use it
+2011-03-23T02:10:19  <antimatroid> it makes io very nice
+2011-03-23T02:10:36  * janzert hates the overloading c++ does of << to do that
+2011-03-23T02:10:45  <antimatroid> i only use them for io
+2011-03-23T02:10:48  <janzert> I sure don't add to it any more than it already has:)
+2011-03-23T02:11:04  <janzert> but anyway
+2011-03-23T02:11:28  <janzert> I'd try just making a regular function virtual in the way you want and get that working first
+2011-03-23T02:11:43  <antimatroid> i have, the print one :P
+2011-03-23T02:11:45  <janzert> then go back to make it into an operator
+2011-03-23T02:12:10  <antimatroid> there are two functions there, one works for virtuals like a print function, but i REALLY want the <</>> operators, plus I use operators in other places
+2011-03-23T02:12:39  <janzert> oh yeah, I see
+2011-03-23T02:12:49  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has joined #aichallenge
+2011-03-23T02:12:50  <janzert> make your method signature in the second class the same as the first
+2011-03-23T02:12:58  <janzert> then try making it virtual
+2011-03-23T02:13:08  <antimatroid> signature?
+2011-03-23T02:13:34  <antimatroid> i can't take one parameter to << without it being friend, and i can't pass os to it without that :\
+2011-03-23T02:13:39  <janzert> have it take the Game class as the second argument not NGame<I>
+2011-03-23T02:13:39  <antimatroid> i'm thinking maybe this just isn't possible
+2011-03-23T02:13:40  <McLeopold> http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Virtual_Friend_Function
+2011-03-23T02:13:48  <antimatroid> hmm okay
+2011-03-23T02:14:21  <janzert> ahh, McLeopold's got it :
+2011-03-23T02:14:23  <janzert> :)
+2011-03-23T02:14:34  <antimatroid> if i do that it wont compile, because it thinks the Game parameter is an actual game
+2011-03-23T02:15:04  <antimatroid> ah okay, messy but that should do it
+2011-03-23T02:15:07  <janzert> look at McLeopold's link, the example is exactly what you want
+2011-03-23T02:15:12  <antimatroid> ye
+2011-03-23T02:15:14  <antimatroid> yep*
+2011-03-23T02:15:16  <janzert> basically it needs a trampoline
+2011-03-23T02:15:29  <antimatroid> is this going to be slow as hell?
+2011-03-23T02:15:38  <antimatroid> this is meant to be for a game theory library :P
+2011-03-23T02:15:52  <antimatroid> and atm it's fairly fast
+2011-03-23T02:16:15  <janzert> with an optimized build I don't think it should be any slower than a straight virtual function
+2011-03-23T02:16:24  <janzert> the trampoline method should get inlined
+2011-03-23T02:16:25  <McLeopold> Why does it even need to be a friend?
+2011-03-23T02:16:39  <antimatroid> McLeopold: to take two parameters
+2011-03-23T02:17:03  <antimatroid> are virtual functions lots slower than normal functions?
+2011-03-23T02:17:22  <janzert> they just take an extra level of indirection to call
+2011-03-23T02:17:37  <antimatroid> i should be alright
+2011-03-23T02:17:38  <janzert> basically an extra pointer lookup
+2011-03-23T02:17:47  <antimatroid> i'll set up a test before i change it and check again once i've updated stuff
+2011-03-23T02:17:55  <McLeopold> It's basically a lookup in a master table of object classes to find the real class, I think.
+2011-03-23T02:18:18  <antimatroid> i better need to write more than an engine class for games generally :\
+2011-03-23T02:18:52  <antimatroid> atm it's just so i can make an engine as Engine<Utility> rather than Engine<Game, Strategy, Utility>
+2011-03-23T02:19:15  *** delt0r_ <delt0r_!~delt0r@188-22-160-215.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-23T02:20:18  *** Whalefreezer1 <Whalefreezer1!~Robert@124-197-25-104.callplus.net.nz> has joined #aichallenge
+2011-03-23T02:20:39  *** Whalefreezer <Whalefreezer!~Robert@124-197-25-104.callplus.net.nz> has quit IRC (Ping timeout: 250 seconds)
+2011-03-23T02:21:26  *** delt0r___ <delt0r___!~delt0r@188-22-161-103.adsl.highway.telekom.at> has quit IRC (Ping timeout: 276 seconds)
+2011-03-23T02:30:07  <antimatroid> it's a bit messy but it works, cheers :)
+2011-03-23T02:30:11  <antimatroid> http://codepad.org/n3KuR7ch
+2011-03-23T02:30:15  <antimatroid> that's the result
+2011-03-23T02:32:18  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-03-23T02:34:56  <antimatroid> janzert: turns out it's not sufficient to say a 2 player simultaneous game isn't symmetric if the payoff matrices aren't transposes
+2011-03-23T02:35:08  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-03-23T02:35:30  <antimatroid> anywhere i had always read the definition had made that sound like it was the case
+2011-03-23T02:36:46  <antimatroid> eg: make a symmetric 2x2 game from 14;23, then swap player one's strategies for an equivalent game, the payoff matrices are no longer transposes
+2011-03-23T02:36:58  <antimatroid> 1,4;2,3
+2011-03-23T02:37:20  <McLeopold> antimatroid: those 2 print functions are really needed, right?
+2011-03-23T02:37:38  <antimatroid> McLeopold: if you can get that to work without them i would do it without
+2011-03-23T02:37:40  <antimatroid> but i don't see how
+2011-03-23T02:38:57  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 246 seconds)
+2011-03-23T02:41:18  <McLeopold> what is your compile command?
+2011-03-23T02:42:00  <antimatroid> you should just be able to compile that file
+2011-03-23T02:42:10  <antimatroid> i use code::blocks, so all that is done for me :P
+2011-03-23T02:42:20  <McLeopold> If I reduce the loop to 1, I get just "1 1 1"
+2011-03-23T02:42:27  <McLeopold> didn't you want 2 lines?
+2011-03-23T02:42:37  <antimatroid> no, i took the first print function out
+2011-03-23T02:42:46  <antimatroid> oh, yeah sorry about keeping that loop :P
+2011-03-23T02:43:33  <McLeopold> so the magic is "cout << game << end1;"
+2011-03-23T02:43:46  <McLeopold> endl
+2011-03-23T02:44:00  <antimatroid> yeah
+2011-03-23T02:44:04  <antimatroid> and picking the right function
+2011-03-23T02:44:34  <antimatroid> basically i want to do this so I can have Game and Strategy as parents to all games with those things, and write the engine to be like Strategy = game.newStrategy();
+2011-03-23T02:44:50  <antimatroid> but to have Game i also need to have the operators work
+2011-03-23T02:47:41  <McLeopold> so, it will be more than just outputting a game class as a string?
+2011-03-23T02:48:03  <antimatroid> well, it makes it a string
+2011-03-23T02:48:12  <antimatroid> but if i do print() i can't compose
+2011-03-23T02:48:50  <McLeopold> if you had the operator overloader just on the base, couldn't it call a toString function and get the right version?
+2011-03-23T02:49:22  <antimatroid> hmm, i can't probably make all functions work the same way by making them call print
+2011-03-23T02:49:30  <antimatroid> hang on
+2011-03-23T02:50:11  <antimatroid> yeah, i should swap the << and print functions for NGame
+2011-03-23T02:50:33  <antimatroid> although if I do it this way, when using NGames i'm not using a virtual function
+2011-03-23T02:51:00  <McLeopold> is that bad?
+2011-03-23T02:51:15  <antimatroid> depends how bad virtual functions are considered in libraries
+2011-03-23T02:51:20  <antimatroid> i intend for this to be open source
+2011-03-23T02:51:45  <antimatroid> hopefully i get far enough to set up a gui with network support so people can play games themselves or against bots, both locally and networked
+2011-03-23T02:51:54  <antimatroid> it's meant for academic stuff
+2011-03-23T02:52:55  <antimatroid> once i learn haskell properly i can see myself doing a rewrite though
+2011-03-23T02:54:27  <McLeopold> Hmm, with your method you avoid string building in memory and just put to the output stream as soon as possible.
+2011-03-23T02:54:51  <antimatroid> yes, i would always pass an ostream to the print function
+2011-03-23T02:55:40  <antimatroid> https://github.com/antimatroid/GTL/blob/master/ngame/NGame.h
+2011-03-23T02:55:45  <antimatroid> that's my actual ngame file at present
+2011-03-23T02:57:05  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has quit IRC (Quit: superflit)
+2011-03-23T03:04:21  <McLeopold> antimatroid: I think you should learn lisp so you can write domain specific languages with the macros.
+2011-03-23T03:05:33  <antimatroid> McLeopold: possibly, can the same sort of thing be done with haskell?
+2011-03-23T03:06:35  <McLeopold> Probably, but I don't know for sure.  And there is the type system, so lisp would be faster to learn.
+2011-03-23T03:06:45  <McLeopold> I'm learning lisp now, haskell is next.
+2011-03-23T03:07:06  <antimatroid> haskell has an awesome type system
+2011-03-23T03:07:10  <McLeopold> c++ was 12 years ago, so I'm over that. :P
+2011-03-23T03:07:20  <antimatroid> i've been learning haskell very slowly, i was reading through real world haskell the other day
+2011-03-23T03:07:33  <antimatroid> i haven't ruled out going into algo trading
+2011-03-23T03:07:47  <antimatroid> so it would be good if i knew a lot of c++, plus i like it before it gets messy
+2011-03-23T03:10:40  <McLeopold> I'm thinking of pickup up straight c again, just for the speed.
+2011-03-23T03:11:04  <McLeopold> I'm really anti OOP
+2011-03-23T03:11:32  <antimatroid> i don't think i'm experienced enough to really judge on that one
+2011-03-23T03:11:37  <antimatroid> (like that's ever stopped me before :P)
+2011-03-23T03:13:32  <McLeopold> judge what?
+2011-03-23T03:13:33  *** avocado <avocado!~legit@unaffiliated/avocado> has joined #aichallenge
+2011-03-23T03:13:37  <McLeopold> if you like OOP?
+2011-03-23T03:14:21  <antimatroid> being anti it
+2011-03-23T03:14:27  <McLeopold> oh
+2011-03-23T03:14:30  <antimatroid> i haven't really had much exposure to anything else
+2011-03-23T03:14:44  <McLeopold> well, it's nice when stuff is packaged for you and it just works
+2011-03-23T03:14:45  <antimatroid> i really like the idea of being able to pass functions around like variables
+2011-03-23T03:15:01  <McLeopold> but when you are building your own program, sometimes it just gets in the way
+2011-03-23T03:15:28  <McLeopold> If I find myself jumping through hoops to do simple tasks, I don't like it.
+2011-03-23T03:15:56  <antimatroid> that's what i think
+2011-03-23T03:16:11  <antimatroid> and hence gave me a bit of a downer when i looked up how to do sieve for primes in haskell
+2011-03-23T03:16:24  <McLeopold> I read the head first design pattern book and threw up
+2011-03-23T03:17:21  <McLeopold> A prime sieve seems like it would be imperative code.  Was the example in the functional style?
+2011-03-23T03:18:23  <antimatroid> http://www.haskell.org/haskellwiki/Prime_numbers
+2011-03-23T03:18:31  <antimatroid> see that page, the first example is alright, but slow as hell
+2011-03-23T03:22:33  <McLeopold> I just don't get haskell.
+2011-03-23T03:23:58  <antimatroid> i don't yet, but it's slowly making more sense, i haven't really put a huge amount of effort in yet though either
+2011-03-23T03:24:21  <antimatroid> real world haskell seems a lot better than learn you a haskell
+2011-03-23T03:26:22  <McLeopold> I was reading learn you a haskell, should I switch?
+2011-03-23T03:26:31  <McLeopold> And remember, I hate math notation. :P
+2011-03-23T03:28:04  <antimatroid> yes
+2011-03-23T03:28:13  <antimatroid> at least give it a look
+2011-03-23T03:28:30  <antimatroid> http://book.realworldhaskell.org/read/
+2011-03-23T03:30:00  <McLeopold> json and barcode, oh my
+2011-03-23T03:30:26  <McLeopold> But no colorful pictures of indistinguishable animals. :(
+2011-03-23T03:30:45  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-23T03:30:53  <antimatroid> i know
+2011-03-23T03:31:06  <antimatroid> i was unsure at first, learn you a haskell is entertaining, but it's so damn confusing
+2011-03-23T03:35:00  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-23T03:41:40  *** Eruonen <Eruonen!onensora@101.076.092.145.hva.nl> has joined #aichallenge
+2011-03-23T03:47:54  *** niemela <niemela!~niemela@129.62.151.126> has quit IRC (Read error: Operation timed out)
+2011-03-23T03:50:33  *** niemela <niemela!~niemela@129.62.151.126> has joined #aichallenge
+2011-03-23T04:02:26  *** niemela <niemela!~niemela@129.62.151.126> has quit IRC (Read error: Operation timed out)
+2011-03-23T04:04:14  *** amstan <amstan!~amstan@75-119-243-151.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-03-23T04:06:42  *** niemela <niemela!~niemela@129.62.151.126> has joined #aichallenge
+2011-03-23T04:19:15  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-03-23T04:31:22  *** boegel <boegel!~boegel@91.182.218.224> has joined #aichallenge
+2011-03-23T04:49:50  *** boegel <boegel!~boegel@91.182.218.224> has quit IRC (Quit: Leaving)
+2011-03-23T04:51:24  <antimatroid> nah, i'm starting to lose a fair bit of speed doing this
+2011-03-23T04:51:35  <antimatroid> and it's just messy, i'm just going to pass extra templates
+2011-03-23T05:11:10  <sigh> antimatroid: I heard some discussion about doing more than 1 damage
+2011-03-23T05:11:16  <sigh> did anything come out of that?
+2011-03-23T05:11:37  <antimatroid> sigh: unsure, it works better in some places and not others
+2011-03-23T05:11:51  <sigh> damage 2 is too high
+2011-03-23T05:11:58  <antimatroid> it's easy for one ant to kill two then, and a.b.c (my favourite example) gives all three dead
+2011-03-23T05:12:14  <sigh> 1.5?
+2011-03-23T05:12:31  <antimatroid> okay, i'll do some examples
+2011-03-23T05:13:04  <sigh> either way, the only values worth looking for are in the range [1, 2)
+2011-03-23T05:13:05  <sigh> imo
+2011-03-23T05:13:20  <antimatroid> i agree
+2011-03-23T05:13:55  <antimatroid> you present the problem of having to pass rationals to players then
+2011-03-23T05:14:10  <sigh> nope, just scale up damage and hp
+2011-03-23T05:14:16  <antimatroid> but we can just make the parameter "damage num denom"
+2011-03-23T05:14:18  <sigh> 1.5 is 2 hp, 3 damage
+2011-03-23T05:14:23  <antimatroid> yeah okay
+2011-03-23T05:15:21  <sigh> and pass it to them as damage/hp :P
+2011-03-23T05:15:36  <antimatroid> yep
+2011-03-23T05:15:51  <antimatroid> i think damage is the way to go
+2011-03-23T05:15:59  <antimatroid> it makes sense to say the ants dish out damage in battle
+2011-03-23T05:16:11  <sigh> yes
+2011-03-23T05:16:31  <sigh> given that ants can't choose who to attack, this makes most sense
+2011-03-23T05:16:57  <antimatroid> if we do 1.5, two ants can kill 3
+2011-03-23T05:17:10  <sigh> of course
+2011-03-23T05:17:14  <antimatroid> you can block 1 width corridors in the very worst of cases, but i really don't care about tat
+2011-03-23T05:17:24  <sigh> if you do d/h then h ants can kill d
+2011-03-23T05:17:46  <antimatroid> yeah, i know the fact is obvious, just noting the fact :)
+2011-03-23T05:18:26  <sigh> I like damage = 1 unless proven otherwise
+2011-03-23T05:21:58  <antimatroid> i think i do too
+2011-03-23T05:22:02  <antimatroid> 2 ants kill 3 doesn't make sense
+2011-03-23T05:22:08  <antimatroid> not for what we're going for
+2011-03-23T05:23:10  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has joined #aichallenge
+2011-03-23T05:24:07  <antimatroid> sigh: it seems to work a bit more like power in some of the examples i put on wiki
+2011-03-23T05:25:14  <antimatroid> not right now, but i think we should push to lock damage =1 in by this time next week
+2011-03-23T05:25:34  <antimatroid> it's too confusing having so many different options for things
+2011-03-23T05:29:25  *** Whalefreezer1 <Whalefreezer1!~Robert@124-197-25-104.callplus.net.nz> has left #aichallenge
+2011-03-23T05:37:19  *** boegel <boegel!~boegel@234-15-144-178.mobileinternet.proximus.be> has joined #aichallenge
+2011-03-23T05:40:08  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-23T05:40:59  <Stocha> In 4 games, i had my most advanced bot clearly behind in term of game won, compared to the other three challengers (whom were at a tie)
+2011-03-23T05:41:23  <Stocha> but against one of those challenger, the advanced bot proved to considerably stronger on 1vs1.
+2011-03-23T05:41:41  <antimatroid> with what rules?
+2011-03-23T05:41:49  <Stocha> having 33% to50% more wins
+2011-03-23T05:41:50  <antimatroid> and when you say advanced, surely it's not very smart with battles
+2011-03-23T05:42:06  <Stocha> i used the radius2=4 X=1_10 for this particular comparison
+2011-03-23T05:42:14  <Stocha> food spawnradius=1
+2011-03-23T05:42:27  <Stocha> ant die on same square also is son
+2011-03-23T05:42:39  <Stocha> the map was 100x100 40% ground
+2011-03-23T05:42:43  <antimatroid> use x=1, radius2 =6, spawn2 = 2, view2 = 93
+2011-03-23T05:42:47  <Stocha> (in both 4 and 2 players)
+2011-03-23T05:43:08  <Stocha> i'll do that. But it won't change the results :)
+2011-03-23T05:43:09  <antimatroid> radius2 == attack2
+2011-03-23T05:43:23  <antimatroid> ... and what is your bot doing that's so much smarter about battles?
+2011-03-23T05:43:40  <Stocha> he gathers its troops before attacking
+2011-03-23T05:43:43  <antimatroid> if it's stupidly running into bots as fast as possible without any real thought to it, it doesn't really surprise me that they lose
+2011-03-23T05:43:52  <Stocha> when the other shoot lonely drone at random
+2011-03-23T05:44:18  <antimatroid> have you run it on symmetric maps with symmetric spawning?
+2011-03-23T05:44:21  <Stocha> the game are available on the link i provided on the forum (thread exotic rules)
+2011-03-23T05:44:28  <Stocha> so you might judge by yourself i guess.
+2011-03-23T05:44:45  <Stocha> it's assymetric map, but that doesn't change the result.
+2011-03-23T05:44:52  <antimatroid> use symmetric
+2011-03-23T05:44:54  <antimatroid> with symmetric spawning
+2011-03-23T05:44:59  <antimatroid> it's implemented in the python engine
+2011-03-23T05:45:02  <antimatroid> you should really be using that
+2011-03-23T05:45:06  <Stocha> i have no algorithms for symetric map at the moment
+2011-03-23T05:45:11  <antimatroid> use my maps
+2011-03-23T05:45:15  <Stocha> i could if you provide me the java version :p
+2011-03-23T05:45:30  <Stocha> at the moment i just can't use anything else in my prototype.
+2011-03-23T05:45:31  <antimatroid> use the examples i posted in the forums
+2011-03-23T05:45:47  <antimatroid> you should at least be using the same io and map formats as the current engine
+2011-03-23T05:45:48  <Stocha> i have played like 4000 games
+2011-03-23T05:45:53  <Stocha> can you provide me 4000 maps ?
+2011-03-23T05:46:16  <Stocha> yeah. it would be good to do thoses testing with your map generator
+2011-03-23T05:46:22  <Stocha> but i have no java version of it.
+2011-03-23T05:46:45  <Stocha> at some point, i may make one myself, of find a way to use the python script one way or another.
+2011-03-23T05:46:45  <antimatroid> http://pastebin.com/HA6EfpUm
+2011-03-23T05:46:49  <antimatroid> see there for symmetric maps
+2011-03-23T05:47:02  <antimatroid> just install python
+2011-03-23T05:47:25  <Stocha> i have also to be able to call non java modules and to interface them
+2011-03-23T05:47:35  <Stocha> at the moment i use only java to java interfaces
+2011-03-23T05:48:02  <Stocha> so that won't happen until some weeks from now. At this point i hope we'll have better data available than my own testings :p
+2011-03-23T05:48:37  <Stocha> Otherwise we just need a java implementation i can paste into my framework
+2011-03-23T05:49:00  <antimatroid> you're welcome to rewrite it
+2011-03-23T05:49:08  <antimatroid> i'm not touching java with a ten foot pole
+2011-03-23T05:49:11  <antimatroid> nor do i have the time
+2011-03-23T05:49:22  <sigh> antimatroid: btw, can you clean up the ants/maps directory and add proper maps, and take out invalid ones and such
+2011-03-23T05:49:33  <antimatroid> sigh: sure
+2011-03-23T05:49:46  <antimatroid> well, at some point tonight
+2011-03-23T05:50:04  <sigh> no worries, I think it is important now that random people are looking at the repo
+2011-03-23T05:50:05  *** boegel <boegel!~boegel@234-15-144-178.mobileinternet.proximus.be> has quit IRC (Quit: Leaving)
+2011-03-23T05:50:14  <antimatroid> yeah
+2011-03-23T05:50:30  <antimatroid> there's some pages that I don't really know what to do with until we've started packaging things
+2011-03-23T05:50:33  <antimatroid> like the quickstart guides
+2011-03-23T05:50:39  <sigh> also update play_one_game.* to use a reasonable default map
+2011-03-23T05:50:43  <antimatroid> and i don't really want to touch tutorials with the rules still so vague
+2011-03-23T05:50:48  <sigh> :)
+2011-03-23T05:50:50  <sigh> yeah
+2011-03-23T05:51:03  <antimatroid> play_one_game?
+2011-03-23T05:53:19  <sigh> ants/play_one_game.sh and ants/play_one_game.md
+2011-03-23T05:56:49  <antimatroid> ah yeah okay
+2011-03-23T06:05:26  <antimatroid> sigh: the bots aren't even there for those files anymore
+2011-03-23T06:05:48  <sigh> they should be, I updated them
+2011-03-23T06:05:59  <sigh> last night
+2011-03-23T06:06:00  <antimatroid> i just pulled :\
+2011-03-23T06:06:32  <antimatroid> ah, nevermind, the directory has changed
+2011-03-23T06:06:46  <sigh> :P
+2011-03-23T06:08:15  *** kaemo <kaemo!~mad5ci@d61-117.icpnet.pl> has quit IRC (Ping timeout: 250 seconds)
+2011-03-23T06:09:12  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-03-23T06:09:36  <antimatroid> what should i use for map naming?
+2011-03-23T06:09:57  <antimatroid> egsymmetric*.txt?
+2011-03-23T06:10:00  <sigh> up to you
+2011-03-23T06:10:11  <sigh> yay for egg symmetry
+2011-03-23T06:11:24  <antimatroid> i'm hoping someone comes in and makes a 3d viewer on a torus :P
+2011-03-23T06:12:43  <antimatroid> nothing against frontiers, it's awesome, just that'd be mega
+2011-03-23T06:13:43  *** iFire` <iFire`!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-23T06:17:29  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T06:24:03  <antimatroid> sigh: are the .png maps going?
+2011-03-23T06:24:04  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-23T06:24:17  <antimatroid> oh
+2011-03-23T06:24:18  <sigh> nfi
+2011-03-23T06:24:27  <antimatroid> we've forgotten to add the don't let accoun win feature :P
+2011-03-23T06:30:44  <antimatroid> sigh: i haven't written a shell script in like 4 years
+2011-03-23T06:30:57  <sigh> why do you need to write a shell script?
+2011-03-23T06:30:58  <antimatroid> want to write a make_symmetric_maps.sh file for me?
+2011-03-23T06:31:09  <antimatroid> otherwise what's an easy way to make x maps?
+2011-03-23T06:31:22  <sigh> how do you make a map?
+2011-03-23T06:31:33  <antimatroid> there is an object that can make them for you
+2011-03-23T06:31:41  <antimatroid> otherwise it defaults to just making and printing one
+2011-03-23T06:31:50  <sigh> paste command to make a map
+2011-03-23T06:32:08  <antimatroid> python symmetric_mapgen.py :P
+2011-03-23T06:32:41  <sigh> that will generate a different map each time?
+2011-03-23T06:32:44  <antimatroid> yes
+2011-03-23T06:32:57  <sigh> and output to stdout?
+2011-03-23T06:33:03  <antimatroid> yes
+2011-03-23T06:33:23  <sigh> for i in {1..20}; do python symmetric_mapgen.py > map_$i.txt; done
+2011-03-23T06:34:24  <antimatroid> :)
+2011-03-23T06:38:28  <antimatroid> what chmod -? do i want?
+2011-03-23T06:39:20  <sigh> chmod changes the permissions on the file
+2011-03-23T06:39:45  <sigh> what are you chmoding?
+2011-03-23T06:40:24  <antimatroid> make_symmetric_maps.sh
+2011-03-23T06:41:02  <sigh> chmod a+x make_symmetric_maps.sh is fine
+2011-03-23T06:41:22  <sigh> give any execute privilages for the script
+2011-03-23T06:44:40  <sigh> *give anyone
+2011-03-23T06:52:20  <CIA-33> aichallenge: Nick Ham epsilon * r783c8e0 / (6 files): removed invalid map files - http://bit.ly/efG8nT
+2011-03-23T06:52:21  <CIA-33> aichallenge: Nick Ham epsilon * rb85a0b9 / (ants/mapgen/symmetric_mapgen.py ants/maps/simple1.txt): cleaned up maps - http://bit.ly/gOSAid
+2011-03-23T06:53:08  <antimatroid> i haven't changed the play game files yet
+2011-03-23T06:53:14  <antimatroid> but there are 200 symmetric maps now :P
+2011-03-23T06:54:12  <sigh> :P
+2011-03-23T06:54:15  <antimatroid> except they didn't show :\
+2011-03-23T07:00:16  <sigh> git you git add them?
+2011-03-23T07:00:21  <sigh> did you
+2011-03-23T07:00:34  <antimatroid> i did
+2011-03-23T07:01:25  <antimatroid> "The following paths are ignored by one of your .gitignore files:" ?
+2011-03-23T07:01:31  <antimatroid> then lists all the file locations
+2011-03-23T07:01:40  <sigh> what did you name the files?
+2011-03-23T07:01:40  <antimatroid> when i try to do git add *.txt inside the actual folder
+2011-03-23T07:01:48  <antimatroid> symmetric_map_n.txt
+2011-03-23T07:02:16  <sigh> wtf, what is that .gitignore file doing there
+2011-03-23T07:02:18  <sigh> remove it
+2011-03-23T07:02:33  <sigh> oh, also... don't put 200 maps for now
+2011-03-23T07:02:36  <sigh> put like 10
+2011-03-23T07:02:49  <sigh> no point cluttering up the map directory, just enough for examples
+2011-03-23T07:02:58  <antimatroid> i don't know what the gitignore file is
+2011-03-23T07:03:25  <sigh> just `rm .gitignore` in that directory
+2011-03-23T07:03:55  <sigh> don't commit the remove, but we'll ask McLeopold what's up
+2011-03-23T07:06:10  <CIA-33> aichallenge: Nick Ham epsilon * ra09ef3b / (22 files in 3 dirs): added example symmetric maps - http://bit.ly/hDP3PI
+2011-03-23T07:07:19  <antimatroid> there we go
+2011-03-23T07:07:37  <antimatroid> oh sorry :P
+2011-03-23T07:07:47  <antimatroid> well it's done now
+2011-03-23T07:08:44  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-23T07:08:51  <sigh> don't matter
+2011-03-23T07:09:11  <sigh> .gitignore specifies what files git will ignore (suprisingly enough)
+2011-03-23T07:09:31  <sigh> for example you would want to ignore *.o files when working with C
+2011-03-23T07:09:49  <sigh> I have no idea why McLeopold told git to ignore *.txt and *.png
+2011-03-23T07:09:59  <antimatroid> yeah oh well
+2011-03-23T07:10:07  <antimatroid> i really like the maps
+2011-03-23T07:11:12  <sigh> :)
+2011-03-23T07:23:26  <antimatroid> my lecturer had an interesting way of going through the contradiction with the set of all sets today
+2011-03-23T07:23:59  <antimatroid> for an example of a set containing itself, let S = {x | x is a set and x is not a hippo}
+2011-03-23T07:27:01  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-03-23T07:28:07  <antimatroid> set of everything**
+2011-03-23T07:32:41  <sigh> ok?
+2011-03-23T07:33:12  <sigh> most hippos I've seen haven't been sets
+2011-03-23T07:33:37  <antimatroid> no
+2011-03-23T07:33:46  <antimatroid> the point is S is an element of itself
+2011-03-23T07:33:51  <sigh> ok
+2011-03-23T07:33:57  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has joined #aichallenge
+2011-03-23T07:34:39  <antimatroid> oh, i think S is meant to be a subset of the set of sets not containing itself
+2011-03-23T07:34:41  <antimatroid> my bad :P
+2011-03-23T07:34:49  <antimatroid> and then from that you get a contradiction
+2011-03-23T07:34:53  <sigh> yes
+2011-03-23T07:34:55  <antimatroid> well, wahtever one would call it
+2011-03-23T07:35:05  <sigh> where did you get hippo from?
+2011-03-23T07:35:18  <antimatroid> that's what my lecturer used as an example of a set containing itself
+2011-03-23T07:35:23  <sigh> ahh
+2011-03-23T07:36:04  <sigh> the set of all sets not containing itself is a fairly standard example
+2011-03-23T07:36:22  <antimatroid> i know, i was referring to the example :P
+2011-03-23T07:36:30  <sigh> Russel's Paradox, I think
+2011-03-23T07:36:45  <sigh> ah ok
+2011-03-23T07:36:45  <antimatroid> i like the pinnocio paradox :P
+2011-03-23T07:36:50  <antimatroid> "my nose will grow"
+2011-03-23T07:36:50  <sigh> :)
+2011-03-23T07:37:04  <Stocha> I have been using one simple rule for years : "if you really needs speed, only use int[] with a single allocation at start of program"
+2011-03-23T07:37:11  <antimatroid> well, if you're being anal "my nose will grow as a result of me saying this"
+2011-03-23T07:37:23  <sigh> haha
+2011-03-23T07:37:32  <Stocha> it works quite well
+2011-03-23T07:37:41  <Stocha> but then you don't need speed that often also
+2011-03-23T07:37:43  <antimatroid> Stocha: try not using java ;)
+2011-03-23T07:37:59  <Stocha> i did the same with c
+2011-03-23T07:38:15  <Stocha> c and java are very alike. Java is a c without the macro, when you need speed
+2011-03-23T07:38:37  <Stocha> when you don't need the speed java is far superior. More user friendly. Faster to test, good libraries.
+2011-03-23T07:38:37  <antimatroid> and without operator overloading? of variable overloading etc.
+2011-03-23T07:38:38  <antimatroid> i could not live
+2011-03-23T07:38:52  <antimatroid> i dunno if i would call java user friendly
+2011-03-23T07:38:53  <Stocha> if you don't need speed you can use them plenty
+2011-03-23T07:38:58  <antimatroid> c++ lets me get away with almost anything i want
+2011-03-23T07:39:28  <Stocha> c++ is one heavy beast to get going in the right direction :p
+2011-03-23T07:39:34  <antimatroid> it is
+2011-03-23T07:39:54  <antimatroid> i treated it like c with classes then i'm still learning almost daily
+2011-03-23T07:40:03  <Stocha> when i would use c++, i'd rather use java. If i need speed, i'm good with C.
+2011-03-23T07:40:47  <Stocha> although i've grown incomfortable at c programming with years passing :'(
+2011-03-23T07:40:49  <antimatroid> i'm pretty sick of c++
+2011-03-23T07:41:09  <Stocha> does that mean you like it, or that you are fed up with it ?
+2011-03-23T07:41:16  <antimatroid> fed up with it
+2011-03-23T07:41:31  <Stocha> me too
+2011-03-23T07:41:50  <Stocha> i have used it a few time, when i was learning computer science.
+2011-03-23T07:42:23  <Stocha> When dinosaures were still a dominant species.
+2011-03-23T07:42:28  <antimatroid> it's pretty much all i know atm, i don't particularly like python, hate java
+2011-03-23T07:42:33  <antimatroid> it's haskell or lisp
+2011-03-23T07:42:46  <Stocha> go with them then.
+2011-03-23T07:42:51  <Stocha> what's wrong with that.
+2011-03-23T07:43:01  <antimatroid> i am slowly learning haskell
+2011-03-23T07:43:04  <antimatroid> it's confusing :P
+2011-03-23T07:43:05  <Stocha> maybe you could even fin some job in haskell those days. maybe.
+2011-03-23T07:43:21  <antimatroid> i'm not really looking to work as a programmer
+2011-03-23T07:43:27  <antimatroid> depending on how interesting the job was
+2011-03-23T07:43:30  <Stocha> if haskell is confusing to you, you'd better be off learning java :p
+2011-03-23T07:43:40  <antimatroid> i will get haskell eventually
+2011-03-23T07:43:54  <Stocha> because there are quite some functionnal style freaks that do that at evening time for a recreation.
+2011-03-23T07:44:14  <antimatroid> i expect i would fall into that category
+2011-03-23T07:44:20  <antimatroid> freak at home doing stuff for recreation
+2011-03-23T07:44:20  <Stocha> and nobody want skilled Haskellers. So they probably have choice when they do :p
+2011-03-23T07:44:54  <Stocha> you can go and try scala also
+2011-03-23T07:45:08  <Stocha> at least when you give up, you'll have grown a few java skill :p
+2011-03-23T07:46:13  <Stocha> c has some ways of overloading functions by the way.
+2011-03-23T07:46:28  <Stocha> it's kinda of the only usefull feature of langages objects anyway :p
+2011-03-23T07:46:52  <Stocha> so c is practically speaking an object langage :p In that it supports virtuals functions
+2011-03-23T07:47:06  <Stocha> (they are called function pointers but well)
+2011-03-23T07:47:09  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.50> has joined #aichallenge
+2011-03-23T07:47:14  <antimatroid> i like haskell
+2011-03-23T07:47:19  <antimatroid> well, parts
+2011-03-23T07:47:22  <Stocha> i don't know haskell
+2011-03-23T07:47:28  <antimatroid> i like the structure, i think the syntax is a bit rank sometimes
+2011-03-23T07:47:36  <antimatroid> the type system is awesome
+2011-03-23T07:47:37  <Stocha> i may have seen a sample hello programs years back.
+2011-03-23T07:47:44  <antimatroid> i don't know much beyond the bare basics
+2011-03-23T07:48:13  <Stocha> in only know it's been popular. I think i even saw a job options every now and then.
+2011-03-23T07:48:35  <antimatroid> people say it's good for doing maths stuff
+2011-03-23T07:48:40  <antimatroid> which is my main interest, so yeah :P
+2011-03-23T07:48:53  <Stocha> what about mathematica ?
+2011-03-23T07:49:05  <antimatroid> rank
+2011-03-23T07:49:10  <antimatroid> i like open source
+2011-03-23T07:49:14  <Stocha> (is it called that ?) well the mathematical framework everyone is using
+2011-03-23T07:49:17  <antimatroid> it means i don't have to pay/pirate
+2011-03-23T07:49:23  <antimatroid> mathematica yeah
+2011-03-23T07:49:27  <Stocha> yeah me too
+2011-03-23T07:49:34  <antimatroid> there's matlab too, but that's mostly for numerical work only
+2011-03-23T07:49:56  <Stocha> i think mathematic is good for people that don't want to get involved too deeply in computer achitecture
+2011-03-23T07:50:05  <Stocha> wich is really 98% of any programming job :p
+2011-03-23T07:50:09  <antimatroid> yeah, i'd rather get involved with sage
+2011-03-23T07:50:31  <sigh> then get used to python :P
+2011-03-23T07:50:47  <antimatroid> i know :P
+2011-03-23T07:50:53  <Stocha> mm, i'll try to go and get going with this new silly bot idea i had. I have like an hour of pause for lunch :p
+2011-03-23T07:51:03  <antimatroid> lunch?
+2011-03-23T07:51:05  <antimatroid> it's almost 11 pm :P
+2011-03-23T07:51:17  <Stocha> no, it's 12:47 am !
+2011-03-23T07:51:22  <Stocha> your watch is wrong !
+2011-03-23T07:51:27  <antimatroid> pm?
+2011-03-23T07:51:33  <Stocha> am !
+2011-03-23T07:51:38  <sigh> he's european
+2011-03-23T07:51:39  <antimatroid> didn't you say lunch?
+2011-03-23T07:51:42  <Stocha> it's lunch time in a word.
+2011-03-23T07:51:51  <sigh> hmmm
+2011-03-23T07:51:54  <sigh> pm
+2011-03-23T07:51:55  <Stocha> isn't lunch at 12:01 am ?
+2011-03-23T07:51:58  <Stocha> oh pm
+2011-03-23T07:52:00  <Stocha> pm then
+2011-03-23T07:52:01  <antimatroid> lol :P
+2011-03-23T07:52:05  <antimatroid> i was like wtf
+2011-03-23T07:52:09  <Stocha> that's 11:59 am
+2011-03-23T07:52:14  <Stocha> then 12:00 pm ?
+2011-03-23T07:52:16  <sigh> 12:00 pm
+2011-03-23T07:52:17  <sigh> yes
+2011-03-23T07:52:17  <Stocha> okay sorry :p
+2011-03-23T07:52:26  <antimatroid> you will be..
+2011-03-23T07:52:56  <antimatroid> sigh: i don't really get how i'm meant to be cleaning up those play game scripts?
+2011-03-23T07:53:00  <sigh> PM stands for post meridiem which means "after noon"
+2011-03-23T07:53:09  <antimatroid> didn't know that
+2011-03-23T07:53:13  <antimatroid> nor will i tomorrow :p
+2011-03-23T07:53:48  <jbroman> And AM is "ante meridiem"
+2011-03-23T07:54:13  <sigh> yes
+2011-03-23T07:54:31  <sigh> post and ante should be easy to remember
+2011-03-23T07:54:51  <sigh> antimatroid: leave them as they are, then
+2011-03-23T07:55:29  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-23T07:55:39  <antimatroid> done :P
+2011-03-23T07:59:24  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-23T08:23:26  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has joined #aichallenge
+2011-03-23T08:25:51  *** Stocha <Stocha!c2faade1@gateway/web/freenode/ip.194.250.173.225> has quit IRC (Quit: Page closed)
+2011-03-23T08:29:55  *** antimatroid <antimatroid!~nick@114.196.dsl.mel.iprimus.net.au> has quit IRC (Quit: Leaving.)
+2011-03-23T08:31:51  *** antimatroid <antimatroid!~nick@114.196.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-23T08:34:56  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-23T08:37:45  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-03-23T08:38:45  *** kaemo <kaemo!~mad5ci@150.254.83.142> has joined #aichallenge
+2011-03-23T08:49:40  *** robbs <robbs!~Robby.Ron@65.170.177.243> has joined #aichallenge
+2011-03-23T08:50:49  *** kaemo <kaemo!~mad5ci@150.254.83.142> has quit IRC (Read error: Operation timed out)
+2011-03-23T08:53:42  *** computer1iz_222 <computer1iz_222!~andrew@216-58-20-94.cpe.distributel.net> has joined #aichallenge
+2011-03-23T08:56:51  *** computerwiz_222 <computerwiz_222!~andrew@216-58-38-217.cpe.distributel.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-23T08:58:40  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-23T09:21:55  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-03-23T09:37:39  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has joined #aichallenge
+2011-03-23T09:46:30  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-23T09:46:36  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-23T09:47:13  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-23T09:57:56  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-03-23T10:15:32  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has joined #aichallenge
+2011-03-23T10:19:19  *** delt0r___ <delt0r___!~delt0r@188-22-160-215.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-23T10:20:46  *** andy_ <andy_!53f9e1aa@gateway/web/freenode/ip.83.249.225.170> has joined #aichallenge
+2011-03-23T10:20:55  *** delt0r_ <delt0r_!~delt0r@188-22-160-215.adsl.highway.telekom.at> has quit IRC (Ping timeout: 250 seconds)
+2011-03-23T10:38:10  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has joined #aichallenge
+2011-03-23T10:38:54  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-23T10:45:08  *** UncleVasya <UncleVasya!kvirc@46.133.104.239> has joined #aichallenge
+2011-03-23T10:57:15  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-03-23T10:59:57  *** Bitbrit <Bitbrit!~BItbrit@5e0297bb.bb.sky.com> has joined #aichallenge
+2011-03-23T11:08:12  *** dsafa <dsafa!46593219@gateway/web/freenode/ip.70.89.50.25> has joined #aichallenge
+2011-03-23T11:24:37  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-23T11:28:59  *** amstan <amstan!~amstan@75-119-243-151.dsl.teksavvy.com> has joined #aichallenge
+2011-03-23T11:28:59  *** ChanServ sets mode: +o amstan
+2011-03-23T11:31:31  <Stocha> McLeopold : you too are beginning to think c is superior to c++  ? :p   Design patterns ARE a nice idea. I mean who don't use the usefull patterns. What do they call that. Inversion control ? Observer or i don't know what. It's really powerfull. It's also awfully like dead-straight functors.
+2011-03-23T11:31:50  <Stocha> And you can do the same with the c langage, having the function pointers.
+2011-03-23T11:32:11  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-23T11:41:25  <amstan> i really don't like how c++ does things, you write a ton of header files that do nothing, just so you can call your functions externally
+2011-03-23T11:42:18  *** Eruonen <Eruonen!onensora@101.076.092.145.hva.nl> has quit IRC ()
+2011-03-23T11:42:38  <amstan> antimatroid: do we need this? https://github.com/aichallenge/aichallenge/pull/39
+2011-03-23T11:45:14  <andy_> It was me who submitted it. not sure if it's really needed but I saw someone here talking about a Java version earlier.. Did it mostly to freshen up my Python reading skills :)
+2011-03-23T11:49:28  <amstan> andy_: cool
+2011-03-23T11:49:58  <amstan> andy_: how about a mapgen that generates different maps?
+2011-03-23T11:50:13  <amstan> andy_: i was thinking of a symmetric map, that's not wrapped
+2011-03-23T11:50:24  <amstan> and you could fit 2^k players on it
+2011-03-23T11:50:35  *** davidd <davidd!davidd@tinkywinky.stack.nl> has quit IRC (Quit: reconnecting to server)
+2011-03-23T11:50:40  *** davidd <davidd!davidd@tinkywinky.stack.nl> has joined #aichallenge
+2011-03-23T11:50:49  <amstan> you can split it in 2, 4, 8 and so on
+2011-03-23T11:53:04  <andy_> yeah I could give that a try
+2011-03-23T12:05:36  <CIA-33> aichallenge: Alexandru Stan fix-playgame-exit-status * rc28f913 / ants/playgame.py : make playgame.py return 0 when success, and -1 on exception - http://bit.ly/htndOM
+2011-03-23T12:07:48  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-23T12:22:55  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-23T12:24:21  *** dsafa <dsafa!46593219@gateway/web/freenode/ip.70.89.50.25> has quit IRC (Quit: Page closed)
+2011-03-23T13:01:37  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has quit IRC (Quit: superflit)
+2011-03-23T13:01:39  *** phirenz <phirenz!~phire@142.248.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-03-23T13:02:49  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-03-23T13:03:01  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-23T13:14:19  *** Eruonen <Eruonen!~onensora@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-03-23T13:26:53  *** ItzMattu <ItzMattu!~no@pool-98-118-109-35.bstnma.fios.verizon.net> has quit IRC (Ping timeout: 246 seconds)
+2011-03-23T13:32:21  *** ItzMattu <ItzMattu!~no@pool-98-118-109-35.bstnma.fios.verizon.net> has joined #aichallenge
+2011-03-23T13:32:55  *** iFire` <iFire`!~kittens@unaffiliated/ifire> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T13:37:08  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-03-23T13:39:01  <andy_> @amstan: I did as you suggested and the results looks something like this http://pastebin.com/TFz9qDqK
+2011-03-23T13:39:02  <contestbot> andy_: User error -- Replace user.
+2011-03-23T13:39:21  <amstan> andy_: yeah, that's what i was looking at
+2011-03-23T13:39:37  <amstan> is that 4 player or 8? looks like 4
+2011-03-23T13:39:43  <andy_> its 4
+2011-03-23T13:39:52  <andy_> only a first start
+2011-03-23T13:39:55  <amstan> you can also make an 8 player one by splitting the diagonals
+2011-03-23T13:40:34  <andy_> yeah im not sure how to fit 8 into a square.. 4*2 or 3*3 with empty in the middle?
+2011-03-23T13:40:48  <amstan> 4/2 is not symmetric
+2011-03-23T13:41:00  <amstan> the 4 guys stuck in the middle will have a harder time
+2011-03-23T13:41:08  <amstan> you need 3x3 with a hole
+2011-03-23T13:41:30  <andy_> ok, I'll see if I can come up with something good
+2011-03-23T13:41:51  <amstan> something like this: http://pastebin.com/9pxBCCRw
+2011-03-23T13:42:13  <amstan> basically..  for 4 players you have 2 axes of symmetry(vertical and horizontal)
+2011-03-23T13:42:19  <amstan> for 8 players you must add the diagonals
+2011-03-23T13:42:39  <amstan> though.. the map should be square or something
+2011-03-23T13:42:54  <amstan> the diagonals should have a slope that fits with the grid
+2011-03-23T13:42:57  <andy_> ahh. ok I see
+2011-03-23T13:43:00  <amstan> so.. either 1/1 or 1/2
+2011-03-23T13:43:12  <amstan> 1/2 will yield a map with one dimension twice the other
+2011-03-23T13:43:14  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has joined #aichallenge
+2011-03-23T13:43:29  <amstan> wait, that won't be symmetric then
+2011-03-23T13:43:39  <amstan> yeah, if you get the diagonals, the map has to be square
+2011-03-23T13:44:42  <amstan> andy_: so basically, i wanted more variety for the mapgens, last contest we had one type of maps that was overrepresented
+2011-03-23T13:44:47  <amstan> so everything hardcoded their bots
+2011-03-23T13:45:49  <amstan> get that mapgen in git and i'll pull it
+2011-03-23T13:46:34  <andy_> ok, I don't have time now must rush away. but I'll add it later or tomorrow.
+2011-03-23T13:47:15  <amstan> ok, cool
+2011-03-23T13:47:28  <amstan> andy_: thanks for helping btw
+2011-03-23T13:47:31  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has quit IRC (Client Quit)
+2011-03-23T13:59:42  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.15/20110303024726])
+2011-03-23T14:04:27  <amstan> contestbot: seen Frontier
+2011-03-23T14:04:27  <contestbot> amstan: Frontier was last seen in #aichallenge 15 hours, 26 minutes, and 19 seconds ago: <Frontier> why did i even ask -.-
+2011-03-23T14:04:39  <amstan> contestbot: later tell Frontier See https://github.com/aichallenge/aichallenge/issues/40
+2011-03-23T14:04:39  <contestbot> amstan: I think that worked...
+2011-03-23T14:05:49  <phirenz> such confidence from a bot.
+2011-03-23T14:06:16  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has joined #aichallenge
+2011-03-23T14:06:17  *** olex <olex!~Adium@p57983302.dip.t-dialin.net> has left #aichallenge
+2011-03-23T14:06:19  <amstan> phirenz: yeah, lol, it's rather humble
+2011-03-23T14:07:01  <amstan> contestbot: later tell McLeopold Can you review https://github.com/aichallenge/aichallenge/issues#issue/38 and confirm my fix?
+2011-03-23T14:07:01  <contestbot> amstan: OK
+2011-03-23T14:35:12  <Frontier> amstan: Map scrolling is in my todo list. I'm currently working on simulating a JavaScript web environment in a Java application so. So far this looks promising. I'm not sure about the speed of execution though. Rendering will be faster than right now in the applet, and it should be ok for the standalone jar, but maybe parsing the replay will take a few seconds. After all I use a JavaScript engine written in Java.
+2011-03-23T14:42:14  <Frontier> All the basic, important features are implemented. The meta data is parsed, there are controls, the buttons-don't-show-bug is fixed and the player names have link buttons to the user profile.
+2011-03-23T14:43:47  <Frontier> The offline viewer needs some loving though, and the applet is rendering too slow. If I get the visualizer to run inside the Rhino JavaScript engine shipped with Java 6 both I hit two flies with one flap as we say. (Java 6 is from Dec. 2006, I hope everyone has upgraded already :) )
+2011-03-23T14:47:33  <amstan> Frontier: so this is supposed to work? http://home.hypertriangle.com/~alex/aichallenge/ants/visualizer/offline.html
+2011-03-23T14:48:04  <amstan> i get Error("Expected s, but f found.")
+2011-03-23T14:48:08  *** andy_ <andy_!53f9e1aa@gateway/web/freenode/ip.83.249.225.170> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T14:48:08  <amstan> in both firefox and chrome
+2011-03-23T14:48:30  *** _andy <_andy!d5730a62@gateway/web/freenode/ip.213.115.10.98> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T14:51:04  <amstan> Frontier: maybe this helps: http://pastebin.com/NB1ArpwV
+2011-03-23T14:54:08  <Frontier> amstan: i forgot to replace the string in the offline.html with a recent replay.
+2011-03-23T14:54:28  <Frontier> the behavoir is actually correct :p
+2011-03-23T14:58:57  <CIA-33> aichallenge: Marco Leise epsilon * r05c1dde / ants/visualizer/offline.html : visualizer: updated replay sample in offline.html - http://bit.ly/gpDhVZ
+2011-03-23T14:58:59  <CIA-33> aichallenge: Marco Leise epsilon * rcddc397 / (30 files in 3 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/gTqRKy
+2011-03-23T15:00:37  *** Bitbrit <Bitbrit!~BItbrit@5e0297bb.bb.sky.com> has quit IRC (Quit: Bitbrit)
+2011-03-23T15:04:05  <amstan> Frontier: pretty good
+2011-03-23T15:05:14  <Frontier> thx
+2011-03-23T15:05:40  <amstan> omg i'm winning!
+2011-03-23T15:06:34  *** choas <choas!~lars@p578F6A60.dip.t-dialin.net> has joined #aichallenge
+2011-03-23T15:06:41  <amstan> oh man, it's much slower in firefox
+2011-03-23T15:06:47  <Frontier> that wasn't planned when I put the names there ^^
+2011-03-23T15:07:04  <Frontier> Chrome renders with about 100 FPS and Firefox with 27
+2011-03-23T15:07:04  <amstan> save doesn't seem to work
+2011-03-23T15:07:34  <amstan> and maximize in chrome yields a scrollbar
+2011-03-23T15:07:46  <Frontier> It should save the current fullscreen setting. When you reload the page you should be in the same mode as when you saved.
+2011-03-23T15:08:05  <amstan> oh
+2011-03-23T15:08:19  <Frontier> sometimes i see that scrollbar, too. maybe i should disable them with JavaScript
+2011-03-23T15:09:31  <Frontier> amstan: I don't think saving replays in the browser is nice. It is not easy to see how much storage space is in use and would require some gui.
+2011-03-23T15:10:09  <amstan> well.. i didn't know what save meant
+2011-03-23T15:10:11  <Frontier> I'll change the label on the button to 'save settings' and add some more 'settings'
+2011-03-23T15:10:14  <antimatroid> sigh: you don't need a java map gen
+2011-03-23T15:10:25  <antimatroid> amstan*
+2011-03-23T15:10:44  <amstan> antimatroid: yeah, he started working a a non-wrapping mapgen
+2011-03-23T15:10:54  <amstan> antimatroid: [13:35] <andy_> @amstan: I did as you suggested and the results looks something like this http://pastebin.com/TFz9qDqK
+2011-03-23T15:14:54  <antimatroid> hmmm okay, i still think it's better when you are surrounded on all sides
+2011-03-23T15:14:59  <amstan> interesting what reddit did to our graph: https://github.com/aichallenge/aichallenge/graphs/traffic
+2011-03-23T15:15:03  <antimatroid> and you can't do symmetric maps with more than 4 players like that
+2011-03-23T15:15:18  <amstan> antimatroid:  http://pastebin.com/9pxBCCRw
+2011-03-23T15:15:32  <antimatroid> sigh: shh :P
+2011-03-23T15:15:38  <antimatroid> but yeha, okay syre
+2011-03-23T15:16:10  <amstan> the problem with my link is that my width!=height since i was lazy
+2011-03-23T15:16:14  <amstan> so it's not really symmetric
+2011-03-23T15:16:22  <antimatroid> my maps don't have width = height
+2011-03-23T15:16:25  <antimatroid> not necessarily anyway
+2011-03-23T15:16:27  <antimatroid> and they're ysmmetric
+2011-03-23T15:16:49  <amstan> your maps... idk if i would call them simmetric
+2011-03-23T15:16:52  <amstan> they're more tile based
+2011-03-23T15:17:07  <antimatroid> it's a symmetric game
+2011-03-23T15:17:16  <antimatroid> each player starts the exact same game
+2011-03-23T15:17:57  <amstan> i guess you're using http://en.wikipedia.org/wiki/Translational_symmetry
+2011-03-23T15:21:20  <antimatroid> yep
+2011-03-23T15:25:12  *** choas <choas!~lars@p578F6A60.dip.t-dialin.net> has quit IRC (Read error: Operation timed out)
+2011-03-23T15:42:28  *** Amagineer <Amagineer!~Amagineer@bas1-stoneycreek08-1177982494.dsl.bell.ca> has joined #aichallenge
+2011-03-23T16:00:23  *** antrn11 <antrn11!~juho@ip-81-175-143-55.oppilastalo.phnet.fi> has left #aichallenge
+2011-03-23T16:12:13  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-03-23T16:17:49  *** mceier_ <mceier_!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-03-23T16:18:24  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Ping timeout: 250 seconds)
+2011-03-23T16:18:58  *** smippy <smippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-03-23T16:18:59  *** smippy <smippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-03-23T16:19:50  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-23T16:20:34  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Disconnected by services)
+2011-03-23T16:20:40  *** smippy is now known as smellyhippy
+2011-03-23T16:20:54  <McLeopold> amstan: the playgame.py fix looks good
+2011-03-23T16:28:47  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-03-23T16:29:48  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has quit IRC (Ping timeout: 276 seconds)
+2011-03-23T16:30:10  *** ItzMattu <ItzMattu!~no@pool-98-118-109-35.bstnma.fios.verizon.net> has quit IRC (Ping timeout: 250 seconds)
+2011-03-23T16:35:17  <CIA-33> aichallenge: Alexandru Stan epsilon * re806266 / ants/playgame.py : Merge branch 'fix-playgame-exit-status' into epsilon - http://bit.ly/gCIRSq
+2011-03-23T16:38:03  *** moongrass <moongrass!~ark@zaq7ac5e0e0.zaq.ne.jp> has joined #aichallenge
+2011-03-23T16:41:20  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-23T16:47:42  *** sigh_ <sigh_!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-23T16:48:17  *** UncleVasya <UncleVasya!kvirc@46.133.104.239> has quit IRC (Ping timeout: 260 seconds)
+2011-03-23T16:54:27  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-03-23T16:56:13  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has quit IRC (Ping timeout: 248 seconds)
+2011-03-23T16:56:48  *** chris___0076 is now known as chris_0076
+2011-03-23T16:57:29  *** Zannick <Zannick!jokeserver@MAXIMEGALON.ANDREW.CMU.EDU> has joined #aichallenge
+2011-03-23T16:59:51  *** sigh_ <sigh_!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-03-23T17:05:55  *** robbs <robbs!~Robby.Ron@65.170.177.243> has left #aichallenge
+2011-03-23T17:23:03  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.50> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-03-23T17:25:43  *** twinshadow <twinshadow!~twinshado@rosencrantz.defaultroute.net> has quit IRC (Quit: leaving)
+2011-03-23T17:37:48  *** Anders____ <Anders____!55e1b87a@gateway/web/freenode/ip.85.225.184.122> has joined #aichallenge
+2011-03-23T17:38:13  <Anders____> Hello McLeopold and other
+2011-03-23T17:39:20  <Anders____> the other day you showed me your site for planet wars competition
+2011-03-23T17:39:31  <Anders____> I wonder how do I get an account?
+2011-03-23T17:40:03  <amstan> Anders____: what site
+2011-03-23T17:40:46  <Frontier> "the other day" as in 4 months ago?
+2011-03-23T17:42:59  <Anders____> this site http://tcp.zeroviz.us/
+2011-03-23T17:43:20  <Anders____> it was actually the other day, I am looking for a place to play planet wars
+2011-03-23T17:43:23  <amstan> Anders____: oh.. the tcp thing..
+2011-03-23T17:43:34  <amstan> Anders____: you don't need an account, the first time you login, creates it
+2011-03-23T17:43:40  <Anders____> ah ok
+2011-03-23T17:43:42  <amstan> make sure you use the same password after that
+2011-03-23T17:43:52  <amstan> first login also sets the password
+2011-03-23T17:43:54  <Anders____> I guess that is enough!
+2011-03-23T17:47:14  <Anders____> I get :  connect: Permission denied
+2011-03-23T17:47:30  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has joined #aichallenge
+2011-03-23T17:48:10  <Anders____> I run       ./tcp tcp.zeroviz.us 995 a1 -p a1a1 ./runjava.sh
+2011-03-23T17:51:14  <McLeopold> hi Anders___
+2011-03-23T17:51:24  <Anders____> hi
+2011-03-23T17:52:57  <McLeopold> I'm looking at it, hold on.
+2011-03-23T17:53:39  <McLeopold> Anders___: try once more
+2011-03-23T17:53:51  <Anders____> I have no battery left   if  you have some ideas  perhaps you can drop me a line at anders.eriksson@gmail.com   thank you in advance!
+2011-03-23T17:53:53  <McLeopold> and you need a colon in your command line
+2011-03-23T17:54:08  <McLeopold> wait, no you don't
+2011-03-23T17:58:05  *** Anders____ <Anders____!55e1b87a@gateway/web/freenode/ip.85.225.184.122> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T18:20:10  *** delt0r_ <delt0r_!~delt0r@188-22-175-5.adsl.highway.telekom.at> has joined #aichallenge
+2011-03-23T18:21:09  *** delt0r___ <delt0r___!~delt0r@188-22-160-215.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-03-23T18:21:54  *** choas <choas!~lars@p578F6A60.dip.t-dialin.net> has joined #aichallenge
+2011-03-23T18:25:44  *** Stocha <Stocha!5243b292@gateway/web/freenode/ip.82.67.178.146> has quit IRC (Quit: Page closed)
+2011-03-23T18:26:49  *** j3camero <j3camero!~jeff@207.219.39.71> has quit IRC (Ping timeout: 276 seconds)
+2011-03-23T18:29:32  *** me0w <me0w!~me0w@197.200.70.166> has joined #aichallenge
+2011-03-23T18:34:11  *** choas <choas!~lars@p578F6A60.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-03-23T18:39:17  *** me0w <me0w!~me0w@197.200.70.166> has quit IRC (Quit: leaving)
+2011-03-23T18:50:58  *** Eruonen <Eruonen!~onensora@e198153.upc-e.chello.nl> has quit IRC ()
+2011-03-23T18:51:09  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has joined #aichallenge
+2011-03-23T18:54:54  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-03-23T19:03:04  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-03-23T19:08:49  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-03-23T19:22:20  *** mceier_ <mceier_!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-03-23T19:36:29  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has quit IRC (Quit: superflit)
+2011-03-23T19:43:23  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has quit IRC (Ping timeout: 255 seconds)
+2011-03-23T19:45:12  *** Frontier <Frontier!~marco@dslb-088-070-132-011.pools.arcor-ip.net> has joined #aichallenge
+2011-03-23T19:55:44  *** Amagineer <Amagineer!~Amagineer@bas1-stoneycreek08-1177982494.dsl.bell.ca> has quit IRC (Remote host closed the connection)
+2011-03-23T20:10:24  *** robbs <robbs!~Robby.Ron@184.88.248.73> has joined #aichallenge
+2011-03-23T20:20:39  *** robbs1 <robbs1!~Robby.Ron@65.170.177.243> has joined #aichallenge
+2011-03-23T20:22:10  *** robbs <robbs!~Robby.Ron@184.88.248.73> has quit IRC (Ping timeout: 240 seconds)
+2011-03-23T20:33:17  *** Cerealklr <Cerealklr!~Cerealklr@cpe-71-74-237-65.neo.res.rr.com> has joined #aichallenge
+2011-03-23T20:33:45  *** Cerealklr <Cerealklr!~Cerealklr@cpe-71-74-237-65.neo.res.rr.com> has left #aichallenge
+2011-03-23T20:40:51  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-23T20:44:55  *** antimatroid <antimatroid!~nick@114.196.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T20:51:08  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has joined #aichallenge
+2011-03-23T20:53:31  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-03-23T20:53:57  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has left #aichallenge
+2011-03-23T20:59:44  *** antimatroid <antimatroid!~nick@169.197.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-03-23T21:00:32  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-23T21:00:41  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-03-23T21:02:58  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-03-23T21:06:33  *** robbs <robbs!~Robby.Ron@73.248.88.184.cfl.res.rr.com> has joined #aichallenge
+2011-03-23T21:06:38  *** robbs <robbs!~Robby.Ron@73.248.88.184.cfl.res.rr.com> has left #aichallenge
+2011-03-23T21:09:59  *** robbs1 <robbs1!~Robby.Ron@65.170.177.243> has quit IRC (Ping timeout: 246 seconds)
+2011-03-23T21:32:47  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has joined #aichallenge
+2011-03-23T21:33:33  *** Todd200 <Todd200!~Todd200@c-24-2-250-138.hsd1.ct.comcast.net> has left #aichallenge
+2011-03-23T21:36:01  <amstan> McLeopold: ping
+2011-03-23T21:36:34  <amstan> McLeopold: doesn't your java one also have a sample bot, it didn't let me compile without including randombot.java
+2011-03-23T21:53:50  <McLeopold> hi
+2011-03-23T21:54:13  <McLeopold> RandomBot shouldn't be referenced anywhere in MyBot
+2011-03-23T21:54:27  <McLeopold> amstan
+2011-03-23T21:55:04  <amstan> McLeopold: https://github.com/aichallenge/aichallenge/blob/epsilon/ants/dist/starter_bots/java/MyBot.java#L5
+2011-03-23T21:56:42  <McLeopold> amstan: my bad, change that to MyBot
+2011-03-23T21:58:43  <CIA-33> aichallenge: Alexandru Stan epsilon * r0c7aef7 / (2 files): Removed the randombot dependency for the starter pack - http://bit.ly/gwDaRc
+2011-03-23T21:58:44  <amstan> darn
+2011-03-23T21:58:50  <amstan> forgot to include java in the commit msg
+2011-03-23T22:13:32  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-03-23T22:13:37  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-03-23T22:18:03  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Ping timeout: 252 seconds)
+2011-03-23T22:21:11  *** dlila <dlila!~dlila@CPE0014d1c9243c-CM001bd71cede2.cpe.net.cable.rogers.com> has quit IRC (Quit: Leaving)
+2011-03-23T22:23:46  *** ritchie_chang <ritchie_chang!~ritchie@125.34.53.177> has joined #aichallenge
+2011-03-23T22:31:40  *** znutar <znutar!~znutar@69.164.197.143> has joined #aichallenge
+2011-03-23T22:36:10  *** ritchie_chang <ritchie_chang!~ritchie@125.34.53.177> has left #aichallenge
+2011-03-23T23:08:37  *** superflit <superflit!~superflit@adsl-99-95-59-97.dsl.bcvloh.sbcglobal.net> has quit IRC (Quit: superflit)

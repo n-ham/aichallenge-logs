@@ -1,0 +1,455 @@
+2011-05-10T00:00:01  <McLeopold> where does your bot dir go?
+2011-05-10T00:00:23  <McLeopold> the uploaded file shouldn't be in the compiled dir, just the uploaded one
+2011-05-10T00:00:44  <janzert> well the worker will be getting it from the manager
+2011-05-10T00:00:55  <McLeopold> and shouldn't the bot dir be outside the submission dir?  if you are worried about clobbering stuff?
+2011-05-10T00:01:12  <janzert> no
+2011-05-10T00:01:25  <janzert> the upload get's unpacked into the bot dir
+2011-05-10T00:01:34  <McLeopold> ooooooohhh
+2011-05-10T00:01:43  <janzert> the only thing that then writes/makes changes there is the compilation process and the bot itself
+2011-05-10T00:03:11  <janzert> does that clear it up?
+2011-05-10T00:03:57  <McLeopold> thinking
+2011-05-10T00:04:09  <McLeopold> the worker needs to download an entry file...
+2011-05-10T00:04:17  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-10T00:04:25  <McLeopold> unless you want to try and share the upload dir for a combined setup
+2011-05-10T00:05:26  <McLeopold> where does the temp worker dir go?  That's what I was using downloaded for
+2011-05-10T00:05:29  <janzert> I think I'd rather not, just because I'd like combined setups not to work too differently from separate machines
+2011-05-10T00:05:50  <janzert> the temp dir is created directly in the compiled/ dir
+2011-05-10T00:06:55  <McLeopold> those are really easy changes to worker
+2011-05-10T00:07:42  <janzert> there are python functions to make sure you get a unique temp directory too without a race condition
+2011-05-10T00:07:52  <janzert> looking that up now since I can't remember the name offhand ;)
+2011-05-10T00:08:03  <McLeopold> k
+2011-05-10T00:08:10  *** Winterfell <Winterfell!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Quit: Page closed)
+2011-05-10T00:09:56  <janzert> basically want something like, import tempfile; tempfile.mkdtemp(dir="/home/contest/compiled")
+2011-05-10T00:11:00  <janzert> which will end up creating a directory something like /home/contest/compiled/tmp1c35b
+2011-05-10T00:11:17  *** Mugen <Mugen!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-10T00:11:27  <McLeopold> janzert: is there an easy way to run the setup script without messing with install and jail users, so I can test dir changes?
+2011-05-10T00:12:14  <janzert> worker_setup?
+2011-05-10T00:13:38  <janzert> I think it should be safe to run it multiple times and it will skip the parts it thinks are already done
+2011-05-10T00:14:06  <McLeopold> ok
+2011-05-10T00:14:07  <janzert> that isn't really tested much though, so I wouldn't be too surprised if it runs into a problem
+2011-05-10T00:14:13  <McLeopold> hmm
+2011-05-10T00:14:24  <amstan> janzert: it'll skip installing /srv/chroot if it sees it's present, it'll jump directly to jail users setup
+2011-05-10T00:14:27  <janzert> but I would guess worst case is that it will either error out or add duplicate lines to some files
+2011-05-10T00:15:06  *** Mugen <Mugen!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Client Quit)
+2011-05-10T00:15:10  <janzert> hmm, yeah there isn't any test to check if a jailuser already exists :(
+2011-05-10T00:16:23  <janzert> add an if file_contains("/etc/passwd", username): return check to the top of create_jail_user should fix that
+2011-05-10T00:22:52  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-05-10T00:30:25  <McLeopold> okay, just need to get the bot dir in the submission dir working...
+2011-05-10T00:30:45  <McLeopold> do you really want to keep the uploaded zip on the worker?
+2011-05-10T00:30:49  <McLeopold> janzert: ^^
+2011-05-10T00:33:13  <janzert> I don't think I really care one way or the other at this point
+2011-05-10T00:33:33  <janzert> deleting it after unpacking would be fine but if you don't want to add that I'm fine with that too
+2011-05-10T00:33:58  <janzert> mostly I just wanted to show that it should be outside the bot directory
+2011-05-10T00:34:12  <McLeopold> ok
+2011-05-10T00:35:41  <janzert> the worker temporary files you're talking about games/ are game replays it is sending to the manager?
+2011-05-10T00:35:55  <McLeopold> yes
+2011-05-10T00:36:15  <McLeopold> wait...
+2011-05-10T00:36:18  <janzert> ok, just concerned about what we put in there since we are planning on exposing it publically
+2011-05-10T00:36:20  <McLeopold> but it couldn't be shared
+2011-05-10T00:36:31  <McLeopold> yeah
+2011-05-10T00:36:52  <janzert> why can't playgame just return it directly to worker.py and it send it directly without ever hitting a disk?
+2011-05-10T00:36:53  <McLeopold> I want a place for the worker to store results when it can't communicate with the server
+2011-05-10T00:37:07  <janzert> but it'll only ever have one result
+2011-05-10T00:37:11  <janzert> in that state
+2011-05-10T00:37:22  <janzert> so just keep it in memory?
+2011-05-10T00:38:03  <McLeopold> yeah, ok
+2011-05-10T00:38:58  <janzert> btw, what is the game directory structure?
+2011-05-10T00:39:24  <janzert> since it's going to have literally a million files or so :}
+2011-05-10T00:39:48  <janzert> maybe more
+2011-05-10T00:41:44  <amstan> janzert: with the mod 1000 thing
+2011-05-10T00:42:44  <janzert> hierarchical unlike the submissions though?
+2011-05-10T00:43:41  <janzert> i.e. games/<gameid % 1000>/<gameid % 1000000>/ (and actually steps of 100 might be better)
+2011-05-10T00:44:02  <janzert> and submissions are division
+2011-05-10T00:44:05  <McLeopold> I do want them to be permalinks
+2011-05-10T00:44:48  <McLeopold> why is 100 better?
+2011-05-10T00:46:12  <janzert> I guess even % 1000 is still a maximum of 1998(?) files in a single directory
+2011-05-10T00:46:29  *** amstan <amstan!~amstan@184.175.3.188> has quit IRC (Remote host closed the connection)
+2011-05-10T00:46:30  <janzert> s/files/files and subdirectories/
+2011-05-10T00:47:55  <janzert> just be some long ls output :}
+2011-05-10T00:48:12  <McLeopold> true
+2011-05-10T00:48:20  <McLeopold> but I don't think we care too much
+2011-05-10T00:48:51  <McLeopold> it would be nice to get a url rewrite to make the links look nice
+2011-05-10T00:49:58  <janzert> I would think that should be fairly easy to add to the apache configuration
+2011-05-10T00:50:04  <McLeopold> yeah
+2011-05-10T00:50:17  <McLeopold> so, double directories for the games, single for the submissions
+2011-05-10T00:50:36  <McLeopold> every thing is at the same level, so /home/contest/games/0/0/0.replay
+2011-05-10T00:51:17  <janzert> ahh, I was picturing expanding levels as the gameid increased
+2011-05-10T00:51:34  <janzert> hence the ~2x number of entries per directory
+2011-05-10T00:51:46  <McLeopold> which is why I clarified :)
+2011-05-10T00:52:07  <janzert> but yeah I doubt we'll ever get to a third level at steps of 1000x
+2011-05-10T00:53:02  <janzert> so fixed two levels deep is almost certainly easier to work with
+2011-05-10T00:53:35  <McLeopold> it would be /home/contest/games/10000/0/10000000000.replay
+2011-05-10T00:53:51  <janzert> and if it's fixed you might as well use division instead of mod
+2011-05-10T00:54:08  <McLeopold> I am
+2011-05-10T00:56:15  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@117.230.85.119> has joined #aichallenge
+2011-05-10T00:56:15  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-05-10T00:58:27  *** delt0r___ <delt0r___!~delt0r@188-22-173-52.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-10T00:59:39  *** delt0r_ <delt0r_!~delt0r@188-22-170-104.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T01:12:18  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T01:18:56  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-05-10T01:21:19  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T01:23:23  <McLeopold> janzert: I'm thinking that the compile stuff in manager can go away
+2011-05-10T01:23:37  <janzert> yes
+2011-05-10T01:24:42  <McLeopold> then, we don't need a "root_path" var in any of the server_setup files
+2011-05-10T01:24:47  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has quit IRC (Quit: bhasker)
+2011-05-10T01:25:19  <janzert> the sandbox needs it on the worker
+2011-05-10T01:25:40  <McLeopold> but, it has a repo path, so we could just make that absolute
+2011-05-10T01:25:50  <janzert> but yeah, looks like it could go away on the manager
+2011-05-10T01:26:28  <McLeopold> repo_path and root_path are only used once in sandbox, and together
+2011-05-10T01:26:38  <janzert> yeah, just looking at it
+2011-05-10T01:27:09  <janzert> yes I suppose making all the paths absolute and getting rid of root path would work fine
+2011-05-10T01:27:16  <janzert> probably a little better even
+2011-05-10T01:28:52  <McLeopold> should I delete bayeselo stuff?
+2011-05-10T01:29:28  <McLeopold> I'm going to move it into a bayeselo folder for now
+2011-05-10T01:29:44  <janzert> no don't move it get rid of it if it's been fully replaced
+2011-05-10T01:29:59  <janzert> only leave old stuff it is something that we still need to write a replacement for
+2011-05-10T01:30:30  <janzert> just so we can easily look at how it used to be done when writing the replacement
+2011-05-10T01:30:35  <McLeopold> but, for future contest, we might use it
+2011-05-10T01:30:39  <janzert> and remind us that we still need to do it :)
+2011-05-10T01:30:57  <McLeopold> if we ever do another 1v1 game
+2011-05-10T01:30:59  <janzert> at that point someone can dig it out of the history
+2011-05-10T01:31:00  *** mcstar <mcstar!~mcstar@adsl-89-132-57-95.monradsl.monornet.hu> has joined #aichallenge
+2011-05-10T01:31:03  <McLeopold> k
+2011-05-10T01:31:20  <janzert> but I think the structure has changed so much that it will be of little use anyway
+2011-05-10T01:31:39  <McLeopold> can gmail.py be removed from manager?
+2011-05-10T01:32:02  <janzert> and right now even if we went back to a 1v1 game I'd rather stick with an incremental rating system like trueskill just for the performance benefits
+2011-05-10T01:32:37  <janzert> hmm, I can't think of any time the manager itself needs to send an email
+2011-05-10T01:32:56  <janzert> the worker sends the emails on submission compilation/testing failure right?
+2011-05-10T01:33:03  <McLeopold> I've never even looked at the emails we send
+2011-05-10T01:33:07  <janzert> and php sends it on upload failures
+2011-05-10T01:34:01  <janzert> how about successful submission emails, I suppose the worker sends those at well?
+2011-05-10T01:34:33  <janzert> account confirmation and submission success/failure emails are the only ones I can think of offhand
+2011-05-10T01:35:46  <McLeopold> right now, the worker doesn't do emails
+2011-05-10T01:36:14  <McLeopold> I've never setup a test smtp/sendmail server to look at it
+2011-05-10T01:36:52  <janzert> yeah, we'll need to get that working one way or the other at some point
+2011-05-10T01:36:55  <McLeopold> looks like I just import gmail and call one function
+2011-05-10T01:37:19  <janzert> if you haven't noticed the gmail module is really misnamed
+2011-05-10T01:37:37  *** dr-` <dr-`!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-05-10T01:37:40  <McLeopold> yeah, I was just thinking that :)
+2011-05-10T01:37:42  <janzert> gmail limits to sending a few hundred emails per day and that wasn't enough for the contest
+2011-05-10T01:37:52  <McLeopold> hard coded to smtp.gmail.com:587
+2011-05-10T01:38:18  <janzert> where?
+2011-05-10T01:38:22  <McLeopold> does amazon have a relay we can use?
+2011-05-10T01:38:25  <janzert> it should be pulling it out of server_info
+2011-05-10T01:38:51  <janzert> they introduced a "simple mail service" a few months ago with 2000 free messages sent per day
+2011-05-10T01:39:01  <janzert> but I haven't looked into the details yet
+2011-05-10T01:39:31  <McLeopold> what if we just didn't do email?
+2011-05-10T01:39:35  <janzert> my understanding is we can configure the server so our code can still do a straight smtp send with the local server
+2011-05-10T01:39:46  <janzert> it'd be a lot easier :)
+2011-05-10T01:39:58  <janzert> I'm not sure how much of an uproar it would create though
+2011-05-10T01:40:11  <janzert> also we probably want to keep the account confirmation emails at least?
+2011-05-10T01:40:19  <McLeopold> why?
+2011-05-10T01:40:28  <McLeopold> that's only used to confirm you own the email address
+2011-05-10T01:40:49  <McLeopold> if we don't send emails, we don't need to confirm anything
+2011-05-10T01:41:07  <janzert> hmm, and don't collect emails at all
+2011-05-10T01:41:17  <janzert> but then we'll have no way to contact participants
+2011-05-10T01:41:26  <McLeopold> so, the user would just need a submission status page
+2011-05-10T01:41:32  <janzert> I guess bring it up with amstan
+2011-05-10T01:41:43  <McLeopold> I'm not sure what we need to contact them for.
+2011-05-10T01:42:22  <janzert> they won, they are killing our servers and we're throwing the present submission out, etc. ;)
+2011-05-10T01:42:25  <janzert> but yeah
+2011-05-10T01:42:40  <McLeopold> submission status page
+2011-05-10T01:42:45  <janzert> I'm not too opposed to doing away with it
+2011-05-10T01:42:59  <McLeopold> okay, if amstan agrees, it would be an easier setup
+2011-05-10T01:43:15  <janzert> actually I just thought of something, I have a feeling j3camero will be opposed to dropping it
+2011-05-10T01:43:16  <McLeopold> hmm...
+2011-05-10T01:43:22  <McLeopold> lost password
+2011-05-10T01:43:32  <janzert> yeah, that is another problem
+2011-05-10T01:44:23  <janzert> the google sponsorship comes from their headhunters and j3camero usually sends an email out to the top competitors towards the end of the contest asking if they'd like to be contacted by a recruiter
+2011-05-10T01:44:52  <janzert> so without an email address google might not be as enthused about the sponsorship
+2011-05-10T01:45:06  <McLeopold> I guess I didn't make the cut last time :p
+2011-05-10T01:45:23  <janzert> heh
+2011-05-10T01:45:42  <janzert> I'm not actually sure he did it last time
+2011-05-10T01:45:58  <janzert> I did get one with the tron contest
+2011-05-10T01:46:29  <janzert> I guess it'd be something we'd need to find out from him
+2011-05-10T01:46:48  <McLeopold> okay, well, at least for lost password issues, email is good, so let's keep it
+2011-05-10T01:46:56  <janzert> but even without that password reset does seem like a good reason to keep it as well
+2011-05-10T01:47:05  * janzert nods
+2011-05-10T01:47:33  <McLeopold> I only submitted twice last contest, which is why I don't remember getting too many emails
+2011-05-10T01:48:44  <McLeopold> submissions_path is going away in the server_info files, to be replaced with upload_dir and compiled_dir
+2011-05-10T01:48:51  <McLeopold> err *_path
+2011-05-10T01:49:12  <janzert> sounds fine
+2011-05-10T01:57:30  <McLeopold> janzert: do you care where log files go
+2011-05-10T01:58:12  <janzert> a consolidated log directory would be nice, but it's fine if that doesn't happen
+2011-05-10T02:18:29  <McLeopold> janzert: I'm thinking we don't want MultiViews for the apache setup
+2011-05-10T02:23:27  <janzert> the current apache config is a barely modified default configuration, there is pretty certainly a lot that should change
+2011-05-10T02:23:37  <janzert> feel free to work on it
+2011-05-10T02:25:10  <antimatroid> i got the email for tron
+2011-05-10T02:25:24  <antimatroid> McLeopold: we weren't in the top 50 even towards the end though?
+2011-05-10T02:25:29  <antimatroid> i'm not sure he sent it out for pw either
+2011-05-10T02:26:48  <antimatroid> i look forward to the day we have a server up and running again for tron
+2011-05-10T02:26:51  <antimatroid> it was such a sweet ai game
+2011-05-10T02:27:06  <antimatroid> janzert: i hope you'll dust your old bot off for that :P
+2011-05-10T02:27:14  <antimatroid> i would write a new bot for that
+2011-05-10T02:30:38  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-10T02:39:16  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T02:39:41  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has joined #aichallenge
+2011-05-10T02:40:06  <janzert> heh, well the source for my tron bot is out there for anyone that wanted to try it :)
+2011-05-10T02:40:31  <antimatroid> same for a lot of people
+2011-05-10T02:40:41  <antimatroid> i guess that's one issue with having old contests up
+2011-05-10T02:40:47  <antimatroid> people might be reluctant to release their code
+2011-05-10T02:41:27  <antimatroid> i'm not really sure people get much out of the code being released, but it's nice that the top ones are usually available for anyone who wants a look
+2011-05-10T02:44:29  <Ice_Harley> Hi, what with "r" lines?
+2011-05-10T02:44:39  <McLeopold> a mistake
+2011-05-10T02:44:45  <McLeopold> ignore it
+2011-05-10T02:45:09  <Ice_Harley> mistake, that will be fixed?
+2011-05-10T02:45:18  <McLeopold> yes
+2011-05-10T02:45:31  <McLeopold> it was an idea, but we decided it added to much complexity
+2011-05-10T02:45:42  <McLeopold> to the spec
+2011-05-10T02:46:09  <antimatroid> i am slow to fixing the c++ bot
+2011-05-10T02:46:17  <antimatroid> sorry, they are going to be removed
+2011-05-10T02:47:10  <Ice_Harley> it's a pity. I think "r" lines are useful
+2011-05-10T02:47:42  *** JaycobColeman <JaycobColeman!~Jaycob@69-161-6-157-rb2.nwc.dsl.dynamic.acsalaska.net> has joined #aichallenge
+2011-05-10T02:49:38  <McLeopold> they are
+2011-05-10T02:50:06  <McLeopold> but if you can do a good bot, you can calculate it yourself by calculating your vision
+2011-05-10T02:52:33  <Ice_Harley> I will, but i'll spend part of MY second on it
+2011-05-10T02:52:56  <McLeopold> :)
+2011-05-10T02:52:58  <McLeopold> yep
+2011-05-10T02:58:44  <JaycobColeman> Is anyone here doing heritage health prize?
+2011-05-10T02:59:54  <antimatroid> no, but i was mistaken as the guy running it :P
+2011-05-10T03:00:09  <JaycobColeman> haha, that's nice
+2011-05-10T03:00:46  <JaycobColeman> a1k0n: are you doing it? I thought you brought it up the other day
+2011-05-10T03:12:06  *** antimatroid <antimatroid!~nick@4.156.dsl.mel.iprimus.net.au> has quit IRC (Read error: Connection reset by peer)
+2011-05-10T03:12:15  *** antimatroid <antimatroid!~nick@4.156.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-05-10T03:38:38  *** aerique <aerique!310225@xs3.xs4all.nl> has joined #aichallenge
+2011-05-10T03:51:06  *** berak <berak!~chatzilla@89.204.153.225> has joined #aichallenge
+2011-05-10T03:53:42  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-05-10T04:04:58  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-05-10T04:13:40  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has joined #aichallenge
+2011-05-10T04:23:08  *** JaycobColeman <JaycobColeman!~Jaycob@69-161-6-157-rb2.nwc.dsl.dynamic.acsalaska.net> has quit IRC (Quit: JaycobColeman)
+2011-05-10T05:34:26  *** Kingpin13 <Kingpin13!~Kingpin13@cpc24-aztw23-2-0-cust12.aztw.cable.virginmedia.com> has joined #aichallenge
+2011-05-10T05:34:29  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-05-10T05:38:07  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-10T05:44:25  *** okayzed <okayzed!~okay@98.158.22.181> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T05:45:27  *** okayzed <okayzed!~okay@98.158.22.181> has joined #aichallenge
+2011-05-10T05:57:45  *** MuTa-ofd00m <MuTa-ofd00m!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-05-10T06:00:18  *** kaemo <kaemo!~mad5ci@d33-29.icpnet.pl> has joined #aichallenge
+2011-05-10T06:26:38  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-05-10T06:31:06  *** MuTa-ofd00m <MuTa-ofd00m!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-05-10T06:56:00  *** berak <berak!~chatzilla@89.204.153.225> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T07:53:17  *** _0x47 <_0x47!~slash@p5B25FD2F.dip.t-dialin.net> has joined #aichallenge
+2011-05-10T07:54:37  *** dr- <dr-!~lotus@tuborg.lifl.fr> has quit IRC (Read error: Operation timed out)
+2011-05-10T08:08:53  *** amstan <amstan!~amstan@184.175.3.188> has joined #aichallenge
+2011-05-10T08:08:53  *** ChanServ sets mode: +o amstan
+2011-05-10T08:20:39  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-05-10T08:29:25  *** amstan <amstan!~amstan@184.175.3.188> has quit IRC (Ping timeout: 260 seconds)
+2011-05-10T08:53:09  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-05-10T08:58:57  *** delt0r_ <delt0r_!~delt0r@188-22-167-66.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-10T08:59:56  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-10T09:00:29  *** delt0r___ <delt0r___!~delt0r@188-22-173-52.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2011-05-10T09:03:24  *** Blargs <Blargs!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-10T09:21:29  *** berak <berak!~chatzilla@89.204.153.227> has joined #aichallenge
+2011-05-10T09:32:17  *** amstan <amstan!~alex@142.222.8.97> has joined #aichallenge
+2011-05-10T09:32:17  *** ChanServ sets mode: +o amstan
+2011-05-10T09:39:54  *** amstan <amstan!~alex@142.222.8.97> has quit IRC (Ping timeout: 248 seconds)
+2011-05-10T09:43:33  *** _0x47 <_0x47!~slash@p5B25FD2F.dip.t-dialin.net> has quit IRC (Read error: Operation timed out)
+2011-05-10T09:44:32  *** _0x47 <_0x47!~slash@p3EE0B3EF.dip.t-dialin.net> has joined #aichallenge
+2011-05-10T10:01:24  *** amstan <amstan!~alex@142.222.30.50> has joined #aichallenge
+2011-05-10T10:01:24  *** ChanServ sets mode: +o amstan
+2011-05-10T10:08:01  *** amstan_ <amstan_!~alex@142.222.92.23> has joined #aichallenge
+2011-05-10T10:08:01  *** ChanServ sets mode: +o amstan_
+2011-05-10T10:08:42  *** amstan <amstan!~alex@142.222.30.50> has quit IRC (Ping timeout: 248 seconds)
+2011-05-10T10:31:11  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T10:32:06  *** kaemo <kaemo!~mad5ci@d33-29.icpnet.pl> has quit IRC (Ping timeout: 258 seconds)
+2011-05-10T10:37:33  *** Ice_Harley <Ice_Harley!4d7921fb@gateway/web/freenode/ip.77.121.33.251> has quit IRC (Ping timeout: 252 seconds)
+2011-05-10T10:41:14  *** amstan_ <amstan_!~alex@142.222.92.23> has quit IRC (Ping timeout: 276 seconds)
+2011-05-10T10:52:33  *** MuTa-ofd00m <MuTa-ofd00m!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-05-10T10:59:01  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-05-10T11:01:19  *** MuTa-ofd00m <MuTa-ofd00m!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T11:07:08  *** contestbot_ <contestbot_!~supybot@69-196-166-22.dsl.teksavvy.com> has joined #aichallenge
+2011-05-10T11:07:30  *** contestbot <contestbot!~supybot@184.175.3.188> has quit IRC (Ping timeout: 260 seconds)
+2011-05-10T11:11:30  *** MuTa-ofd00m <MuTa-ofd00m!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-05-10T11:16:35  *** fmeyer <fmeyer!~fmeyer@50-56-113-212.static.cloud-ips.com> has joined #aichallenge
+2011-05-10T11:20:33  *** aerique <aerique!310225@xs3.xs4all.nl> has quit IRC (Quit: ...)
+2011-05-10T11:23:57  *** fmeyer <fmeyer!~fmeyer@50-56-113-212.static.cloud-ips.com> has quit IRC (Quit: leaving)
+2011-05-10T11:38:26  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-10T12:20:29  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@117.230.216.163> has joined #aichallenge
+2011-05-10T12:20:29  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-05-10T12:30:04  *** amstan_ <amstan_!~alex@142.222.92.23> has joined #aichallenge
+2011-05-10T12:30:04  *** ChanServ sets mode: +o amstan_
+2011-05-10T12:53:55  *** amstan_ <amstan_!~alex@142.222.92.23> has quit IRC (Read error: Operation timed out)
+2011-05-10T12:54:56  *** Frontier <Frontier!~marco@dslb-088-070-155-076.pools.arcor-ip.net> has joined #aichallenge
+2011-05-10T13:02:12  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wxwtmihbwbrhjllr> has joined #aichallenge
+2011-05-10T13:06:50  *** Naktibalda <Naktibalda!~chatzilla@host-81-20-37-12.eckoh.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110413222027])
+2011-05-10T13:11:54  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Quit: Leaving)
+2011-05-10T13:13:22  *** Frontier <Frontier!~marco@dslb-088-070-155-076.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-05-10T13:18:24  *** kaemo <kaemo!~mad5ci@d33-29.icpnet.pl> has joined #aichallenge
+2011-05-10T13:26:50  <CIA-33> aichallenge: McLeopold setup-test * r36e4a9d / (27 files in 5 dirs): changes to setup path structure - http://bit.ly/iDP6QQ
+2011-05-10T13:38:10  <CIA-33> aichallenge: Scott Hamilton epsilon * r124c95e / INSTALL.md : Edited INSTALL.md via GitHub - http://bit.ly/jWN9hu
+2011-05-10T13:38:31  <CIA-33> aichallenge: Scott Hamilton epsilon * r82e2d7f / INSTALL.md : Edited INSTALL.md via GitHub - http://bit.ly/j6WpMU
+2011-05-10T13:40:20  <CIA-33> aichallenge: Scott Hamilton epsilon * r326d6a6 / INSTALL.md : Edited INSTALL.md via GitHub - http://bit.ly/jNhSLM
+2011-05-10T13:40:36  <janzert> btw, if you want the contest user like the automatic worker setup would create it the command is 'useradd --disabled-password --gecos "" contest'
+2011-05-10T13:48:05  <janzert> err rather that should the adduser command
+2011-05-10T13:52:52  *** mcstar <mcstar!~mcstar@adsl-89-132-57-95.monradsl.monornet.hu> has quit IRC (Remote host closed the connection)
+2011-05-10T13:57:20  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-05-10T13:57:57  *** bhasker <bhasker!~bhasker@nat/yahoo/x-wxwtmihbwbrhjllr> has quit IRC (Quit: bhasker)
+2011-05-10T13:59:21  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yerztfafcwmywhwl> has joined #aichallenge
+2011-05-10T14:43:34  <CIA-33> aichallenge: McLeopold setup-test * rae404a3 / setup/server_setup.py : fixes to server_setup - http://bit.ly/lY0MJ4
+2011-05-10T14:43:34  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-05-10T15:12:39  <CIA-33> aichallenge: McLeopold setup-test * rc5d1679 / (3 files): updates to setup - http://bit.ly/jO7FeS
+2011-05-10T15:27:56  *** mcstar <mcstar!~mcstar@adsl-89-132-57-95.monradsl.monornet.hu> has joined #aichallenge
+2011-05-10T15:28:49  *** mcstar <mcstar!~mcstar@adsl-89-132-57-95.monradsl.monornet.hu> has joined #aichallenge
+2011-05-10T15:49:30  *** berak <berak!~chatzilla@89.204.153.227> has quit IRC (Read error: Connection reset by peer)
+2011-05-10T15:53:34  *** amstan_ <amstan_!~alex@142.222.14.52> has joined #aichallenge
+2011-05-10T15:53:34  *** ChanServ sets mode: +o amstan_
+2011-05-10T16:01:46  *** amstan_ <amstan_!~alex@142.222.14.52> has quit IRC (Ping timeout: 248 seconds)
+2011-05-10T16:06:31  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-05-10T16:21:00  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-05-10T16:25:30  *** Frontier <Frontier!~marco@dslb-088-070-155-076.pools.arcor-ip.net> has joined #aichallenge
+2011-05-10T16:34:18  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2011-05-10T16:40:59  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 4.0.1/20110422205559])
+2011-05-10T16:55:07  *** amstan_ <amstan_!~alex@142.222.80.34> has joined #aichallenge
+2011-05-10T16:55:07  *** ChanServ sets mode: +o amstan_
+2011-05-10T16:55:45  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T16:58:54  *** delt0r___ <delt0r___!~delt0r@188-22-167-186.adsl.highway.telekom.at> has joined #aichallenge
+2011-05-10T17:00:13  *** delt0r_ <delt0r_!~delt0r@188-22-167-66.adsl.highway.telekom.at> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T17:00:39  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-10T17:04:40  *** Frontier <Frontier!~marco@dslb-088-070-155-076.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-05-10T17:09:58  *** teuneboon <teuneboon!589f44b7@gateway/web/freenode/ip.88.159.68.183> has joined #aichallenge
+2011-05-10T17:10:04  <teuneboon> hi all
+2011-05-10T17:12:08  *** Frontier <Frontier!~Marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-05-10T17:26:19  *** amstan_ <amstan_!~alex@142.222.80.34> has quit IRC (Quit: Konversation terminated!)
+2011-05-10T17:27:58  *** teuneboon <teuneboon!589f44b7@gateway/web/freenode/ip.88.159.68.183> has quit IRC (Quit: Page closed)
+2011-05-10T17:42:14  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 241 seconds)
+2011-05-10T17:43:30  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-10T17:50:42  *** bhasker <bhasker!~bhasker@nat/yahoo/x-yerztfafcwmywhwl> has quit IRC (Quit: bhasker)
+2011-05-10T17:51:03  *** ltriant <ltriant!~ltriant@110-174-168-43.static.tpgi.com.au> has joined #aichallenge
+2011-05-10T18:03:23  <McLeopold> antimatroid: you around
+2011-05-10T18:03:25  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Ping timeout: 260 seconds)
+2011-05-10T18:04:11  <janzert> McLeopold: for boolean options in the setup scripts you probably want to use the get_choice function
+2011-05-10T18:05:04  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-05-10T18:06:10  *** _0x47 <_0x47!~slash@p3EE0B3EF.dip.t-dialin.net> has quit IRC (Quit: Leaving.)
+2011-05-10T18:14:36  <McLeopold> janzert: yeah, I got that fix, just haven't committed yet :)
+2011-05-10T18:14:47  <McLeopold> which is why I'm in a branch
+2011-05-10T18:15:12  <McLeopold> I'm testing stuff on a 10.04 vm right now
+2011-05-10T18:15:21  <McLeopold> I mean, 11.04
+2011-05-10T18:18:27  *** Bleep <Bleep!63295294@gateway/web/freenode/ip.99.41.82.148> has joined #aichallenge
+2011-05-10T18:18:52  *** Bleep is now known as Guest5502
+2011-05-10T18:19:46  <janzert> great
+2011-05-10T18:20:14  <McLeopold> janzert: I've got a question about starter packs
+2011-05-10T18:20:37  <McLeopold> I keep going back and forth between minimalist starter packs and ones with a full set of tools
+2011-05-10T18:20:39  <janzert> yes? although I'm probably the wrong one to ask about them
+2011-05-10T18:20:53  <McLeopold> right now, you're the only one to ask :)
+2011-05-10T18:21:02  <janzert> full set of tools meaning?
+2011-05-10T18:21:10  *** sigh <sigh!~sigh@210.18.207.102> has joined #aichallenge
+2011-05-10T18:21:16  <McLeopold> depending on the language, plus the engine
+2011-05-10T18:21:49  <McLeopold> what about full starter packs, but the quick start guide says to download, extract and upload the MyBot.tgz located inside the pack.
+2011-05-10T18:22:10  <McLeopold> And we reject full starter packs.
+2011-05-10T18:22:37  <McLeopold> so, each starter pack can have a build script that produces the smaller MyBot file
+2011-05-10T18:23:03  <McLeopold> I know jeff wants *really* easy, and I'm wondering if that would be easy enough.
+2011-05-10T18:23:18  <janzert> I'm still a little confused I guess
+2011-05-10T18:24:07  <McLeopold> how so?
+2011-05-10T18:24:11  <janzert> mainly I think jeff wants to be able to take the downloaded package and a) run a game with it locally without other dependancies and b) be able to upload it to the server and have an entry
+2011-05-10T18:24:30  <janzert> what is "the smaller MyBot file"?
+2011-05-10T18:25:04  <McLeopold> we don't want users uploading hugh sets of files that really aren't part of the bot
+2011-05-10T18:25:17  <janzert> I think splitting the download into two files one with the generic engine, viewer and such and one for each language starter bot is a good idea
+2011-05-10T18:25:55  <McLeopold> Okay, but the starter pack creators also want to create tools for their language
+2011-05-10T18:27:06  <McLeopold> So each language would have their own tools files.
+2011-05-10T18:27:24  <janzert> I think that is probably fine, so long as they keep a fairly orderly directory structure that makes it obvious what is part of the bot
+2011-05-10T18:27:58  <janzert> also I would try and keep the main packs c++, java, python fairly minimal
+2011-05-10T18:28:09  <McLeopold> our build script needs to create 2 zip files then, and know which parts to take from the starter pack dir
+2011-05-10T18:28:15  <janzert> those will cover almost all the entries anyway
+2011-05-10T18:28:21  <McLeopold> yeah
+2011-05-10T18:28:24  <McLeopold> they are right now
+2011-05-10T18:28:26  <janzert> especially the ones by newbies
+2011-05-10T18:28:48  <janzert> the more esoteric languages I expect will have users more likely to understand what they have
+2011-05-10T18:29:02  <McLeopold> I disagree with that
+2011-05-10T18:29:19  <McLeopold> I wouldn't mind trying out lisp or haskell this time around, but the starter packs were beasts
+2011-05-10T18:29:59  <janzert> but you would still understand pretty quickly what parts of it were tools and what was the actual bot I imagine
+2011-05-10T18:30:09  <McLeopold> I can't look at the lisp starter and learn lisp
+2011-05-10T18:30:18  <McLeopold> I really had a hard time with the lisp one, so no
+2011-05-10T18:30:34  <janzert> I can't look at most any lisp and learn lisp ;)
+2011-05-10T18:30:52  <janzert> perl is almost easier to learn by reading :P
+2011-05-10T18:31:23  <McLeopold> anyway, when it comes to building starter packs and tool sets, I'm thinking each language will get one of each...
+2011-05-10T18:31:39  <McLeopold> And we need to impose some structure on the starter bot writers
+2011-05-10T18:32:11  <janzert> people did fine without that in the past
+2011-05-10T18:32:27  <janzert> consistent structure in starter bots that is
+2011-05-10T18:32:51  <McLeopold> perhaps, or maybe people just gave up and didn't complain
+2011-05-10T18:33:17  <janzert> personally I'd rather idiomatic starter bots, i.e. written the way a programmer experienced in the language would naturally write it
+2011-05-10T18:33:39  <McLeopold> yes, that is good for learning
+2011-05-10T18:34:00  <McLeopold> but we still need a way to separate tools and extra stuff from what should be submitted in a zip file
+2011-05-10T18:34:05  <janzert> that was something I really disliked about the python and java starter packs in the past
+2011-05-10T18:34:29  <McLeopold> oh yeah, the python starter was written in java :p
+2011-05-10T18:34:52  <McLeopold> 1 class per file and such
+2011-05-10T18:34:54  <janzert> well, that just entails telling the authors to have a tools directory and a bot directory right?
+2011-05-10T18:35:13  <McLeopold> something like that, which is why I wanted your opinion
+2011-05-10T18:35:25  <janzert> yeah, and while I'm not as familiar with Java people were complaining about the same sort of thing with that one
+2011-05-10T18:35:29  <McLeopold> or some way for them to declare what goes where
+2011-05-10T18:35:54  <janzert> ok, I don't have a real problem with that sort of structure
+2011-05-10T18:36:10  <janzert> I thought you meant the structure of the bot program itself
+2011-05-10T18:36:14  <McLeopold> no
+2011-05-10T18:36:24  <McLeopold> just enough for our build scripts to be smart
+2011-05-10T18:36:57  <janzert> it might be best to have a per bot, either makefile or build script
+2011-05-10T18:37:05  <McLeopold> probably
+2011-05-10T18:37:44  <McLeopold> require something that will produce the 2 zips if not in a dir structure?
+2011-05-10T18:38:11  <janzert> have a recommended dir structure and a required script
+2011-05-10T18:39:26  <janzert> I'd keep the language neutral stuff (engine, visualizer, etc.) as its own download too
+2011-05-10T18:40:10  <janzert> and all a person has to download is the engine pack and a starter bot, they can get the language specific tools if or when they want
+2011-05-10T18:40:56  <McLeopold> I'm thinking the tools pack can be rolled in with the language tools.
+2011-05-10T18:41:16  <McLeopold> That way if someone produces a java engine and java playgame, then they can include that instead.
+2011-05-10T18:41:32  <McLeopold> This might be stuff for zeta.
+2011-05-10T18:41:42  <janzert> that complicates the language packaging though and I want everyone to have the same "official" engine
+2011-05-10T18:41:55  <McLeopold> hmm...
+2011-05-10T18:42:09  <McLeopold> what if we had 2 official engines?
+2011-05-10T18:42:32  <janzert> that's the what happened in the past and I'd rather avoid that
+2011-05-10T18:42:32  <McLeopold> we'd have to have pretty good unit tests for that
+2011-05-10T18:42:41  <McLeopold> why avoid?
+2011-05-10T18:43:13  <janzert> the problem is that we always end up with bugs/slight differences in behavior on edge cases that confuse people until we get it fixed
+2011-05-10T18:43:30  <McLeopold> I can see that, thus the unit tests
+2011-05-10T18:43:55  <janzert> even with unit tests I think we'll always miss something
+2011-05-10T18:44:18  *** sigh <sigh!~sigh@210.18.207.102> has quit IRC (Remote host closed the connection)
+2011-05-10T18:44:19  <McLeopold> yeah, it always happens that way, but I don't think we shouldn't try, at least not in the future
+2011-05-10T18:44:35  *** amstan <amstan!~amstan@69.196.166.22> has joined #aichallenge
+2011-05-10T18:44:35  *** ChanServ sets mode: +o amstan
+2011-05-10T18:44:38  <janzert> but what do we gain by having more than one?
+2011-05-10T18:44:54  <McLeopold> maybe someone doesn't want to install python
+2011-05-10T18:45:25  <janzert> anymore the only people that don't have it already is windows
+2011-05-10T18:45:51  <McLeopold> a c++ engine could be much faster, allowing for faster training/testing
+2011-05-10T18:45:55  <janzert> and it's an easy install compared to most other languages
+2011-05-10T18:46:20  <janzert> I'd let the community create that
+2011-05-10T18:46:20  <McLeopold> this worker install takes forever...
+2011-05-10T18:46:26  <janzert> yep
+2011-05-10T18:46:54  <janzert> its gotta do a full OS install and then the compiled languages take quite a while
+2011-05-10T18:47:16  <janzert> finding ppa's with precompiled packages for all the languages would be really nice
+2011-05-10T18:47:23  <McLeopold> ppa?
+2011-05-10T18:47:39  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-05-10T18:48:02  <janzert> personal package archives
+2011-05-10T18:48:18  <janzert> https://launchpad.net/ubuntu/+ppas
+2011-05-10T18:48:23  <McLeopold> amstan: if you read above, we are discussing download packs for starters and language tools
+2011-05-10T19:01:27  <McLeopold> looks like I'm compiling go...
+2011-05-10T19:13:14  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Read error: Connection reset by peer)
+2011-05-10T19:35:56  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-05-10T19:37:34  <CIA-33> aichallenge: McLeopold setup-test * r7648664 / setup/server_setup.py : updates - http://bit.ly/kbSPia
+2011-05-10T19:40:08  *** javagamer <javagamer!~javagamer@ip-69-162-134-31.static.chi2.systeminplace.net> has quit IRC (Quit: brb)
+2011-05-10T19:40:19  *** javagamer <javagamer!~javagamer@ip-69-162-134-31.static.chi2.systeminplace.net> has joined #aichallenge
+2011-05-10T19:43:53  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-05-10T19:56:10  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-05-10T19:56:48  *** teuneboon <teuneboon!589f5951@gateway/web/freenode/ip.88.159.89.81> has joined #aichallenge
+2011-05-10T20:02:37  <CIA-33> aichallenge: Alexandru Stan epsilon * ra788323 / (3 files):
+2011-05-10T20:02:38  <CIA-33> aichallenge: Merge pull request #102 from smiley1983/epsilon
+2011-05-10T20:02:38  <CIA-33> aichallenge: OCaml starter: r lines gone, comments updated. - http://bit.ly/iPt6g4
+2011-05-10T20:02:54  <amstan> aww
+2011-05-10T20:02:57  <amstan> he's gone too
+2011-05-10T20:14:49  <mcstar> oh
+2011-05-10T20:14:51  <mcstar> well
+2011-05-10T20:15:09  <mcstar> i must say that i disagree with janzert  and McLeopold
+2011-05-10T20:15:29  <mcstar> i think the lisp starter pack is not hard to understand
+2011-05-10T20:15:59  <mcstar> and i havent seen almost any lisp before a month or so
+2011-05-10T20:16:33  <mcstar> but i wrote mine from the ground up
+2011-05-10T20:21:12  *** mcstar <mcstar!~mcstar@adsl-89-132-57-95.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.4)
+2011-05-10T21:00:38  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-05-10T21:05:23  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: money can't buy you love, but it can if you have enough)
+2011-05-10T21:32:42  *** ahmedhelal <ahmedhelal!~nullkuhl@196.221.100.103> has joined #aichallenge
+2011-05-10T21:34:49  *** nullkuhl <nullkuhl!~nullkuhl@unaffiliated/nullkuhl> has quit IRC (Ping timeout: 252 seconds)
+2011-05-10T21:38:29  <jmcarthur> i also agree with the above comments that starters should be written idiomatically rather than like they were written by beginners or directly ported from another language
+2011-05-10T21:47:11  *** amstan_ <amstan_!~alex@69-196-166-22.dsl.teksavvy.com> has joined #aichallenge
+2011-05-10T21:47:11  *** ChanServ sets mode: +o amstan_
+2011-05-10T21:48:07  *** amstan_ <amstan_!~alex@69-196-166-22.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-05-10T21:48:57  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-176-224-68.asm.bellsouth.net> has quit IRC (Ping timeout: 240 seconds)
+2011-05-10T21:49:30  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-125-62.asm.bellsouth.net> has joined #aichallenge
+2011-05-10T21:52:15  *** Chris_0076 <Chris_0076!~Chris_007@adsl-74-190-125-62.asm.bellsouth.net> has quit IRC (Read error: Connection reset by peer)
+2011-05-10T22:39:37  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-05-10T22:59:59  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-05-10T23:02:05  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Ping timeout: 252 seconds)
+2011-05-10T23:18:17  *** Guest5502 <Guest5502!63295294@gateway/web/freenode/ip.99.41.82.148> has quit IRC (Quit: Page closed)
+2011-05-10T23:25:39  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)

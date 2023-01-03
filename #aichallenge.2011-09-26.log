@@ -1,0 +1,1870 @@
+2011-09-26T00:17:32  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-26T00:19:19  <ChrisH> I am getting a strange behavior when using the new tools to test my bot. My starting hive is being send as owned by player #3.
+2011-09-26T00:19:32  <McLeopold> hmm
+2011-09-26T00:19:39  <ChrisH> On a 4 player map.
+2011-09-26T00:19:47  <McLeopold> you should always be player 0
+2011-09-26T00:20:03  <ChrisH> yep, and my starting ant is player 0
+2011-09-26T00:20:10  <ChrisH> just my hive is wrong
+2011-09-26T00:20:15  <McLeopold> on the same spot for sure?
+2011-09-26T00:20:31  <ChrisH> yep, just ran it with logged bot inputs, so it's not my code
+2011-09-26T00:20:40  <McLeopold> what map?
+2011-09-26T00:20:59  <janzert> McLeopold: did you see that last player standing is not being given points for the remaining hills?
+2011-09-26T00:21:02  <ChrisH> the default, maze_9
+2011-09-26T00:21:10  <McLeopold> janzert: yes, working on it
+2011-09-26T00:21:24  <McLeopold> janzert: plus, I will kill bots without hills
+2011-09-26T00:21:24  <janzert> oh, was working on it as well :}
+2011-09-26T00:21:42  <janzert> heh, amstan convinced me they should remain
+2011-09-26T00:21:48  <McLeopold> oh
+2011-09-26T00:21:50  <McLeopold> then...
+2011-09-26T00:22:00  <McLeopold> how did he convince you?
+2011-09-26T00:22:00  <janzert> but I'm really not sure either way right now
+2011-09-26T00:22:37  <amstan> McLeopold: scenario: nestless ants win the game!
+2011-09-26T00:22:39  <ChrisH> Should a bot with a dead hill be able to recapture it with live ants?  That seems intuitive.
+2011-09-26T00:22:49  <janzert> that it was worth letting them keep trying to capture and that it may actually lead to shorter games anyway
+2011-09-26T00:22:52  <McLeopold> ChrisH, no
+2011-09-26T00:23:05  <janzert> once a hills is destroyed it's out
+2011-09-26T00:23:12  *** davidjliu <davidjliu!8cf7f5b5@gateway/web/freenode/ip.140.247.245.181> has joined #aichallenge
+2011-09-26T00:23:18  <McLeopold> hmm, I probably need to test no hills left...
+2011-09-26T00:23:24  <ChrisH> ok, any reason why?
+2011-09-26T00:23:36  <McLeopold> ChrisH: janzert said so...
+2011-09-26T00:23:40  <McLeopold> :D
+2011-09-26T00:23:54  <janzert> it's introduces a non-reversible point in the game
+2011-09-26T00:23:59  <McLeopold> Mainly, we want to limit the game length
+2011-09-26T00:24:07  <_flag> If my opinion counts for anything, I'd rather have nestless ants roaming around trying to kill other hills than just a bunch of lifeless ants scattered all over the place
+2011-09-26T00:24:10  <janzert> it helps bring the game length down
+2011-09-26T00:24:28  <McLeopold> _flag: yes, it does matter, you've convinced me
+2011-09-26T00:24:45  <janzert> :P
+2011-09-26T00:25:14  <ChrisH> hmm, nestless ants as kingmaker, or out for revenge...
+2011-09-26T00:25:22  <janzert> if a hill is stomped all over, just getting a friendly ant back on it doesn't redig all the necessary tunnels and chambers ;)
+2011-09-26T00:25:27  <McLeopold> ChrisH: in the game, what position were you?
+2011-09-26T00:25:37  <ChrisH> I was pos 3
+2011-09-26T00:25:43  <ChrisH> so that matched the hill
+2011-09-26T00:25:49  <McLeopold> yeah, I bet I didn't use the switch matrix
+2011-09-26T00:26:28  <ChrisH> I wondered if that was the case.
+2011-09-26T00:26:37  <janzert> so my naive method of checking for one remaining_player and then calling raze_hill on any non-destroyed hills inside finish_game doesn't work :P
+2011-09-26T00:26:59  <janzert> I'm guessing because the scores at that point never get into the replay
+2011-09-26T00:27:38  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 260 seconds)
+2011-09-26T00:28:15  <ChrisH> I'm done for the night. The new game looks interesting. I'll work on my bot some more once the hill numbering gets fixed.
+2011-09-26T00:28:39  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-09-26T00:28:43  <McLeopold> janzert: when the game ends, do we want to spread the remaining hill points across all the survivors?
+2011-09-26T00:29:13  <CIA-24> aichallenge: McLeopold epsilon * rfe369f8 / ants/ants.py : fix perspective switch for hills - http://git.io/f3AzOg
+2011-09-26T00:29:24  <janzert> at this point I think only if there just one player with ants left
+2011-09-26T00:29:55  <janzert> but as with everything I reserve the right to change my mind after watching more games with that in place :P
+2011-09-26T00:29:57  <McLeopold> not including timeouts/crashes of course
+2011-09-26T00:30:18  <janzert> right, I really meant the player alive
+2011-09-26T00:30:34  <janzert> just the visualizer at this point doesn't seem to show a player dead when all the ants are dead
+2011-09-26T00:30:40  <McLeopold> so, if player a takes player b's hill, but then gets eliminated, and player b survives to the end, who did better?
+2011-09-26T00:30:58  <janzert> :)
+2011-09-26T00:31:21  <janzert> if player b is the only surviving player then I say b
+2011-09-26T00:31:25  <janzert> I suppose
+2011-09-26T00:31:46  <McLeopold> and if not? does it make a difference if there is a 3rd player or not?
+2011-09-26T00:32:30  <janzert> the idea for me right now is that we end the game when only one player is left, most likely if we let the game run he would be able to eventually capture all the remaining hills
+2011-09-26T00:32:36  <janzert> but for efficiency we don't do that
+2011-09-26T00:33:06  <McLeopold> okay, so lone survivor get's the points
+2011-09-26T00:33:15  <McLeopold> that makes sense
+2011-09-26T00:33:16  <janzert> there are obviously situations where that doesn't hold but I think we can ignore that
+2011-09-26T00:33:20  <McLeopold> what about 2 survivors?
+2011-09-26T00:33:31  <janzert> that's where I'm less sure
+2011-09-26T00:33:49  <janzert> but for now I think no bonus for them
+2011-09-26T00:34:39  <janzert> I don't know though I could pretty easily go the other way
+2011-09-26T00:35:24  <janzert> I suppose the above reasoning for the lone player case can be applied to any non-destroyed hills of dead players
+2011-09-26T00:35:46  <janzert> in the multiplayer case
+2011-09-26T00:36:21  <janzert> so go for whichever you feel like ;)
+2011-09-26T00:37:21  <janzert> I guess my feeling against it is that if the game ended with multiple players alive and viable hills of dead players then it's likely the living players just weren't trying to destroy them very hard
+2011-09-26T00:39:14  <janzert> are sigma's being raised based on population turn over?
+2011-09-26T00:39:41  <janzert> I think that may be rather important when starting from zip like we are
+2011-09-26T00:49:34  <McLeopold> I'm okay with no bonus, I just don't want a game to end for someone still trying and get cheated out of points.
+2011-09-26T00:50:07  <McLeopold> sigma's are changed by trueskill, which has no knowledge of our game mechanics
+2011-09-26T00:50:40  <McLeopold> the tau, or dynamics factor should do the raising
+2011-09-26T00:50:56  <janzert> well, part of the trueskill system is to raise sigma so much over time
+2011-09-26T00:51:02  <janzert> but we took that out
+2011-09-26T00:51:22  <McLeopold> yes we did, but the more I read, the more I think tau is suppose to do that
+2011-09-26T00:51:25  <janzert> and I thought we were going to replace it to match the population turnover
+2011-09-26T00:51:55  <janzert> ah, ok
+2011-09-26T00:52:05  <McLeopold> they don't really go below 1.5-1.8, so I think we are ok
+2011-09-26T00:52:32  <McLeopold> we can increase tau first, if we think they are too low
+2011-09-26T00:53:58  <McLeopold> were extinct bots marked as dead before the rule change?
+2011-09-26T00:54:32  *** dabino <dabino!558d4006@gateway/web/freenode/ip.85.141.64.6> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T00:54:40  <janzert> well bots that lost all there ants certainly were ;)
+2011-09-26T00:55:07  <janzert> and I think that is still the interesting spot to mark in the graph
+2011-09-26T00:55:33  <janzert> and yes, timeouts and crashes also are/were
+2011-09-26T00:56:59  <McLeopold> hmm, okay, I think that is just the visualizer
+2011-09-26T00:57:08  <McLeopold> I didn't change any replay format stuff for that
+2011-09-26T00:57:20  * janzert nods
+2011-09-26T00:58:22  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-26T01:01:19  <McLeopold> janzert: I'm inclined to remove the cutoff for this week, just to see how stuff will go
+2011-09-26T01:01:43  <McLeopold> I think the logic doesn't make as much sense now that ants only spawn at the hills
+2011-09-26T01:01:44  <janzert> hmm, here's an example of a game that would be 25% shorter if ants without hills were eliminated :( http://antsbeta.janzert.com/visualizer.php?game=60
+2011-09-26T01:03:35  <McLeopold> oh, maybe need to stop of only one bot has hills?
+2011-09-26T01:03:54  <janzert> I think maybe the food cutoff needs to be reworked, but I'm not so sure about the general overbearing% of ants cutoff
+2011-09-26T01:04:08  <janzert> yeah, I'm not sure
+2011-09-26T01:04:17  <janzert> that might make sense
+2011-09-26T01:04:48  <janzert> theoretically the rank could still change, but I don't think it would hardly ever happen in practice
+2011-09-26T01:04:59  <McLeopold> hmm...
+2011-09-26T01:05:16  <McLeopold> we need a list of edge cases
+2011-09-26T01:05:33  <McLeopold> I'm thinking if  you lose your hill, you don't deserve the chance to come back
+2011-09-26T01:05:33  <janzert> I guess leave it for the moment and see how it feels as we see more games
+2011-09-26T01:06:37  <McLeopold> so, if green had lost his hill first instead, magenta still gets an opportunity to come back, but not the other way around
+2011-09-26T01:07:01  <McLeopold> so the can_rank_change check is only applied to bots with surviving hills
+2011-09-26T01:07:46  <janzert> hmm, sounds reasonable
+2011-09-26T01:07:49  <McLeopold> if you lose your hills, you still get to participate somewhat, but the cutoffs and other game length decisions won't depend on you
+2011-09-26T01:08:01  <janzert> and a nice compromise between completely eliminating them
+2011-09-26T01:08:06  <McLeopold> yes
+2011-09-26T01:08:14  <McLeopold> I'm going to implement that, in about 30 minutes
+2011-09-26T01:08:20  <janzert> great
+2011-09-26T01:10:52  <janzert> I'm liking the way that battle lines develop much more naturally. although the map type might be having some effect on it as well
+2011-09-26T01:10:59  <janzert> could we add a few of the old maps back in?
+2011-09-26T01:16:21  <McLeopold> janzert: not yet, please, but soon
+2011-09-26T01:16:27  <McLeopold> tomorrow some time
+2011-09-26T01:17:04  *** davidjliu <davidjliu!8cf7f5b5@gateway/web/freenode/ip.140.247.245.181> has quit IRC (Quit: Page closed)
+2011-09-26T01:17:20  <janzert> aww ;)
+2011-09-26T01:19:54  <_flag> The server says I failed the test cases but I pass ./test_bot.sh from the tools
+2011-09-26T01:20:00  <_flag> Any ideas?
+2011-09-26T01:21:21  <janzert> I thought the server had gotten a little more verbose about failed test cases in the last week
+2011-09-26T01:22:35  <janzert> says your bot crashed on turn 1
+2011-09-26T01:22:51  <_flag> Yeah it shows me that on my profile
+2011-09-26T01:23:00  <janzert> unfortunately that's all that was recorded
+2011-09-26T01:23:50  <_flag> I really didn't change much that might affect it except it now recognizes hives, which it does just fine in a regular scenerio
+2011-09-26T01:25:52  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-09-26T01:29:43  <_flag> McLeopold: Has anything changed regarding test cases or is the server still just running ./test_bot.sh ?
+2011-09-26T01:31:52  <McLeopold> _flag: same test, but I will probably add more test maps
+2011-09-26T01:31:53  <janzert> hmm, manually testing it on the worker it crashes
+2011-09-26T01:32:10  <janzert> but there isn't any other output besides it crashed at turn 1
+2011-09-26T01:32:45  <McLeopold> janzert: I added, like, 3 changes to squeeze more data out, but it never seems to work :(
+2011-09-26T01:33:00  <janzert> hmm?
+2011-09-26T01:33:16  <janzert> oh, record more
+2011-09-26T01:33:21  <McLeopold> yeah
+2011-09-26T01:33:27  <janzert> well in this case there isn't anymore to record
+2011-09-26T01:33:35  <McLeopold> plus test_submission was doing stuff a little different
+2011-09-26T01:34:01  <McLeopold> I added the ability for the engine to grab stuff from stderr on a timeout bot
+2011-09-26T01:34:32  <McLeopold> my vb bot failed to compile, but I didn't get much in the way of error messages
+2011-09-26T01:34:43  <McLeopold> but compile is totally different than the test  game
+2011-09-26T01:35:03  * janzert nods
+2011-09-26T01:35:17  <McLeopold> _flag: are you writing to stderr on a crash, and flushing?
+2011-09-26T01:35:40  <_flag> McLeopold: I write one line to stderr every turn for debuging
+2011-09-26T01:35:45  <_flag> Should I turn that off?
+2011-09-26T01:35:50  <McLeopold> no, that is good
+2011-09-26T01:35:55  <janzert> _flag: if your bot is started manually, will respond to a go or ready?
+2011-09-26T01:35:59  <McLeopold> we should have captured that
+2011-09-26T01:36:31  <janzert> if I run it manually and try sending it "go" or "ready" it seg faults
+2011-09-26T01:36:38  <_flag> It responds to go
+2011-09-26T01:36:46  <_flag> It should give you a line each time you type go
+2011-09-26T01:37:06  *** Hammerok <Hammerok!551ab865@gateway/web/freenode/ip.85.26.184.101> has joined #aichallenge
+2011-09-26T01:37:13  <janzert> hmm, "Segmentation fault" is the only response I'm getting :(
+2011-09-26T01:37:27  <_flag> To go or ready?
+2011-09-26T01:37:28  <janzert> 64bit problem maybe?
+2011-09-26T01:37:35  <_flag> It should segfault on ready
+2011-09-26T01:37:36  <janzert> either, both :(
+2011-09-26T01:37:41  <_flag> I use 64bit
+2011-09-26T01:38:11  <_flag> And it's essentially the exact same code my previous bot that I submitted an hour ago worked fine with
+2011-09-26T01:38:31  <_flag> Especially in regards to responding to a "go\n"
+2011-09-26T01:38:33  <janzert> gcc (Ubuntu/Linaro 4.5.2-8ubuntu4) 4.5.2
+2011-09-26T01:38:44  <_flag> Has that changed in the last two hours?
+2011-09-26T01:38:50  <janzert> $ ./MyBot
+2011-09-26T01:38:50  <janzert> go
+2011-09-26T01:38:50  <janzert> Segmentation fault
+2011-09-26T01:38:59  <janzert> shouldn't have I don't believe
+2011-09-26T01:39:39  <_flag> $ ./MyBot
+2011-09-26T01:39:41  <_flag> go
+2011-09-26T01:39:42  <_flag> turn 1: (1) 0000, (2) 0000, (5) 0000, (6) 0000 || 0000 (-nan, -nan) { 0 : 0 }
+2011-09-26T01:39:46  <_flag> go
+2011-09-26T01:39:48  <_flag> Is what I get
+2011-09-26T01:40:53  <janzert> tried a manual "make clean; make" to see if it made a difference but same thing
+2011-09-26T01:42:14  <janzert> unfortunately no gdb installed so can't jump into it real quick
+2011-09-26T01:42:42  <_flag> Are all the source files present? There should be ants.c, ants.h, MyBot.c and YourCode.c
+2011-09-26T01:43:36  <janzert> yep
+2011-09-26T01:43:54  <janzert> and it appears to compile without error
+2011-09-26T01:44:41  <_flag> Can you do a "md5sum YourCode.c ants.c ants.h MyBot.c" ?
+2011-09-26T01:45:15  <janzert> 176d4a9ccedb1d3a59b0347d0fa8cc73  YourCode.c
+2011-09-26T01:45:16  <janzert> 00f749f0642876ef1ed3b8e36454d4e6  ants.c
+2011-09-26T01:45:16  <janzert> c7b6b1d355eaf70e3beda58770f3fac0  ants.h
+2011-09-26T01:45:16  <janzert> 30c43eb2ea1ccb0767d9863b6c5cb584  MyBot.c
+2011-09-26T01:45:52  *** Hammerok <Hammerok!551ab865@gateway/web/freenode/ip.85.26.184.101> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T01:47:33  <_flag> Well that's really bizarre...
+2011-09-26T01:47:44  <_flag> I'll try reuploading it anyway I guess
+2011-09-26T01:48:15  <janzert> :} ok
+2011-09-26T01:50:08  <_flag> "Success: ready to play"
+2011-09-26T01:50:11  <_flag> I'll take it
+2011-09-26T01:50:19  <janzert> heh, ok then
+2011-09-26T01:50:36  <CIA-24> aichallenge: McLeopold epsilon * re67a7e0 / ants/ants.py : scoring and rules changes - http://git.io/c-_U6g
+2011-09-26T01:51:14  <McLeopold> janzert: restart worker, or update?
+2011-09-26T01:51:19  <janzert> McLeopold: how hard would it be to start all players with points = hills?
+2011-09-26T01:51:24  <janzert> I'll update it
+2011-09-26T01:51:32  <McLeopold> so we don't go negative?
+2011-09-26T01:51:41  <janzert> yep
+2011-09-26T01:51:45  <McLeopold> easy
+2011-09-26T01:52:10  <McLeopold> what's wrong with negative?
+2011-09-26T01:52:25  <janzert> and since 0 point players basically disappear in the current score display, it's rather wierd not to have them when they are ahead of the negative scorers
+2011-09-26T01:52:33  <McLeopold> oh
+2011-09-26T01:52:41  <McLeopold> okay, give me a minute
+2011-09-26T01:53:13  <janzert> I just think it overall will look a little nicer, it doesn't make any difference except cosmetically of course
+2011-09-26T01:53:40  <_flag> Also, because of the way mazes are done, I'm not even sure most of these games will ever end in anything other than a draw given the current turn limits
+2011-09-26T01:53:53  <_flag> It takes a few hundred turns just to reach your opponent
+2011-09-26T01:55:10  <janzert> yeah, I don't think the large mazes are going to work out particularly well
+2011-09-26T01:55:32  <janzert> the smaller ones seem rather fun though
+2011-09-26T01:56:32  <CIA-24> aichallenge: McLeopold epsilon * rac21371 / ants/ants.py : prevent negative scores - http://git.io/SQWslQ
+2011-09-26T01:57:05  <_flag> Also, it would be nice if the hill numbers matched the player numbers, so your hill was always 0, the next person you saw was 1, etc.
+2011-09-26T01:57:20  <_flag> I made my bot assuming that and now it's doing dumb things :(
+2011-09-26T01:57:22  <McLeopold> _flag: there was a fix for that tonight
+2011-09-26T01:57:41  <_flag> Can you push it to the main server before my bot loses a bunch of games?
+2011-09-26T01:57:43  <janzert> I assume I can update now?
+2011-09-26T01:57:44  <_flag> :)
+2011-09-26T01:58:21  <McLeopold> yes
+2011-09-26T01:59:07  <janzert> should be up
+2011-09-26T01:59:15  <janzert> rebuilt tools as well
+2011-09-26T01:59:36  <McLeopold> janzert: we should be able to calc a distance table for opponents
+2011-09-26T01:59:50  <McLeopold> that would give us a reasonable max_turns for a map
+2011-09-26T02:00:16  <janzert> I'm thinking initial food needs to do something like that as well
+2011-09-26T02:00:44  <McLeopold> more initial food when the distance is large?
+2011-09-26T02:01:06  <janzert> well right now we get situations where food is initially visible but can be quite far away for a bot to get to
+2011-09-26T02:01:20  <McLeopold> oh, yeah
+2011-09-26T02:01:44  <McLeopold> I need to check visibility *and* path finding
+2011-09-26T02:02:01  <janzert> it's just several things that didn't arise with non-mazelike maps :/
+2011-09-26T02:02:12  <McLeopold> that shouldn't be too hard
+2011-09-26T02:03:03  <McLeopold> I can to a flood fill to the vision radius at each hill to get the set of initial food squares
+2011-09-26T02:03:53  <janzert> that would help the initial ability to get a few ants going out for sure
+2011-09-26T02:05:04  <janzert> I think this is probably just going to be too much for  a 2 player map no matter what though http://antsbeta.janzert.com/map.php?map=maze/maze_2.map
+2011-09-26T02:05:24  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-09-26T02:05:49  <janzert> even if there was no food cutoff whatsoever it's just going to take forever to play that out
+2011-09-26T02:07:06  <janzert> it takes *me* a long time just to find the route between the hills ;)
+2011-09-26T02:09:07  *** eashoka <eashoka!dcf7e114@gateway/web/freenode/ip.220.247.225.20> has joined #aichallenge
+2011-09-26T02:10:10  <janzert> A good rule of thumb might be that maximum travel distance between any two points on a map should be no more than say 25% (less/more?) of the hard turn limit (1500/2000?)
+2011-09-26T02:10:58  <janzert> 25% is probably really pushing it
+2011-09-26T02:12:32  <janzert> 10-15% is probably a more reasonable limit
+2011-09-26T02:15:14  <McLeopold> I'll just check max between any 2 hills
+2011-09-26T02:15:54  <McLeopold> then a map can have rabbit trails, but they will not be significant
+2011-09-26T02:16:01  <_flag> Especially since with this game there is a lot more strategic depth than simply spread out and don't die (simplified), so you don't need as large of maps
+2011-09-26T02:16:08  <janzert> except a bot has to search them out
+2011-09-26T02:16:19  <janzert> maybe from a hill to furthest point
+2011-09-26T02:17:14  <janzert> at least map design is something I feel we can keep refining through most of the contest
+2011-09-26T02:17:20  <McLeopold> so, 500 max distance from any hill to any point?
+2011-09-26T02:17:47  <janzert> at the very upper limit
+2011-09-26T02:18:09  <McLeopold> then, 250 for hill to hill?
+2011-09-26T02:18:55  <janzert> I think those might still feel too far but it would be a start
+2011-09-26T02:19:16  <janzert> I guess knowing the values of the various current maps would help
+2011-09-26T02:20:02  <McLeopold> for the food cutoff, you would want at least 10% of the map discoverable by 150 turns
+2011-09-26T02:20:14  <janzert> e.g. maze 3 still feels too far
+2011-09-26T02:20:19  <janzert> but I don't know how far that is
+2011-09-26T02:20:44  <janzert> http://antsbeta.janzert.com/visualizer.php?game=44
+2011-09-26T02:21:13  <janzert> leviathan seems to search fairly efficiently but just is getting to the opponent at 1000 turns
+2011-09-26T02:21:39  <janzert> certainly not maximally efficient but not terrible
+2011-09-26T02:22:34  <eashoka> in case of draws, (players taken same number of hills at the end) shall we break the tie and rank the players according to number of ants they have at the end ? this will prevent players taking defensive stances and just staying put, leading to boring games.
+2011-09-26T02:22:42  <McLeopold> yea, it's about 450-475 distance
+2011-09-26T02:22:54  <janzert> eashoka: no, I really don't want to do that
+2011-09-26T02:23:42  <janzert> so the numbers above might work out fine then
+2011-09-26T02:23:45  <McLeopold> no, ties are okay
+2011-09-26T02:24:15  <eashoka> reason ? how and why we should say players with 300 ants and 10 ants (both taking 2 hills each) should both be considered as equally performed ?
+2011-09-26T02:24:34  <janzert> because the objective is to take hills :)
+2011-09-26T02:24:35  <_flag> eashoka: I think the idea is to give people who have been working on the beta for a long time the smallest possible headstart, and if they did that a bot could essentially win by just doing what everyone's already been doing
+2011-09-26T02:25:07  <janzert> how many ants you keep alive doesn't really matter at all
+2011-09-26T02:25:08  <eashoka> _flag : that sounds logical :-)
+2011-09-26T02:25:28  <janzert> how you use them does ;)
+2011-09-26T02:29:39  *** onensora <onensora!~c@188.65.161.142> has joined #aichallenge
+2011-09-26T02:34:55  <eashoka> Another one : why don't we stop games as soon as a winner is determined? say in a map with 4 hills, let's say one player has destroyed 2 hills. 2 hills remaining with 2 remaining players, there is no way now the second player can overtake 1st, for he can at most destroy 1 more ant hill and so never can catch the 1st play in scores. so what if we just stop the game at this point ?
+2011-09-26T02:36:15  <janzert> once leviathan learns about destroying hills he's going to be quite a bit better ;)
+2011-09-26T02:36:54  <janzert> the plan is to stop games as soon as the ranking of all remaining players can not change
+2011-09-26T02:37:01  <janzert> it just hasn't been coded yet
+2011-09-26T02:37:52  <janzert> or actually I think that made it into the last big update McLeopold pushed
+2011-09-26T02:39:47  <eashoka> jancert : ok, it is all beginning to make sense now :-) one last qsn : should we give any special bonus for a lone survivor ? (in case there is one player who has managed to eliminate all others but little behind in belted hills)
+2011-09-26T02:40:49  <janzert> I'd really rather not add any score finagling and I think that situation will be pretty rare
+2011-09-26T02:42:13  <janzert> it's like chess the objective there is to checkmate the opponent, all that matters is whether or not you accomplish the objective
+2011-09-26T02:42:34  <janzert> the objective here is to destroy enemy hills
+2011-09-26T02:42:44  <janzert> the purer that can stay the happier I'll be ;)
+2011-09-26T02:43:06  <McLeopold> janzert: what map were initial foods outside traversable area?
+2011-09-26T02:44:04  <janzert> hmm, I'd have to look around again and I'm not sure it was actually out of reach before a cutoff or anything but it was around several corners in the opposite direction initially
+2011-09-26T02:44:39  <McLeopold> yeah, that's what I'm looking for, so a hill near a long wall
+2011-09-26T02:45:24  <janzert> probably maze_2
+2011-09-26T02:45:27  <McLeopold> maze_12.map looks good
+2011-09-26T02:45:54  <janzert> here's an example http://antsbeta.janzert.com/visualizer.php?game=134
+2011-09-26T02:47:28  <janzert> maze_2 is really bad for it since the hills are at a dead end that takes a long route to get to the other side of
+2011-09-26T02:48:22  <CIA-24> aichallenge: McLeopold epsilon * r61de3e9 / ants/ants.py : insure initial food is not behind a wall - http://git.io/Qd2cMw
+2011-09-26T02:48:25  <McLeopold> fixed :)
+2011-09-26T02:48:33  <janzert> yay
+2011-09-26T02:49:07  <McLeopold> distance checks need to be in the map gen, but you can set the priority of the bad ones to negative
+2011-09-26T02:49:18  <McLeopold> janzert: can you check the vb submission?
+2011-09-26T02:50:25  <McLeopold> also, we need to keep an eye out for the cutoff games, and the ranking stuff
+2011-09-26T02:51:58  <janzert> worker and tools should be updated
+2011-09-26T02:52:22  <McLeopold> janzert: the error message for compiler not able to create has a full path, that looks bad
+2011-09-26T02:52:45  <janzert> where?
+2011-09-26T02:53:15  <McLeopold> Output file /home/contest/compiled/tmpSegyNf/bot/MyBot.exe was not created.
+2011-09-26T02:53:19  <McLeopold> for my bad submission
+2011-09-26T02:53:28  <McLeopold> line 128 of compiler.py
+2011-09-26T02:53:58  <McLeopold> we should shorten that to just the filename, no path
+2011-09-26T02:54:03  <janzert> and it looks bad how, as in ugly? I agree. as in wrong, nope that's normal
+2011-09-26T02:54:10  <janzert> yeah
+2011-09-26T02:54:10  <McLeopold> security hole?
+2011-09-26T02:54:16  <janzert> shouldn't be
+2011-09-26T02:54:31  <janzert> anyone reading the source can tell that's the structure
+2011-09-26T02:55:17  <janzert> that's not the path where the compile is actually done by the way, just where the compile results are copied back out of the sandbox
+2011-09-26T02:56:21  <janzert> the file check for the result is done after it is out of the sandbox
+2011-09-26T02:57:29  <janzert> it's always rather wierd to me to see the .exe files for bots on linux :P
+2011-09-26T02:59:04  <CIA-24> aichallenge: McLeopold epsilon * r9619174 / ants/ants.py : provide reason for game end - http://git.io/Gf4FLw
+2011-09-26T02:59:39  <janzert> that will be recorded in the DB?
+2011-09-26T02:59:51  <CIA-24> aichallenge: McLeopold epsilon * r5ef6271 / worker/compiler.py : shorted error message for output file not being created - http://git.io/BpTdmQ
+2011-09-26T02:59:52  <McLeopold> janzert: yes?
+2011-09-26T02:59:57  <janzert> sweet
+2011-09-26T03:00:26  <McLeopold> nope
+2011-09-26T03:00:31  <McLeopold> that might break stuff...
+2011-09-26T03:00:33  <janzert> oh :(
+2011-09-26T03:00:41  <McLeopold> hmm...
+2011-09-26T03:00:45  <McLeopold> it's a bit in the db
+2011-09-26T03:01:09  <janzert> is there anything other than the turn adjuster even looking at it?
+2011-09-26T03:01:29  <janzert> since you only just added it recently, I can't imagine there is much
+2011-09-26T03:02:12  * janzert looks up the commands used to compile a vb submission
+2011-09-26T03:02:24  <McLeopold> nope
+2011-09-26T03:02:35  <McLeopold> but it might be nice in the game lists
+2011-09-26T03:03:07  <janzert> the actual reason, not just a boolean value probably?
+2011-09-26T03:03:23  <janzert> in any case the boolean can be derived pretty easily ;)
+2011-09-26T03:03:27  <McLeopold> I'm only storing it, I don't see any php or sql reading the value
+2011-09-26T03:03:41  <McLeopold> I was thinking of max_turns being a reason as well
+2011-09-26T03:03:43  <janzert> the turn adjuster script does, but I'll fix that
+2011-09-26T03:03:58  <McLeopold> so it would always be filled in
+2011-09-26T03:04:02  <janzert> ok
+2011-09-26T03:04:32  <janzert> would probably be better
+2011-09-26T03:06:14  <janzert> manual VB compilation http://pastebin.com/ac5g0RJT
+2011-09-26T03:06:18  <janzert> attempt
+2011-09-26T03:06:25  <janzert> did I get that command right?
+2011-09-26T03:07:51  <janzert> if I did, I don't know why that output didn't get recorded
+2011-09-26T03:08:10  * janzert decides to try with the compiler script once
+2011-09-26T03:10:03  <janzert> hmm, yep the compiler script just complains about the output file missing
+2011-09-26T03:10:09  <CIA-24> aichallenge: McLeopold epsilon * r91eed65 / (ants/ants.py sql/0_schema.sql website/api_game_result.php): update to cutoff reason - http://git.io/dQNJxg
+2011-09-26T03:10:53  <McLeopold> was it on stdout and not stderr?
+2011-09-26T03:11:25  <janzert> could be
+2011-09-26T03:11:55  <McLeopold> we'd have to do what I did for golang to fix that
+2011-09-26T03:12:02  <McLeopold> add in a "vglob"
+2011-09-26T03:12:12  <janzert> yep, it's on stdout
+2011-09-26T03:12:29  <McLeopold> what about c#?
+2011-09-26T03:12:52  <McLeopold> heck, we should check them all, _flag was complaining too
+2011-09-26T03:13:24  <McLeopold> now's your chance to rename vglob ;)
+2011-09-26T03:13:29  <janzert> _flag's problem a few hours ago compiled fine but crashed when run
+2011-09-26T03:13:36  <McLeopold> oh
+2011-09-26T03:13:45  <McLeopold> did it get turned off properly?
+2011-09-26T03:13:54  <janzert> it didn't pass the test case
+2011-09-26T03:14:04  <janzert> so yes
+2011-09-26T03:14:07  <McLeopold> so it never turned on then...
+2011-09-26T03:14:13  * janzert nods
+2011-09-26T03:15:40  <janzert> C# is on stderr
+2011-09-26T03:15:44  <janzert> like it should be ;)
+2011-09-26T03:15:58  <McLeopold> okay, so it may not be that bad
+2011-09-26T03:16:36  <McLeopold> I assume your fixing it now? :)
+2011-09-26T03:16:57  <janzert> wasn't I'm probably too tired to do it properly :/
+2011-09-26T03:17:08  <McLeopold> ok, I'll give it a try
+2011-09-26T03:17:20  <janzert> if you want to do it, I'll update the worker for a last time before going to bed ;)
+2011-09-26T03:18:37  <janzert> since that's all in bash history at this point I should be able to manage it
+2011-09-26T03:20:25  <CIA-24> aichallenge: McLeopold epsilon * rc04c1cc / worker/compiler.py : make compiler look for errors on stdout for vb - http://git.io/rmT8_Q
+2011-09-26T03:20:53  <McLeopold> I'll reset the submission in the db
+2011-09-26T03:20:53  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Quit: Computer has gone to sleep)
+2011-09-26T03:21:37  <McLeopold> janzert: when you are ready
+2011-09-26T03:21:51  <janzert> just sec
+2011-09-26T03:22:24  <janzert> database been update to handle new cutoff info?
+2011-09-26T03:22:44  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Ping timeout: 256 seconds)
+2011-09-26T03:22:47  <McLeopold> yes
+2011-09-26T03:27:26  <McLeopold> janzert: ?
+2011-09-26T03:27:34  <janzert> just restarted it
+2011-09-26T03:27:39  <janzert> should be going
+2011-09-26T03:27:55  <McLeopold> okay, look for the vb
+2011-09-26T03:28:20  <janzert> yeah, it's runing an 8 player game so may be a little bit
+2011-09-26T03:31:43  <janzert> looks like it recorded the errors
+2011-09-26T03:31:58  <McLeopold> yep :)
+2011-09-26T03:32:16  <janzert> one step closer :)
+2011-09-26T03:32:23  <McLeopold> now I need to learn the difference between real vb.net and mono vb
+2011-09-26T03:32:48  <janzert> ugh
+2011-09-26T03:32:55  *** MikeTheAnt <MikeTheAnt!8ae3bd09@gateway/web/freenode/ip.138.227.189.9> has joined #aichallenge
+2011-09-26T03:32:57  <janzert> have fun ;)
+2011-09-26T03:33:13  *** Blkt <Blkt!~user@89-96-199-46.ip13.fastwebnet.it> has joined #aichallenge
+2011-09-26T03:33:25  <Blkt> good morning everyone
+2011-09-26T03:33:41  <MikeTheAnt> hi! has the majority of the accounts been removed? Or is it time to go live soon?
+2011-09-26T03:34:31  <janzert> sorta both hopefully, see the front page notice
+2011-09-26T03:34:46  <McLeopold> janzert: I messed up api_game_result
+2011-09-26T03:35:04  <janzert> :(
+2011-09-26T03:35:16  <janzert> pause the worker?
+2011-09-26T03:35:24  <CIA-24> aichallenge: McLeopold epsilon * r120216b / website/sql.php : fix sql error - http://git.io/vA7xYA
+2011-09-26T03:35:40  <janzert> ahh, you got it
+2011-09-26T03:35:43  <McLeopold> okay, that was quick
+2011-09-26T03:36:28  <McLeopold> yeah, lone survivor in the db!
+2011-09-26T03:36:56  <McLeopold> I'm looking for 'ranking stabilized' so I can watch the game.
+2011-09-26T03:40:13  <janzert> hmm, I think the lone survivor remaining hill count is wrong
+2011-09-26T03:40:25  <janzert> it shouldn't get extra score for its own hill
+2011-09-26T03:40:35  <janzert> http://antsbeta.janzert.com/visualizer.php?game=152&user=4
+2011-09-26T03:41:01  <janzert> ahh, nevermind it didn't
+2011-09-26T03:41:09  <janzert> see I should go to bed :P
+2011-09-26T03:42:53  *** cichociemno <cichociemno!4a7d3921@gateway/web/freenode/ip.74.125.57.33> has joined #aichallenge
+2011-09-26T03:43:13  <McLeopold> janzert: any opinion on the points per hill?
+2011-09-26T03:43:58  <janzert> not really at this point
+2011-09-26T03:44:38  <janzert> I could see possibly doing away with giving any points for your own hill
+2011-09-26T03:45:38  <janzert> but it really seriously is too late here for me to make any sort of good opinion about it
+2011-09-26T03:45:50  <McLeopold> okay, go to bed
+2011-09-26T03:46:05  <McLeopold> I will stop tempting you with intellectual conversation
+2011-09-26T03:46:06  <janzert> see you tomorrow, hopefully Jeff shows up too
+2011-09-26T03:46:16  <McLeopold> so, about my visual basic error...
+2011-09-26T03:46:26  <janzert> hehe, yes?
+2011-09-26T03:47:10  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-09-26T03:49:15  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-26T03:56:01  <antimatroid> McLeopold: I am about
+2011-09-26T03:56:27  <antimatroid> i can do the maps tonight too, i'll get onto that soon
+2011-09-26T03:56:38  <antimatroid> any requests or just as is now but with multiple starting locations per player?
+2011-09-26T03:56:57  <McLeopold> antimatroid: have you looked at the site, do you know what is happening?
+2011-09-26T03:57:09  <antimatroid> i have seen a few comments here and just loaded the first link above
+2011-09-26T03:57:12  <antimatroid> otherwise no
+2011-09-26T03:57:17  <McLeopold> :D
+2011-09-26T03:57:34  <McLeopold> I really wanted to go over this stuff with you yesterday, but I slept in
+2011-09-26T03:57:56  <antimatroid> that's alright
+2011-09-26T03:59:22  <antimatroid> the ant hills look awesome :)
+2011-09-26T03:59:25  *** MikeTheAnt <MikeTheAnt!8ae3bd09@gateway/web/freenode/ip.138.227.189.9> has quit IRC (Quit: Page closed)
+2011-09-26T03:59:37  <McLeopold> yeah, it's a different game now
+2011-09-26T03:59:59  <antimatroid> is there a page explaining new rules?
+2011-09-26T04:00:03  <antimatroid> or want to give me a quick overview? :P
+2011-09-26T04:00:05  <McLeopold> not yet
+2011-09-26T04:00:13  <McLeopold> that what I wanted to talk about :)
+2011-09-26T04:00:22  <McLeopold> the problem description is okay
+2011-09-26T04:00:27  <McLeopold> the spec needs to be written
+2011-09-26T04:00:44  <McLeopold> score is hills only, 2 points for capture, -1 for loss
+2011-09-26T04:00:51  <McLeopold> ants spawn only at hills
+2011-09-26T04:01:08  <antimatroid> 2 points for capture of a hill or ant?
+2011-09-26T04:01:13  <McLeopold> hill
+2011-09-26T04:01:24  <McLeopold> ant counts and kill points are gone
+2011-09-26T04:02:33  <antimatroid> so you are trying to take out ant hills and not ants?
+2011-09-26T04:02:39  <antimatroid> can you kill enemy ants still?
+2011-09-26T04:02:42  <McLeopold>  yes
+2011-09-26T04:03:10  <antimatroid> hmmm, this is much cooler, awesome
+2011-09-26T04:03:11  <McLeopold> you can kill ants, just like normal, but you only get points for taking out hills
+2011-09-26T04:03:55  <antimatroid> what happens if your ant hill is captured?
+2011-09-26T04:03:59  <antimatroid> do all your ants get removed from the game?
+2011-09-26T04:04:05  <McLeopold> no
+2011-09-26T04:04:22  <antimatroid> do you capture it by killing it like any other ant?
+2011-09-26T04:04:23  <McLeopold> you can still score a kill
+2011-09-26T04:04:34  <McLeopold> no, you must step on it
+2011-09-26T04:04:42  <McLeopold> range 0
+2011-09-26T04:04:42  <antimatroid> so once your hill is gone you can't spawn any more ants?
+2011-09-26T04:04:46  <McLeopold> right
+2011-09-26T04:05:02  <antimatroid> and if you collect more than one food item per turn you wait to spawn one ant per turn?
+2011-09-26T04:05:09  <antimatroid> until you've spawned all ants waiting to spwn?
+2011-09-26T04:05:14  <McLeopold> there is a hive score
+2011-09-26T04:05:19  <McLeopold> what some replays
+2011-09-26T04:05:24  <McLeopold> you have ants waiting to spawn
+2011-09-26T04:05:34  <antimatroid> i will, just trying to make sure my intuition is right :)
+2011-09-26T04:05:36  <McLeopold> watch leviathan's games
+2011-09-26T04:07:08  <antimatroid> is there a 1 turn delay in an ant spawning?
+2011-09-26T04:07:42  <McLeopold> yes
+2011-09-26T04:07:49  <McLeopold> nice catch :)
+2011-09-26T04:07:54  <antimatroid> why is that?
+2011-09-26T04:08:04  <McLeopold> you're the first to notice
+2011-09-26T04:08:16  <antimatroid> food is automatically harvested if you're adjacent though yeah?
+2011-09-26T04:08:23  <McLeopold> yes
+2011-09-26T04:11:26  <antimatroid> McLeopold: so what's the plan with map files? do you still want multiple starting locations per bot?
+2011-09-26T04:11:33  <McLeopold> yes
+2011-09-26T04:11:49  <McLeopold> maps must produce a 0-9 for the hills
+2011-09-26T04:11:52  <antimatroid> is that for multiple hills? and how do you select which hill to spawn to?
+2011-09-26T04:12:05  <McLeopold> least recently touched
+2011-09-26T04:12:17  <antimatroid> if it's a tie?
+2011-09-26T04:12:42  <McLeopold> I expect if bots want to control, they will leave an ant on top of the ones they don't want to spawn at
+2011-09-26T04:12:56  <antimatroid> yep fair call
+2011-09-26T04:13:11  <antimatroid> i'll try and update the specs and map gen tonight
+2011-09-26T04:13:18  <antimatroid> which map gen did you use for the beta maps atm?
+2011-09-26T04:13:32  <antimatroid> doesn't look like mine
+2011-09-26T04:14:11  <McLeopold> a tie is random :D https://github.com/aichallenge/aichallenge/blob/epsilon/ants/ants.py#L641
+2011-09-26T04:14:26  <McLeopold> mapgen.py
+2011-09-26T04:14:34  <McLeopold> which is yours
+2011-09-26T04:14:54  <antimatroid> mapgen.py
+2011-09-26T04:17:00  <antimatroid> it's a sweet map, i'll take ownership, i just don't remember it making them quite like that
+2011-09-26T04:17:44  *** kaemo <kaemo!~mad5ci@d58-73.icpnet.pl> has joined #aichallenge
+2011-09-26T04:18:39  *** ibdknox <ibdknox!~ibdknox@c-67-169-37-82.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-09-26T04:19:08  *** ibdknox <ibdknox!~ibdknox@c-67-169-37-82.hsd1.ca.comcast.net> has joined #aichallenge
+2011-09-26T04:23:43  *** ibdknox <ibdknox!~ibdknox@c-67-169-37-82.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 248 seconds)
+2011-09-26T04:36:32  *** kaemo <kaemo!~mad5ci@d58-73.icpnet.pl> has quit IRC (Ping timeout: 276 seconds)
+2011-09-26T04:40:02  *** cichociemno <cichociemno!4a7d3921@gateway/web/freenode/ip.74.125.57.33> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T04:40:25  *** eashoka <eashoka!dcf7e114@gateway/web/freenode/ip.220.247.225.20> has quit IRC (Quit: Page closed)
+2011-09-26T04:48:03  *** xathis <xathis!~Mathis@g231124027.adsl.alicedsl.de> has quit IRC ()
+2011-09-26T04:49:07  *** boegel <boegel!~boegel@ca60c171.ugent.be> has joined #aichallenge
+2011-09-26T04:50:48  *** k333es <k333es!8527293d@gateway/web/freenode/ip.133.39.41.61> has joined #aichallenge
+2011-09-26T05:03:11  *** k333es <k333es!8527293d@gateway/web/freenode/ip.133.39.41.61> has quit IRC (Quit: Page closed)
+2011-09-26T05:08:15  *** berak <berak!~chatzilla@82.113.99.160> has joined #aichallenge
+2011-09-26T05:17:56  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has joined #aichallenge
+2011-09-26T05:23:07  <CIA-24> aichallenge: McLeopold epsilon * rf5afadd / (3 files): update vb starter package - http://git.io/AHFd0Q
+2011-09-26T05:43:25  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-09-26T05:44:51  <ChrisH> @later McLeopold This game seems to have ended due to cutoff when my bot was still making progress (wow that's a big map for two players).
+2011-09-26T05:44:52  <contestbot> ChrisH: Run as fast as you can and don't look back.
+2011-09-26T05:45:09  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Client Quit)
+2011-09-26T05:54:57  <Keth> Why not make a scoring based on number of ants left? That would even make sense that largest 'ant colony' wins. And solves the 'suicide-last-minute' problem.
+2011-09-26T05:55:03  <Keth> just a suggestion
+2011-09-26T06:09:07  *** SimonT <SimonT!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-09-26T06:09:21  *** nplus <nplus!~chatzilla@unaffiliated/simont> has quit IRC (Ping timeout: 245 seconds)
+2011-09-26T06:09:34  *** SimonT is now known as nplus
+2011-09-26T06:11:32  *** mcstar <mcstar!~mcstar@szfkipc72.szfki.kfki.hu> has joined #aichallenge
+2011-09-26T06:15:12  <mcstar> hm
+2011-09-26T06:15:18  <mcstar> so its live then
+2011-09-26T06:15:48  <mcstar> soo much changed in a couple of hours
+2011-09-26T06:16:05  <mcstar> i think i may have traveled to an alternate universe
+2011-09-26T06:19:44  *** GreenTea <GreenTea!c15d66f9@gateway/web/freenode/ip.193.93.102.249> has joined #aichallenge
+2011-09-26T06:20:06  <GreenTea> Hi!
+2011-09-26T06:20:41  <GreenTea> im a little shoked about new rules..
+2011-09-26T06:20:55  <GreenTea> This is end variant or possible changes?
+2011-09-26T06:21:53  <mcstar> GreenTea: im shocked as well, but i havent read them
+2011-09-26T06:22:48  <GreenTea> im too. game specification is old
+2011-09-26T06:23:12  <Keth> It's kind of old but you can still find the new changes. Search for "hill" in game specification
+2011-09-26T06:23:54  <GreenTea> i think current rules will lead to very long games, to find the winner
+2011-09-26T06:24:23  <GreenTea> because now bot need to 1) find enemies in maze
+2011-09-26T06:24:54  <Keth> I like the strategical aspects of new game, but I dislike the scoring.
+2011-09-26T06:25:12  <Keth> long games don't change much
+2011-09-26T06:25:20  <GreenTea> 2) kill them, which can be not so easy in narrow passages
+2011-09-26T06:27:20  <GreenTea> Keth: i found "hill" thank you
+2011-09-26T06:28:08  <Keth> GreenTea: welcome, keep in mind this will all probably change. Did you get my message?
+2011-09-26T06:29:17  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-26T06:33:04  <mcstar> im just surprised that apparaently something else was going on in the background, that wasnt mentioned on irc
+2011-09-26T06:33:40  <mcstar> many things were discussed constantly, the organizers seemd to be interested in other people's opinions
+2011-09-26T06:33:50  <mcstar> and now there are these changes out of the blue
+2011-09-26T06:33:56  <GreenTea> and no words on forum..
+2011-09-26T06:50:31  *** SimonT <SimonT!~chatzilla@unaffiliated/simont> has joined #aichallenge
+2011-09-26T06:51:30  *** Akranis <Akranis!~Mattias@u193-11-163-114.studentnatet.se> has joined #aichallenge
+2011-09-26T06:52:31  *** nplus <nplus!~chatzilla@unaffiliated/simont> has quit IRC (Ping timeout: 248 seconds)
+2011-09-26T06:52:46  *** SimonT is now known as nplus
+2011-09-26T06:56:54  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-09-26T06:57:24  *** solif <solif!~smiley@115-64-6-216.static.tpgi.com.au> has joined #aichallenge
+2011-09-26T07:12:43  *** GreenTea <GreenTea!c15d66f9@gateway/web/freenode/ip.193.93.102.249> has quit IRC (Quit: Page closed)
+2011-09-26T07:13:30  *** patrisk <patrisk!137914@inglor.ifi.uio.no> has joined #aichallenge
+2011-09-26T07:19:14  *** solif <solif!~smiley@115-64-6-216.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-09-26T07:19:48  *** smiley1983 <smiley1983!~smiley@115-64-6-216.static.tpgi.com.au> has joined #aichallenge
+2011-09-26T07:20:45  <mleise> :D
+2011-09-26T07:21:34  <mcstar> what?
+2011-09-26T07:21:39  <mcstar> all we get is a :D?
+2011-09-26T07:22:36  <mleise> What do you want to hear? Yes, there was some work going on in the background to even the playing field for beta testers and new participants
+2011-09-26T07:25:25  <smiley1983> yes, seems like a good idea.
+2011-09-26T07:25:33  <smiley1983> you could go even further :)
+2011-09-26T07:26:12  <mleise> im away for lunch
+2011-09-26T07:30:33  *** delt0r_ <delt0r_!~bob@93-82-139-65.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-09-26T07:31:39  <patrisk> Does the python version matter when using playgame.py?
+2011-09-26T07:33:28  <smiley1983> I would expect so - I think it requires version 2.7, unless they changed it
+2011-09-26T07:34:20  <patrisk> Yeah, it seems to require 2.7
+2011-09-26T07:35:32  <Keth> yes, used to be 2.6, now 2.7 is recommended (I use 2.7.2)
+2011-09-26T07:38:19  <patrisk> Is local play broken? When I try to test the sample_bots(Python) they all crash
+2011-09-26T07:38:23  <patrisk> and the replay is all messed up
+2011-09-26T07:39:09  <patrisk> Ah.. never mind.
+2011-09-26T07:39:34  <patrisk> Stupidly started python 2.5.2 when it launched the bots, and 2.7 when it attempted to play the damn thing
+2011-09-26T07:39:43  <patrisk> I'm assuming that's the problem
+2011-09-26T07:40:49  <patrisk> Yup, never mind!
+2011-09-26T07:42:09  *** delt0r_ <delt0r_!~bob@88-117-34-74.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-26T07:44:15  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Ping timeout: 248 seconds)
+2011-09-26T07:51:42  <antimatroid> mcstar: I had no idea either, but I think a mix up is good :)
+2011-09-26T07:53:09  <smiley1983> yes, especially since it seems we will get land vision as well as water vision now :)
+2011-09-26T07:53:36  <antimatroid> heh, might as well have just gone with char maps :P
+2011-09-26T07:54:26  <smiley1983> wouldn't that imply resending the whole map each turn though? This way it's only transmitted once
+2011-09-26T07:55:52  <antimatroid> oh land is sent once?
+2011-09-26T07:55:55  <antimatroid> is that really that helpful?
+2011-09-26T07:56:11  <antimatroid> oh wait
+2011-09-26T07:56:18  <antimatroid> you get land and water information every turn?
+2011-09-26T07:57:31  <smiley1983> I'm not sure if it's being sent yet; but the "problem description" seems to be saying that you get land information just as you get water information
+2011-09-26T07:57:42  <smiley1983> which is to say, the first time one of your ants sees it
+2011-09-26T07:58:00  <antimatroid> i need to get onto updating the map generator
+2011-09-26T07:58:07  <antimatroid> mcleopold wants bots to start with multiple ant hills
+2011-09-26T07:58:31  <smiley1983> that could be interesting
+2011-09-26T07:58:38  *** patrisk <patrisk!137914@inglor.ifi.uio.no> has quit IRC (Quit: Leaving)
+2011-09-26T07:58:44  <smiley1983> and so could the idea of bringing food back to the hill to get the new ant :)
+2011-09-26T07:58:58  <antimatroid> hehe, games would be too slow
+2011-09-26T07:59:04  <antimatroid> my original game had that :p
+2011-09-26T07:59:21  <smiley1983> multiple hills sounds good though
+2011-09-26T08:04:06  *** olexs <olexs!~Leviathan@drms-4d01503c.pool.mediaWays.net> has joined #aichallenge
+2011-09-26T08:09:39  <olexs> the current game seems to be bugged a bit when it comes to scoring... or is it somehow redefined now?
+2011-09-26T08:10:06  <antimatroid> olexs: 2 points for taking out an ant hill, -1 for losing your ant hill
+2011-09-26T08:10:22  <olexs> no more points for killing ants?
+2011-09-26T08:10:26  <antimatroid> no points for killing enemies, you just kill them for positional advantage or attacking their hill
+2011-09-26T08:10:30  <olexs> I see
+2011-09-26T08:10:49  <olexs> time to implement attacking hills, then xD
+2011-09-26T08:11:27  *** dr- <dr-!~dr-freeno@ble59-1-82-66-133-150.fbx.proxad.net> has quit IRC (Ping timeout: 259 seconds)
+2011-09-26T08:11:50  <antimatroid> and defending :P
+2011-09-26T08:12:16  <olexs> defending should work fairly implicitly, since ants spawn at the hill, they won't give their terrain up
+2011-09-26T08:12:38  <olexs> best defence is a good attack, so first things first.
+2011-09-26T08:12:46  <antimatroid> i should still think a good bot is now going to want to actually defend their hill, as without it you can't spawn new ants
+2011-09-26T08:13:00  <mleise> antimatroid: Frederick the Great once said "He who defends everything, defends nothing."
+2011-09-26T08:13:08  <olexs> does every bot only get one hill?
+2011-09-26T08:13:12  <olexs> on any map?
+2011-09-26T08:13:15  <antimatroid> no, that's my job tonight
+2011-09-26T08:13:25  <antimatroid> to update the map generator so bots start with more than one hill
+2011-09-26T08:13:50  <olexs> how's spawning resolved then? closest hill to the collected food item?
+2011-09-26T08:14:29  <mleise> olexs: no
+2011-09-26T08:14:34  <antimatroid> longest one since it spawned one
+2011-09-26T08:14:37  <antimatroid> ties are broken randomly
+2011-09-26T08:14:40  <olexs> ok
+2011-09-26T08:14:47  <mleise> antimatroid: how do you know?
+2011-09-26T08:14:50  <antimatroid> there's a 1 turn delay before you spawn an ant from collecting food too
+2011-09-26T08:14:55  <antimatroid> mleise: had a chat to mcleopold before
+2011-09-26T08:15:31  <mleise> I hope you like that this is closer to your first proposal
+2011-09-26T08:15:39  <antimatroid> and if you have more ants to spawn than ant hills it will just line them up to spawn on future turns
+2011-09-26T08:15:47  <antimatroid> melise: i love the changes :D
+2011-09-26T08:16:19  <olexs> lining them up works now already, displayed as "hive" in the visualizer, if i'm right
+2011-09-26T08:16:25  <antimatroid> yep
+2011-09-26T08:16:44  <olexs> keeping a spawn free is important :)
+2011-09-26T08:17:12  <antimatroid> if you want to alter where an ant will spawn you can move you ants onto your own hills i believe
+2011-09-26T08:17:27  <antimatroid> and to take out an enemy hill you need to be on the hill after battle is resolved
+2011-09-26T08:17:39  <antimatroid> mleise: it is after battle yes?
+2011-09-26T08:17:54  <smiley1983> is there going to be a line telling you about dead hives, like dead ants?
+2011-09-26T08:18:00  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-26T08:18:05  <smiley1983> hills, rather
+2011-09-26T08:18:27  <antimatroid> interesting, i think there maybe should be if it's visible
+2011-09-26T08:25:31  *** cichociemno <cichociemno!4a7d3921@gateway/web/freenode/ip.74.125.57.33> has joined #aichallenge
+2011-09-26T08:28:30  <olexs> how exactly does one kill hills? just move an ant next to it or onto it?
+2011-09-26T08:29:07  <antimatroid> yep, if you have an ant on an enemy hill you take it out
+2011-09-26T08:29:15  <olexs> ok
+2011-09-26T08:49:58  <olexs> one-on-one games don't work well. if my bot is vastly superior, he will kill all enemy ants before taking out the hive, and the game will end with 1-1 scores. the bonus doesn't seem to count into ratings, both players are displayed as "1st" in profiles
+2011-09-26T08:50:29  <olexs> example: http://antsbeta.janzert.com/visualizer.php?game=323&user=4
+2011-09-26T08:50:39  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has joined #aichallenge
+2011-09-26T08:54:31  <smiley1983> hills, rather
+2011-09-26T08:54:33  <smiley1983> oops
+2011-09-26T08:54:38  <smiley1983> wrong terminal
+2011-09-26T08:56:37  *** kaemo <kaemo!~mad5ci@150.254.83.242> has joined #aichallenge
+2011-09-26T08:58:25  *** Keth_ <Keth_!kwketh@client-86-25-202-182.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-09-26T08:58:25  *** Keth <Keth!kwketh@client-86-25-202-182.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-09-26T08:59:36  <mcstar> mleise: i hope you agree that for a short time i can play my "surprised" act
+2011-09-26T09:00:56  *** Apophis_ <Apophis_!~apophis@217-162-209-17.dynamic.hispeed.ch> has joined #aichallenge
+2011-09-26T09:00:58  <mleise> sure, mcstar. I'm still busy reading the log and watching the most interesting games. From this morning (European time)
+2011-09-26T09:01:36  <mcstar> gtg now, i hope it turns out good
+2011-09-26T09:01:38  *** nann <nann!~apophis@217-162-209-17.dynamic.hispeed.ch> has quit IRC (Read error: Connection reset by peer)
+2011-09-26T09:01:40  *** mcstar <mcstar!~mcstar@szfkipc72.szfki.kfki.hu> has left #aichallenge ("WeeChat 0.3.5")
+2011-09-26T09:05:42  *** eashoka <eashoka!70874c49@gateway/web/freenode/ip.112.135.76.73> has joined #aichallenge
+2011-09-26T09:12:15  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has quit IRC (Ping timeout: 248 seconds)
+2011-09-26T09:17:12  *** dr- <dr-!~dr-@ble59-1-82-66-133-150.fbx.proxad.net> has joined #aichallenge
+2011-09-26T09:30:17  <mleise> antimatroid: Toanswer your question, I don't know if the hills are destroyed after battle resolution or before.
+2011-09-26T09:41:44  *** sir_macelon <sir_macelon!c06482e4@gateway/web/freenode/ip.192.100.130.228> has joined #aichallenge
+2011-09-26T09:43:46  <sir_macelon> wow, now this is a big suprise
+2011-09-26T09:44:04  <sir_macelon> these changes are really great IMO
+2011-09-26T09:44:36  <sir_macelon> there was an obvious lack of a neat macro strategy
+2011-09-26T09:44:57  <sir_macelon> and there won't be any stupid suicides in the end!
+2011-09-26T09:45:04  <sir_macelon> @monologue
+2011-09-26T09:45:04  <contestbot> sir_macelon: Your current monologue is at least 5 lines long.
+2011-09-26T09:46:15  <olexs> hills bring the game much closer to "proper" strategy games. one can use many more interesting strategies now
+2011-09-26T09:48:56  <sir_macelon> exactly and games will be much better to watch
+2011-09-26T09:49:49  <olexs> my bot does surprisingly well on these maze maps... didn't actually expect that
+2011-09-26T09:52:42  <olexs> rankings take a while to stabilize with this few bots and the 1-on-1 bug, though
+2011-09-26T09:54:45  <sir_macelon> well, mine also does well, although I didn't optimized it on mazes yet and it is hill-blind
+2011-09-26T09:55:49  <olexs> I fixed the hill-blindness with simple "kill all hills after battle simulation" order. will work more on that later, hill defence is also quite important
+2011-09-26T09:57:20  <sir_macelon> I am still analyzing the games to come up with a good design
+2011-09-26T09:57:33  <sir_macelon> but it is really interesting
+2011-09-26T09:58:07  <olexs> a possible tactic would be hill diving... just try and get a few ants past defences and take out an enemy hill quickly, without engaging in large battles
+2011-09-26T09:58:10  <sir_macelon> defence will get more important if bots will start to send ALL ants on particular hill
+2011-09-26T09:58:44  <olexs> my bot should do something similar in certain situations
+2011-09-26T09:59:26  <olexs> but for now, I'm afk. Will work more on this in the coming days
+2011-09-26T10:00:32  <olexs> wtf xD my bot just got the deciding hill kill on turn 1000: http://aichallengebeta.hypertriangle.com/visualizer.php?game=373&user=4 that's close...
+2011-09-26T10:02:50  *** kaemo <kaemo!~mad5ci@150.254.83.242> has quit IRC (Ping timeout: 276 seconds)
+2011-09-26T10:02:53  *** olexs <olexs!~Leviathan@drms-4d01503c.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-09-26T10:06:39  *** berak_ <berak_!~chatzilla@89.204.153.224> has joined #aichallenge
+2011-09-26T10:08:15  *** berak <berak!~chatzilla@82.113.99.160> has quit IRC (Ping timeout: 248 seconds)
+2011-09-26T10:08:19  *** berak_ is now known as berak
+2011-09-26T10:09:41  <sir_macelon> BTW. wouldn't it be better to call hills as hives, it suites better IMO
+2011-09-26T10:15:22  <jnwhiteh> did I break the website?
+2011-09-26T10:16:03  <sir_macelon> what do you mean?
+2011-09-26T10:18:08  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-09-26T10:22:17  <berak> betaserver is down
+2011-09-26T10:25:11  <sir_macelon> oh...
+2011-09-26T10:26:32  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-09-26T10:36:21  *** computerwiz_222 <computerwiz_222!~andrew@142.222.1.138> has joined #aichallenge
+2011-09-26T10:36:24  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has quit IRC (Quit: Page closed)
+2011-09-26T10:36:46  <computerwiz_222> hello -- anyone else having difficulty connecting to the contest site?
+2011-09-26T10:37:23  <computerwiz_222> janzert:
+2011-09-26T10:40:43  *** amstan <amstan!~alex@142.222.1.140> has joined #aichallenge
+2011-09-26T10:40:45  *** ChanServ sets mode: +o amstan
+2011-09-26T10:41:07  <amstan> contestbot: seen janzert
+2011-09-26T10:41:07  <contestbot> amstan: janzert was last seen in #aichallenge 6 hours, 54 minutes, and 40 seconds ago: <janzert> hehe, yes?
+2011-09-26T10:49:25  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Ping timeout: 255 seconds)
+2011-09-26T10:49:29  *** computerwiz_222 <computerwiz_222!~andrew@142.222.1.138> has quit IRC (Remote host closed the connection)
+2011-09-26T10:53:03  *** amstan <amstan!~alex@142.222.1.140> has quit IRC (Ping timeout: 248 seconds)
+2011-09-26T10:58:08  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-26T10:59:49  *** patrisk <patrisk!137914@inglor.ifi.uio.no> has joined #aichallenge
+2011-09-26T11:04:07  *** onensora <onensora!~c@188.65.161.142> has quit IRC ()
+2011-09-26T11:14:55  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Ping timeout: 248 seconds)
+2011-09-26T11:17:43  *** kaemo <kaemo!~mad5ci@d58-73.icpnet.pl> has joined #aichallenge
+2011-09-26T11:18:05  *** cichociemno <cichociemno!4a7d3921@gateway/web/freenode/ip.74.125.57.33> has quit IRC (Quit: Page closed)
+2011-09-26T11:27:49  *** Blkt <Blkt!~user@89-96-199-46.ip13.fastwebnet.it> has quit IRC (Quit: Going home...)
+2011-09-26T11:28:27  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-09-26T11:31:46  *** boegel <boegel!~boegel@ca60c171.ugent.be> has quit IRC (Ping timeout: 256 seconds)
+2011-09-26T11:34:58  *** Corgano <Corgano!80e634c8@gateway/web/freenode/ip.128.230.52.200> has joined #aichallenge
+2011-09-26T11:41:14  *** Corgano <Corgano!80e634c8@gateway/web/freenode/ip.128.230.52.200> has quit IRC (Quit: Page closed)
+2011-09-26T11:49:18  <McLeopold> the beta server is turned off
+2011-09-26T11:49:29  <McLeopold> :(
+2011-09-26T11:49:37  <McLeopold> someone with ec2 access must turn in on
+2011-09-26T11:51:18  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Ping timeout: 260 seconds)
+2011-09-26T12:08:49  <McLeopold> @later tell janzert wake up! beta is down!
+2011-09-26T12:08:49  <contestbot> McLeopold: Job's done.
+2011-09-26T12:12:15  *** sir_macelon <sir_macelon!c06482e4@gateway/web/freenode/ip.192.100.130.228> has quit IRC (Quit: Page closed)
+2011-09-26T12:15:11  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2011-09-26T12:21:56  *** kaemo <kaemo!~mad5ci@d58-73.icpnet.pl> has quit IRC (Ping timeout: 276 seconds)
+2011-09-26T12:22:41  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-09-26T12:23:19  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has joined #aichallenge
+2011-09-26T12:23:39  <McLeopold> @later tell olexs if you are the long survivor, you get a bonus of all remaining enemy hills as if you razed them, so there shouldn't be a 1 on 1 bug
+2011-09-26T12:23:39  <contestbot> McLeopold: I come to serve.
+2011-09-26T12:32:11  <CIA-24> aichallenge: McLeopold epsilon * r3ca3b1d / ants/ants.py : fix hill bonus for lone survivor. closes #264 - http://git.io/oRlWuA
+2011-09-26T12:32:28  <McLeopold> @later tell olexs ok, there was a bug, but it's fixed now, thx
+2011-09-26T12:32:28  <contestbot> McLeopold: I think that worked...
+2011-09-26T12:33:39  *** kaemo <kaemo!~mad5ci@d58-73.icpnet.pl> has joined #aichallenge
+2011-09-26T12:35:44  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-26T12:36:34  <McLeopold> antimatroid: what is the best/fastest way to find the distance between 2 points on the map?  paint out from both?
+2011-09-26T12:38:11  <antimatroid> i assume you mean shortest path length?
+2011-09-26T12:38:16  <antimatroid> i imagine some kind of a* search?
+2011-09-26T12:38:28  <McLeopold> hey, check this out http://harablog.wordpress.com/2011/09/07/jump-point-search/
+2011-09-26T12:39:05  <McLeopold> antimatroid: btw, we are going to try and implement a max distance of 250 between hills
+2011-09-26T12:39:16  <McLeopold> which is a map gen issue
+2011-09-26T12:39:45  <antimatroid> what do you want the minimum starting distance between hills to be?
+2011-09-26T12:39:58  <McLeopold> no min
+2011-09-26T12:40:10  <McLeopold> symmetry will take care of that
+2011-09-26T12:40:11  <antimatroid> you could end up with them adjacent then :P
+2011-09-26T12:40:25  <McLeopold> well, ...
+2011-09-26T12:40:33  <McLeopold> 20?
+2011-09-26T12:40:34  <McLeopold> idk
+2011-09-26T12:40:51  <janzert> minimum is probably vision radius + a little :)
+2011-09-26T12:40:57  <janzert> working on getting server up btw
+2011-09-26T12:41:08  <antimatroid> i can put in a max starting distance, but it wouldn't be based on path distance
+2011-09-26T12:41:09  <McLeopold> janzert: but with path finding, as the crow flies can be less
+2011-09-26T12:41:26  <janzert> hmm, true
+2011-09-26T12:41:37  <antimatroid> i am thinking i'll just add the extra hills in to maps once they're made
+2011-09-26T12:41:42  <McLeopold> janzert: I assume you've revived the server?
+2011-09-26T12:41:43  <McLeopold> :)
+2011-09-26T12:41:54  <janzert> ^^ working on it ;)
+2011-09-26T12:42:21  <McLeopold> I got a nice message in my ssh session that said it was going down NOW
+2011-09-26T12:42:53  <janzert> yeah, somehow the spot price shot up to over double the regular instance price
+2011-09-26T12:43:04  <McLeopold> how long?
+2011-09-26T12:43:08  <McLeopold> is it still there?
+2011-09-26T12:43:28  <janzert> it seems to be jumping up and down still in that zone,
+2011-09-26T12:43:38  <McLeopold> has it before now, in the last month?
+2011-09-26T12:44:06  <McLeopold> can I get the price link?
+2011-09-26T12:44:16  <janzert> only other time I know of is in april when amazon had a major outage
+2011-09-26T12:44:34  <janzert> but it didn't really matter what you payed then since there just plain weren't any working
+2011-09-26T12:46:15  <janzert> unfortunately I don't know of a third part site that shows price by availability zone, which is how amazon breaks it down now, http://cloudexchange.org/charts/us-east-1.linux.m1.large.html has it by region but only shows a peak of 0.34
+2011-09-26T12:56:55  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Quit: Leaving.)
+2011-09-26T12:59:56  <antimatroid> huzzah, i just generated my first maps with multiple hills
+2011-09-26T13:00:06  <antimatroid> now i just need to try and make it seem a bit less like a bandaid
+2011-09-26T13:02:03  *** UncleVasya <UncleVasya!kvirc@178-133-166-142.dialup.umc.net.ua> has joined #aichallenge
+2011-09-26T13:07:56  <janzert> servers back up (note the server host key has changed, i.e. ssh will throw an error when connecting if you connected before)
+2011-09-26T13:08:19  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has joined #aichallenge
+2011-09-26T13:17:55  *** ibdknox <ibdknox!~ibdknox@c-67-169-37-82.hsd1.ca.comcast.net> has joined #aichallenge
+2011-09-26T13:19:06  <antimatroid> janzert: do you know much about the distances between hills issue?
+2011-09-26T13:19:17  <antimatroid> should i perhaps reduce the max dimensions from 150?
+2011-09-26T13:19:35  <janzert> some maps are created with too much travel time between the hills
+2011-09-26T13:19:53  <UncleVasya> Is it April 1 already? :-)
+2011-09-26T13:20:01  <janzert> but the max dimension of a maze map doesn't correspond well with the travel distance
+2011-09-26T13:20:14  <janzert> so we want to measure the actual distance directly
+2011-09-26T13:20:54  <janzert> for non-maze maps the max dimension correlates fairly well of course
+2011-09-26T13:21:13  <antimatroid> hmmm okay
+2011-09-26T13:21:15  <UncleVasya> This thing with non-expected hills adding seems totally like a joke for April fools day.
+2011-09-26T13:21:17  <antimatroid> i have an idea i think
+2011-09-26T13:21:19  <janzert> but the current sizes are probably fine
+2011-09-26T13:21:37  <antimatroid> UncleVasya: no jokes :)
+2011-09-26T13:22:49  <UncleVasya> Have you created a top secret irc channel for discussing it?
+2011-09-26T13:23:20  <antimatroid> janzert: hmmm, i don't know how easy it would be, but adding in more hills per player should help the problem?
+2011-09-26T13:23:31  <UncleVasya> I'm interested in logs twith talks about hiils making.
+2011-09-26T13:23:56  <antimatroid> UncleVasya: it wasn't done here, i didn't know about it until today :P
+2011-09-26T13:26:38  <UncleVasya> hmm, I'm surprised with fact that they did not add you to a secret group of hills_makers. Or them was made by only one person?
+2011-09-26T13:27:30  *** ibdknox <ibdknox!~ibdknox@c-67-169-37-82.hsd1.ca.comcast.net> has quit IRC (Remote host closed the connection)
+2011-09-26T13:27:33  <UncleVasya> From logs I know that it was added "to even the battle field between betatesters and new participiants".
+2011-09-26T13:27:48  <janzert> antimatroid: somewhat I suppose
+2011-09-26T13:28:03  *** ibdknox <ibdknox!~ibdknox@c-67-169-37-82.hsd1.ca.comcast.net> has joined #aichallenge
+2011-09-26T13:28:40  <antimatroid> janzert: it's 3:30am, do you think i should push the equivalent of the current version that does multi hills or wait until I do something about the maximum starting distance between hills? :P
+2011-09-26T13:29:13  <janzert> my primary motivation for the change was not evening the battlefield but the lack of clarity in objective to the old version, which seemed to me to lead to a game that wasn't terribly 'fun'
+2011-09-26T13:29:25  <antimatroid> yeah i totally agree with that
+2011-09-26T13:29:26  <antimatroid> http://pastebin.com/raw.php?i=qCkzisTS
+2011-09-26T13:29:30  <antimatroid> there's some pastebin examples
+2011-09-26T13:29:33  <janzert> antimatroid: if it's finished go ahead and push it
+2011-09-26T13:29:38  <antimatroid> it doesn't seem to show the hills on ant paste? :\
+2011-09-26T13:30:05  <janzert> must not be updated with a new visualizer yet
+2011-09-26T13:30:36  <UncleVasya> Do we need to register new accounts now?
+2011-09-26T13:30:48  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Ping timeout: 258 seconds)
+2011-09-26T13:31:03  <janzert> multiple hills isn't super exciting for me, but I really want to see some different maps types play out now
+2011-09-26T13:31:17  <antimatroid> i like the idea of multiple hills
+2011-09-26T13:31:22  <janzert> and mcleopold doesn't want to add them until you update the generator ;)
+2011-09-26T13:31:41  <janzert> UncleVasya: yes, all the old accounts were wiped
+2011-09-26T13:31:57  <janzert> and pretty certainly will be again before going live
+2011-09-26T13:32:19  *** ibdknox <ibdknox!~ibdknox@c-67-169-37-82.hsd1.ca.comcast.net> has quit IRC (Ping timeout: 255 seconds)
+2011-09-26T13:32:27  *** Dlayne is now known as InsaneMalkavian
+2011-09-26T13:32:55  *** Hammerok <Hammerok!551aba7b@gateway/web/freenode/ip.85.26.186.123> has joined #aichallenge
+2011-09-26T13:36:33  <CIA-24> aichallenge: Nick Ham epsilon * rad6355b / ants/mapgen/mapgen.py : added multiple hills to the map generator - http://git.io/QLUt1g
+2011-09-26T13:36:53  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-26T13:37:26  <UncleVasya> I finally saw what are these "hills". I found it interesting and wanna see and feel the difference with old gameplay. This kind of game seems to be a little easier (just intuitive feeling).
+2011-09-26T13:37:32  <antimatroid> @later tell McLeopold I've added multiple hills to the map generator but haven't done anything about the maximum path distance between hills yet, atm I'm thinking maybe adding hills until that distance is below a given maximum?
+2011-09-26T13:37:32  <contestbot> antimatroid: Aye, aye, sir
+2011-09-26T13:37:55  <antimatroid> maximum min path :P
+2011-09-26T13:38:04  <antimatroid> maximin path
+2011-09-26T13:38:59  <UncleVasya> But now McLeopold's forum message that start will be before october isn't actual anymore, is it?
+2011-09-26T13:39:25  <antimatroid> i think they're pretty much ready
+2011-09-26T13:39:30  <antimatroid> just need to iron these changes out
+2011-09-26T13:39:59  *** patrisk <patrisk!137914@inglor.ifi.uio.no> has quit IRC (Quit: Leaving)
+2011-09-26T13:42:51  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-26T13:44:34  <janzert> we're hoping to launch by october still but I won't be surprised if it is pushed into the beginning of the month
+2011-09-26T13:46:40  <antimatroid> janzert: do you know if hills are taken out if an ant is on them before or after collisions/battles are resolved?
+2011-09-26T13:47:58  <antimatroid> apparently there's only 1 programmer in the credits for goldeneye 64, talk about badass
+2011-09-26T13:54:15  *** UncleVasya <UncleVasya!kvirc@178-133-166-142.dialup.umc.net.ua> has quit IRC (Ping timeout: 244 seconds)
+2011-09-26T13:55:54  *** nux67 <nux67!51b9bea2@gateway/web/freenode/ip.81.185.190.162> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T13:58:36  <janzert> hmm, I saw the list of calls in ants.py but I don't remember offhand
+2011-09-26T13:58:49  *** UncleVasya <UncleVasya!kvirc@178-133-228-47.dialup.umc.net.ua> has joined #aichallenge
+2011-09-26T13:59:13  <janzert> do_orders, do_attack, do_raze_hills, do_spawn
+2011-09-26T13:59:52  <janzert> so it comes between attacking and spawning
+2011-09-26T14:02:28  <antimatroid> hmmm, so you can't spawn an ant to save your hill that turn
+2011-09-26T14:02:40  <antimatroid> there's also a 1 turn delay in spawning an ant
+2011-09-26T14:03:30  <janzert> well if you start at spawn then it's spawn -> orders -> attack -> raze
+2011-09-26T14:03:52  <janzert> so if there is an ant on the hill you'll have to kill all the ants in the hill before you'll be able to step onit
+2011-09-26T14:03:59  <antimatroid> yeah that's reasonable
+2011-09-26T14:04:14  <antimatroid> i'm still not sure why there's a 1 turn delay between harvesting food and spawning an ant?
+2011-09-26T14:04:49  <janzert> me neither, I saw you ask but I don't think McLeopold ever explained did he?
+2011-09-26T14:05:10  <janzert> my guess is it wasn't purposeful
+2011-09-26T14:05:21  <antimatroid> yeah i don't think he ever explained
+2011-09-26T14:05:29  <antimatroid> seems like it'll just result in endless questions to me :P
+2011-09-26T14:05:35  <antimatroid> anyway, i'm going to get some more sleep before uni
+2011-09-26T14:05:49  <janzert> is it really a turn delay?
+2011-09-26T14:05:59  <janzert> or just harvest on turn 0 and spawn on turn 1
+2011-09-26T14:06:20  <antimatroid> you would expect it to spawn at the start of the following turn, it's a turn after that
+2011-09-26T14:10:03  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has joined #aichallenge
+2011-09-26T14:10:26  <janzert> spawning activity is where both the food is gathered and the ant spawns on the hill
+2011-09-26T14:10:57  <janzert> this happens as the last activity of the turn
+2011-09-26T14:11:18  <janzert> if the food is gathered on turn 1 then it spawns an ant on turn 2
+2011-09-26T14:11:34  <janzert> if a hill is clear for it to spawn anyway
+2011-09-26T14:12:03  <janzert> I think it should work that way and I'm almost positive that is the way it actually works
+2011-09-26T14:12:30  <antimatroid> ask mcleopold later, i'm pretty sure it'll spawn on turn 3 atm
+2011-09-26T14:12:36  <antimatroid> but i think 2 would be better
+2011-09-26T14:12:39  <antimatroid> anyway, sleep :P
+2011-09-26T14:12:51  <janzert> but you won't be able to send the new ant an order till turn 3 of course
+2011-09-26T14:12:53  *** ChrisH <ChrisH!60ff8f05@gateway/web/freenode/ip.96.255.143.5> has joined #aichallenge
+2011-09-26T14:13:26  <McLeopold> janzert: antimatroid: let's go ahead and generate 20 more maps with multiple hills, just so they get some playtime
+2011-09-26T14:13:40  <McLeopold> 4 of player count 2,3,4,5 and 8.
+2011-09-26T14:13:41  *** detryo <detryo!~detryo@249.Red-83-33-20.dynamicIP.rima-tde.net> has joined #aichallenge
+2011-09-26T14:13:50  <janzert> you doing it?
+2011-09-26T14:13:51  <McLeopold> antimatroid: btw, 6 player always failed :(
+2011-09-26T14:13:53  <McLeopold> no
+2011-09-26T14:14:25  <janzert> I would still like to see some of the old maps or at least the old styles, single hill back too
+2011-09-26T14:14:37  <McLeopold> janzert: ok, tomorrow
+2011-09-26T14:14:44  <janzert> why wait?
+2011-09-26T14:14:50  <McLeopold> geeze, okay, today
+2011-09-26T14:14:56  <janzert> yay :)
+2011-09-26T14:15:05  *** arlequ1 <arlequ1!58aff739@gateway/web/freenode/ip.88.175.247.57> has joined #aichallenge
+2011-09-26T14:15:18  <janzert> I'm tempted to make a couple of plain, no water, maps too
+2011-09-26T14:15:21  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Read error: Connection reset by peer)
+2011-09-26T14:15:50  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-26T14:16:52  *** mcstar <mcstar!~mcstar@adsl-89-132-23-108.monradsl.monornet.hu> has joined #aichallenge
+2011-09-26T14:17:02  <McLeopold> janzert: okay, that should be really easy :)
+2011-09-26T14:17:46  <McLeopold> antimatroid: move, attack, raze, spawn, gather
+2011-09-26T14:18:25  <McLeopold> so it will spawn on turn 2, but after the turn 2 move
+2011-09-26T14:20:00  <janzert> McLeopold: is there any reason the code doesn't do the actual add_ant till after the gather? it makes the above slightly inaccurate in the case of a food adjacent to a hill that spawns an ant
+2011-09-26T14:21:50  <janzert> it makes it, move, attack, raze, gather, spawn anything gather before this turn. I think I like your order above better
+2011-09-26T14:22:29  <janzert> seems a little cleaner
+2011-09-26T14:22:45  *** xathis <xathis!~Mathis@g230250253.adsl.alicedsl.de> has joined #aichallenge
+2011-09-26T14:25:52  <janzert> end game conditions seem to a little broken still, seems like this should have ended at turn 440 http://antsbeta.janzert.com/visualizer.php?game=335
+2011-09-26T14:26:54  <janzert> http://antsbeta.janzert.com/visualizer.php?game=301&user=5 this at 314
+2011-09-26T14:29:46  <mcstar> what is "raze"
+2011-09-26T14:29:46  <janzert> hmm, worker crashed
+2011-09-26T14:30:13  <janzert> mcstar: general definition or in context here?
+2011-09-26T14:30:16  <mcstar> e-raze, lol, never heard that verb before
+2011-09-26T14:30:24  <mcstar> got it
+2011-09-26T14:30:26  <janzert> here, destroy a hill
+2011-09-26T14:30:32  <mcstar> ok
+2011-09-26T14:30:46  <mcstar> when did you guys decide to stir up the rules?
+2011-09-26T14:30:52  <janzert> general usage is about destroying a city or such in a war
+2011-09-26T14:31:31  <janzert> well, antimatroid might remember that I mentioned pretty much the current form of the game back in july ;)
+2011-09-26T14:31:55  <janzert> but no real talk or decision to do it was made until a week or two ago
+2011-09-26T14:32:09  <mcstar> since mcleo came back to life
+2011-09-26T14:32:59  <UncleVasya> * from life to us  is more correct ;)
+2011-09-26T14:33:13  <mcstar> and less funy
+2011-09-26T14:33:16  <mcstar> n
+2011-09-26T14:33:56  <mcstar> alright, i think i will accept the rules after all, i registered damn it!
+2011-09-26T14:33:58  <mcstar> :D
+2011-09-26T14:34:06  <janzert> :P
+2011-09-26T14:35:16  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has joined #aichallenge
+2011-09-26T14:37:25  <McLeopold> janzert: what order do you want?
+2011-09-26T14:37:55  <janzert> I like your move, attack, raze, spawn, gather
+2011-09-26T14:38:03  <janzert> it's just not what the code does now
+2011-09-26T14:38:11  <McLeopold> I think it does...
+2011-09-26T14:38:11  <janzert> not quite anyway
+2011-09-26T14:38:26  <janzert> (2:20:02 PM) janzert: McLeopold: is there any reason the code doesn't do the actual add_ant till after the gather? it makes the above slightly inaccurate in the case of a food adjacent to a hill that spawns an ant
+2011-09-26T14:38:35  <janzert> (2:21:52 PM) janzert: it makes it, move, attack, raze, gather, spawn anything gather before this turn. I think I like your order above better
+2011-09-26T14:38:38  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-09-26T14:39:53  <McLeopold> oh, i do: move, attack, raze, gather, spawn
+2011-09-26T14:40:07  <McLeopold> kinda
+2011-09-26T14:40:08  <McLeopold> ...
+2011-09-26T14:40:24  <janzert> right, spawn anything gathered before this turn
+2011-09-26T14:41:52  <McLeopold> so if you spawn next to a food, you want it gathered that turn?
+2011-09-26T14:44:28  <berak> hmm, got a game, before the submission code was unzipped:  http://aichallengebeta.hypertriangle.com/profile.php?user=41
+2011-09-26T14:44:37  <janzert> yes, although I don't care a whole lot about that directly
+2011-09-26T14:44:58  <janzert> it's just a side effect of making the order and explanation cleaner
+2011-09-26T14:45:22  <McLeopold> yeah, it only gives you an extra food per hill at the most
+2011-09-26T14:45:53  <McLeopold> plus, you don't have to manuver around it to keep your hill open and waste time to gather it again
+2011-09-26T14:46:04  <McLeopold> I'll make the change
+2011-09-26T14:46:17  <janzert> yeah, very rare it should make any difference in practice
+2011-09-26T14:46:23  <ChrisH> berak: Yes, I reported that bug yesterday, so McLeopold is aware. :)
+2011-09-26T14:46:30  <berak> ok.
+2011-09-26T14:48:24  <InsaneMalkavian> hey, i've got a problem. I've uploaded code one hour ago and it's still "compiling", wtf?
+2011-09-26T14:48:57  <janzert> it's probably the one that broke the worker, you seem to have a knack for that ;)
+2011-09-26T14:49:03  <janzert> working on it now
+2011-09-26T14:49:44  <InsaneMalkavian> ooh )
+2011-09-26T14:49:48  <InsaneMalkavian> ok
+2011-09-26T14:49:55  <ChrisH> InsaneMalkavian: your screen name seems redundant ;)
+2011-09-26T14:51:04  <InsaneMalkavian> yeah, right. Do you know where it's come from?
+2011-09-26T14:51:53  *** detryo <detryo!~detryo@249.Red-83-33-20.dynamicIP.rima-tde.net> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T14:52:04  <ChrisH> yes, used to play in OWBN and some tabletop as well.
+2011-09-26T14:52:55  <CIA-24> aichallenge: McLeopold epsilon * r8f44ef4 / ants/ants.py : change order of game phases - http://git.io/huh7eA
+2011-09-26T14:52:55  <CIA-24> aichallenge: McLeopold epsilon * r144b971 / ants/mapgen/mapgen.py : Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/BbsnEA
+2011-09-26T14:53:24  *** Hammerok_ <Hammerok_!551aba7b@gateway/web/freenode/ip.85.26.186.123> has joined #aichallenge
+2011-09-26T14:53:28  *** Hammerok <Hammerok!551aba7b@gateway/web/freenode/ip.85.26.186.123> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T14:53:51  <CIA-24> aichallenge: janzert epsilon * r98b87d8 / setup/update_visualizer.sh : Remove su and git pull from update_visualizer script - http://git.io/7LJFvA
+2011-09-26T14:56:19  <McLeopold> janzert: where is the visualizer build script?
+2011-09-26T14:56:27  <UncleVasya> Just ban InsaneMalkavian and you'll become chrash-free :-)
+2011-09-26T14:56:38  <UncleVasya> *crash-free
+2011-09-26T14:57:00  <janzert> a script from mleise, that rebuilds the visualizer and tools packages
+2011-09-26T14:57:16  <janzert> I think supposed to be run after any visualizer change
+2011-09-26T14:57:38  <McLeopold> *where*
+2011-09-26T14:57:43  <McLeopold> I can't find it?
+2011-09-26T14:57:46  <janzert> in setup/
+2011-09-26T14:57:56  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-09-26T14:58:00  <ChrisH> Are you refering to ant/dist/tools/Makefile?
+2011-09-26T14:58:01  <janzert> update_visualizer.sh
+2011-09-26T14:58:16  <janzert> nope, it does call that though ;)
+2011-09-26T14:58:42  <McLeopold> what about all the iced-tea stuff?
+2011-09-26T14:58:46  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Quit: Konversation terminated!)
+2011-09-26T14:59:10  *** dvladim <dvladim!~dvladim@85.113.131.65> has joined #aichallenge
+2011-09-26T15:01:34  <janzert> ?
+2011-09-26T15:01:47  <McLeopold> it's much cleaner now, it just works :)
+2011-09-26T15:02:03  <janzert> that is all handled by the ant build no?
+2011-09-26T15:02:39  <McLeopold> before i had to specify a deploy path and a path to iced-tea
+2011-09-26T15:02:59  <janzert> hmm, no idea really
+2011-09-26T15:03:15  <janzert> it did seem to work when I tried it just now
+2011-09-26T15:03:47  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-09-26T15:05:52  <CIA-24> aichallenge: janzert epsilon * r4bea0a3 / worker/worker.py : Clean up some unicode to ascii problems in worker.py - http://git.io/h4qvGA
+2011-09-26T15:06:30  <ChrisH> was it intentional that the visualizer no longer color codes the player focus toggles on the left?
+2011-09-26T15:10:14  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-09-26T15:10:43  <CIA-24> aichallenge: janzert epsilon * rc21ae8b / worker/worker.py : Remove redundant log output - http://git.io/W2XmDw
+2011-09-26T15:13:19  <janzert> ChrisH: I doubt it
+2011-09-26T15:13:50  <ChrisH> janzert: Should I file an issue?
+2011-09-26T15:14:34  <mleise> ChrisH: It still does that. Nothing changed about this.
+2011-09-26T15:15:09  <berak> ChrisH, take a quick screenshot of the ranking page.. NOW!
+2011-09-26T15:15:32  <ChrisH> mleise: Since the addition of hives the player focus buttons in the visualizer are just grey for me.
+2011-09-26T15:15:54  <janzert> ChrisH: they do look correctly colored here
+2011-09-26T15:15:57  <mleise> Oo on the server?
+2011-09-26T15:16:30  <mleise> This should only happen locally, when the browsers enforce the web security rules.
+2011-09-26T15:16:38  <ChrisH> berak: haha, I have one from the PlanetWars finals where I was #1 for a couple hours.
+2011-09-26T15:16:57  <berak> it can only go down from there..
+2011-09-26T15:17:15  <ChrisH> mleise: yes, on the server. I use FF 3.6.x
+2011-09-26T15:17:26  <mleise> wtf... I have to check that *g*
+2011-09-26T15:17:44  <janzert> mleise: it do see what seems like 'timeout', 'crash' marks in the timeline are getting pushed to the end of the game
+2011-09-26T15:17:54  <janzert> e.g. this game http://antsbeta.janzert.com/visualizer.php?game=383&user=5
+2011-09-26T15:18:19  <janzert> that timeout appears to happen around turn 280
+2011-09-26T15:18:20  <ChrisH> janzert: yeah, I filed an issue on that one yesterday too.
+2011-09-26T15:18:39  <UncleVasya> ChrisH: Do you have the same nick on PlanetWars?
+2011-09-26T15:18:53  <ChrisH> UncleVasya: yes
+2011-09-26T15:19:18  <mleise> ChrisH: FF 3.6.20, doesn't show any change. Did you recently upgrade FF or are u sure it was the game update?
+2011-09-26T15:19:55  <mleise> janzert: The crash/timeout/etc are pushed to the end now, because they are placed at the end of the score list.
+2011-09-26T15:20:06  <mleise> Bots used to produce no new scores when they are dead
+2011-09-26T15:20:22  <McLeopold> so it is a replay issue?
+2011-09-26T15:20:27  <ChrisH> mleise: It used to show colors, and now it doesn't. I have FF 3.6.22, and I can't swear it was the game update, but that's when I noticed it.
+2011-09-26T15:20:30  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-09-26T15:20:37  <mleise> McLeopold: we didn't consider this, yes
+2011-09-26T15:21:12  <McLeopold> the score history can stop short?
+2011-09-26T15:21:19  *** Blkt <Blkt!~user@82.84.154.15> has joined #aichallenge
+2011-09-26T15:21:34  <mleise> ChrisH: FF had problems with the visualizer in 2 other versions, so I am biased ;)
+2011-09-26T15:21:53  <mleise> McLeopold: is that a question? it did stop short.
+2011-09-26T15:21:56  <ChrisH> mleise: I can try chrome if you'd like.
+2011-09-26T15:22:05  <janzert> McLeopold: well the players score could still go down by one after they are eliminated now
+2011-09-26T15:22:19  <mleise> ChrisH: ok, it should work in all other browsers and FF versions
+2011-09-26T15:22:20  <CIA-24> aichallenge: McLeopold epsilon * r74c1985 / ants/ants.py : only add live bots to history - http://git.io/kLstzQ
+2011-09-26T15:23:01  <ChrisH> RE: bot death marks pushed to end:  if you run playgame.py manually it will generate a player death event to stdout mid-game, so that would be a clue that it is a visualizer or game log issue.
+2011-09-26T15:23:05  <McLeopold> janzert: should it go down anyway?  negative bonus?
+2011-09-26T15:23:40  <janzert> if the hill is destroyed after the bot times out, it has to doesn't it?
+2011-09-26T15:23:57  <ChrisH> mleise: colors show in chrome
+2011-09-26T15:24:09  <McLeopold> I'm thinking for bots where all the ants are eliminated
+2011-09-26T15:24:39  <Blkt> good evening everyone
+2011-09-26T15:24:46  <McLeopold> so, elimination, timeout, crash is instant -1 for all hills
+2011-09-26T15:24:48  <janzert> or just go to only adding the self hill scores at the end of the game
+2011-09-26T15:25:11  <janzert> that still seems the cleanest to me
+2011-09-26T15:25:17  <McLeopold> I like the fact that the score history tells you when the events happened
+2011-09-26T15:26:31  <janzert> hmm, ok it seems to complicate the engine if you split when the negative score for the hill being destroyed and the postive score for destroying the hill is handed out though
+2011-09-26T15:26:43  <McLeopold> it does...
+2011-09-26T15:27:04  <McLeopold> but watching your score go down makes more sense
+2011-09-26T15:28:07  <McLeopold> mleise: can you figure out another way to detect the bots participation length?
+2011-09-26T15:28:09  <UncleVasya> Blkt: hi
+2011-09-26T15:28:15  <mleise> Do bots still participate in the game, if they have no ants and no hive storage?
+2011-09-26T15:28:44  <mleise> (otherwise they could timeout after they are eliminated for fact)
+2011-09-26T15:28:47  <janzert> not really, but their score can still change atm
+2011-09-26T15:29:28  <mleise> I currently show when the bot is technically killed by the engine (I think)
+2011-09-26T15:30:01  <mleise> I shouldn't show a timeout at the replay position where it just lost all ants
+2011-09-26T15:30:05  <ChrisH> berak: yeah, I'm enjoying being in the #1 slot for the little bit of time it will last.  Server crashes are my friend right now.  ;)
+2011-09-26T15:30:38  *** delt0r_ <delt0r_!~bob@88-117-34-74.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-09-26T15:31:16  <berak> hihi ;)
+2011-09-26T15:31:52  <berak> and thanks for that go-compiler fix
+2011-09-26T15:32:02  *** mleise <mleise!~marco@dslb-088-071-187-218.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-09-26T15:32:31  *** mleise <mleise!~marco@dslb-088-071-187-218.pools.arcor-ip.net> has joined #aichallenge
+2011-09-26T15:32:56  <mleise> sorry, the power plug slipped out again :-(
+2011-09-26T15:33:12  <ChrisH> berak: my pleasure, this is my project forcing me to use go for something.  Too bad multiple threads aren't allowed, or I'd get to play with go routines too.
+2011-09-26T15:34:24  <berak> yeah not even on gae
+2011-09-26T15:35:02  <ChrisH> berak: It would also be nice if multiple packages were supported, but maybe next time.
+2011-09-26T15:35:07  <McLeopold> @later tell antimatroid multi-hill test on ant paste is working now
+2011-09-26T15:35:07  <contestbot> McLeopold: Yes master!
+2011-09-26T15:35:13  <McLeopold> http://ants.zeroviz.us/GYr5y/
+2011-09-26T15:37:06  <McLeopold> mleise: what do you need for the visualier events to show up properly?
+2011-09-26T15:40:27  <mleise> McLeopold: first we need to define what the event is. currently it is the reason the bot was removed from the game (survived till end, eliminated, crashed, timeout)
+2011-09-26T15:41:06  <mleise> I have to show multiple markers if elimination can happen independently from a timeout or crash
+2011-09-26T15:42:35  *** delt0r_ <delt0r_!~bob@178-190-69-26.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-26T15:42:40  *** dvladim <dvladim!~dvladim@85.113.131.65> has quit IRC (Ping timeout: 258 seconds)
+2011-09-26T15:43:06  <berak> ahh, cool ,got an issue here, see http://ants.zeroviz.us/QoCBQ/,  starwqy won by score, but timed out in the last frame, 1st in the ranks, but the visualizer places it 2nd
+2011-09-26T15:44:18  <ChrisH> berak: it looks like Starwqy timed out in berak turn 278, because his ants stop moving there.
+2011-09-26T15:44:33  <berak> you can't win, when you time out ? still it appeard 1st in the rankings list.
+2011-09-26T15:44:55  <mleise> you can win if you timeout :)
+2011-09-26T15:45:05  <ChrisH> I'm not saying there isn't a problem, just filling in details.
+2011-09-26T15:46:12  <ChrisH> In that game it looks like Clavier gets 4 bonus points for the remaining hives, and gets the #1 spot as a result.
+2011-09-26T15:46:34  <berak> if you look at the replay['ranks'], Starwqy won, viszualiser thinks otherwise
+2011-09-26T15:46:38  <berak> ahh.
+2011-09-26T15:47:07  <berak> got it
+2011-09-26T15:48:30  <mleise> McLeopold: It looks like our programs disagree on ranks ^^
+2011-09-26T15:48:51  <berak> still, the ranks seem to be wrong
+2011-09-26T15:49:36  <mleise> _flag: online?
+2011-09-26T15:49:45  <mleise> propably not with that underscore
+2011-09-26T15:50:05  <berak> no, he's not here
+2011-09-26T15:50:17  <_flag> mleise: yes
+2011-09-26T15:50:18  <ChrisH> Should Starwqy lose a point at the end as well? His score stays 3, even though Clavier gets bonus points for Starwqy's hive.
+2011-09-26T15:50:29  <_flag> But I just happened to look right now
+2011-09-26T15:50:31  <_flag> So you were lucky :)
+2011-09-26T15:51:17  <mleise> berak and _flag: I was the hacker that downloaded /bin/cp. I hope it was a wake-up call and you don't hate me now ;)
+2011-09-26T15:51:29  *** boegel <boegel!~boegel@91.182.100.93> has joined #aichallenge
+2011-09-26T15:51:32  <berak> shure !!
+2011-09-26T15:52:04  <_flag> Okay, no problem, as long as I know nothing happened
+2011-09-26T15:52:56  <mleise> I have to admit that it was amusing to read the chat. Nothing else happened, _flag.
+2011-09-26T15:53:31  <_flag> mleise: Yeah, from reading the code and looking at the logs I was pretty sure nothing else was downloaded
+2011-09-26T15:53:44  <berak> scanned the list down to jbroman, than gave up ;)
+2011-09-26T15:53:55  <_flag> I monitored my system for several hours though just to make sure :P
+2011-09-26T15:54:28  <mleise> _flag: probably run experimental software in a new user account
+2011-09-26T15:55:58  <_flag> mleise: Well I didn't run it as a user that would let you get anything important
+2011-09-26T15:56:06  <_flag> You could've stolen my code though, if that's of any value :)
+2011-09-26T15:56:22  <mleise> oh, that's disappointing
+2011-09-26T15:56:44  <_flag> But you would have to guess the directory, so I'm not sure how much luck you'd have there
+2011-09-26T15:58:37  <berak> just get one up, one up, etc .. until you know where to find /etc
+2011-09-26T16:05:05  *** simshon <simshon!6dba5997@gateway/web/freenode/ip.109.186.89.151> has joined #aichallenge
+2011-09-26T16:07:38  <mleise> berak: You cache the requested files. If I download /index.html, //index.html, ///index.html and so on, I could fill up the cache with the same file, referenced through diefferent names ;)
+2011-09-26T16:08:03  *** olexs <olexs!~Leviathan@drms-4d01503c.pool.mediaWays.net> has joined #aichallenge
+2011-09-26T16:08:35  <berak> hmm, true. better way ?
+2011-09-26T16:08:39  *** Palmik <Palmik!~palmik@man-208-80.pks.muni.cz> has quit IRC (Remote host closed the connection)
+2011-09-26T16:09:36  <mleise> get the physical file and it's canonical name
+2011-09-26T16:10:19  <mleise> so the filesystem would resolve ////index.html to /index.html, and you can go from there (either load that from the cache or add it)
+2011-09-26T16:10:33  <berak> so, before caching it actually ? makes sense.
+2011-09-26T16:10:39  <mleise> yes
+2011-09-26T16:11:15  <berak> more hints ?
+2011-09-26T16:11:29  <mleise> you could also use that name to make sure it is inside the app directory. I didn't see anything else, no :)
+2011-09-26T16:11:52  <_flag> mleise: You could have requested the server configuration, that actually worked
+2011-09-26T16:12:06  <_flag> And everyone's passwords
+2011-09-26T16:12:42  <berak> won't work anymore, i guess.
+2011-09-26T16:12:58  <_flag> You meant after the .. fix?
+2011-09-26T16:14:06  <_flag> mean*
+2011-09-26T16:15:00  <berak> got it the 1st time, but yes, working on getting some other webserver running there
+2011-09-26T16:15:25  <mleise> McLeopold: are you still there? you could add an additional array next to the player status that contains the turns
+2011-09-26T16:15:39  <_flag> Because the passwords and the configuration were downloadable last time regardless of the /../ trick
+2011-09-26T16:16:06  <berak> cool, how ?
+2011-09-26T16:16:41  <_flag> Just by typing in the names into the url
+2011-09-26T16:16:55  <_flag> You had the webserver set to operate in the root directory of the code
+2011-09-26T16:17:05  <_flag> So just typing "main.py" would give you "main.py"
+2011-09-26T16:17:14  <_flag> Same with data/saved_players or whatever it was
+2011-09-26T16:17:30  <berak> was that mcleo's or dhartmei's server ?
+2011-09-26T16:17:52  <_flag> This was the server I tested 2 or 3 days ago
+2011-09-26T16:18:05  <UncleVasya> guys...
+2011-09-26T16:18:06  <berak> k, mine ;(
+2011-09-26T16:18:17  <UncleVasya> InsaneMalkavian has a problem again.
+2011-09-26T16:19:07  <_flag> ;(
+2011-09-26T16:19:55  <CIA-24> aichallenge: janzert epsilon * r7861010 / (worker/engine.py worker/worker.py): More unicode work - http://git.io/2K4ZYw
+2011-09-26T16:19:58  <CIA-24> aichallenge: janzert epsilon * rde02fe6 / ants/ants.py : Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/s7ICQg
+2011-09-26T16:24:21  <janzert> antimatroid: does mapgen create only the maze type maps?
+2011-09-26T16:28:28  <CIA-24> aichallenge: janzert epsilon * r5aa1370 / (5 files): Cleanup extraneous whitespace in map generators - http://git.io/7y3OvA
+2011-09-26T16:30:12  *** amstan <amstan!~amstan@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-26T16:30:12  *** ChanServ sets mode: +o amstan
+2011-09-26T16:33:47  *** berak <berak!~chatzilla@89.204.153.224> has quit IRC (Ping timeout: 256 seconds)
+2011-09-26T16:34:31  *** berak <berak!~chatzilla@89.204.137.194> has joined #aichallenge
+2011-09-26T16:34:52  * janzert doesn't understand why the map format changed
+2011-09-26T16:35:02  *** Hammerok_ <Hammerok_!551aba7b@gateway/web/freenode/ip.85.26.186.123> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T16:36:20  <janzert> especially since it changed to be strictly less capable
+2011-09-26T16:38:17  <CIA-24> aichallenge: janzert epsilon * r5559f1d / ants/mapgen/symmetric_mapgen.py : Cleanup whitespace from a previously missed map generator - http://git.io/0wTgZA
+2011-09-26T16:42:49  *** GeorgeSebastian <GeorgeSebastian!~georgeSeb@unaffiliated/georgesebastian> has quit IRC (Quit: Leaving)
+2011-09-26T16:50:35  <McLeopold> janzert: it's because ants can be on top of hills, so a square sometimes needs to hold 2 pieces of information
+2011-09-26T16:51:33  <McLeopold> technically an owner, an ant bit and a hill bit
+2011-09-26T16:53:32  <janzert> in a map file?
+2011-09-26T16:54:03  <janzert> and even so how does it represent that?
+2011-09-26T16:54:18  <janzert> I thought it just changed from lower case letters to numerals
+2011-09-26T16:56:39  <McLeopold> 0 is a hill, a is ant ant A is ant ant on a hill
+2011-09-26T16:57:06  <McLeopold> dang, I can't type 'an' or 'and' without typing 'ant'
+2011-09-26T16:57:18  <McLeopold> 0=hill, a=ant, A=ant on hill
+2011-09-26T16:57:31  <janzert> hmm, so the current maps are broken since there are no starting ants ;)
+2011-09-26T16:57:54  <McLeopold> no, the game removes all ants and food, then places 1 ant on each hill
+2011-09-26T16:57:55  <janzert> but anyway...
+2011-09-26T16:58:35  <McLeopold> I could add a --scenario flag so it doesn't mess with than, nor does the symmetric check
+2011-09-26T16:59:10  <janzert> it's not something I'm either going to agree with or push to change so I'll shut up now :P
+2011-09-26T16:59:26  <McLeopold> ok, cause it's not changing :)
+2011-09-26T16:59:39  <McLeopold> 10 players was a limit anyway, so it's ok
+2011-09-26T17:00:21  <McLeopold> in fact, test test submission really needs that...
+2011-09-26T17:01:20  *** boegel <boegel!~boegel@91.182.100.93> has quit IRC (Quit: Leaving)
+2011-09-26T17:04:54  *** UncleVasya <UncleVasya!kvirc@178-133-228-47.dialup.umc.net.ua> has quit IRC (Ping timeout: 244 seconds)
+2011-09-26T17:07:12  <ChrisH> the bot death events are no longer pegged to the end of the game, nice
+2011-09-26T17:08:30  <janzert> hmm, does heightmap.py ever actually finish?
+2011-09-26T17:08:55  <janzert> seems to continually throw out maps due to to much area filled in
+2011-09-26T17:11:18  *** berak <berak!~chatzilla@89.204.137.194> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-09-26T17:12:12  <ChrisH> McLeopold: I know this is small, but would it be possible to get the date/time formats consistent on the user profile page?  Presently bot submissions times are formatted differently from game times.
+2011-09-26T17:14:20  <InsaneMalkavian> what does mean "hive"? On replay page. The number of ants ready to be released from hill?
+2011-09-26T17:14:51  <janzert> yes, that's what the section is referring to
+2011-09-26T17:15:48  <InsaneMalkavian> Can we get this info from game state?
+2011-09-26T17:15:50  <ChrisH> speaking of that, are there any plans to provide that number as an input to the bots each turn?
+2011-09-26T17:16:06  *** eashoka <eashoka!70874c49@gateway/web/freenode/ip.112.135.76.73> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T17:16:29  <ChrisH> InsaneMalkavian: It wasn't being sent when I did some testing early this morning.
+2011-09-26T17:16:33  <janzert> InsaneMalkavian: it would be food gathered - food spawned
+2011-09-26T17:16:50  <janzert> I don't believe there is any plan to explicitly send it
+2011-09-26T17:17:04  <janzert> err, food gathered - ants spawned
+2011-09-26T17:17:34  <InsaneMalkavian> ok, thanks
+2011-09-26T17:17:48  <ChrisH> janzert: how does a bot know for sure it gathered any particular food? does it have to resolve conflicted gathering radii itself?
+2011-09-26T17:18:39  <janzert> yes, I believe so
+2011-09-26T17:19:31  <ChrisH> likewise, it would need to keep track of whether an ant on top of a hill was new or one that existed on the prior turn (maybe moved on or off the hive)
+2011-09-26T17:19:49  * janzert nods
+2011-09-26T17:20:04  <ChrisH> and not killed by a battle.
+2011-09-26T17:20:25  <ChrisH> ok, just checking.
+2011-09-26T17:23:01  <CIA-24> aichallenge: janzert epsilon * r96f29a6 / (3 files): Update map generators to use new format - http://git.io/8flQaw
+2011-09-26T17:25:36  *** Blkt <Blkt!~user@82.84.154.15> has quit IRC (Ping timeout: 245 seconds)
+2011-09-26T17:25:50  <McLeopold> janzert: dang, stay out of mapgens :)
+2011-09-26T17:26:05  <McLeopold> now I have to merge
+2011-09-26T17:27:01  <CIA-24> aichallenge: McLeopold epsilon * rebf0801 / (ants/ants.py worker/engine.py): update score history and player turns - http://git.io/p_V60A
+2011-09-26T17:27:01  <CIA-24> aichallenge: McLeopold epsilon * rb0f86fd / (8 files in 2 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/VT40xQ
+2011-09-26T17:27:12  <janzert> it seems your heightmap.py commit in august of "don't remember what changed" broke it
+2011-09-26T17:27:16  <janzert> :}
+2011-09-26T17:27:33  <McLeopold> :) yeah, I was in the middle of stuff
+2011-09-26T17:28:07  <McLeopold> height map is slow, due to lots of bad maps
+2011-09-26T17:28:35  <janzert> that commit was almost certainly conflicting with engine.py not the mapgen stuff
+2011-09-26T17:28:51  <McLeopold> no, it was map.py
+2011-09-26T17:28:56  <McLeopold> no biggy
+2011-09-26T17:29:47  <McLeopold> git stash worked nicely
+2011-09-26T17:30:04  <janzert> ahh, so your change is still uncommited
+2011-09-26T17:30:22  <McLeopold> janzert: so, I need to give a hive status at the beginning of the turn?
+2011-09-26T17:30:34  <janzert> do we?
+2011-09-26T17:30:55  <janzert> it would make bot authors lives easier
+2011-09-26T17:31:08  <janzert> but is information that they can calculate if they really want it
+2011-09-26T17:31:30  <janzert> just the calculation is a tad complex
+2011-09-26T17:31:52  <janzert> I don't have an opinion either way
+2011-09-26T17:32:26  <McLeopold> I'd say yes, I know jeff wants stuff to be easy
+2011-09-26T17:32:26  *** Akranis <Akranis!~Mattias@u193-11-163-114.studentnatet.se> has quit IRC (Quit: Lämnar)
+2011-09-26T17:33:05  <janzert> are you planning at looking into end game conditions again soon?
+2011-09-26T17:33:35  <McLeopold> the cutoff logic?
+2011-09-26T17:33:36  <janzert> http://antsbeta.janzert.com/visualizer.php?game=416&user=5 should have ended about twice as fast as it did
+2011-09-26T17:33:47  <McLeopold> oh
+2011-09-26T17:33:47  <janzert> it seems to be broken yes
+2011-09-26T17:33:48  <McLeopold> hm..
+2011-09-26T17:33:54  <janzert> there are a bunch of examples
+2011-09-26T17:33:57  <McLeopold> bad uri :)
+2011-09-26T17:34:09  <McLeopold> can we add them to a github issue?
+2011-09-26T17:34:43  <janzert> I could start doing that, or I can work on fixing them if you want
+2011-09-26T17:35:44  <McLeopold> so, is it just games where one ant had 90 percent for 150?
+2011-09-26T17:36:18  <janzert> no, I didn't even mean for that to apply on that one
+2011-09-26T17:36:36  <janzert> at turn ~253 the opponents hill is captured
+2011-09-26T17:37:03  <janzert> at that point the rankings cannot change and there is only one ant with a hill left
+2011-09-26T17:37:18  <janzert> either one should have triggered the game end I think
+2011-09-26T17:38:08  <CIA-24> aichallenge: McLeopold epsilon * r339e9c8 / ants/ants.py : fix winning/ranking turn incorrect after last turn change - http://git.io/Zj2CMw
+2011-09-26T17:38:29  <McLeopold> janzert: I'll get that bug
+2011-09-26T17:38:51  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-09-26T17:39:51  *** boegel <boegel!~boegel@91.182.100.93> has joined #aichallenge
+2011-09-26T17:42:48  <janzert> you sure the current heightmap will ever generate a valid map? :P I added a print to show how much area was added when it throws out a map for too much added area. The lowest I've seen is 13% and the cutoff is set at 2%.
+2011-09-26T17:48:46  <McLeopold> janzert: i think it was 1 in 3 that were good, but I can't remember how it ended
+2011-09-26T17:49:12  <McLeopold> don't use it, I had to hand pick the ones for beta as it was
+2011-09-26T17:50:14  <janzert> well, I've watched it try to generate a map for about 10-20 minutes and it's generating them at a rate of about 1 every 5 seconds or so and has yet to get one
+2011-09-26T17:50:32  <janzert> I mean it doesn't even ever output a map
+2011-09-26T17:50:38  <janzert> it justs throws them all out
+2011-09-26T17:51:23  <janzert> I'm surprised I haven't hit a stack depth limit, since it is a recursive call to generate each time it throws one out ;)
+2011-09-26T17:51:45  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-09-26T17:58:59  *** Eruonen <Eruonen!~c@e198153.upc-e.chello.nl> has joined #aichallenge
+2011-09-26T18:00:11  *** onensora <onensora!~c@e198153.upc-e.chello.nl> has quit IRC (Ping timeout: 245 seconds)
+2011-09-26T18:01:21  *** boegel <boegel!~boegel@91.182.100.93> has quit IRC (Quit: Leaving)
+2011-09-26T18:03:18  <McLeopold> janzert: I think I was adding in a rainfall simulation and broke it
+2011-09-26T18:03:49  <janzert> ok, I've given up on it for now :/
+2011-09-26T18:04:03  <janzert> mult hill and old symmetric coming up though
+2011-09-26T18:06:00  <CIA-24> aichallenge: janzert epsilon * refa611d / (35 files in 2 dirs): Some more maps - http://git.io/gf62uQ
+2011-09-26T18:06:01  <CIA-24> aichallenge: janzert epsilon * rf590146 / (ants/ants.py worker/engine.py): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/VIGg1g
+2011-09-26T18:06:52  *** ibdknox_ <ibdknox_!~ibdknox@70-36-146-56.dsl.dynamic.sonic.net> has joined #aichallenge
+2011-09-26T18:07:55  <McLeopold> janzert: oh man, are you ready for the fix for ending games?
+2011-09-26T18:08:12  <janzert> heh, ok
+2011-09-26T18:08:59  <CIA-24> aichallenge: McLeopold epsilon * r1e685fb / ants/ants.py : fix can_rank_change logic - http://git.io/ABv-PA
+2011-09-26T18:08:59  <CIA-24> aichallenge: McLeopold epsilon * r551084d / (35 files in 2 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/q5_ilg
+2011-09-26T18:09:24  <janzert> oops :}
+2011-09-26T18:09:31  <janzert> afk for a while
+2011-09-26T18:09:35  <McLeopold> k
+2011-09-26T18:10:00  <McLeopold> keep the game going if you can beat yourself...
+2011-09-26T18:11:04  <McLeopold> mleise: the playerturns array is in the replay now
+2011-09-26T18:11:13  <McLeopold> janzert: are the workers going to be restarted now?
+2011-09-26T18:14:09  <_flag> Yay, new maps
+2011-09-26T18:14:29  <olexs> what's with the 0 turn games?
+2011-09-26T18:15:49  *** simshon <simshon!6dba5997@gateway/web/freenode/ip.109.186.89.151> has joined #aichallenge
+2011-09-26T18:16:02  *** simshon <simshon!6dba5997@gateway/web/freenode/ip.109.186.89.151> has quit IRC (Quit: Page closed)
+2011-09-26T18:24:02  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-09-26T18:35:03  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: quit)
+2011-09-26T18:37:11  <janzert> hmm, looks like it is choking on the new maps?
+2011-09-26T18:37:25  <janzert> see what happens when the new worker comes up
+2011-09-26T18:43:06  <janzert> McLeopold: ping
+2011-09-26T18:47:08  <CIA-24> aichallenge: janzert epsilon * r6c0c1c8 / worker/worker.py : This should always already be an actual string - http://git.io/UdK4Cg
+2011-09-26T18:47:08  <CIA-24> aichallenge: janzert epsilon * r4cdbf5b / ants/ants.py : Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/1gHifw
+2011-09-26T19:03:10  *** arlequ1 <arlequ1!58aff739@gateway/web/freenode/ip.88.175.247.57> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T19:05:47  <CIA-24> aichallenge: janzert epsilon * rb527a60 / worker/engine.py : Fix bad conversion to string in engine - http://git.io/1Ff0Uw
+2011-09-26T19:08:33  <McLeopold> janzert: pong
+2011-09-26T19:09:56  <janzert> I fixed an engine bug above, but it seems to be creating a bad replay file
+2011-09-26T19:10:00  <janzert> at least I think
+2011-09-26T19:10:07  <janzert> getting the file now to look at
+2011-09-26T19:10:12  <janzert> game 500
+2011-09-26T19:11:16  <janzert> hmm, doesn't look like the game actually played any turns?
+2011-09-26T19:11:56  <McLeopold> olexs mentioned something about 0 turn games?
+2011-09-26T19:12:17  <ChrisH> yeah, i've got three in my profile.
+2011-09-26T19:12:20  <amstan> McLeopold: yes, like this one: http://aichallengebeta.hypertriangle.com/visualizer.php?game=481&user=5&turn=0
+2011-09-26T19:12:21  <janzert> that seemed to be before the worker was restarted, but yes I think it's related
+2011-09-26T19:12:52  <McLeopold> janzert: that fix should probably be applied in 2 other places
+2011-09-26T19:13:47  <xathis> hey guys, i was thining about strategies for multiple hills per player and i might have discovered a flaw
+2011-09-26T19:13:53  <xathis> imagine i get control of an enemy hill but instead of stepping on it i just place two of my ants in attack radius of the hill. so now every other ant my enemy spawns will be directly killed and he has no chance of preventing this. as soon as other enemies approach or the turn limit is over i can still step on the hill and get the points
+2011-09-26T19:14:33  <xathis> what's your opinion on this?
+2011-09-26T19:14:41  <janzert> play_one_game seems to run the game but visualizer then displays an error
+2011-09-26T19:14:56  <olexs> McLeopold: see ny last 3 games, http://antsbeta.janzert.com/profile.php?user=4
+2011-09-26T19:15:05  <amstan> xathis: i think the ants should create a stockpile of ants in the hill to be able to defend it
+2011-09-26T19:15:16  <olexs> all new maps, all finished directly at start. no game played since, that was a while ago
+2011-09-26T19:16:02  <xathis> amstan: but there can only spawn one ant per turn and it would be killed
+2011-09-26T19:21:40  <antimatroid> morning
+2011-09-26T19:24:14  <xathis> McLeopold, janzert: what do you think about the flaw?
+2011-09-26T19:25:11  <antimatroid> xathis: why wouldn't you just take the ant hill out already?
+2011-09-26T19:25:16  <antimatroid> oh wait, yeah hmmm
+2011-09-26T19:25:27  <janzert> put it in your bot and see how it works out
+2011-09-26T19:25:42  <janzert> I'm ambivalent about multiple hills anyway
+2011-09-26T19:26:41  <xathis> i'd love to see multiple hills but i'm sure this idea catches on and than we need a different implementation
+2011-09-26T19:27:10  <xathis> something like being able to sacriface a hill or directly controlling where you want to spawn
+2011-09-26T19:28:28  <antimatroid> McLeopold: have any games run with multiple hills yet?
+2011-09-26T19:28:40  <janzert> not successfully
+2011-09-26T19:28:57  <janzert> I think he's working on it now
+2011-09-26T19:30:13  <antimatroid> hmmm, i just thought of something that does need to change
+2011-09-26T19:30:36  <antimatroid> i don't think i ever checked to make sure i'm not adding the additional hills where they'd be completely surrounded by water
+2011-09-26T19:31:59  <xathis> i thought there couldn't be a land completely surrounded by water at all?
+2011-09-26T19:32:56  <ChrisH> I wonder how a map with two islands separated from each other but both having hives from all players on them would play.
+2011-09-26T19:33:01  <antimatroid> no, but it's not checking to make sure what the type of squares are it's adding hills too, it could add them on top of hills
+2011-09-26T19:33:06  <antimatroid> i have a 2 line fix
+2011-09-26T19:33:28  <xathis> ah okay
+2011-09-26T19:36:32  <McLeopold> xathis: the idea was to allow the bot to control where to spawn, I tried to do that without changing the bot output
+2011-09-26T19:37:20  <janzert> McLeopold: find the problem with games yet?
+2011-09-26T19:37:26  <CIA-24> aichallenge: Nick Ham epsilon * r0288abf / ants/mapgen/mapgen.py : fixed the maze map generator - http://git.io/flceNg
+2011-09-26T19:37:27  <xathis> uhm...okay. i'm curious how this will work
+2011-09-26T19:37:44  <McLeopold> janzert: no, haven't been looking
+2011-09-26T19:38:01  <janzert> oh, guess I better get back to trying to figure it out
+2011-09-26T19:41:15  <antimatroid> McLeopold: what do you think about the idea of adding ant hills for players until the maximum minimum path between enemy ant hills is below a specified maximum?
+2011-09-26T19:41:21  <antimatroid> i can't really think of how else you'd do it nicely
+2011-09-26T19:41:53  <McLeopold> antimatroid: how ever you want to do it
+2011-09-26T19:41:59  <janzert> antimatroid: knock down walls in between them?
+2011-09-26T19:42:22  <antimatroid> janzert: yeah, that's probably harder though still :P
+2011-09-26T19:42:30  <antimatroid> but would allow you to pick how many hills to have better
+2011-09-26T19:42:52  <antimatroid> i'll think about it today, i have to leave for uni in a bit anyway
+2011-09-26T19:45:23  <ChrisH> janzert: I get an error trying to run the visualizer locally after playing a game on a regular (single hive) maze map. Not sure if that helps, but it sounded like the new maps might have been suspected, but they may not be the direct cause.
+2011-09-26T19:45:55  <janzert> yeah, I'm not sure the new maps are actually causing any problem at all. certainly not the only problem
+2011-09-26T19:47:20  <antimatroid> http://ants.zeroviz.us/iC3TC/
+2011-09-26T19:47:32  <antimatroid> they can look a bit weird with 8 player rotational symmetry
+2011-09-26T19:48:56  <antimatroid> http://ants.zeroviz.us/cWckw/ not sure if that many hills is a good idea?
+2011-09-26T19:49:17  <ChrisH> antimatroid: not so weird once you translate it to put one of the rotation points in the center
+2011-09-26T19:49:42  <antimatroid> ChrisH: I randomly translate the rotationally symmetric grids so that it's harder to determine the type of symmetry :)
+2011-09-26T19:50:01  <McLeopold> janzert: the visualizer is complaining about game durations
+2011-09-26T19:50:01  <ChrisH> antimatroid: understood
+2011-09-26T19:50:01  <antimatroid> i guess i could just get it to try and translate the most ants into the center of the map somehow
+2011-09-26T19:50:52  <McLeopold> this is a visualizer/replay issue
+2011-09-26T19:51:31  <antimatroid> umm, is that last map i posted fully connected?
+2011-09-26T19:52:14  <antimatroid> yeah it is, but i think there's 2 regions pretty well separated
+2011-09-26T19:52:26  <janzert> McLeopold: seems to be lines 1373 and 1374 in ants.py where scores are added to the score_history in finish_game
+2011-09-26T19:52:33  <McLeopold> yep
+2011-09-26T19:52:40  <McLeopold> let me think about this...
+2011-09-26T19:52:47  <janzert> ok
+2011-09-26T19:54:26  <CIA-24> aichallenge: McLeopold epsilon * rd41d704 / ants/ants.py : fix game score history length bug - http://git.io/bh3nBQ
+2011-09-26T19:56:16  <amstan> antimatroid, mleise: you guys free in an hour?
+2011-09-26T19:56:35  <amstan> jeff might come by for a meeting about the launch
+2011-09-26T19:56:42  <amstan> well.. he should
+2011-09-26T19:58:20  <janzert> and something is still going wrong on the worker, it's getting 0 length games
+2011-09-26T19:58:45  <janzert> although play_one_game runs normally
+2011-09-26T19:58:47  <McLeopold> might?
+2011-09-26T19:59:14  <McLeopold> janzert: I did see the error, and the fix made a local game display correctly
+2011-09-26T19:59:39  <janzert> yeah, me too locally
+2011-09-26T19:59:48  <janzert> the worker seems to have something else going on
+2011-09-26T19:59:53  <McLeopold> hmm...
+2011-09-26T20:00:00  <McLeopold> you got a screen session?
+2011-09-26T20:00:08  <janzert> there's no error displayed
+2011-09-26T20:00:21  <McLeopold> you can stop it and run with --debug
+2011-09-26T20:00:23  <janzert> but yeah, I'm playing in a screen now
+2011-09-26T20:00:42  <McLeopold> what's the ip?
+2011-09-26T20:01:20  <janzert> 184.73.47.209
+2011-09-26T20:02:04  <janzert> ugh, max_turns is set to 30
+2011-09-26T20:02:08  <janzert> there's one problem
+2011-09-26T20:02:24  <McLeopold> oh, I know what happened
+2011-09-26T20:02:36  <McLeopold> you used add_maps..., but didn't update the max_turns?
+2011-09-26T20:02:45  <janzert> yep, just saw that
+2011-09-26T20:02:48  <McLeopold> the default value is 0 :)
+2011-09-26T20:03:38  <McLeopold> on the bright side, 100 games will go quick so you know to up the turns :P
+2011-09-26T20:03:45  <janzert> heh
+2011-09-26T20:04:00  <McLeopold> okay, I'm out until 6
+2011-09-26T20:04:10  *** McLeopold <McLeopold!~Scott@barracuda.imagesourceinc.com> has left #aichallenge
+2011-09-26T20:06:39  <janzert> there we go
+2011-09-26T20:08:47  <ChrisH> multi_maze_20 is a wild wild west map
+2011-09-26T20:09:44  <olexs> it seems there are spawns on water in it
+2011-09-26T20:09:56  <olexs> hills
+2011-09-26T20:10:53  <janzert> well I think by definition in the map a hill is land, it could be in the midst of water though
+2011-09-26T20:11:03  <janzert> since these were generated before antimatroid last fix
+2011-09-26T20:11:51  <ChrisH> yeah, it doesn't seem to affect proper movement.
+2011-09-26T20:12:30  <olexs> question: will turn_time now stay at 500ms or will it be turned back up to 1s when we go live?
+2011-09-26T20:12:44  <janzert> it's probably going to stay at 500
+2011-09-26T20:14:44  <olexs> ok
+2011-09-26T20:15:55  <antimatroid> amstan: I'm going to be at uni, but I don't think i'm really needed anyway
+2011-09-26T20:16:11  <amstan> antimatroid: just letting you know
+2011-09-26T20:16:16  <antimatroid> yep
+2011-09-26T20:16:17  <amstan> antimatroid: but you're right
+2011-09-26T20:16:17  <mleise> amstan: what did you want to tell me and antimatroid? I'm going to bed now.
+2011-09-26T20:16:28  <antimatroid> ouch on the 500ms
+2011-09-26T20:16:41  <amstan> mleise: if you're interested in participating in a meeting about the launch
+2011-09-26T20:16:58  <amstan> mleise: i don't think we need you, but you might like to take part
+2011-09-26T20:18:18  <mleise> That's ok for me if you do it in a small group. You may get done more with less opinions ;)
+2011-09-26T20:19:39  <amstan> ok
+2011-09-26T20:20:58  <mleise> I'll look at something McLeopold added to get the bot status markers right, tomorrow and fix some bugs or get some minor enhancements into the visualizer.
+2011-09-26T20:21:54  <mleise> And then I'm through with organizing the ant contest. :)
+2011-09-26T20:22:41  <mleise> antimatroid: You use C++, right? Then you should be happy about the advantage of a narrow time window for your turn.
+2011-09-26T20:23:25  <antimatroid> mleise: i'm more interested in people being able to implement cooler strategies, but it's always got to be limited somewhere i suppose
+2011-09-26T20:23:29  <mleise> Imagine someone using a garbage collected language where the GC kicks in, in the middle of a turn calculation ;)
+2011-09-26T20:25:47  <antimatroid> hehe, "if java had real garbage collection it would delete most programs upon execution" my new favourite quote
+2011-09-26T20:27:37  <mleise> that's great, anyway gtg!
+2011-09-26T20:28:11  *** mleise <mleise!~marco@dslb-088-071-187-218.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-09-26T20:28:36  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-09-26T20:52:47  *** nullkuhl <nullkuhl!c4dd1bab@gateway/web/freenode/ip.196.221.27.171> has joined #aichallenge
+2011-09-26T20:58:26  *** Keth <Keth!kwketh@client-86-25-202-182.cht-bng-012.adsl.virginmedia.net> has joined #aichallenge
+2011-09-26T20:58:26  *** Keth_ <Keth_!kwketh@client-86-25-202-182.cht-bng-012.adsl.virginmedia.net> has quit IRC (Read error: Connection reset by peer)
+2011-09-26T21:04:10  <McLeopold> j3camero: ping
+2011-09-26T21:04:18  <McLeopold> janzert: ping
+2011-09-26T21:04:20  <McLeopold> amstan: ping
+2011-09-26T21:04:32  <amstan> McLeopold: pong
+2011-09-26T21:05:12  <janzert> McLeopold: was trying to put together a quick games page, but I have the same error the map page used to have http://antsbeta.janzert.com/games.php
+2011-09-26T21:05:27  <janzert> only one player name is shown in all spots
+2011-09-26T21:05:32  * amstan doesn't see jeff anywhere
+2011-09-26T21:05:39  <amstan> like gtalk
+2011-09-26T21:06:32  <janzert> I'm basically just calling get_game_list_table($page)
+2011-09-26T21:07:20  <McLeopold> janzert: redoing game_list.php is on my todo list for this week
+2011-09-26T21:07:47  <janzert> ok
+2011-09-26T21:07:47  <McLeopold> you should be able to pass in nulls for the criteria and a page 1 to get the first 100 results
+2011-09-26T21:08:14  <janzert> yeah, pretty sure they all default to NULL
+2011-09-26T21:08:17  <McLeopold> but...I may need to switch to the "select_map_game_list" query to prevent dups
+2011-09-26T21:09:07  <McLeopold> amstan: so, did you ever get a response from jeff?  didn't he send out an email to someone?
+2011-09-26T21:09:22  <amstan> McLeopold: i did not get a response
+2011-09-26T21:09:32  <McLeopold> can you text him now?
+2011-09-26T21:09:47  <CIA-24> aichallenge: janzert epsilon * r50f49f2 / website/games.php : Quick page to list server games - http://git.io/pXfBNA
+2011-09-26T21:10:00  <amstan> McLeopold: i don't really have a phone to text him from right now
+2011-09-26T21:10:14  <amstan> if you guys want to:
+2011-09-26T21:10:15  <amstan> @seen j3camero
+2011-09-26T21:10:15  <contestbot> amstan: j3camero was last seen in #aichallenge 13 weeks, 6 days, 22 hours, 10 minutes, and 12 seconds ago: <j3camero> Text me at 416 464 3096.
+2011-09-26T21:11:05  <CIA-24> aichallenge: McLeopold epsilon * r7893e35 / website/game_list.php : prevent duplicate names for game lists with no criteria - http://git.io/sk46XQ
+2011-09-26T21:11:05  <janzert> I'd like to link the games page right below the visualizer on the frontpage but I'll wait till it's working correctly
+2011-09-26T21:11:18  <McLeopold> try that?
+2011-09-26T21:11:24  <janzert> heh, that was quick :)
+2011-09-26T21:11:33  <janzert> yay
+2011-09-26T21:13:31  <olexs> order of maps played doesn't look very random, triple repeats all the time in the last games?
+2011-09-26T21:13:51  <McLeopold> olexs: you're right, I haven't looked at that in months
+2011-09-26T21:13:54  <janzert> shouldn't this game have ended at move 260? http://antsbeta.janzert.com/visualizer.php?game=522
+2011-09-26T21:14:13  <janzert> i.e. as soon as only one player had a hill left?
+2011-09-26T21:14:51  <McLeopold> the scores are wrong for multiple hills, I see negative numbers
+2011-09-26T21:14:58  <jbroman> Woah, you can seal hills?
+2011-09-26T21:15:20  <olexs> jbroman: you pretty much must, that's the only thing you get points for anymore :)
+2011-09-26T21:15:20  <janzert> no, but you can start with more than 1
+2011-09-26T21:15:42  <janzert> ok, depends on what you mean by steal :)
+2011-09-26T21:15:50  <olexs> seal != steal :)
+2011-09-26T21:16:16  <janzert> heh
+2011-09-26T21:17:56  <olexs> the scoring system is not perfect, imo. in that game (522 linked above) red had the only hill left, but since blue got all the hill kills, he gets a higher score. even though red would have eventually taken blue out, having the only hill left on the map
+2011-09-26T21:18:53  <janzert> blue did better than red, even if red would eventually wipe him out
+2011-09-26T21:19:07  <janzert> the objective is not to survive
+2011-09-26T21:19:19  <janzert> the objective is to destroy hills :)
+2011-09-26T21:19:46  <olexs> I see.
+2011-09-26T21:19:59  <janzert> surviving generally helps though :P
+2011-09-26T21:20:07  <olexs> true :)
+2011-09-26T21:20:55  <olexs> I need to implement some explicit hill defence, I fear on open maps my bot won't be as good as in the mazes
+2011-09-26T21:21:13  <ChrisH> You and me both olexs.
+2011-09-26T21:21:39  <janzert> reminds me, I think I'll go make that completely open map
+2011-09-26T21:21:55  <olexs> no water at all? :)
+2011-09-26T21:21:56  <McLeopold> game 522 should have ended sooner
+2011-09-26T21:22:06  <janzert> olexs: right
+2011-09-26T21:22:13  <olexs> janzert: interesting
+2011-09-26T21:22:23  <janzert> just to see what it looks like
+2011-09-26T21:22:29  <janzert> plays like
+2011-09-26T21:22:56  <olexs> no terrain advantages, only formations against formations
+2011-09-26T21:25:51  * amstan just saw jeff login to gmail
+2011-09-26T21:27:59  *** ibdknox_ <ibdknox_!~ibdknox@70-36-146-56.dsl.dynamic.sonic.net> has quit IRC (Remote host closed the connection)
+2011-09-26T21:28:32  *** ibdknox_ <ibdknox_!~ibdknox@70-36-146-56.dsl.dynamic.sonic.net> has joined #aichallenge
+2011-09-26T21:31:27  <amstan> McLeopold, janzert: ok, this needs to be quick
+2011-09-26T21:31:39  <j3camero> Oh nice my screen session is still live.
+2011-09-26T21:31:44  <j3camero> That's convenient.
+2011-09-26T21:31:44  <janzert> hey
+2011-09-26T21:31:48  <j3camero> Hey hey.
+2011-09-26T21:32:00  <j3camero> Can't stay long. Gotta get up early for teh work tomorrow.
+2011-09-26T21:32:25  <janzert> before we launch we need to know if money's and permissions are in place to do so
+2011-09-26T21:32:31  <amstan> j3camero: so, we can launch soon, we have an amazon server going, ready for domain redirection
+2011-09-26T21:32:50  <j3camero> Sweet.
+2011-09-26T21:33:08  *** ibdknox_ <ibdknox_!~ibdknox@70-36-146-56.dsl.dynamic.sonic.net> has quit IRC (Ping timeout: 276 seconds)
+2011-09-26T21:33:14  <janzert> the way I'd like to host the main server would cost ~$250 US if the money is there for it
+2011-09-26T21:33:14  <amstan> j3camero: if you still want to do that non profit stuff, here's my idea
+2011-09-26T21:33:21  <janzert> per month
+2011-09-26T21:33:46  <amstan> j3camero: we could meet next weekend at your place, and get the directors thing going, if jbroman wants to
+2011-09-26T21:33:54  <amstan> j3camero: maybe have a little launch party
+2011-09-26T21:34:03  <j3camero> Hmm this sounds intriguing.
+2011-09-26T21:34:06  <jbroman> I don't believe I'm sufficiently involved at this point to make an appropriate director.
+2011-09-26T21:34:11  <j3camero> Meeting in RL, hehe.
+2011-09-26T21:34:47  <jbroman> Also my being a current Google employee may complicate things.
+2011-09-26T21:34:57  <amstan> jbroman: darn
+2011-09-26T21:35:03  <amstan> jbroman: but we need 3!
+2011-09-26T21:35:06  <jbroman> Also, gathering people from Waterloo, Hamilton and Toronto for a meeting seems impractical. :P
+2011-09-26T21:35:11  <j3camero> At this point I think what I will do is instead of tackling the creation of a non profit, it we'll just operate it the same way as in the past and home for no personal income tax issues.
+2011-09-26T21:35:32  <amstan> i don't mind coming over for that one time
+2011-09-26T21:35:46  <amstan> ok, sounds good then
+2011-09-26T21:37:28  <amstan> j3camero: k, so money? we interrupted janzert
+2011-09-26T21:37:31  <j3camero> Okay, so what do we need... we need money, and permission to use Google's name again. I can advance both these things tomorrow. I will prepare a package to send to the relevant folks at Google and send it. To ensure that I actually do this, I also promise to send said package to the ai contest mailing list. So you'll know when it's been sent.
+2011-09-26T21:38:02  <janzert> great :)
+2011-09-26T21:38:12  <McLeopold> we want to launch Sunday
+2011-09-26T21:38:24  <janzert> shhh :P
+2011-09-26T21:38:25  <McLeopold> in 6 days
+2011-09-26T21:38:57  <McLeopold> well, anyday but sunday, i mean
+2011-09-26T21:39:22  <janzert> hehe
+2011-09-26T21:39:49  <McLeopold> j3camero: can you get that stuff done by Friday?
+2011-09-26T21:41:54  <j3camero> I will get it in the mail tomorrow.
+2011-09-26T21:42:12  <McLeopold> j3camero: do you know how long it will take to get permission?
+2011-09-26T21:42:14  <j3camero> We will see how long it takes to get someone at Google to carry out the concrete steps that it takes to secure funding.
+2011-09-26T21:42:27  <McLeopold> ok
+2011-09-26T21:42:29  <j3camero> The permission should be quicker.
+2011-09-26T21:42:39  <McLeopold> so then, we launch when you say go?
+2011-09-26T21:43:00  <j3camero> I don't imagine them having a problem with the event, given how smoothly and professionally its been in the past.
+2011-09-26T21:43:16  <janzert> also I  would like to run the contest up to christmas break for north american uni's
+2011-09-26T21:43:42  <j3camero> That sounds good to me.
+2011-09-26T21:43:42  <McLeopold> about 3 months?
+2011-09-26T21:43:48  <McLeopold> I like it
+2011-09-26T21:43:50  * amstan can just see the ammount of people we're going to make miserable because they must code bots
+2011-09-26T21:43:54  <j3camero> That will give lots of people a chance to take part.
+2011-09-26T21:44:01  <janzert> which means closing the open portion around the 12th of december and running finals for most or all of that week
+2011-09-26T21:44:01  <amstan> especially near xmas
+2011-09-26T21:44:12  <janzert> 2.5 months about
+2011-09-26T21:44:43  <j3camero> Is there an instance of the site running in a staging area somewhere?
+2011-09-26T21:44:48  <janzert> then they can all brag about their results when they're home on break :P
+2011-09-26T21:44:50  <j3camero> Or someone have a decent dev instance up
+2011-09-26T21:45:02  <janzert> @beta
+2011-09-26T21:45:03  <contestbot> janzert: beta could be http://aichallengebeta.hypertriangle.com/.
+2011-09-26T21:45:25  <j3camero> Can I get an account for that?
+2011-09-26T21:45:40  <amstan> j3camero: go ahead
+2011-09-26T21:45:43  <j3camero> Or do I just make one
+2011-09-26T21:45:43  <amstan> j3camero: or you mean ssh?
+2011-09-26T21:45:44  <j3camero> Nice.
+2011-09-26T21:45:49  <j3camero> Nope just web account.
+2011-09-26T21:46:11  <janzert> we made a semi-major change to the game yesterday, so the people that have been participating for 4+ months of beta shouldn't be too advantaged either :)
+2011-09-26T21:46:18  <amstan> janzert, McLeopold: you guys want to release that server as is, with no more mods, right?
+2011-09-26T21:46:25  <janzert> the objective now is to destroy the most hills
+2011-09-26T21:46:34  <janzert> hmm?
+2011-09-26T21:46:35  <McLeopold> amstan: not quite sure what you mean
+2011-09-26T21:46:44  <amstan> McLeopold: without any more account resets
+2011-09-26T21:46:55  <janzert> no, planning on doing a reset at launch
+2011-09-26T21:47:00  <j3camero> Oh man... this account creation system... all written by hand in PHP...
+2011-09-26T21:47:00  <amstan> again? ok
+2011-09-26T21:47:00  <McLeopold> ^^
+2011-09-26T21:47:02  <janzert> probably build a new server
+2011-09-26T21:47:37  <amstan> j3camero: if i had known we were to take 8 monts to release epsilon i would have been more persistent with django
+2011-09-26T21:49:57  <McLeopold> so, is there anymore agenda items?
+2011-09-26T21:50:10  <amstan> j3camero: party?
+2011-09-26T21:50:23  <j3camero> Amstan I would have a launch party with you.
+2011-09-26T21:50:24  <janzert> not that I can think that we need j3camero for offhand
+2011-09-26T21:50:45  <j3camero> I am just poking at the website.
+2011-09-26T21:50:50  <amstan> j3camero: i can also get computerwiz_222(site designer) in that
+2011-09-26T21:51:24  <j3camero> Just submitted a starter package. However I'm not seeing much feedback on where its at.
+2011-09-26T21:51:30  <j3camero> Are there game servers running?
+2011-09-26T21:51:36  <amstan> they should be
+2011-09-26T21:51:48  <olexs> http://antsbeta.janzert.com/server_stats.php doesn't look like it
+2011-09-26T21:51:49  <McLeopold> j3camero: check your profile page
+2011-09-26T21:51:58  <amstan> 1	2011-09-27 01:49:21	Uploaded: ready to be unzipped and compiled	-			 Unknown
+2011-09-26T21:52:01  <janzert> uh oh, looks like ec2 shut it down
+2011-09-26T21:52:04  <olexs> no games per minute, no workers registered
+2011-09-26T21:52:20  <j3camero> Okay I have one more agenda item.
+2011-09-26T21:52:33  <janzert> spot price must have spiked
+2011-09-26T21:52:38  <McLeopold> janzert: so, should we decide on using a server that will always be up
+2011-09-26T21:52:48  <janzert> well, the main server yes
+2011-09-26T21:52:54  <j3camero> As power users, we tend to focus a lot on tools, rules, specs, and the like. One thing that is an absolute prerequisite that we dont seem to have is decent tutorials.
+2011-09-26T21:52:56  *** aarossig <aarossig!~andrew@216-246-252-177.cpe.distributel.net> has joined #aichallenge
+2011-09-26T21:53:27  <McLeopold> j3camero: My goal this week is to write easy to read tutorials
+2011-09-26T21:53:31  <janzert> McLeopold: which the main server should be now
+2011-09-26T21:53:47  <McLeopold> I know a few others on irc will help vet out the tough stuff
+2011-09-26T21:54:10  <j3camero> The standard in the past has been "a high school student with no programming experience should be able to submit a bot and improve it to some degree". I don't know if we'll get there given that this contest has more involved rules. But we need at least tutorials about how to submit a bot and climb the rankings.
+2011-09-26T21:54:12  <janzert> we could run one worker like that too, but then we could normally run 3 workers for the same price
+2011-09-26T21:54:17  <McLeopold> http://antsbeta.janzert.com/problem_description.php if you look at this page, you can see we will be able to put diagrams and sample games into the spec pages
+2011-09-26T21:54:25  <janzert> so I think the occasional, all workers go down is worth it
+2011-09-26T21:54:39  <j3camero> good idea McLeopold.
+2011-09-26T21:55:29  <j3camero> But yeah we can't talk about launch until we produce an extremely low-attrition process for transforming casual web surfers into contestants. Tutorials are a huge part of that.
+2011-09-26T21:55:44  <McLeopold> ok, good to know
+2011-09-26T21:55:52  <j3camero> Well actually I would be happy with just a few tutorials.
+2011-09-26T21:56:09  <McLeopold> do you care which language?
+2011-09-26T21:56:48  <j3camero> I would insist on C++, Java, Python, or C#. But I can see that its possible to do an amazing job with other languages.
+2011-09-26T21:57:00  <j3camero> I single out those four because they are by far the most popular.
+2011-09-26T21:57:01  <McLeopold> 4 tutorials?
+2011-09-26T21:57:04  <olexs> if I may, I'd have another point. not all starter bots are yet upgraded to support hills, using ones that don't (like Java) might be a lot harder on newcomers
+2011-09-26T21:57:18  <j3camero> Not 4 tutorials. Just any one of those languages. Since almost any programmer can read them with ease.
+2011-09-26T21:58:35  <janzert> olexs: it should be pretty easy for someone to do those updates though, I'm hoping we'll get most all of them this week from contributors
+2011-09-26T21:58:43  <janzert> and even the non-updated ones will still run
+2011-09-26T21:59:02  <janzert> it just won't be as easy for a beginner to make progress with them
+2011-09-26T21:59:09  <j3camero> Okay who wants to pick a launch date? Let's pick a date in two weeks ish and just launch this thang.
+2011-09-26T21:59:29  <j3camero> Google-branded or not. Google-funded or not.
+2011-09-26T21:59:42  <McLeopold> Oct 2
+2011-09-26T21:59:44  <McLeopold> :)
+2011-09-26T21:59:44  <j3camero> Even without Google funding I believe it's possible to run this thing on a shoestring budget.
+2011-09-26T21:59:47  <aarossig> j3camero: what is the connection that we have with google? I have always been curious.
+2011-09-26T21:59:51  <janzert> well, we need funding of some sort
+2011-09-26T21:59:58  <amstan> yeah, idea was for Oct 2
+2011-09-26T22:00:01  <janzert> it's a little too much for me to fund myself ;)
+2011-09-26T22:00:28  <j3camero> Yeah it would be steep.
+2011-09-26T22:00:36  <aarossig> Oct 2 would be cool, I want to put the web design on my resume for some co-op interviews :P
+2011-09-26T22:00:36  <janzert> I can fund the beta server myself for another week or two but beyond that I can't keep it up
+2011-09-26T22:00:41  <McLeopold> j3camero: how do you feel about selling ad space?
+2011-09-26T22:00:41  <j3camero> What did we say the game servers would be? Like $600/mth for three?
+2011-09-26T22:01:21  <amstan> since we're on ads, apparently reddit offers free ads for not for profit things, maybe we can get a bunch on r/programming
+2011-09-26T22:01:33  <aarossig> if the worker is portable, is it possible to donate CPU time? does this violate some kind of rule for the contest?
+2011-09-26T22:01:51  <amstan> aarossig: the workers should be uniform
+2011-09-26T22:01:54  <janzert> workers are ~$125 per and the main server ~$250
+2011-09-26T22:02:01  <olexs> I'll write an article about the contest on a big russian IT blog. The planetwars challenge was pretty popular there.
+2011-09-26T22:02:07  <aarossig> amstan: can we get some help from school maybe?
+2011-09-26T22:02:09  <j3camero> aarossig: I would love to be able to take you up on that. Really. But there's enough people who feel that the workers must be very fair and even.
+2011-09-26T22:02:19  <McLeopold> olexs: wait for amstan to do that
+2011-09-26T22:02:43  <amstan> McLeopold: do what?
+2011-09-26T22:02:49  <McLeopold> make anouncements
+2011-09-26T22:02:53  <olexs> mcleopold: I'm not publishing anything before you launch :)
+2011-09-26T22:02:59  <aarossig> j3camero: understabdable, i had considered the issues associated with using varying systems -- it would be near impossible to benchmark the system to give an accurate time per move that is proportional to available CPU power
+2011-09-26T22:03:18  <amstan> olexs: you can write it and i'll give you a ping when we're launching
+2011-09-26T22:03:29  <olexs> amstan: that'd be great.
+2011-09-26T22:03:43  <j3camero> janzert: supposing that the costs of the contest are somewhere in the range of under $1000/mth, I think that we can go ahead no matter what. That is, we could say its a go right here right now without any further information.
+2011-09-26T22:03:48  <janzert> worker is back, btw
+2011-09-26T22:04:05  <aarossig> j3camero: what if we get one of those gay paypal donate buttons lol
+2011-09-26T22:04:08  <McLeopold> aarossig: on a side note, we need the top header to be shrunk quite a bit
+2011-09-26T22:04:12  <janzert> ok, yes I can keep it less than that for sure
+2011-09-26T22:04:38  <j3camero> Between funding it out of my own pocket and dealing 1 on 1 with the odd person who wants to pitch $100, it shoudl be manageable. I'm just saying this as last-resort kind of thinging. That is, we can pick a launch date now even though we dont yet know how the Google funding will be.
+2011-09-26T22:04:58  <aarossig> we might come across someone who cares about the contest and donates some money to help us out
+2011-09-26T22:05:19  <amstan> j3camero: we still need permission otherwise we'll have to grep for "Google" and remove
+2011-09-26T22:05:27  <j3camero> Yes for sure.
+2011-09-26T22:05:35  <janzert> then let's launch next Sunday evening
+2011-09-26T22:05:43  <aarossig> can someone enlighten me on the Google situation?
+2011-09-26T22:05:57  <McLeopold> aarossig: they are big and in control of EVERYTHING
+2011-09-26T22:05:57  <j3camero> Permission to use the same brand as we have in the past is unlikely to be an issue. But yes I do need to get the formal OK for that.
+2011-09-26T22:06:01  <janzert> oh, that's what we need j3camero for :)
+2011-09-26T22:06:22  <janzert> we'll need you around to do the dns change at that point
+2011-09-26T22:06:26  <aarossig> got it, I thought there was some kind of rumor that google would not allow us to continue using the branding
+2011-09-26T22:06:43  <amstan> aarossig: no, it's just that we have to ping them every time
+2011-09-26T22:06:47  <aarossig> great
+2011-09-26T22:06:59  <j3camero> aarossig: the contest was originally created by the Computer Science Club at Waterloo. Many of the members there have interned at Google including myself and jbroman. So they have pitched us a small bit of money in the past to run the contest servers.
+2011-09-26T22:07:20  <aarossig> j3camero: very cool -- I am understanding now
+2011-09-26T22:07:37  <janzert> I can start bringing the final server up around 6pm EST and it will most likely be ready to go by 9pm at the latest
+2011-09-26T22:08:24  <aarossig> I would love to get a visualizer for web traffic that runs in a terminal -- once the contest is launched we can watch the traffic roll in (something prettier than tail -f access.log)
+2011-09-26T22:08:36  <j3camero> janzert: speaking of what we need j3camero for. Past experience has shown that in year since I started working full time, I have been a terrible day to day manager of this project. This I regret, since I really love the project. Since I want to see it succeed once again, I propose it might be wise to appoint someone else to run it day to day. Someone who can make key decisions in my absense. Just so I don't sink it by being absent for a
+2011-09-26T22:09:20  <janzert> well, we've been able to work most everything out between amstan, McLeopold and myself since June
+2011-09-26T22:09:29  <j3camero> Awesome.
+2011-09-26T22:09:41  <amstan> j3camero: except the parts where money or domain jiggling is required
+2011-09-26T22:09:52  <amstan> that's why we couldn't launch on our own
+2011-09-26T22:09:57  <amstan> and google permissions*
+2011-09-26T22:09:58  <janzert> the only things we can't do are the money, name issues and dns
+2011-09-26T22:10:00  <j3camero> Right right.
+2011-09-26T22:10:50  <aarossig> amstan: I would like to see that task split to two people so that any issus that arise don't have to be put in on a list until they are available
+2011-09-26T22:11:12  <amstan> aarossig: it's 3 ppl so there's no split votes
+2011-09-26T22:11:14  <janzert> look at that j3camero bottom of the rankings :P
+2011-09-26T22:11:17  <aarossig> or worse... something happens and they are simply unable to work on the contest at all -- yeah
+2011-09-26T22:11:25  <j3camero> haha my bot sucks
+2011-09-26T22:11:26  <amstan> lol! j3camero is the dumbest bot
+2011-09-26T22:11:43  <j3camero> Wow I can't believe Reddit hasn't found this beta site. There are people who would kill for another Google AI Challenge.
+2011-09-26T22:11:48  <aarossig> lol
+2011-09-26T22:12:05  <amstan> j3camero: our github got reddited 2 months ago
+2011-09-26T22:12:15  <janzert> well we had over 400 active accounts before the reset yesterady
+2011-09-26T22:12:15  <amstan> j3camero: got a bunch of ppl on irc and stuff
+2011-09-26T22:12:22  <McLeopold> you know who has? baiduspider
+2011-09-26T22:12:22  <j3camero> Haha nice nice.
+2011-09-26T22:12:27  <janzert> and I think the game is much more interesting now :)
+2011-09-26T22:12:41  <amstan> oh yeah.. and such a crappy server we had, it was only $7/month
+2011-09-26T22:12:47  <aarossig> amstan: hey, it worked
+2011-09-26T22:12:48  <j3camero> Okay I will send off some letters tomorrow to shake our tin cup.
+2011-09-26T22:13:03  <a1k0n_> are you getting sponsorship from google this time?
+2011-09-26T22:13:05  <aarossig> amstan: I dare say my pentium 4 server would have been better
+2011-09-26T22:13:07  *** a1k0n_ is now known as a1k0n
+2011-09-26T22:13:30  <amstan> aarossig: in pw the main server was worse than yours
+2011-09-26T22:13:37  <a1k0n> you should have done the contest site in appengine
+2011-09-26T22:13:46  <j3camero> janzert: why would we launch on a Sunday?
+2011-09-26T22:13:53  <amstan> a1k0n: appengine can't really do what we're doing
+2011-09-26T22:14:00  <McLeopold> j3camero: can someone have access to create A records for dns?
+2011-09-26T22:14:01  <a1k0n> yeah, i know.  unless you require everybody to write python.
+2011-09-26T22:14:04  <a1k0n> i was kidding.
+2011-09-26T22:14:06  <aarossig> lol
+2011-09-26T22:14:09  <amstan> a1k0n: they're too limited, only having go and python
+2011-09-26T22:14:16  <janzert> it's just a good time for McLeopold and I to get together to get it rolling
+2011-09-26T22:14:18  <a1k0n> oh there's go?  well, that's all you need
+2011-09-26T22:14:18  <aarossig> amstan: pw?
+2011-09-26T22:14:20  <McLeopold> or can you create some for us? tron.ai-contest.com, pw., ants.
+2011-09-26T22:14:34  <amstan> j3camero: i can handle dns if you want
+2011-09-26T22:14:36  <j3camero> a1k0n: I can do you one better. The google AI Challenge is now a Facebook app. Just like Farmville1
+2011-09-26T22:14:43  <a1k0n> haha.  nooooooooo
+2011-09-26T22:14:44  <aarossig> j3camero: dude, no
+2011-09-26T22:14:48  <aarossig> worse api ever
+2011-09-26T22:14:51  <aarossig> worst*
+2011-09-26T22:14:57  <j3camero> Yeah I got no problem letting people control the domain.
+2011-09-26T22:15:00  <a1k0n> google+ game?
+2011-09-26T22:15:20  <j3camero> amstan, janzert, whoever wants to.
+2011-09-26T22:15:25  <amstan> j3camero: i can do it
+2011-09-26T22:15:29  <j3camero> Yup.
+2011-09-26T22:15:55  <j3camero> Okay so why don't we launch this baby on a Friday night?
+2011-09-26T22:16:12  <amstan> j3camero: yeah, i was lurking on #csc
+2011-09-26T22:16:15  <j3camero> That way the lot of us can actually stay up late into the night should the web server get crushed or other problems hahppen.
+2011-09-26T22:16:16  <amstan> j3camero: uw has a code party
+2011-09-26T22:16:19  <aarossig> j3camero: that would be awesome
+2011-09-26T22:16:28  <amstan> j3camero: on friday
+2011-09-26T22:16:33  <aarossig> amstan: then we don't have to come home early on sunday
+2011-09-26T22:16:48  <amstan> McLeopold: what do you think?
+2011-09-26T22:16:53  <McLeopold> umm...
+2011-09-26T22:17:00  <j3camero> Code party is an awesome time to launch a contest.
+2011-09-26T22:17:08  <j3camero> You could have a live traffic graph up and such.
+2011-09-26T22:17:20  <amstan> j3camero: except only jbroman's at uwaterloo from here
+2011-09-26T22:17:25  <aarossig> j3camero: I was thinking about doing something..... no commitment from me yet though
+2011-09-26T22:17:28  <McLeopold> maybe, if we get the tutorial and starters going
+2011-09-26T22:18:27  <amstan> McLeopold: won't starters be fairly easy? just email everyone that made starters to update their stuff
+2011-09-26T22:18:47  <McLeopold> amstan: yes, starters are easy to update
+2011-09-26T22:19:18  <McLeopold> just reading 'h' lines, storing the info somehow, no logic change
+2011-09-26T22:19:23  <janzert> hmm, I'm not sure how well this Friday will work. I guess if all the permissions come in and it looks like everything else is actually ready I can see how my schedule is looking
+2011-09-26T22:19:52  <j3camero> I was thinking the Friday after next.
+2011-09-26T22:20:00  <j3camero> Very little odds that we will be ready this Friday.
+2011-09-26T22:20:03  <amstan> j3camero: that's no code party then
+2011-09-26T22:20:13  <McLeopold> oh *a* Friday night
+2011-09-26T22:20:26  <janzert> well, if we're not ready by this Friday we probably aren't ready by this Sunday either?
+2011-09-26T22:20:29  <McLeopold> yeah, that feels beter
+2011-09-26T22:20:42  <janzert> but ok, if we can't hit this Sunday I'd be fine with next Friday
+2011-09-26T22:20:55  <j3camero> Why Sunday?
+2011-09-26T22:21:07  <amstan> work during the weekend probably
+2011-09-26T22:21:09  <j3camero> Just so it goes live Monday when there is little traffic?
+2011-09-26T22:21:12  <aarossig> if we go for next friday you give me a little time to think about a realtime traffic visualizer
+2011-09-26T22:21:22  <janzert> that's a good reason too :P
+2011-09-26T22:21:22  <McLeopold> so, the 7th to the 10th I'm going to be gone
+2011-09-26T22:21:33  <amstan> that won't work then
+2011-09-26T22:21:36  <aarossig> damn.
+2011-09-26T22:21:37  <amstan> saturday?
+2011-09-26T22:21:43  <amstan> this one
+2011-09-26T22:22:14  <janzert> I'll be mostly unavailable 12-15th, but hopefully we're launched by then
+2011-09-26T22:22:23  <j3camero> I think less than a week is a bit soon.
+2011-09-26T22:22:55  <j3camero> Janzert how are you Thurs the 13th?
+2011-09-26T22:23:13  <janzert> in the middle of a big show, but I don't know my full schedule for it yet
+2011-09-26T22:23:22  <j3camero> Here's my angle: everyone reads about it on Reddit on Friday morning and afternoon, and starts working on Saturday.
+2011-09-26T22:23:25  <McLeopold> ugg, that's so far away
+2011-09-26T22:23:27  <aarossig> amstan: are we running the current version of apache on the servers?
+2011-09-26T22:23:36  <amstan> aarossig: yes, natty
+2011-09-26T22:23:45  <aarossig> amstan: great, thanks -- i'll use those logs for reference.
+2011-09-26T22:23:48  <amstan> well.. bottom line, if it's not this weekend, then it's the 21st
+2011-09-26T22:23:49  <McLeopold> j3camero: but, it can still be live for 4 days before that?
+2011-09-26T22:24:03  <janzert> amstan or middle of next possibly
+2011-09-26T22:24:13  *** eashoka <eashoka!708743ac@gateway/web/freenode/ip.112.135.67.172> has joined #aichallenge
+2011-09-26T22:24:57  <j3camero> I guess there's no reason not to launch this upcoming weekend, as long as the tutorials are nice and polished by then.
+2011-09-26T22:24:59  <ChrisH> janzert: FYI, the worker is down again
+2011-09-26T22:24:59  <janzert> maybe next Wednesday
+2011-09-26T22:25:13  <j3camero> Does anyone want to commit to a tutorial or two before this Friday?
+2011-09-26T22:25:28  <j3camero> Next Wednesday could work.
+2011-09-26T22:25:49  <janzert> ChrisH: looks like ec2 took it down again, spot prices have been really funky today
+2011-09-26T22:25:56  <janzert> first time in months
+2011-09-26T22:26:11  <McLeopold> maybe it's a yearly cycle?
+2011-09-26T22:26:54  <amstan> antimatroid: wanna make tutorials?
+2011-09-26T22:27:00  <j3camero> Sorry janzert I meant Thursday the 6th of Oct.
+2011-09-26T22:27:10  <j3camero> How do that work for you?
+2011-09-26T22:27:26  <McLeopold> I'm okay with the 6th
+2011-09-26T22:27:38  <janzert> at this point any day except Monday next week should work for me
+2011-09-26T22:27:42  <j3camero> I guess if we launch when the both of us have decent amount of time, then I can get trained up on how to keep it running as well.
+2011-09-26T22:28:14  <janzert> mostly it's just fire and forget
+2011-09-26T22:28:28  <janzert> mostly just code changes break it at this point
+2011-09-26T22:28:52  <ChrisH> janzert: does ec2 bring it back automatically when prices drop again?
+2011-09-26T22:28:52  <j3camero> Okay, so I propose launching in the evening of Thurs, Oct 6, EST. Any reason we shoudl not do this?
+2011-09-26T22:29:11  <janzert> sounds fine with me
+2011-09-26T22:29:44  <amstan> what about the launch party?
+2011-09-26T22:30:02  <j3camero> Between now and then, I will do my best to get the Google brand and a bit of cash for running servers. Event absent either of those, we can still proceed.
+2011-09-26T22:30:07  <janzert> amstan: will you be setting up new forums on the final server?
+2011-09-26T22:30:18  <j3camero> amstan: I will have to coordinate with the CSC to organize a launch party, if they care.
+2011-09-26T22:30:20  <amstan> janzert: yes, i'll also get them updated
+2011-09-26T22:30:25  <janzert> ok
+2011-09-26T22:30:37  <amstan> j3camero: see if jbroman's interested
+2011-09-26T22:30:43  <j3camero> Yeah good idea.
+2011-09-26T22:30:49  <janzert> we could probably close the old ones and point something like planetwars.ai-contest.com at the current site?
+2011-09-26T22:31:09  <amstan> janzert: what size is the old site?
+2011-09-26T22:31:13  <j3camero> Okay guys I am heading to bed. I have to get up at an ungodly hour.
+2011-09-26T22:31:18  <amstan> j3camero: cya
+2011-09-26T22:31:21  <janzert> huge :/
+2011-09-26T22:31:26  <amstan> janzert: yeah.. that's the problem
+2011-09-26T22:31:30  <janzert> I don't remember exactly
+2011-09-26T22:31:34  * janzert nods
+2011-09-26T22:31:52  <amstan> is there a way to remove the games that are not linked on the site anymore?
+2011-09-26T22:32:17  <janzert> I think they're all linked one way or another
+2011-09-26T22:32:24  <amstan> sigh
+2011-09-26T22:32:33  <amstan> how huge are we talking about?
+2011-09-26T22:32:36  <amstan> 10s of GB?
+2011-09-26T22:32:41  <janzert> just sec
+2011-09-26T22:33:06  <janzert> 53GB for the database
+2011-09-26T22:33:19  <amstan> that's with the old leaderboards though
+2011-09-26T22:33:41  <amstan> oh, and games table
+2011-09-26T22:33:42  <amstan> i guess
+2011-09-26T22:33:44  <janzert> games are 50GB
+2011-09-26T22:34:06  <amstan> is archival without games acceptable?
+2011-09-26T22:34:15  <j3camero> Maybe dump the games to some huge compressed text file and create a torrent for it. Then the game replays would just 404 on the site and probably no one cares.
+2011-09-26T22:34:17  <amstan> is there a way to archive the games?
+2011-09-26T22:34:31  <amstan> j3camero: who would seed?
+2011-09-26T22:34:44  <janzert> not currently there isn't
+2011-09-26T22:34:47  <j3camero> Always the problem with torrents, eh.
+2011-09-26T22:34:47  <aarossig> amstan: I volunteer
+2011-09-26T22:34:52  <amstan> aarossig: lol
+2011-09-26T22:34:55  <aarossig> though it will be slow
+2011-09-26T22:35:13  <amstan> aarossig: that's 50 HD episodes..
+2011-09-26T22:35:21  <amstan> aarossig: that you could be storing instead
+2011-09-26T22:35:31  <aarossig> amstan: there is no better feeling that uploading way more than my download on an asynchronous connection
+2011-09-26T22:35:53  <aarossig> amstan: I doubt anyone will ever download it, but if they do I will leave it seeding
+2011-09-26T22:36:28  <amstan> janzert: as long as the old server remains, and i have a place to put the archive server, it should be fairly easy
+2011-09-26T22:37:08  <McLeopold> aren't the replays in the database?
+2011-09-26T22:37:21  <janzert> McLeopold: right, that's why it's 53GB
+2011-09-26T22:37:22  <amstan> McLeopold: i think we moved them out in the middle of the contest last time
+2011-09-26T22:37:26  <janzert> nope
+2011-09-26T22:37:38  <amstan> well, still
+2011-09-26T22:37:39  <janzert> they were only stored in the database for the whole contest
+2011-09-26T22:37:42  <amstan> games without replays are kinda useless
+2011-09-26T22:38:17  <janzert> php served the replay data embedded in the html page with the visualizer
+2011-09-26T22:38:40  <McLeopold> myisampack
+2011-09-26T22:38:51  <amstan> McLeopold: perfect
+2011-09-26T22:38:58  <amstan> that solves the space issue
+2011-09-26T22:39:06  <amstan> what about where to put it?
+2011-09-26T22:39:11  <amstan> main server? buy another server?
+2011-09-26T22:39:28  <janzert> I guess see how big it ends up being
+2011-09-26T22:39:43  <aarossig> I have >700GB available, I would be willing to archive it for a year a least
+2011-09-26T22:39:52  <amstan> janzert: i also want to get tron and rps
+2011-09-26T22:39:53  <janzert> I'd rather stick it on a different server than the current contest main server
+2011-09-26T22:39:54  <aarossig> aarossig: that doesn't mean fast access... but access nonetheless
+2011-09-26T22:40:14  <amstan> aarossig: it's supposed to be reliable though
+2011-09-26T22:40:34  <janzert> it should fairly be low traffic to all the old contests so should be good on a smaller server
+2011-09-26T22:40:35  <aarossig> amstan: well.. i'm about 90% reliable, but your call
+2011-09-26T22:41:51  <amstan> janzert: well, i need someone to buy me a server and i can set all this up nicely
+2011-09-26T22:42:05  <amstan> or maybe i should ask j3camero
+2011-09-26T22:42:32  <janzert> yep, probably as soon as he finds out what sort of funding he has
+2011-09-26T22:49:05  <ChrisH> janzert: earlier we were talking about whether the server should send the bots information about how many ants are in a hive waiting to spawn. This might be really important if the bot has no way to know the order of the hives on a multi hive map.
+2011-09-26T22:49:33  <janzert> you're "spawn queue
+2011-09-26T22:49:37  <janzert> " is global
+2011-09-26T22:49:54  <janzert> i.e. there is one hive, even if you have multiple hills
+2011-09-26T22:50:19  <janzert> I believe thats why the distinction in terminology between hive and hill
+2011-09-26T22:50:38  <ChrisH> ok, I hadn't realized that nuance. but strategically it could matter which hill gets the next spawning ant
+2011-09-26T22:51:07  <janzert> the one last occupied by a friendly ant, so the bot can control where the next spawn happens
+2011-09-26T22:51:15  <janzert> ties are broken randomly
+2011-09-26T22:51:19  <ChrisH> interesting.
+2011-09-26T22:51:55  <ChrisH> but then, why don't they just keep spawning from the same hill, as that would be the last one to have a friendly ant (the previous spawn)
+2011-09-26T22:52:07  <olexs> will only one ant spawn in a turn, or can multiple ants from the hive spawn at once on multiple hills?
+2011-09-26T22:52:18  <janzert> only one spawn per turn
+2011-09-26T22:53:39  <janzert> ChrisH: yeah, without active bot intervention that is what would happen
+2011-09-26T22:54:27  <McLeopold> one spawn per hill per turn
+2011-09-26T22:54:29  <ChrisH> That's not what I see in replays,.
+2011-09-26T22:54:38  <McLeopold> and I have a solution to xathis's delima
+2011-09-26T22:54:47  <xathis> i'm interested
+2011-09-26T22:54:53  <ChrisH> The spawn rotate through each hill in a sequence.
+2011-09-26T22:55:07  <McLeopold> if your ant dies on your own hill, the hill is destroyed
+2011-09-26T22:55:22  <xathis> that's clever
+2011-09-26T22:55:56  <xathis> but what if you put ants not directly in attacking distance but 1 more
+2011-09-26T22:56:25  <janzert> McLeopold: I don't think xathis dilemna works though
+2011-09-26T22:56:46  <xathis> why not?
+2011-09-26T22:56:49  <ChrisH> McLeopold: Doesn't that make destroying a hill too easy?
+2011-09-26T22:56:51  <janzert> so long as the bot steps its ant off the other hill right away the next ant should keep spawning at the safe hill
+2011-09-26T22:57:23  <janzert> and yeah, that fix might be worse than the problem
+2011-09-26T22:57:32  <ChrisH> janzert: Your explanation doesn't match the current implementation.
+2011-09-26T22:57:50  <janzert> hmm, well it's my understanding of the way it was supposed to work
+2011-09-26T22:58:03  <janzert> maybe I got it wrong, McLeopold came up with that mechanic
+2011-09-26T22:58:26  <McLeopold> xathis: then, the hill owner can stay on the hill and prevent spawning
+2011-09-26T22:58:55  *** olexs <olexs!~Leviathan@drms-4d01503c.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-09-26T22:59:10  <McLeopold> janzert: I think you are backwards
+2011-09-26T22:59:12  <xathis> McLeopold: yeah you're right this sounds good
+2011-09-26T22:59:36  <janzert> hmm?
+2011-09-26T22:59:40  *** nullkuhl <nullkuhl!c4dd1bab@gateway/web/freenode/ip.196.221.27.171> has quit IRC (Ping timeout: 252 seconds)
+2011-09-26T22:59:42  <ChrisH> McLeopold: so the squatter alternates killing the ant on top of the hill and standing back.
+2011-09-26T22:59:48  <janzert> it's least recently stepped on that spawns?
+2011-09-26T23:00:18  *** rofer is now known as construction_wor
+2011-09-26T23:00:25  *** construction_wor is now known as rofer
+2011-09-26T23:01:13  <janzert> I think that would make it impossible to stop xathis' attack  then
+2011-09-26T23:01:46  <ChrisH> without a rescue force
+2011-09-26T23:01:55  <janzert> yes
+2011-09-26T23:02:24  <janzert> even if it works I'm not sure how serious of a problem it will be in practice
+2011-09-26T23:02:46  <ChrisH> but under a "xanthis attack" its harder to construct one because your spawn are being siphoned off.
+2011-09-26T23:02:55  <janzert> if it is a real problem I'd rather reverse the spawn order than make a dieing ant on the hill destroy the hill
+2011-09-26T23:03:02  *** antiuni <antiuni!83d90608@gateway/web/freenode/ip.131.217.6.8> has joined #aichallenge
+2011-09-26T23:03:24  <xathis> it's alright. if your enemy has control over your hill you just leace one of your ants on it. So while the enemy isn't attacking the ant, new ants will spawn at other hills. and if he attack it, than your hill is destroyed
+2011-09-26T23:03:32  <xathis> *leave
+2011-09-26T23:04:15  <ChrisH> xathis: that's not good when you have only one hill, now the enemy can destroy your hill even if you have a large reserve in the hive.
+2011-09-26T23:05:18  * janzert nods
+2011-09-26T23:05:28  <xathis> chrisH: that's true, so this should probably not happen with the last hill of any player
+2011-09-26T23:05:35  <McLeopold> who cares about 1 hill, your dead anyway
+2011-09-26T23:05:40  <McLeopold> your ants have to spawn there
+2011-09-26T23:06:02  <janzert> yeah, I'd rather the hive has to be emptied out before the hill can be destroyed at least in the single hill case
+2011-09-26T23:06:41  <McLeopold> the only other solution is to introduce a new order type that let's you specify open hills
+2011-09-26T23:06:50  <ChrisH> I care if I have reinforcements on the way that can drive off two the enemy ants before my hive is emptied.
+2011-09-26T23:07:23  <McLeopold> ChrisH: the point is, the enemy has control of your hill, and you wont be able to save it anyway
+2011-09-26T23:07:25  <ChrisH> Then the bot still has a chance to survie.
+2011-09-26T23:07:44  <janzert> what are the disadvantages of reversing the spawn order to most recent occupied wins?
+2011-09-26T23:08:00  <McLeopold> the hill is effectively dead at that point, we are preventing them from siphoning your hive
+2011-09-26T23:08:10  <janzert> naive bots will all spawn at the same location, but I'm not sure that is a big deal
+2011-09-26T23:08:12  <ChrisH> Sure you can save it.  The enemy has two ants squatting on your last hill, and you have 10 ants 5 spaces away, you could take out the 2 squatters and liberate your hill
+2011-09-26T23:08:14  <McLeopold> janzert: you can't ever switch
+2011-09-26T23:08:35  <janzert> sure you can, stay on the active hill for one turn or step on another one
+2011-09-26T23:08:39  *** ibdknox <ibdknox!~ibdknox@c-98-210-192-192.hsd1.ca.comcast.net> has joined #aichallenge
+2011-09-26T23:08:49  <McLeopold> ChrisH: no, the 2 squaters see you coming and step on the hill
+2011-09-26T23:09:00  <janzert> you've then made that your active hill
+2011-09-26T23:09:13  <janzert> I'm also not opposed to an explicit order by the way
+2011-09-26T23:09:18  <ChrisH> They can't step on it if there are a bunch of ants coming out of it, more than the 5 turns it takes your rescue force to arrive.
+2011-09-26T23:09:42  <McLeopold> ChrisH: 1 ant at a time, you move in at the same distance and don't take a loss
+2011-09-26T23:09:51  <McLeopold> spawn is after battle and raze
+2011-09-26T23:10:08  <janzert> and I'm also still not seeing anything that interesting in multi-hill maps either :}
+2011-09-26T23:10:28  <McLeopold> if the hill has 2 enemies in attack range, and reinforcements are not, the hill is just gone
+2011-09-26T23:10:52  <ChrisH> McLeopold: I'm assuming there are already spawned ants nearby that can force the enemy ants to retreat. I'm not understanding your point.
+2011-09-26T23:10:57  <McLeopold> janzert: we don't have properly mixed hills yet
+2011-09-26T23:11:26  <janzert> I meant the idea in general really
+2011-09-26T23:11:34  <McLeopold> if they are within attack range, the squatters would have died already
+2011-09-26T23:12:26  <ChrisH> McLeopold: Here is my scenario: 100 ants in the hive being killed off one at a time by 2 enemy squatters, with 10 friendly ants within 5 turns of the hill.
+2011-09-26T23:12:31  <janzert> I'd really rather not make it easier to have a hill killed though
+2011-09-26T23:13:04  <janzert> I'd prefer the explicit order or reversing the spawn order of the three
+2011-09-26T23:13:12  <ChrisH> I argue that those 10 friendly ants can kill or drive off the 2 squatters before all 100 ants are dead and (under the current rules) the enemy could step on the hill.
+2011-09-26T23:13:20  <antiuni> janzert: sorry if this has been answered, reading logs, why would the game end if only one bot had a hill left?
+2011-09-26T23:13:27  *** eashoka <eashoka!708743ac@gateway/web/freenode/ip.112.135.67.172> has quit IRC (Quit: Page closed)
+2011-09-26T23:13:28  <antiuni> shouldn't the remaining enemy ants get to try and take that hill out?
+2011-09-26T23:13:53  <smiley1983> is the plan still to give a list of first-time-seen land, like we get for water?
+2011-09-26T23:14:21  <janzert> it's sort of a compromise between completely removing a bot if all of their hills are destroyed and leaving them fully in the game
+2011-09-26T23:14:37  <McLeopold> antiuni: only if the 1 ant with the hill is behind and can actually take the lead
+2011-09-26T23:14:53  <ChrisH> or improve their rank?
+2011-09-26T23:14:55  <McLeopold> ...does the game continue
+2011-09-26T23:15:18  <antiuni> wouldn't it be if the ant without hills can take the lead?
+2011-09-26T23:15:26  <antiuni> as they can score more points by taking out the remaining hill
+2011-09-26T23:15:32  <antiuni> and take points off the bot with a hill
+2011-09-26T23:15:42  <janzert> basically the bots that don't have a hill left can still control their remaining ants and try to win still but they don't get to keep the game continuing on
+2011-09-26T23:16:02  <antiuni> ah okay
+2011-09-26T23:16:37  <McLeopold> ChrisH: so, the xathis delima is that 2 ants can sit at a hill, killing all ants that spawn there without losses.  There is no saving the hill in this situation.  If you had ants close enough, they would be dead already.  If you move to kill them, they can just step on the hill and destroy it.  There is just no saving the hill in that situation.
+2011-09-26T23:16:42  <janzert> McLeopold: if there is only 1 ant with a hill left that ant can't gain any more points
+2011-09-26T23:17:06  <janzert> as soon as there is only one ant with hill(s) the game should end regardless
+2011-09-26T23:17:27  <janzert> it's actually the lone survivor ending
+2011-09-26T23:17:30  <McLeopold> janzert: right, I was thinking of 2 bots left, 1 ant hill left and the current leader has already lost its hill
+2011-09-26T23:17:47  <McLeopold> so it needs to defend until max turns
+2011-09-26T23:17:55  <ChrisH> McLeopold: There is no guarantee that the rescue force is already dead, and how can one of the enemies step on the hill if it is still spawning?
+2011-09-26T23:18:07  <janzert> I'd say the game should still end right away
+2011-09-26T23:18:10  <McLeopold> no the squatters would already be dead
+2011-09-26T23:18:34  <janzert> if the leader lost his hill he lost the position to force the game to continue
+2011-09-26T23:18:46  <ChrisH> Why is that, the rescue force is still 5 turns out of range for killing them.
+2011-09-26T23:18:57  <McLeopold> janzert: but then he can suicide to force a win
+2011-09-26T23:19:08  <janzert> who?
+2011-09-26T23:19:14  <janzert> the leader?
+2011-09-26T23:19:32  <janzert> the guy behind can't catch up anyway
+2011-09-26T23:19:35  <McLeopold> ChrisH: if the rescue force is 5 turns out of range, then the squatters will see the rescue and just step on the hill
+2011-09-26T23:19:43  <janzert> there isn't anything for him to catch up with
+2011-09-26T23:19:45  <McLeopold> the squatters get to destroy the hill no matter what
+2011-09-26T23:20:20  <McLeopold> janzert: if there is a bot with a hill that can still gain in rank, then the game continues, otherwise it ends
+2011-09-26T23:20:21  <ChrisH> McLeopold: but there are still 100 ants in the hive, I didn't think they could step on the hill if it is spawning.  (We're talking about the last hill for the defender here.)
+2011-09-26T23:20:41  <McLeopold> ChrisH:  you can step on a hill at any time, the hive count doesn't matter
+2011-09-26T23:21:00  <McLeopold> ChrisH: one spawn at a hill per turn, after attack and raze
+2011-09-26T23:21:04  <janzert> although it can be very expensive
+2011-09-26T23:21:20  <ChrisH> McLeopold: Oh, that's my misunderstanding.
+2011-09-26T23:21:32  <McLeopold> cool :)
+2011-09-26T23:21:32  <janzert> or maybe not
+2011-09-26T23:21:59  <ChrisH> but move comes before attack, right?
+2011-09-26T23:22:11  <McLeopold> yes
+2011-09-26T23:22:15  <janzert> McLeopold: add an explicit order the bot can give and be done with it :)
+2011-09-26T23:22:45  <McLeopold> janzert: it works, it doesn't change the game hardly at all
+2011-09-26T23:22:49  <janzert> it will probably save us a lot of explaining
+2011-09-26T23:23:01  <McLeopold> if an enemy ant is near your hill, the hill should be gone anyway, you need to defend
+2011-09-26T23:23:11  <ChrisH> let me just play this out one step at a time to make sure I'm clear, (please bear with me)
+2011-09-26T23:23:29  <McLeopold> sry, I really need to go
+2011-09-26T23:23:30  <ChrisH> Assume I have an ant on top of my hill holding in the 100 reserves.
+2011-09-26T23:23:38  <McLeopold> can we put this in a  github issue?
+2011-09-26T23:23:40  <ChrisH> when the two squatters arrive.
+2011-09-26T23:24:11  <ChrisH> we can chat another time
+2011-09-26T23:24:14  <McLeopold> oik
+2011-09-26T23:24:17  *** McLeopold <McLeopold!~Scott@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-09-26T23:29:44  *** amstan_ <amstan_!~alex@69-196-185-243.dsl.teksavvy.com> has joined #aichallenge
+2011-09-26T23:29:44  *** ChanServ sets mode: +o amstan_
+2011-09-26T23:30:51  *** delt0r_ <delt0r_!~bob@178-190-69-26.adsl.highway.telekom.at> has quit IRC (Ping timeout: 256 seconds)
+2011-09-26T23:39:42  <CIA-24> aichallenge: janzert epsilon * r5104ffc / ants/ants.py : Bot must be alive and control a hill to keep the game going - http://git.io/1AKqJg
+2011-09-26T23:39:42  <CIA-24> aichallenge: janzert epsilon * r09273cd / website/game_list.php : Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://git.io/G9evJw
+2011-09-26T23:40:40  <antiuni> McLeopold: I'
+2011-09-26T23:40:48  <antiuni> ll get working on tutorials with you too later if you want
+2011-09-26T23:43:00  *** delt0r_ <delt0r_!~bob@178-191-246-250.adsl.highway.telekom.at> has joined #aichallenge
+2011-09-26T23:44:14  <CIA-24> aichallenge: janzert epsilon * r8f86de3 / website/index.php : Add link to game list on front page - http://git.io/_4-bog
+2011-09-26T23:47:00  *** Cyndre <Cyndre!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Quit: Leaving)
+2011-09-26T23:47:00  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Read error: Connection reset by peer)

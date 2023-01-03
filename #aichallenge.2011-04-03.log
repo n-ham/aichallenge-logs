@@ -1,0 +1,770 @@
+2011-04-03T00:00:18  <antimatroid> people don't need to worry about programming for such a special case and not ending the game if it would result in a lower score
+2011-04-03T00:00:27  <antimatroid> or a higher score for the enemy..
+2011-04-03T00:00:29  <antimatroid> potentially..
+2011-04-03T00:00:50  <antimatroid> the idea is you would still want to go in for the kill
+2011-04-03T00:01:20  <antimatroid> i know it's a very unlikely edge case, but it's fairly easy to say the food bonus goes to the last participating player if there is one and possibly works better? :P
+2011-04-03T00:03:11  <sigh>  sure
+2011-04-03T00:03:41  <sigh> hmm.. at the moment I think I've just got turnsremaining*spawnrate so it won't do anything anyway
+2011-04-03T00:04:37  <antimatroid> ... you should be adding the number of food squares currently on the grid too :)
+2011-04-03T00:04:40  <antimatroid> that will fix it
+2011-04-03T00:05:11  <antimatroid> it would likely be a pretty small bonus unless both armies are small
+2011-04-03T00:05:42  *** stocha <stocha!575a5513@gateway/web/freenode/ip.87.90.85.19> has joined #aichallenge
+2011-04-03T00:05:50  <sigh> both armies?
+2011-04-03T00:05:52  <stocha> what memory can we expect to have ?
+2011-04-03T00:06:09  <antimatroid> well, the dying army has to be small, the winning army might be small too
+2011-04-03T00:06:26  <antimatroid> stocha: wont know until we work out how everything is to be run
+2011-04-03T00:06:32  <antimatroid> i'm not banking on much if we do multiplayer
+2011-04-03T00:07:17  <stocha> will it be more like 1kb or more like 1gb ?
+2011-04-03T00:07:36  <stocha> or somewhere in between ?
+2011-04-03T00:08:28  <stocha> i realize i'm trying to optimize memory. And that could be so wrong :p
+2011-04-03T00:08:32  <antimatroid> i would say 200mb-1gb would be my guess
+2011-04-03T00:08:41  <stocha> okay
+2011-04-03T00:08:44  <antimatroid> maybe less
+2011-04-03T00:08:50  <stocha> anyone think i can bet on 100 mo ?
+2011-04-03T00:08:51  <sigh> 1gb per bot seems excessive
+2011-04-03T00:08:55  <antimatroid> are you doing a tree already?
+2011-04-03T00:09:07  <stocha> no ... but still i'm worrying :p
+2011-04-03T00:09:21  <antimatroid> i'm worried about my tree, i may have to clear state information as i generate
+2011-04-03T00:09:26  <stocha> i'd like to maintain some full int structure for each square   * number of entity
+2011-04-03T00:09:39  <stocha> (ant food, maybe even water i don't know)
+2011-04-03T00:09:45  <stocha> it is starting to add up :p
+2011-04-03T00:10:12  <antimatroid> i have a fair bit of information for each square, and i have a grid of those, which each node in my tree will have
+2011-04-03T00:10:22  <stocha> but i was like maybe we will have only 1mb.
+2011-04-03T00:10:28  <antimatroid> i expect 100mb to be more than enough in the worst case where i clear data as i generate
+2011-04-03T00:10:52  <stocha> if 100 mb is okay i'll be fine up until i do trees i guess.
+2011-04-03T00:10:54  <antimatroid> you shouldn't be getting less than 100mb i don't think
+2011-04-03T00:10:55  <stocha> i hope.
+2011-04-03T00:11:02  <stocha> what will the max map size be ?
+2011-04-03T00:11:03  <sigh> stocha: some of the language run times won't fit in 1 mb :P
+2011-04-03T00:11:15  <antimatroid> stocha: will depend on what we can visualise
+2011-04-03T00:11:22  <antimatroid> people are keen for as large as possible i think
+2011-04-03T00:11:24  <stocha> yeah but that doesn't say much about the memory of the structures :p
+2011-04-03T00:11:44  <antimatroid> maybe i should drop the grid representation
+2011-04-03T00:11:52  <stocha> yeah but with my idea of using int map based on real map size (for simplicity really) i have to know a size limit :p
+2011-04-03T00:12:13  <antimatroid> there will be a limit when the contest starts
+2011-04-03T00:12:20  <antimatroid> or soon after
+2011-04-03T00:12:23  <stocha> if it gets much larger than 128 i'll have to start worrying
+2011-04-03T00:12:26  <antimatroid> until then assume anything
+2011-04-03T00:12:38  <stocha> if it is larger then 512, then i have to really take it into account
+2011-04-03T00:12:42  <antimatroid> i doubt we'd get over 200x200 and i personally don't think that's feasible
+2011-04-03T00:13:12  <antimatroid> we need to also take into consideration the length of games, and allowing games to run long enough to actually play out
+2011-04-03T00:13:13  <stocha> okay so 256x256 will be the definite limit then ?
+2011-04-03T00:13:25  <antimatroid> 200x200 is hard to show and would require fairly lengthy games
+2011-04-03T00:13:33  <stocha> good
+2011-04-03T00:13:33  <antimatroid> stocha: i can give you no definite limit
+2011-04-03T00:13:42  <stocha> have you any authority over the case ?
+2011-04-03T00:13:42  <antimatroid> i am strictly giving you my current opinion on the topic
+2011-04-03T00:13:46  <antimatroid> no i don't
+2011-04-03T00:14:10  <stocha> had you some discussion with any authorities about it ? :p
+2011-04-03T00:14:28  <antimatroid> i'm fairly confident jeff will agree with what i just said
+2011-04-03T00:14:36  <stocha> Still i suppose most will agree that 200+ isn't that good :p
+2011-04-03T00:15:03  <stocha> okay, so i have 100mb and 256x256 max size :p
+2011-04-03T00:15:27  <antimatroid> i think you would be fairly safe taking those as worst case scenarios for the moment
+2011-04-03T00:15:35  <antimatroid> you and i both will need to reevaluate a lot of things otherwise
+2011-04-03T00:15:51  <stocha> mmm i need the length of game and max number of food per game :p
+2011-04-03T00:16:03  <antimatroid> sigh: what's the current spawn
+2011-04-03T00:16:10  <antimatroid> we can't lock a length in now
+2011-04-03T00:16:15  <sigh> current spawn?
+2011-04-03T00:16:19  <antimatroid> rate
+2011-04-03T00:16:21  <stocha> give some max value again
+2011-04-03T00:16:30  <stocha> there should be pretty safe guess.
+2011-04-03T00:16:33  <sigh> 1 food per turn per player
+2011-04-03T00:16:40  <stocha> no starting food ?
+2011-04-03T00:16:40  <antimatroid> length will depend on what allows for a game to play out with the dimensions that are decided upon
+2011-04-03T00:16:52  <sigh> there is starting food
+2011-04-03T00:17:00  <antimatroid> ah yeah, i was going to say otherwise :P
+2011-04-03T00:17:05  <stocha> what will be the limit for starting food ?
+2011-04-03T00:17:07  <sigh> but I would not count on any of that staying the same
+2011-04-03T00:17:16  <sigh> stocha: not part of the specs
+2011-04-03T00:17:19  <antimatroid> sigh: there should always be starting food
+2011-04-03T00:17:36  <sigh> antimatroid: sure, but the amount of starting food is not part of the specs
+2011-04-03T00:17:38  <stocha> i still need a upper limit, for anticipating worst case memory usage.
+2011-04-03T00:17:49  <sigh> stocha: upper limit is all land
+2011-04-03T00:17:58  <stocha> 65535 !
+2011-04-03T00:18:00  <antimatroid> all food*
+2011-04-03T00:18:05  <stocha> that's a lot of ant to care for !
+2011-04-03T00:18:14  <sigh> *all land is food :P
+2011-04-03T00:18:20  <antimatroid> we wont flood the maps, but you are asking for an upper bound
+2011-04-03T00:18:21  <stocha> but then the food per turn would drop i guess :p
+2011-04-03T00:18:22  <sigh> stocha: you asked for an upper limit
+2011-04-03T00:18:22  <antimatroid> that is one
+2011-04-03T00:18:30  <sigh> point is that it is not defined
+2011-04-03T00:18:34  <stocha> that's hell of a upper one :p
+2011-04-03T00:18:49  <sigh> and it won't ever be part of the specs
+2011-04-03T00:19:00  <stocha> so i have to account for 65000 ant
+2011-04-03T00:19:14  <stocha> when i would like to go for like max 2048 :p
+2011-04-03T00:19:26  <antimatroid> you can unofficially bank on the maps not being completely flooded as that would be stupid
+2011-04-03T00:19:32  <sigh> stocha: no, you don't... up to you to decide what you account for
+2011-04-03T00:19:42  <antimatroid> we're just not willing to give a realistic upper bound, that's the point
+2011-04-03T00:19:43  <stocha> :'(
+2011-04-03T00:19:58  <sigh> but you can't rely on there being a fixed answer
+2011-04-03T00:20:27  <stocha> how are people to make bots if they have no informations on anything :p
+2011-04-03T00:20:40  <sigh> stocha: use intelligence :P
+2011-04-03T00:20:43  <stocha> the most lucky one will win. because his bot won't crash.
+2011-04-03T00:20:44  <antimatroid> sigh: might be worth playing around with n in {1,2,3} food squares per player each turn
+2011-04-03T00:20:47  <sigh> that's what it is called AI
+2011-04-03T00:21:06  <stocha> it's not ai, it's memory management guessing.
+2011-04-03T00:21:25  <antimatroid> it wont be that absurd so as to break lots of bots
+2011-04-03T00:21:30  <sigh> stocha: well then wait until the contest has started and the engine is stable
+2011-04-03T00:21:36  <antimatroid> just don't restrict yourself to a really small number of ants per team
+2011-04-03T00:21:43  <stocha> ah you will provide information then ? :)
+2011-04-03T00:21:56  <antimatroid> the engine code will be open source
+2011-04-03T00:21:57  <stocha> i was started to worry that no upper bound was the spec.
+2011-04-03T00:22:02  <sigh> stocha: the engine source code is always available
+2011-04-03T00:22:11  <stocha> it won't change during the ongoing contest ?
+2011-04-03T00:22:26  <sigh> it won't change in the finals
+2011-04-03T00:22:28  <antimatroid> we're hoping to lock things down like that earlier rather than later
+2011-04-03T00:22:36  <antimatroid> but no absolute guarantee
+2011-04-03T00:22:48  <sigh> the only reason it will change is for bugs or to balance the game
+2011-04-03T00:22:53  <sigh> before the finals
+2011-04-03T00:22:59  <stocha> i still have trouble understanding how decision are made :p
+2011-04-03T00:23:22  <antimatroid> decisions are made to try and make the most interesting game both visually and strategically and to allow people to get involved easily
+2011-04-03T00:23:24  <sigh> stocha: ok, ask again after the submissions are open
+2011-04-03T00:23:28  <antimatroid> at least those are my main prioirites
+2011-04-03T00:23:29  <sigh> that's the answer
+2011-04-03T00:23:33  <sigh> it's pointless asking now
+2011-04-03T00:24:00  <antimatroid> we don't even have an official battle resolution and you want the definite upper bound on maximum starting food squares? :P
+2011-04-03T00:24:04  <stocha> yeah i accept the answer of 1 food per ground square.
+2011-04-03T00:24:34  <stocha> but now i ask this new question about my wondering how decision are settled. Not why (to make the game more interesting) but How.
+2011-04-03T00:24:58  <antimatroid> jeff started this, he has the ruling opinion
+2011-04-03T00:25:22  <stocha> So decision are made, whenever jeff state that something should be ?
+2011-04-03T00:25:22  <antimatroid> he is at least willing to listen to peoples opinions and while not necessarily always agreeing with me has a somewhat valid reason for his opinion
+2011-04-03T00:25:26  <antimatroid> so it could be worse
+2011-04-03T00:25:52  <stocha> hey i just want to know the rules. I guess now i have to try to know jeff :p
+2011-04-03T00:26:04  <stocha> Will he be making a bot also ?
+2011-04-03T00:26:21  <antimatroid> it has been said over and over again, the rules are not decided and anyone playing around atm should not expect them to be
+2011-04-03T00:26:29  <stocha> what langage is he comfortagle with ?
+2011-04-03T00:26:34  <antimatroid> he is not allowed to compete, he has server access
+2011-04-03T00:26:52  <sigh> stocha: anyone who has access to the contest servers can't compete
+2011-04-03T00:26:55  <stocha> so you guys antimatroid, mcleopold ans such won't have ?
+2011-04-03T00:27:05  <antimatroid> no
+2011-04-03T00:27:26  <stocha> but will he still make some bots ?
+2011-04-03T00:27:32  <stocha> even if he doesn't compete ?
+2011-04-03T00:27:34  <antimatroid> no, he is quite busy
+2011-04-03T00:27:47  <antimatroid> it wouldn't be as fun when you can't submit it to the final contest
+2011-04-03T00:28:01  <stocha> so he will rely on his lieutenants big time :p
+2011-04-03T00:28:01  <antimatroid> you will have a few thousand other people making bots, i wouldn't sweat it
+2011-04-03T00:28:27  <stocha> do you guys have been knowing him for long ?
+2011-04-03T00:29:02  <stocha> that's assuming the challenge will encounter success :p
+2011-04-03T00:29:16  <stocha> wich probably every people here at the moment hope for.
+2011-04-03T00:30:08  <stocha> mm, okay that's only about 4 gb of memory for the basic structures.
+2011-04-03T00:30:34  <stocha> so i'm stuck with a dice roll i guess :p
+2011-04-03T00:30:56  <stocha> let's try with ant <= 2048 then
+2011-04-03T00:31:59  <stocha> that would give about 140 mb.
+2011-04-03T00:34:31  <sigh> antimatroid: regarding food bonus, why won't it result in a stalemate when there are more than 2 players?
+2011-04-03T00:34:42  <antimatroid> sigh: i thought of that
+2011-04-03T00:34:44  <antimatroid> what then?
+2011-04-03T00:35:19  <sigh> hmm?
+2011-04-03T00:35:20  <antimatroid> i think really in both situations you both want to be in a fight if possible anyway, to score some points
+2011-04-03T00:35:31  <antimatroid> maybe without the food bonus in both instances?
+2011-04-03T00:35:36  <stocha> why add a food bonus then ?
+2011-04-03T00:35:42  <sigh> both situations?
+2011-04-03T00:35:58  <antimatroid> ie. maybe the food bonus shouldn't be given out at the end ever, 2 players or n players
+2011-04-03T00:36:52  <antimatroid> that way we can just have: if the game ends before the maximum number of turns, the winner gets a food bonus which is equal to the remaining number of turns * spawn rate
+2011-04-03T00:37:28  <sigh> ok, why won't that result in a stalemate?
+2011-04-03T00:37:47  <stocha> you give +1 if it does ?
+2011-04-03T00:37:56  <antimatroid> if you can get an ant involved in killing another your points increase
+2011-04-03T00:37:57  <stocha> to the remaining guy
+2011-04-03T00:38:22  <antimatroid> you may not want to fight if you think you are really close on points and not sure who would win
+2011-04-03T00:38:27  <stocha> so the game is about having ant involved in killing one.
+2011-04-03T00:38:29  <antimatroid> but i think that's the same with the food bonus?
+2011-04-03T00:38:48  <antimatroid> really you're going to want to try and score any additonal points
+2011-04-03T00:39:01  <stocha> why ? if you are already winning
+2011-04-03T00:39:06  <sigh> so you are arguing that the food bonus is too small to matter?
+2011-04-03T00:39:08  <antimatroid> you don't know that
+2011-04-03T00:39:10  <stocha> you only have to wait for the game to end.
+2011-04-03T00:39:14  <stocha> ah true.
+2011-04-03T00:39:18  <stocha> but you can guess
+2011-04-03T00:39:20  <antimatroid> sigh: yeah pretty much
+2011-04-03T00:39:28  <sigh> then why have it? :P
+2011-04-03T00:39:30  <stocha> if you can guess how many ant there is in in the game.
+2011-04-03T00:39:36  <antimatroid> sigh: and that the food bonus is meant to encourage you to end the game earlier
+2011-04-03T00:39:39  <antimatroid> the game is over regardless
+2011-04-03T00:39:57  <sigh> if it is too small to matter, why would it encourage the game to end?
+2011-04-03T00:40:04  <antimatroid> defining the food bonus as above, winning there gives you a food bonus, but it's 0
+2011-04-03T00:40:04  <stocha> so the question is : without food bonus will the game take longer.
+2011-04-03T00:40:22  <antimatroid> sigh: we're talking about the turn right as we hit max turns
+2011-04-03T00:40:28  <antimatroid> the game is called off anyway
+2011-04-03T00:40:38  <sigh> stop making that stupid distinction
+2011-04-03T00:40:47  <antimatroid> ?
+2011-04-03T00:40:47  <stocha> why not state that if the game end before turn limit the remaining player always win ?
+2011-04-03T00:40:54  <sigh> there is no difference between a game that ends early and otherwise
+2011-04-03T00:41:05  <sigh> nor should there be
+2011-04-03T00:41:11  <sigh> it just complicates the discussion
+2011-04-03T00:41:26  <antimatroid> my point above was there doesn't need to be
+2011-04-03T00:41:52  <antimatroid> all you need to say is: if the game ends and there is one participating player remaining, they get a food bonus which is the number of turns remaining * spawn rate
+2011-04-03T00:42:17  <antimatroid> if num turns = 0, the food bonus is nothing
+2011-04-03T00:42:35  <sigh> yes, there has never been an argument about that?
+2011-04-03T00:42:35  *** amstan_ <amstan_!~amstan@76-10-134-25.dsl.teksavvy.com> has joined #aichallenge
+2011-04-03T00:42:35  *** ChanServ sets mode: +o amstan_
+2011-04-03T00:43:07  <sigh> I don't see why you ever made that distinction
+2011-04-03T00:43:19  <antimatroid> i started this conversation talking about the food bonus as that specific point :\
+2011-04-03T00:43:45  <sigh> what specific point?
+2011-04-03T00:43:52  <stocha> end of turn limit
+2011-04-03T00:45:08  <sigh> why does that case matter, or why did that case ever matter as a distinct case?
+2011-04-03T00:45:10  <stocha> won't scoring dead ants increase the incentive for defending positions ?
+2011-04-03T00:45:45  <antimatroid> sigh: my original point was wanting to avoid a stalemate there with the current metho
+2011-04-03T00:45:54  <stocha> because attacking my earn a lower ratio
+2011-04-03T00:45:55  <antimatroid> then i thought we came around to the conclusion that i was wrong
+2011-04-03T00:46:00  <sigh> antimatroid: I thought food bonus was always: "turns remaining * spawn rate" or "turns remaining * spawn rate + current food"
+2011-04-03T00:46:43  <antimatroid> sigh: i wasn't aware that the end case had been considered, i'm sure mcleopold and i have talked about it before
+2011-04-03T00:46:55  <antimatroid> probably more me querying him on it like this though
+2011-04-03T00:47:00  <sigh> the end case should never have to be considered!
+2011-04-03T00:47:15  <sigh> it should follow as a trivial extension of the general case
+2011-04-03T00:47:30  <stocha> what make you think that the food bonus will change how people tune their bots.
+2011-04-03T00:47:38  <sigh> I'm confused as to why there was ever a distinction!
+2011-04-03T00:48:12  <stocha> if couting killed ant is fair. Then what use for a food bonus ?
+2011-04-03T00:50:27  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-03T00:50:44  <sigh> antimatroid: anyway, do you agree that there is no need to treat the turnlimit as a special case?
+2011-04-03T00:52:46  *** stocha <stocha!575a5513@gateway/web/freenode/ip.87.90.85.19> has quit IRC (Ping timeout: 252 seconds)
+2011-04-03T00:54:25  <sigh> meh, I have a feeling we've been talking past each other... I guess I don't understand the terminology you guys have been using
+2011-04-03T01:33:51  <antimatroid> sigh: i agree with that
+2011-04-03T01:34:02  <sigh> :)
+2011-04-03T01:34:44  <sigh> antimatroid: ok, to clarify the next point, the current consideration is between: "turns remaining * spawn rate" and "turns remaining * spawn rate + current food"?
+2011-04-03T01:35:13  <antimatroid> i don't mind :P
+2011-04-03T01:35:31  <sigh> what's the current consensus?
+2011-04-03T01:35:50  <antimatroid> it was with + current food
+2011-04-03T01:35:56  <antimatroid> but i don't think it's really been discussed
+2011-04-03T01:36:13  <sigh> i see
+2011-04-03T01:36:48  <sigh> and what change were you proposing to avoid stalemate?
+2011-04-03T01:37:47  <antimatroid> i wasn't sure whether the food bonus was defined at the end of the game like that
+2011-04-03T01:38:27  <antimatroid> it is the obvious way to do it, you're right, but there's a lot of things that i think are obvious that apparently aren't
+2011-04-03T01:38:33  <antimatroid> like using row/col for indexing :P
+2011-04-03T01:38:36  <sigh> :P
+2011-04-03T01:39:34  <sigh> either way, I'm unsure how clarifying the case where there is exactly 1 player at the turn limit helps... that is such a rare edge case?
+2011-04-03T01:40:35  <sigh> I guess my question is, were you brining it up for completeness sake, or because it would change the outcome fundementally?
+2011-04-03T01:48:06  <antimatroid> completeness
+2011-04-03T01:48:14  <antimatroid> i always bring up stupid edge cases like that :P
+2011-04-03T01:48:27  <antimatroid> i get ripped to pieces at uni if i don't check edge cases
+2011-04-03T01:49:39  <sigh> :P
+2011-04-03T01:53:18  <sigh> well, then I guess this is what I'm confused about. If you wanted to give an upper bound on what score could have been achieved by keeping the enemy alive then that would be "turns remaining * spawn rate + current food"... however this seems like such a large bonus that it would encourage stalemates
+2011-04-03T01:53:52  <sigh> so your argument was that it would not be such a large bonus?
+2011-04-03T01:55:36  <antimatroid> i was just trying to make sure people didn't get to some weird edge case and want to not fight just because the game was about to end
+2011-04-03T01:55:44  <antimatroid> like what we had with planet wars
+2011-04-03T01:55:59  <antimatroid> i won quite a few games in the final contest just because i knew to stop taking neutrals from the max turns
+2011-04-03T01:56:12  <antimatroid> like it actually happened more than once for me
+2011-04-03T01:56:22  <antimatroid> which is quite a few for such a seemingly small edge case
+2011-04-03T01:57:44  <antimatroid> ideally i would like max turns to be there just because it needs to be, and not really change the strategy people use as they approach it
+2011-04-03T01:58:20  <sigh> I'm not talking about the edge case anymore... I thought we agreed that would be handled in the obvious way :(
+2011-04-03T01:58:24  <antimatroid> alas that isn't the case with scoring, as if there's lots of players left, people are going to start killing like mad
+2011-04-03T01:58:47  <antimatroid> oh, hmmm sorry :P hang on
+2011-04-03T01:59:18  <antimatroid> i had no argument on that, but i do think it was too large before
+2011-04-03T01:59:26  <antimatroid> i don't mind not including current food
+2011-04-03T01:59:54  <antimatroid> you also need to remember that this player doesn't really know if they're competing with the last remaining bot or another bot for positions
+2011-04-03T02:00:14  <antimatroid> so i think they will go for the food bonus if they have a half decent chance
+2011-04-03T02:00:30  <sigh> hmmm... are you sure?
+2011-04-03T02:01:21  <antimatroid> i don't think the last two remaining bots will necessarily be the top 2 ranking bots
+2011-04-03T02:01:34  <antimatroid> the scoring is based around how much you have participated in the actual battles
+2011-04-03T02:01:53  <sigh> well, the food bonus upsets that :p
+2011-04-03T02:01:56  <antimatroid> i think a half decent "try to survive bot" might make it to the end of quite a few games
+2011-04-03T02:02:06  <antimatroid> yes, but that's just another part of the game
+2011-04-03T02:02:21  <sigh> I thought you didn't want that
+2011-04-03T02:02:32  <sigh> as that leads to stalemates
+2011-04-03T02:02:32  <antimatroid> maybe it should be you get a point for every ant you spawn?
+2011-04-03T02:02:47  <antimatroid> or you get a point for every ant every turn
+2011-04-03T02:02:59  <antimatroid> i don't want that
+2011-04-03T02:03:03  <sigh> I thought about that
+2011-04-03T02:03:10  <antimatroid> my point is that bot wouldn't win, so it's not a good strategy
+2011-04-03T02:03:23  <antimatroid> but if a person makes such a bot, then it may make it to such a situation without winning
+2011-04-03T02:03:36  <antimatroid> and with thousands of bots, there's bound to be plenty of variation
+2011-04-03T02:04:03  <sigh> but food bonus makes a "try to survive bot" strategy valid?
+2011-04-03T02:04:08  <sigh> does it not?
+2011-04-03T02:04:15  <antimatroid> it makes it more valid with the scoring system
+2011-04-03T02:04:24  <antimatroid> where's stocha when i need him
+2011-04-03T02:04:33  <antimatroid> i wouldn't mind having him try out those two other scoring methods above
+2011-04-03T02:04:59  <sigh> two other? how many scoring systems are there?
+2011-04-03T02:05:05  <antimatroid> there is the current one
+2011-04-03T02:05:23  <sigh> current is ""turns remaining * spawn rate"?
+2011-04-03T02:05:23  <antimatroid> then there is 1. you get an point for every ant spawned, 2. you get a point for every live ant every turn
+2011-04-03T02:05:32  <sigh> ah ok
+2011-04-03T02:05:56  <antimatroid> i kind of like 2
+2011-04-03T02:06:08  <antimatroid> although it may discourage fighting
+2011-04-03T02:06:33  <antimatroid> 1. might be better, as you fight for territory to spawn more ants
+2011-04-03T02:06:37  <sigh> 2 exacerbates the problem, you get a HUGE bonus for being the last alive
+2011-04-03T02:07:08  <janzert> just since it hasn't even been mentioned lately, I still prefer inverse order of elimination. ;)
+2011-04-03T02:07:09  <antimatroid> yeah, i don't like 2 30 seconds later
+2011-04-03T02:07:26  <antimatroid> janzert: that is simple
+2011-04-03T02:07:47  <antimatroid> actually, that way scoring doesn't determine what works best out of those various strategies
+2011-04-03T02:07:57  <sigh> (1) is similar to food bonus
+2011-04-03T02:07:57  <antimatroid> what gets you surviving the longest does
+2011-04-03T02:08:09  <antimatroid> whether that's camping, expanding, being catious, being fierce etc.
+2011-04-03T02:08:15  * janzert nods
+2011-04-03T02:08:25  * janzert goes away again
+2011-04-03T02:08:35  <antimatroid> sigh: what do you think about that?
+2011-04-03T02:08:40  <antimatroid> it's dead simple to explain too
+2011-04-03T02:09:25  <sigh> I agree with with what's been said... it is very appealing and the danger is that it leads to a stalemate
+2011-04-03T02:09:45  <antimatroid> yeah i was just running back to my computer to say that :)
+2011-04-03T02:10:06  <antimatroid> but if you don't fight and others expand, then you will be too small to compete
+2011-04-03T02:10:13  <antimatroid> with the fog of war it's hard to tell
+2011-04-03T02:10:36  <sigh> last alive wins, with the rest sorted by score might be a better compromise
+2011-04-03T02:10:49  <antimatroid> i don't think stale mates will be too much of an issue except with small openings where neither play can see an opportunity to do anything without getting pwned
+2011-04-03T02:12:35  <sigh> i think I prefer scoring the losers based on score so that you can't just get 2nd place by camping
+2011-04-03T02:15:23  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-04-03T02:35:26  <antimatroid> sigh: so no food bonus, just if there is one remaining participating player they automatically win?
+2011-04-03T02:35:30  <antimatroid> that's a bit weird
+2011-04-03T02:35:41  <antimatroid> the rest of the results could be wildly different
+2011-04-03T02:36:40  <sigh> not really, it's not that weird... it's the limit at the length of the game approaches infinity :P
+2011-04-03T02:36:58  <antimatroid> i just found another reason for not liking the food bonus
+2011-04-03T02:37:13  <sigh> what's that?
+2011-04-03T02:37:13  <antimatroid> depending on the map, it's going to have a different level of importance
+2011-04-03T02:37:18  <sigh> of course
+2011-04-03T02:37:50  <sigh> and depends on length of the game
+2011-04-03T02:38:10  <antimatroid> although we really need to get some decisions made and get the tournament going
+2011-04-03T02:38:31  <sigh> :P
+2011-04-03T02:38:52  <antimatroid> i'm going to start a wiki tutorial after
+2011-04-03T02:39:16  <antimatroid> atm i'm thinking of sections for path finding, food collection and game trees for battle
+2011-04-03T02:39:42  <antimatroid> this is the "advanced guide" not tutorial sorry
+2011-04-03T02:40:10  <antimatroid> i will do a general basic tutorial, although hopefully people will do a basic one specific to their starter packages
+2011-04-03T02:40:21  <sigh> cool
+2011-04-03T02:40:41  <antimatroid> feel free to give me ideas :P
+2011-04-03T02:41:05  <sigh> I'll be moving to sydney in like 2 weeks so I won't be looking at this stuff much longer :P
+2011-04-03T02:41:33  <antimatroid> yep, fair enough
+2011-04-03T02:41:41  <antimatroid> i'm starting to get busy too
+2011-04-03T02:41:49  <antimatroid> so i'm wanting to get my "committments" done
+2011-04-03T02:41:57  <sigh> not sure what my internet will be like when I get there either :P
+2011-04-03T02:42:01  <sigh> yeah
+2011-04-03T02:43:29  *** phire <phire!~phire@142.248.69.111.dynamic.snap.net.nz> has joined #aichallenge
+2011-04-03T02:48:58  <antimatroid> sigh: couldn't get internet worse than mine
+2011-04-03T02:49:13  <antimatroid> i'm on 1500/256 with a 20gb/month limit D:
+2011-04-03T02:50:06  <phire> antimatroid, switch to a better isp
+2011-04-03T02:50:15  <phire> you can actually get 1TB/month plans
+2011-04-03T02:50:31  <antimatroid> i live in tasmania :P
+2011-04-03T02:50:45  <antimatroid> and i live with my father, who "likes the convenience of one phone/internet bill"
+2011-04-03T02:51:46  <antimatroid> i shouldn't be that far away from being able to get adsl2 at least
+2011-04-03T02:53:40  <phire> well thats one good thing about new zealand, its pretty hard to not get adsl2
+2011-04-03T02:54:24  <phire> its pretty close to nationwide
+2011-04-03T03:08:38  <sigh> antimatroid: then you should offer to pay for internet and upgrade to something decent :P
+2011-04-03T03:09:07  <antimatroid> phire: i do like nz
+2011-04-03T03:09:18  <antimatroid> it's my backup plan if australia keeps going down the same track
+2011-04-03T03:10:02  <antimatroid> sigh: you say that like i ever have any money :P
+2011-04-03T03:10:17  <sigh> ah well, then you can't really complain :)
+2011-04-03T03:18:40  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-04-03T03:23:06  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-04-03T03:25:27  *** amstan_ <amstan_!~amstan@76-10-134-25.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-04-03T03:57:24  *** Frontier <Frontier!~marco@dslb-088-070-136-120.pools.arcor-ip.net> has joined #aichallenge
+2011-04-03T03:59:42  *** delt0r_ <delt0r_!~delt0r@188-22-174-177.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-03T04:01:23  *** delt0r___ <delt0r___!~delt0r@188-22-164-158.adsl.highway.telekom.at> has quit IRC (Ping timeout: 255 seconds)
+2011-04-03T04:08:31  *** antimatroid <antimatroid!~nick@117.236-27-211.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 248 seconds)
+2011-04-03T04:42:03  *** Frontier <Frontier!~marco@dslb-088-070-136-120.pools.arcor-ip.net> has quit IRC (Quit: Leaving.)
+2011-04-03T04:44:31  *** Frontier <Frontier!~Marco@dslb-088-070-136-120.pools.arcor-ip.net> has joined #aichallenge
+2011-04-03T04:47:39  <Frontier> someone proposed to have a list of replays available on the net in form of a json array. it would be generated by a parametrized php. from the last contest we can see that there is interest in downloading all replays that match certain criteria, even if it is only your own games.
+2011-04-03T04:48:21  <phire> sounds like a good idea
+2011-04-03T04:48:25  <Frontier> Maybe it has been discussed here already.
+2011-04-03T04:50:54  <Frontier> I would be interested in the list of games in which a certain bot that is stronger than mine lost, so I can try to figure out a good strategy against it. And (I posted that on gihub already) a 'continue from' parameter, so you never load the complete list just to get a refresh on the last couple of new games.
+2011-04-03T04:51:38  <Frontier> A list of all games played by a Ruby bot or a Python bot seems rather pointless to me though.
+2011-04-03T04:53:01  <phire> but a list of all games played on certain map types would be.
+2011-04-03T04:53:51  <Frontier> you mean a complete list off all games played on symmetrical maps for example?
+2011-04-03T04:55:04  <phire> more percisce, like all maps that have narrow gates between player locations
+2011-04-03T04:56:03  <Frontier> phire: You are asking for quite some backend support here :)
+2011-04-03T04:56:53  <phire> well, I'm pointing out that a large backend might be needed to provide useful information
+2011-04-03T05:00:20  <Frontier> I think it is a very special case you think about. This is more something the players should do themselves then. But some filtering on the server should be in place anayway to avoid high loads.
+2011-04-03T05:01:35  <Frontier> One step is to only provide links in the list of games. Links to the map and the replay as separate entities. This way you can skip replays where the map doesn't match your own criteria
+2011-04-03T05:01:52  <phire> yes
+2011-04-03T05:10:10  <Frontier> Ok, I'll now implement the fullscreen mode in the visualizer correctly (Java standalone version). Unfortunately to get rid of the window decorations you have to let Java free the associated system resources in a separate thread first. That is a bit annoying when you need this to happen instantly. So the best way seems to be to create a new window and move the contents from the normal window into the fullscreen window.
+2011-04-03T05:14:27  *** antimatroid <antimatroid!~nick@81.113-27-211.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-03T05:19:11  <antimatroid> .. what's better to use, a set of a map?
+2011-04-03T05:19:34  <phire> depends
+2011-04-03T05:20:03  <antimatroid> i want to be able to check whether something is in there, iterate through it and delete stuff from it
+2011-04-03T05:21:24  <sigh> that's a set, isn't it?
+2011-04-03T05:23:26  <antimatroid> yes
+2011-04-03T05:23:28  <phire> Sets are guaranteed to perform operations of insertion, deletion, and testing whether an element is in it, in logarithmic time - O(log n).
+2011-04-03T05:23:32  <antimatroid> but i can do it with a map too yes?
+2011-04-03T05:24:34  <sigh> antimatroid: of course, but why would you use a map unless you actually had values associated with each item?
+2011-04-03T05:24:37  <phire> yes
+2011-04-03T05:25:49  <antimatroid> sigh: if they were faster/more efficient
+2011-04-03T05:25:54  <antimatroid> hence my question :P
+2011-04-03T05:25:57  <antimatroid> i'll go with sets
+2011-04-03T05:26:35  <antimatroid> i'm scrapping the "grid" representation for my actual bot
+2011-04-03T05:29:19  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.30> has joined #aichallenge
+2011-04-03T05:35:55  <antimatroid> what are simple straight up changes people can change other than avoiding collisions?
+2011-04-03T05:45:05  <sigh> find food?
+2011-04-03T05:45:31  <phire> and/or enemies
+2011-04-03T05:46:05  <sigh> explore/survey territory
+2011-04-03T05:46:21  <phire> better pathfinding
+2011-04-03T05:59:40  <antimatroid> pathfinding is my starting point for the proper guide
+2011-04-03T06:00:21  <antimatroid> http://pastebin.com/nefyN5i6
+2011-04-03T06:00:35  <antimatroid> that's what i currently have for a "tutorial.txt", i may throw some of that out though
+2011-04-03T06:02:19  <sigh> shouldn't setup stuff be separated from the tutorial?
+2011-04-03T06:02:59  <antimatroid> that's a file i'm planning to just include, i could split it into two i guess
+2011-04-03T06:03:04  <antimatroid> i didn't really want too many .txt files
+2011-04-03T06:03:49  <sigh> they serve quite different purposes
+2011-04-03T06:05:00  <antimatroid> i don't know, anything tutorialish in that is really for people to understand the source more than anything
+2011-04-03T06:05:37  <sigh> not sure what you mean
+2011-04-03T06:06:09  <sigh> have two files, one that answers "how do I run the bot", and another for "how do I improve the bot"
+2011-04-03T06:07:00  <antimatroid> getting_started.txt and getting_better.txt? :P
+2011-04-03T06:08:22  <sigh> "how do I run the bot" should definely be the readme
+2011-04-03T06:08:26  <sigh> *README
+2011-04-03T06:08:29  <antimatroid> yeah true
+2011-04-03T06:08:34  <antimatroid> i'll put that stuff in there
+2011-04-03T06:08:42  <antimatroid> anyway gotta take my brother to the airport, back after
+2011-04-03T06:08:48  <sigh> cya
+2011-04-03T06:16:27  <Frontier> sigh: I'll implement the json replay today or tomorrow, but remain compatible with what we currently have. If someone hates it, which i doubt, I don't have to rewrite the parser.
+2011-04-03T06:16:38  <sigh> :)
+2011-04-03T06:18:29  <sigh> Frontier: also if you haven't already, please look at how visualize_locally.py works in the replay branch and tell me if you think that it is fine
+2011-04-03T06:19:27  <sigh> and that offline.html temaplte is alright
+2011-04-03T06:19:41  <Frontier> is it spelled wether or weather? (the synonym to if)
+2011-04-03T06:20:06  <sigh> whether :P
+2011-04-03T06:21:37  <Frontier> oh thanks ^^. I guess I only have to look at the html template then?
+2011-04-03T06:22:01  <sigh> yeah, just have a look at it and feel free to change it
+2011-04-03T06:22:25  <sigh> if you think something else would be more appropriate :)
+2011-04-03T06:22:26  <Frontier> I can add a section to the ant build.xml to zip it up, but I don't know where amstan wants to put downlods
+2011-04-03T06:22:57  <sigh> yeah, I don't know how everything is going to be distributed
+2011-04-03T06:23:45  <Frontier> ok, you kept the load button and text field
+2011-04-03T06:24:10  <sigh> I made minimal changes to make it work :P
+2011-04-03T06:25:55  <Frontier> Ok, sure. Do you think it is ok, to remove the manual copy&paste option to have the replay in the center?
+2011-04-03T06:26:26  <sigh> I automatically put them into fullscreen mode
+2011-04-03T06:26:34  <sigh> if you look at the onload line
+2011-04-03T06:26:48  <Frontier> :)
+2011-04-03T06:27:24  <Frontier> hacker, that was supposed to be a private method :p
+2011-04-03T06:27:29  <sigh> :D
+2011-04-03T06:27:47  <sigh> then you should have made it private :P
+2011-04-03T06:28:48  <Frontier> It wont work on IE now that I put the whole JavaScript into the applet. Should IE be supported as well?
+2011-04-03T06:29:40  <sigh> is it easy?
+2011-04-03T06:30:57  <Frontier> It requires a browser detection and of course the applet in the distribution (which is equal to distributing the offline java visualizer with some html template and a python script ^^)
+2011-04-03T06:31:24  <sigh> don't you have to do that anyway for the online visualiser?
+2011-04-03T06:32:12  <Frontier> Sure, but imagine you download both the java and html visualizers, just to find the html version includes the java version.
+2011-04-03T06:32:46  <Frontier> Maybe we should just make it clear that IE is not supported by the html only version
+2011-04-03T06:32:49  <sigh> ah... then tell IE users to use the java visualiser directly
+2011-04-03T06:34:14  <Frontier> Ok. I really like how Rhino enabled me to reuse the JavaScript code three times :-)
+2011-04-03T06:34:56  <sigh> :)
+2011-04-03T06:35:27  <sigh> can the java visualiser take input on stdin?
+2011-04-03T06:35:37  <sigh> like can we pipe the engine output to the visualiser?
+2011-04-03T06:35:54  <Frontier> not yet
+2011-04-03T06:37:01  <Frontier> and people will also hate the load time atm. stocha wanted to look into a simple pipe-able visualizer for the streaming format
+2011-04-03T06:37:35  <sigh> I was starting to write a simple ascii one using curses :P
+2011-04-03T06:37:48  <Frontier> since i have no support for that format nor stdin support or the infrastructure to incrementally load replays that seemed like a good idea
+2011-04-03T06:37:48  <sigh> but screen is too small to be any good :(
+2011-04-03T06:38:27  <Frontier> yeah 200x200 looks horrible on a 80x40 display
+2011-04-03T06:40:08  <sigh> :)
+2011-04-03T06:41:29  *** phreeza <phreeza!~phreeza@f049074222.adsl.alicedsl.de> has joined #aichallenge
+2011-04-03T06:44:03  <Frontier> eclipse just switched to an english keyboard layout. how can i revert to german? any ideas? I keep mixing up z and y now :p
+2011-04-03T06:45:18  *** s3my0n <s3my0n!~s3my0n@unaffiliated/s3my0n> has joined #aichallenge
+2011-04-03T06:48:07  *** s3my0n <s3my0n!~s3my0n@unaffiliated/s3my0n> has left #aichallenge ("return 0;")
+2011-04-03T06:49:27  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-03T06:59:25  <phreeza> Frontier: just eclipse or your operating system=
+2011-04-03T06:59:26  <phreeza> ?
+2011-04-03T07:03:59  <Frontier> just eclipse
+2011-04-03T07:04:57  <Frontier> I think it may be some hotkey I'm accidently hitting when I add JavaDoc through Alt+Shift+J
+2011-04-03T07:10:24  <phreeza> ah ok. don't know a lot about eclipse, sorry...
+2011-04-03T07:41:33  <antimatroid> are we still going with starter packages standing alone from the engine/visualiser/tools this time?
+2011-04-03T08:08:36  <antimatroid> i have my third "improvement idea" if i can explain in simple enough terms painting outwards from an ant until finding something attractive then moving towards that
+2011-04-03T08:11:24  <sigh> antimatroid: simpler to iterate over all interesting objects and pick the closest
+2011-04-03T08:12:07  <antimatroid> sigh: that's my second improvement idea
+2011-04-03T08:12:12  <antimatroid> but it ignores water blocking
+2011-04-03T08:12:40  <sigh> ah ok
+2011-04-03T08:13:04  <sigh> then sure... but don't call it painting, just call it breadth-first search
+2011-04-03T08:13:19  <sigh> they'll actually be able to look it up on google that way :P
+2011-04-03T08:13:35  <antimatroid> yeah okay
+2011-04-03T08:13:36  <antimatroid> good point
+2011-04-03T08:26:30  <antimatroid> sigh: http://pastebin.com/8xJBkXaY how about that? :P
+2011-04-03T08:27:48  <sigh> cool
+2011-04-03T08:28:12  <sigh> maybe it should be made language agnostic and put on the wiki?
+2011-04-03T08:28:43  <sigh> and link breadth-first search to the wikipedia page or some other introduction
+2011-04-03T08:29:19  <antimatroid> yeah, i was just thinking it's fairly easy to make that language agnostic
+2011-04-03T08:29:20  <sigh> there's really only one thing in there that is c++ specific :P
+2011-04-03T08:29:28  <antimatroid> yep
+2011-04-03T08:29:49  <sigh> then in the README you can link to the wiki page for the tutorial
+2011-04-03T08:29:49  <antimatroid> then i have a pretty good idea of how to do the more advanced strategy guide
+2011-04-03T08:30:05  <antimatroid> okay, i'll start making those now
+2011-04-03T08:30:12  <sigh> advanced strategy guide should be completely language agnostic
+2011-04-03T08:30:25  <antimatroid> yeah that was always going to be langauge agnostic
+2011-04-03T08:38:09  <antimatroid> sigh: Ants Strategy Guide and Ants Advanced Strategy Guide?
+2011-04-03T08:38:33  <sigh> Tutorial + Strategy Guide
+2011-04-03T08:39:08  <sigh> I don't think the second one will be very advanced :P
+2011-04-03T08:48:30  <antimatroid> it will lead people towards it, but sure :p
+2011-04-03T08:50:25  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Tutorial
+2011-04-03T08:54:09  <Frontier> oh btw sigh: McLeopold said it is up to you to output whatever meta data in the engine.
+2011-04-03T08:54:34  <sigh> Frontier: yeah, he told me that too
+2011-04-03T08:54:38  <sigh> antimatroid: looks good
+2011-04-03T08:55:29  <sigh> antimatroid: my understanding is that all the starter packs have a similar interface? in which case you should be able to reference sepecific functions and such
+2011-04-03T08:55:34  <sigh> just guessing
+2011-04-03T08:55:52  <antimatroid> sigh: I haven't looked at any other starter packages :P
+2011-04-03T08:55:57  <sigh> :)
+2011-04-03T08:56:05  <antimatroid> i just wrote mine early and told others to base it off mine, so hopefully :P
+2011-04-03T09:09:04  <antimatroid> sigh: have you ever played with B*?
+2011-04-03T09:09:12  <sigh> antimatroid: nope
+2011-04-03T09:09:33  <antimatroid> a quick skim of the wiki page has it saying it works will possibly numerous objective locations and for 2 player zero sum games
+2011-04-03T09:09:43  <antimatroid> with*
+2011-04-03T09:11:16  <sigh> might be interesting
+2011-04-03T09:13:21  <antimatroid> i can't really find anything on it :s
+2011-04-03T09:13:32  <antimatroid> the wiki page looks promising though
+2011-04-03T09:14:33  <sigh> my AI book seems to only mentions it in passing
+2011-04-03T09:16:21  <sigh> it mentions the 2 player analogue to A* is SSS*: http://chessprogramming.wikispaces.com/SSS*+and+Dual*
+2011-04-03T09:17:24  <sigh> but it says it is impractical :P
+2011-04-03T09:27:29  *** skynetz <skynetz!~none@unaffiliated/skynetz> has joined #aichallenge
+2011-04-03T09:28:04  *** kissakala <kissakala!~mauri@95.175.118.169> has joined #aichallenge
+2011-04-03T09:28:38  <kissakala> http://www.gratispremium.info/?ref=222530
+2011-04-03T09:30:03  <sigh> Frontier: you there? I'm using this game: http://pastebin.com/gCuQ4XQn and it is giving me this error: http://pastebin.com/jpWS8Swe
+2011-04-03T09:30:08  <phire> from what I've read SSS* is impractical on a 8x8 chess board, where you only make one move per turn
+2011-04-03T09:30:16  <kissakala> Can you click that link? That's not virus or etc. Just harmless link. If you click that I'll be happy :)
+2011-04-03T09:30:29  <phire> we area talking 80x80 board, with hundreds of moves per turn
+2011-04-03T09:31:51  *** phreeza <phreeza!~phreeza@f049074222.adsl.alicedsl.de> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T09:32:14  *** kissakala <kissakala!~mauri@95.175.118.169> has quit IRC (Quit: Lähdössä)
+2011-04-03T09:33:50  *** phreeza <phreeza!~phreeza@f049184067.adsl.alicedsl.de> has joined #aichallenge
+2011-04-03T09:33:54  <sigh> Frontier: figured it out... I was adding another entry to the score list for the food bonus
+2011-04-03T09:33:57  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has joined #aichallenge
+2011-04-03T09:34:20  <sigh> let me know how you want to be given
+2011-04-03T09:34:36  <Frontier> food bonus? what is that
+2011-04-03T09:36:08  <sigh> at the end of the game player might get a bonus added to their score
+2011-04-03T09:36:35  <CIA-90> aichallenge: sigh epsilon * re5af6f3 / (5 files in 4 dirs): Merge branch 'replay' into epsilon - http://bit.ly/eehCoT
+2011-04-03T09:36:41  <CIA-90> aichallenge: sigh epsilon * ra2ea3b8 / ants/ants.py : Make food bonus score update work with current visualizer - http://bit.ly/fyC9Gl
+2011-04-03T09:36:42  <CIA-90> aichallenge: sigh epsilon * r1454faa / ants/visualizer/.gitignore : Add replay.html to gitignore - http://bit.ly/eUw8ED
+2011-04-03T09:36:46  <CIA-90> aichallenge: sigh epsilon * r0e1ff7f / worker/sandbox.py : Wait for children to actually die after sending them SIGKILL - http://bit.ly/g2nx95
+2011-04-03T09:37:52  <sigh> Frontier: I made it work for now
+2011-04-03T09:38:09  <Frontier> well, you cannot just add an extra turn to the scores :p
+2011-04-03T09:38:22  <sigh> yeah... apparently not :P
+2011-04-03T09:39:16  <sigh> that's probably what should happen, but we'll talk about that after the bonus stuff is sorted out :)
+2011-04-03T09:42:30  <antimatroid> https://github.com/aichallenge/aichallenge/wiki/Ants-Strategy-Guide
+2011-04-03T09:42:39  <antimatroid> in making, feel free to give me ideas anyone :P
+2011-04-03T09:44:32  <sigh> I hate how the wiki indents the first line of a code block
+2011-04-03T09:46:13  <antimatroid> so do i
+2011-04-03T09:46:20  <antimatroid> i think i hate it more than you :P
+2011-04-03T09:46:26  <antimatroid> given i have edited the pages so much
+2011-04-03T09:46:47  <sigh> :P
+2011-04-03T09:46:59  <antimatroid> that and lack of contents
+2011-04-03T09:47:06  <antimatroid> worst part about github wikis
+2011-04-03T09:47:13  <sigh> yeah
+2011-04-03T09:52:59  <sigh> is there anyone around who knows about sandbox.py?
+2011-04-03T09:54:11  <antimatroid> janzert ^? :P
+2011-04-03T10:02:11  <sigh> time to sleep!
+2011-04-03T10:02:28  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-03T10:10:44  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-03T10:12:13  *** boegel <boegel!~boegel@vpnr086.ugent.be> has joined #aichallenge
+2011-04-03T10:27:54  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-03T10:27:55  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-04-03T10:44:39  *** p4p4p5 <p4p4p5!~chatzilla@82.113.106.30> has quit IRC (Ping timeout: 255 seconds)
+2011-04-03T10:46:04  *** Stocha <Stocha!575a5513@gateway/web/freenode/ip.87.90.85.19> has joined #aichallenge
+2011-04-03T11:31:03  <Stocha> I saw in the log that maybe i was working on some format.
+2011-04-03T11:31:59  <Stocha> <Frontier> and people will also hate the load time atm. stocha wanted to look into a simple pipe-able visualizer for the streaming format
+2011-04-03T11:33:01  <Stocha> as i was under the impression that a lot of people were working efficiently on those issues, i didn't really investigated further.
+2011-04-03T11:33:19  <Stocha> I'm not sure i understand what frontier means by that phrase also :p
+2011-04-03T11:39:10  *** Stocha <Stocha!575a5513@gateway/web/freenode/ip.87.90.85.19> has quit IRC (Quit: Page closed)
+2011-04-03T11:41:24  <Frontier> lol, ok. in that case I'll have to work faster, not smarter ^^
+2011-04-03T11:42:36  *** choas <choas!~lars@p578F69E2.dip.t-dialin.net> has joined #aichallenge
+2011-04-03T11:54:15  *** Heulsay <Heulsay!~heulsay@24-230-200-75.tr.cgocable.ca> has joined #aichallenge
+2011-04-03T11:59:47  *** delt0r___ <delt0r___!~delt0r@188-22-168-71.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-03T12:01:28  *** delt0r_ <delt0r_!~delt0r@188-22-174-177.adsl.highway.telekom.at> has quit IRC (Ping timeout: 260 seconds)
+2011-04-03T12:07:52  *** boegel_ <boegel_!~boegel@91.182.217.104> has joined #aichallenge
+2011-04-03T12:10:11  *** boegel <boegel!~boegel@vpnr086.ugent.be> has quit IRC (Ping timeout: 248 seconds)
+2011-04-03T12:15:55  *** boegel_ <boegel_!~boegel@91.182.217.104> has quit IRC (Quit: Leaving)
+2011-04-03T12:24:37  *** kaemo <kaemo!~mad5ci@dbn176.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-04-03T12:37:57  *** amstan_ <amstan_!~amstan@76-10-134-25.dsl.teksavvy.com> has joined #aichallenge
+2011-04-03T12:37:57  *** ChanServ sets mode: +o amstan_
+2011-04-03T12:39:26  *** amstan_ <amstan_!~amstan@76-10-134-25.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-04-03T13:44:14  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.55> has joined #aichallenge
+2011-04-03T13:58:50  *** choas <choas!~lars@p578F69E2.dip.t-dialin.net> has quit IRC (Quit: leaving)
+2011-04-03T14:00:24  <CIA-90> aichallenge: Marco Leise master * r18d7dec / (23 files in 5 dirs): visualizer: fixed ant script on Windows / fixed fullscreen mode on Windows / fixed applet crashes - http://bit.ly/g7O4cM
+2011-04-03T14:09:58  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-04-03T14:18:50  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has joined #aichallenge
+2011-04-03T14:38:42  *** Frontier <Frontier!~Marco@dslb-088-070-136-120.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-03T14:40:30  *** Frontier <Frontier!~marco@dslb-088-070-136-120.pools.arcor-ip.net> has joined #aichallenge
+2011-04-03T14:49:00  *** amstan_ <amstan_!~amstan@76-10-134-25.dsl.teksavvy.com> has joined #aichallenge
+2011-04-03T14:49:00  *** ChanServ sets mode: +o amstan_
+2011-04-03T14:49:44  *** amstan <amstan!~alex@76-10-134-25.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-04-03T14:49:56  *** amstan_ is now known as amstan
+2011-04-03T14:50:24  <CIA-90> aichallenge: Marco Leise epsilon * r18d7dec / (23 files in 5 dirs): visualizer: fixed ant script on Windows / fixed fullscreen mode on Windows / fixed applet crashes - http://bit.ly/g7O4cM
+2011-04-03T14:50:26  <CIA-90> aichallenge: Marco Leise epsilon * ra099b14 / (23 files in 5 dirs): Merge branch 'master' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/freEes
+2011-04-03T14:57:33  <amstan> what's with the branches?
+2011-04-03T14:57:58  <amstan> Frontier: did you push master?
+2011-04-03T15:01:51  <CIA-90> aichallenge: Alexandru Stan epsilon * r683ce4b / (14 files in 3 dirs): Merge branch 'epsilon' of https://github.com/Naktibalda/aichallenge into epsilon - http://bit.ly/ghocuu
+2011-04-03T15:02:59  <CIA-90> aichallenge: Alexandru Stan epsilon * r228eea6 / (3 files): Merge remote branch 'tjc/perlbotfixes' into epsilon - http://bit.ly/dQT4i0
+2011-04-03T15:03:23  <CIA-90> aichallenge: Alexandru Stan epsilon * r0a8720b / (8 files): Merge remote branch 'synesso/epsilon' into epsilon - http://bit.ly/dUnRDl
+2011-04-03T15:03:42  *** Eruonen <Eruonen!onensora@546BEF4A.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-03T15:06:21  *** fgump <fgump!~gump@188.74.82.177> has quit IRC (Quit: Leaving)
+2011-04-03T15:14:47  <CIA-90> aichallenge: Marco Leise epsilon * r26ce1aa / (2 files in 2 dirs): standalone visualizer can read stdin / fixed download bug in build.xml - http://bit.ly/ehSvbS
+2011-04-03T15:14:49  <CIA-90> aichallenge: Marco Leise epsilon * rd3de275 / (25 files in 5 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/i5rVVb
+2011-04-03T15:16:41  <Frontier> amstan: I accidently pushed to master when I was on windows. Don't know how that happened.
+2011-04-03T15:18:22  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has quit IRC ()
+2011-04-03T15:18:33  <Frontier> I pulled master on Linux then and it listed only visualizer files, so I pushed that to epsilon again.
+2011-04-03T15:19:00  <amstan> Frontier: ok, cool
+2011-04-03T15:19:29  <Frontier> amstan: your comment on the json feed... have you read the other comments?
+2011-04-03T15:19:37  <amstan> Frontier: you can delete remote branches with git push origin :branchthatyouwanttodelete
+2011-04-03T15:19:44  <amstan> Frontier: yes
+2011-04-03T15:20:08  <Frontier> so I created a new branch called master?
+2011-04-03T15:20:43  <amstan> Frontier: i'm not sure... how did you pull master?
+2011-04-03T15:21:10  <Frontier> in that case I blame git gui for listing master as the only option.
+2011-04-03T15:21:33  <amstan> ok.. w/e
+2011-04-03T15:21:45  <amstan> so.. you don't actually need a master branch
+2011-04-03T15:21:54  <Frontier> no
+2011-04-03T15:23:08  <amstan> Frontier: k.. so what about the json
+2011-04-03T15:23:20  <Frontier> what did you mean by requesting the game info without getting the replay data? It sounds pretty much like what I proposed.
+2011-04-03T15:24:05  <amstan> oh, ic
+2011-04-03T15:24:24  <amstan> so.. you're proposing to always have an external link for the other stuff
+2011-04-03T15:25:23  <Frontier> on this feed yes. it allows us to filter the results on the client if the serverside filtering is not enough.
+2011-04-03T15:25:45  <Frontier> and then fetch only the desired replays.
+2011-04-03T15:25:50  <amstan> i was just thinking something easier... keep it like it was before(with the data embedded in a string).. but for the php script that outputs that json, give it a $GET variable to keep the replay data out of the response
+2011-04-03T15:26:16  <amstan> oh wait.. you're talking about lists
+2011-04-03T15:26:29  <amstan> ok... sounds good either way
+2011-04-03T15:26:47  * amstan gets out of this... ignore everything i said
+2011-04-03T15:28:21  <amstan> McLeopold: how are you doing?
+2011-04-03T15:30:40  *** Accoun <Accoun!~1@static-213-88-2-78.chebnet.ru> has joined #aichallenge
+2011-04-03T16:23:27  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.86.1 [Firefox 3.6.16/20110323143040])
+2011-04-03T16:43:19  *** phire <phire!~phire@142.248.69.111.dynamic.snap.net.nz> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T16:46:14  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-04-03T16:49:10  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 246 seconds)
+2011-04-03T16:49:19  *** phreeza <phreeza!~phreeza@f049184067.adsl.alicedsl.de> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T16:49:50  *** phreeza <phreeza!~phreeza@f048133086.adsl.alicedsl.de> has joined #aichallenge
+2011-04-03T17:02:49  *** dr-` <dr-`!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-04-03T17:05:43  *** dr- <dr-!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T17:18:51  *** phreeza <phreeza!~phreeza@f048133086.adsl.alicedsl.de> has quit IRC (Quit: kthxbai)
+2011-04-03T17:30:03  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has joined #aichallenge
+2011-04-03T17:34:03  *** p4p4p5 <p4p4p5!~chatzilla@82.113.121.55> has quit IRC (Quit: ChatZilla 0.9.84 [SeaMonkey 2.0a3/20090223135443])
+2011-04-03T17:41:14  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-04-03T17:45:00  *** Apophis_ <Apophis_!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 255 seconds)
+2011-04-03T18:03:34  *** sigh <sigh!~sigh@145.115-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2011-04-03T18:10:04  *** fgump <fgump!~gump@188.74.82.177> has joined #aichallenge
+2011-04-03T18:10:50  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-04-03T18:13:36  *** skynetz <skynetz!~none@unaffiliated/skynetz> has quit IRC (Quit: .)
+2011-04-03T18:26:01  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Connection reset by peer)
+2011-04-03T18:28:28  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2011-04-03T18:47:00  *** fgump <fgump!~gump@188.74.82.177> has quit IRC (Quit: Leaving)
+2011-04-03T19:02:28  *** FireFly <FireFly!~firefly@unaffiliated/firefly> has quit IRC (Quit: swatted to death)
+2011-04-03T19:10:58  *** mceier <mceier!~mceier@89-77-208-118.dynamic.chello.pl> has quit IRC (Quit: leaving)
+2011-04-03T19:11:00  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-04-03T19:14:48  <sigh> anyone here know much about sandbox.py?
+2011-04-03T19:19:04  *** kaemo <kaemo!~mad5ci@dbn176.neoplus.adsl.tpnet.pl> has quit IRC (Ping timeout: 255 seconds)
+2011-04-03T19:21:01  <McLeopold> sigh: I know a little
+2011-04-03T19:21:29  <sigh> McLeopold: do you see any problems with this commit I made: https://github.com/aichallenge/aichallenge/commit/0e1ff7fdd234c253595ec8b5fea09ab536b7849b
+2011-04-03T19:22:04  <sigh> it stops the parent finishing before the child is actually dead, (which caused annoying errors to be displayed)
+2011-04-03T19:22:13  <sigh> it doesn't hurt performance as far as I can see
+2011-04-03T19:23:08  <McLeopold> the python docs suggest using communicate, as the wait may cause a deadlock
+2011-04-03T19:24:56  <sigh> it can deadlock even after a SIGKILL?
+2011-04-03T19:25:07  <McLeopold> that I don't know about
+2011-04-03T19:25:21  <McLeopold> I haven't worked much with subprocess
+2011-04-03T19:27:34  <sigh> hmm... anyone here know about python subprocess modules? :P
+2011-04-03T19:28:20  <amstan> sigh: try #python
+2011-04-03T19:29:29  <sigh> yeah, I'll try that a bit later
+2011-04-03T19:31:14  *** kaemo <kaemo!~mad5ci@ayk79.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-04-03T19:39:11  *** smippy <smippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-04-03T19:39:11  *** smippy <smippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-04-03T19:39:33  *** pgpaskar1 <pgpaskar1!~phor@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-04-03T19:39:41  *** Eruonen <Eruonen!onensora@546BEF4A.cm-12-4d.dynamic.ziggo.nl> has quit IRC ()
+2011-04-03T19:39:45  *** shutch_ <shutch_!~shutch@hc6523863.dhcp.vt.edu> has joined #aichallenge
+2011-04-03T19:41:53  *** kaemo <kaemo!~mad5ci@ayk79.neoplus.adsl.tpnet.pl> has quit IRC (*.net *.split)
+2011-04-03T19:41:53  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (*.net *.split)
+2011-04-03T19:41:54  *** shutch <shutch!~shutch@hc6523863.dhcp.vt.edu> has quit IRC (*.net *.split)
+2011-04-03T19:41:54  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (*.net *.split)
+2011-04-03T19:41:54  *** pgpaskar_ <pgpaskar_!~phor@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-04-03T19:42:52  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-04-03T19:44:06  *** Eruonen <Eruonen!onensora@546BEF4A.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-03T19:52:41  *** kaemo <kaemo!~mad5ci@ayk79.neoplus.adsl.tpnet.pl> has joined #aichallenge
+2011-04-03T19:57:47  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Ping timeout: 252 seconds)
+2011-04-03T19:57:47  *** jbroman <jbroman!~jbroman@taurine.csclub.uwaterloo.ca> has quit IRC (Ping timeout: 252 seconds)
+2011-04-03T19:57:47  *** dr-` <dr-`!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T19:57:47  *** znutar <znutar!~znutar@69.164.197.143> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T19:57:47  *** drhodes <drhodes!~none@drhodes.xen.prgmr.com> has quit IRC (Ping timeout: 252 seconds)
+2011-04-03T19:58:26  *** needsch1 <needsch1!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-03T19:58:26  *** amstan_ <amstan_!~amstan@76-10-134-25.dsl.teksavvy.com> has joined #aichallenge
+2011-04-03T19:58:27  *** ChanServ sets mode: +o amstan_
+2011-04-03T19:58:27  *** amstan <amstan!~amstan@76-10-134-25.dsl.teksavvy.com> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T19:58:27  *** sente <sente!~stu@ip-208-118-225-99.twdx.net> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T19:58:30  *** jbroman_ <jbroman_!~jbroman@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-04-03T20:00:06  *** dr- <dr-!~dr-@ble59-7-88-161-172-151.fbx.proxad.net> has joined #aichallenge
+2011-04-03T20:00:06  *** drhodes_ <drhodes_!~none@drhodes.xen.prgmr.com> has joined #aichallenge
+2011-04-03T20:00:06  *** sente <sente!~stu@ip-208-118-225-99.twdx.net> has joined #aichallenge
+2011-04-03T20:00:06  *** BtbN <BtbN!btbn@btbn.de> has quit IRC (Ping timeout: 252 seconds)
+2011-04-03T20:00:06  *** amstan_ is now known as amstan
+2011-04-03T20:00:20  *** delt0r_ <delt0r_!~delt0r@188-22-174-151.adsl.highway.telekom.at> has joined #aichallenge
+2011-04-03T20:01:44  *** delt0r___ <delt0r___!~delt0r@188-22-168-71.adsl.highway.telekom.at> has quit IRC (Read error: Operation timed out)
+2011-04-03T20:01:44  *** BtbN <BtbN!btbn@btbn.de> has joined #aichallenge
+2011-04-03T20:02:43  *** kaemo <kaemo!~mad5ci@ayk79.neoplus.adsl.tpnet.pl> has quit IRC (Ping timeout: 255 seconds)
+2011-04-03T20:08:28  *** Ttech <Ttech!ttech@botters/staff/ttech> has quit IRC (Ping timeout: 252 seconds)
+2011-04-03T20:10:33  *** stride <stride!~double@helix.ghb.hs-furtwangen.de> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T20:12:34  *** contestbot_ <contestbot_!~supybot@76-10-134-25.dsl.teksavvy.com> has joined #aichallenge
+2011-04-03T20:12:37  *** contestbot_ is now known as contestbot
+2011-04-03T20:12:39  *** ChanServ sets mode: +o contestbot
+2011-04-03T20:17:41  <antimatroid> McLeopold: did you see that i started up some tutorials/strategy guide pages
+2011-04-03T20:20:46  *** Ttech <Ttech!ttech@botters/staff/ttech> has joined #aichallenge
+2011-04-03T20:38:33  *** Keth <Keth!kwketh@client-86-17-86-203.cht-bng-12.adsl.virginmedia.com> has joined #aichallenge
+2011-04-03T20:42:55  <Keth> 'The Ants Competition has started! Entries due in 2 weeks! Good luck!' < was that April Fools'?
+2011-04-03T20:44:51  *** Eruonen <Eruonen!onensora@546BEF4A.cm-12-4d.dynamic.ziggo.nl> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T20:44:52  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T20:44:59  *** Eruonen <Eruonen!onensora@546BEF4A.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-03T20:44:59  *** BtbN <BtbN!btbn@btbn.de> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T20:45:04  *** BtbN <BtbN!btbn@btbn.de> has joined #aichallenge
+2011-04-03T20:46:16  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-04-03T21:04:10  *** jbroman_ is now known as jbroman
+2011-04-03T21:08:02  *** greghaynes <greghaynes!~irc@174.136.108.178> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T21:08:28  *** sente <sente!~stu@ip-208-118-225-99.twdx.net> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T21:08:29  *** sixthgear <sixthgear!~sixthgear@sixthgear.ca> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T21:08:31  *** dwchandler <dwchandler!~dwc@tuppy.intrepidhosting.net> has quit IRC (Ping timeout: 252 seconds)
+2011-04-03T21:08:33  *** sixthgear <sixthgear!~sixthgear@sixthgear.ca> has joined #aichallenge
+2011-04-03T21:08:59  *** sixthgear is now known as Guest25595
+2011-04-03T21:16:34  *** Eruonen <Eruonen!onensora@546BEF4A.cm-12-4d.dynamic.ziggo.nl> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T21:18:00  *** Eruonen <Eruonen!~onensora@546BEC44.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-04-03T21:18:50  *** dwchandler <dwchandler!~dwc@tuppy.intrepidhosting.net> has joined #aichallenge
+2011-04-03T21:20:19  *** sente <sente!~stu@ip-208-118-225-99.twdx.net> has joined #aichallenge
+2011-04-03T21:20:52  *** Eruonen <Eruonen!~onensora@546BEC44.cm-12-4d.dynamic.ziggo.nl> has quit IRC (Client Quit)
+2011-04-03T21:25:53  *** needsch1 <needsch1!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Quit: Leaving.)
+2011-04-03T21:25:57  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has joined #aichallenge
+2011-04-03T21:30:06  *** needsch <needsch!~Robert@ip-81-210-159-12.unitymediagroup.de> has quit IRC (Ping timeout: 250 seconds)
+2011-04-03T22:02:38  *** drhodes_ is now known as drhodes
+2011-04-03T22:08:20  *** kwketh <kwketh!kwketh@client-86-17-86-203.cht-bng-12.adsl.virginmedia.com> has joined #aichallenge
+2011-04-03T22:08:20  *** Keth <Keth!kwketh@client-86-17-86-203.cht-bng-12.adsl.virginmedia.com> has quit IRC (Read error: Connection reset by peer)
+2011-04-03T22:09:22  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: You're a kitty!)
+2011-04-03T22:10:27  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-04-03T22:16:43  *** Guest25595 is now known as sixthgear
+2011-04-03T22:30:56  *** ZanniqlcKzxkq <ZanniqlcKzxkq!~mick@unaffiliated/zannick> has joined #aichallenge
+2011-04-03T22:33:34  *** Zannick <Zannick!~mick@unaffiliated/zannick> has quit IRC (Ping timeout: 240 seconds)
+2011-04-03T22:33:46  *** ZanniqlcKzxkq is now known as Zannick
+2011-04-03T22:37:40  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-03T22:40:45  *** kwketh <kwketh!kwketh@client-86-17-86-203.cht-bng-12.adsl.virginmedia.com> has quit IRC ()
+2011-04-03T22:41:14  *** Keth <Keth!~kwketh@client-86-17-86-203.cht-bng-12.adsl.virginmedia.com> has joined #aichallenge
+2011-04-03T22:51:04  *** Keth <Keth!~kwketh@client-86-17-86-203.cht-bng-12.adsl.virginmedia.com> has quit IRC ()
+2011-04-03T23:01:33  *** smippy <smippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (*.net *.split)
+2011-04-03T23:01:34  *** Frontier <Frontier!~marco@dslb-088-070-136-120.pools.arcor-ip.net> has quit IRC (*.net *.split)
+2011-04-03T23:01:34  *** _aj <_aj!~aj@66.133.136.43> has quit IRC (*.net *.split)
+2011-04-03T23:01:34  *** Sunhay <Sunhay!~ssbasi@taurine.csclub.uwaterloo.ca> has quit IRC (*.net *.split)
+2011-04-03T23:01:35  *** cmoylan <cmoylan!~djmoymoy@thelounge.org> has quit IRC (*.net *.split)
+2011-04-03T23:01:54  *** smellyhippy <smellyhippy!~asmodean@cust240-dsl50.idnet.net> has joined #aichallenge
+2011-04-03T23:01:54  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2011-04-03T23:02:56  *** cmoylan <cmoylan!~djmoymoy@thelounge.org> has joined #aichallenge
+2011-04-03T23:04:37  *** Frontier <Frontier!~marco@dslb-088-070-136-120.pools.arcor-ip.net> has joined #aichallenge
+2011-04-03T23:04:54  *** _aj <_aj!~aj@66.133.136.43> has joined #aichallenge
+2011-04-03T23:06:37  *** Sunhay <Sunhay!~ssbasi@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2011-04-03T23:07:14  *** jmcarthur <jmcarthur!~jake@76.73.216.201> has quit IRC (*.net *.split)
+2011-04-03T23:07:15  *** davidd <davidd!davidd@tinkywinky.stack.nl> has quit IRC (*.net *.split)
+2011-04-03T23:07:59  *** jmcarthur <jmcarthur!~jake@76.73.216.201> has joined #aichallenge
+2011-04-03T23:07:59  *** davidd <davidd!davidd@tinkywinky.stack.nl> has joined #aichallenge
+2011-04-03T23:20:25  <CIA-90> aichallenge: McLeopold epsilon * ra4a0da2 / ants/mapgen/McMaps.py : Small change to map gen (in progress) - http://bit.ly/ecxzTP
+2011-04-03T23:20:26  <CIA-90> aichallenge: McLeopold epsilon * r1d73cb2 / (62 files in 15 dirs): Merge branch 'epsilon' of github.com:aichallenge/aichallenge into epsilon - http://bit.ly/eaZZyG
+2011-04-03T23:32:46  *** dwchandl1r <dwchandl1r!~dwc@tuppy.intrepidhosting.net> has joined #aichallenge
+2011-04-03T23:34:16  *** sixthgea1 <sixthgea1!~sixthgear@sixthgear.ca> has joined #aichallenge
+2011-04-03T23:34:43  *** Frontier1 <Frontier1!~marco@dslb-088-070-136-120.pools.arcor-ip.net> has joined #aichallenge
+2011-04-03T23:37:41  <antimatroid> amstan: have you guys considered getting the ai challenge in gsoc?
+2011-04-03T23:37:57  <amstan> antimatroid: i was thinking about it a few weeks ago
+2011-04-03T23:38:06  <amstan> who would mentor?
+2011-04-03T23:38:16  <antimatroid> yeah i know, that's the biggest snag
+2011-04-03T23:38:25  <amstan> also.. are we that organized?
+2011-04-03T23:38:26  *** sigh_ <sigh_!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2011-04-03T23:38:47  <jbroman> GSoC is really intended for much larger (and more mature) projects.
+2011-04-03T23:38:58  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has quit IRC (Read error: Connection reset by peer)
+2011-04-03T23:38:58  *** dwchandler <dwchandler!~dwc@tuppy.intrepidhosting.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-03T23:38:59  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has quit IRC (Ping timeout: 246 seconds)
+2011-04-03T23:39:00  *** Frontier <Frontier!~marco@dslb-088-070-136-120.pools.arcor-ip.net> has quit IRC (Ping timeout: 246 seconds)
+2011-04-03T23:39:00  *** sixthgear <sixthgear!~sixthgear@sixthgear.ca> has quit IRC (Ping timeout: 246 seconds)
+2011-04-03T23:39:08  *** sigh_ is now known as ghost
+2011-04-03T23:39:11  <amstan> jbroman: did you ever do it?
+2011-04-03T23:39:13  <antimatroid> jbroman: i'm hoping the project will mature with zeta
+2011-04-03T23:39:18  *** ghost is now known as sigh_
+2011-04-03T23:39:49  *** sigh_ is now known as sigh
+2011-04-03T23:40:03  <jbroman> amstan: No, I haven't done GSoC.
+2011-04-03T23:40:23  <jbroman> Wasn't eligible last year, and this year I have school in the spring.
+2011-04-03T23:40:53  <amstan> jbroman: i guess you can't do it next year either, since you're with google eh?
+2011-04-03T23:41:06  <jbroman> amstan: Sure, let's go with that.
+2011-04-03T23:41:13  <jbroman> :P
+2011-04-03T23:41:57  *** McLeopold <McLeopold!~scott@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-04-03T23:42:46  <antimatroid> i'm going through the steps for applying atm, but i'm not sure if they'll like the fact that i'll have classes during some of it
+2011-04-03T23:42:57  <amstan> antimatroid: what project?
+2011-04-03T23:43:02  <antimatroid> i have a fairly relaxed courseload though, and can do my thesis based off the project
+2011-04-03T23:43:13  <antimatroid> amstan: Gambit
+2011-04-03T23:43:35  <antimatroid> more specifically, to iterate all nash equilibria for 2 player extensive form games with imperfect information using the sequence form :P
+2011-04-03T23:43:52  <amstan> i tried investigating kate, but after chatting on irc and sending 2 emails on their mailing list with no reply i'm rather dissapointed
+2011-04-03T23:44:03  <antimatroid> that's rather poor
+2011-04-03T23:44:14  <antimatroid> i've received two emails from the gambit guys for the one i sent
+2011-04-03T23:44:24  <amstan> i guess it depends on the org
+2011-04-03T23:44:43  <amstan> and yeah, it seems to be a much bigger deal than i tought
+2011-04-03T23:44:59  <amstan> they don't want you to do school or any other commitment(read: ai challenge)
+2011-04-03T23:45:17  <amstan> apparently the work for gsoc is supposed to take 40hours/week
+2011-04-03T23:45:20  <antimatroid> i didn't even know gambit was participating til some guy i was talking to on reddit a while ago about game theory emailed me about it
+2011-04-03T23:45:32  <antimatroid> yeah, you're meant to treat it like a full time job

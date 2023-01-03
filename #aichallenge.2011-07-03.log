@@ -1,0 +1,912 @@
+2011-07-03T00:03:23  <janzert> contestbot: later tell Mcleopold http://pastebin.com/RHi6fLZG in this case we could probably catch the socket error, but it might be better in general to just retry getting a new task from the server whenever a task fails.
+2011-07-03T00:03:23  <contestbot> janzert: Yep.
+2011-07-03T00:03:50  *** janzert <janzert!~brian@74-95-97-57-Richmond.hfc.comcastbusiness.net> has left #aichallenge
+2011-07-03T00:49:41  *** bhasker <bhasker!~bhasker@99-162-151-97.lightspeed.sntcca.sbcglobal.net> has joined #aichallenge
+2011-07-03T01:34:08  <antimatroid1> i must say, i'm a pretty good fan of just ordering by min h
+2011-07-03T01:36:15  <antimatroid1> bhasker: http://pastebin.com/A6uuU4LA
+2011-07-03T01:37:25  <bhasker> what am i looking at?
+2011-07-03T01:37:35  <antimatroid1> different methods of ordering my search queue
+2011-07-03T01:37:36  <bhasker> path finding?
+2011-07-03T01:37:52  <antimatroid1> p == on path, s == searched, v == visited, a == ant, * == food, % == wall
+2011-07-03T01:38:07  <bhasker> ah k
+2011-07-03T01:38:29  <antimatroid1> min h doesn't always give an optimal solution
+2011-07-03T01:38:31  <antimatroid1> but it's pretty good
+2011-07-03T02:11:12  *** UncleVasya <UncleVasya!kvirc@31.144.18.97> has joined #aichallenge
+2011-07-03T02:20:41  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC (Ping timeout: 240 seconds)
+2011-07-03T02:23:00  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-07-03T02:27:46  <antimatroid1> @topic
+2011-07-03T02:27:46  <contestbot> antimatroid1: Official Google AI Challenge: http://ai-contest.com/ || Channel Logs: http://contestbot.hypertriangle.com/ || Code Repo: http://github.com/aichallenge/aichallenge || Beta testers needed: http://aichallengebeta.hypertriangle.com/ (amstan) || Launch Preparation Meeting http://bit.ly/kYYbD4 (amstan)
+2011-07-03T02:40:14  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-07-03T02:50:46  *** UncleVasya <UncleVasya!kvirc@31.144.18.97> has quit IRC (Ping timeout: 260 seconds)
+2011-07-03T03:13:04  *** VilleH <VilleH!54fb9a09@gateway/web/freenode/ip.84.251.154.9> has joined #aichallenge
+2011-07-03T03:14:15  *** nux67 <nux67!51b9bee9@gateway/web/freenode/ip.81.185.190.233> has joined #aichallenge
+2011-07-03T03:27:54  *** jmreardon <jmreardon!~jmreardon@CPE0026f3271b08-CM0026f3271b05.cpe.net.cable.rogers.com> has quit IRC (Quit: jmreardon)
+2011-07-03T03:30:52  *** mleise <mleise!~Marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-07-03T03:48:40  *** mcstar <mcstar!~mcstar@adsl-89-132-3-104.monradsl.monornet.hu> has joined #aichallenge
+2011-07-03T03:53:54  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has joined #aichallenge
+2011-07-03T04:04:30  *** amstan <amstan!~amstan@69-165-136-225.dsl.teksavvy.com> has quit IRC (Read error: Operation timed out)
+2011-07-03T04:21:21  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has quit IRC (Ping timeout: 255 seconds)
+2011-07-03T04:38:39  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has joined #aichallenge
+2011-07-03T04:48:12  <pcavs> hey all
+2011-07-03T04:48:26  <pcavs> where is the starter packs for the ants game? I can't seem to find them...
+2011-07-03T04:49:02  <mcstar> ants/dist/starter_bots?
+2011-07-03T04:49:42  <mcstar> https://github.com/aichallenge/aichallenge/tree/epsilon/ants/dist/starter_bots
+2011-07-03T04:50:29  <pcavs> thanks
+2011-07-03T04:51:47  *** UncleVasya <UncleVasya!kvirc@46.133.87.18> has joined #aichallenge
+2011-07-03T05:03:21  *** choas <choas!~lars@p578F6E45.dip.t-dialin.net> has joined #aichallenge
+2011-07-03T05:06:21  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has quit IRC (Ping timeout: 255 seconds)
+2011-07-03T05:28:04  *** mleise <mleise!~Marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-07-03T05:28:48  <antimatroid1> mcstar: http://pastebin.com/A6uuU4LA
+2011-07-03T05:28:59  <antimatroid1> i haven't really tested any larger maps yet
+2011-07-03T05:29:35  <mcstar> im optimizing my heap-insert function now
+2011-07-03T05:29:57  <mcstar> 0.6 seconds?
+2011-07-03T05:30:23  <mcstar> antimatroid1: what does time taken mean?
+2011-07-03T05:30:48  <antimatroid1> mcstar: time in milliseconds it took to run a star and backtrack the path information
+2011-07-03T05:30:56  <antimatroid1> i haven't super refined it though, and it's too small to really get anything out of
+2011-07-03T05:31:04  <mcstar> pfff, im feel better now
+2011-07-03T05:31:09  <mcstar> -m
+2011-07-03T05:31:39  <antimatroid1> v == visited/added to search queue, s == searched/taken off search queue, p == on path
+2011-07-03T05:32:01  <mcstar> well, mine can do a 1000, 65 length path in 2 seconds
+2011-07-03T05:32:02  <antimatroid1> no, 0.6 milliseconds :)
+2011-07-03T05:32:57  <antimatroid1> i'm very impressed with just sorting by min h
+2011-07-03T05:33:33  <mcstar> you know what i did? i changed the heap sorting operator from < to <= every time i used one of them
+2011-07-03T05:34:06  <mcstar> because it seemed to me that one prefers horizontal the other vertical search
+2011-07-03T05:35:43  <mcstar> its a bit hard to follow that ascii map :)
+2011-07-03T05:36:30  <mcstar> antimatroid1: how come the second map, min f searched all the nodes?
+2011-07-03T05:37:23  <mcstar> yeah, the min h didnt find the optimal path
+2011-07-03T05:37:56  <mcstar> i experimented with weighted a*, and it behaves  much better time-wise in bad situations
+2011-07-03T05:38:17  <mcstar> (of course it gives longer solutions but who cares)
+2011-07-03T05:38:49  <mcstar> antimatroid1: ill load your map up
+2011-07-03T05:38:58  <mcstar> i made mine work with ants maps
+2011-07-03T05:39:10  <mcstar> but first ill finish my optimizations
+2011-07-03T05:55:13  <antimatroid1> mcstar: it did find an optimal path i think
+2011-07-03T05:55:15  <antimatroid1> there were two
+2011-07-03T06:07:14  <mcstar> i counted the p's, the first sum is less than the second
+2011-07-03T06:07:24  <mcstar> ergo the second cant be optima
+2011-07-03T06:07:25  <mcstar> l
+2011-07-03T06:08:45  <mcstar> but im confused, im not sure which one i counted second lol
+2011-07-03T06:09:59  <antimatroid1> i coutned them before and got the same
+2011-07-03T06:10:02  <antimatroid1> i'll do it again
+2011-07-03T06:10:12  <antimatroid1> it gives both paths above where they should all be optimal
+2011-07-03T06:10:42  <antimatroid1> yeah, i get 15 p's both ways to before it enters the object
+2011-07-03T06:13:03  <antimatroid1> mcstar: i suspect the rest search the entire outside because each of those locations are estimated to be shorted than the final path?
+2011-07-03T06:13:24  <antimatroid1> i'm going to tweak my map generator later to make search situations
+2011-07-03T06:13:31  <antimatroid1> but i think i'ma got to a friends place for a while first
+2011-07-03T06:13:46  <mcstar> have fun
+2011-07-03T06:24:36  *** sir_macelon <sir_macelon!c06482e4@gateway/web/freenode/ip.192.100.130.228> has joined #aichallenge
+2011-07-03T06:24:41  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-07-03T06:24:46  <sir_macelon> contestbot: rankings
+2011-07-03T06:24:57  <contestbot> sir_macelon: Error: There was a problem accessing the interface to ai-contest.com
+2011-07-03T06:25:04  <antimatroid1> @rankings
+2011-07-03T06:25:16  <contestbot> antimatroid1: Error: There was a problem accessing the interface to ai-contest.com
+2011-07-03T06:27:31  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has joined #aichallenge
+2011-07-03T06:47:28  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-07-03T06:50:18  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 255 seconds)
+2011-07-03T07:05:55  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has joined #aichallenge
+2011-07-03T07:20:16  *** UncleVasya <UncleVasya!kvirc@46.133.87.18> has quit IRC (Ping timeout: 260 seconds)
+2011-07-03T07:27:34  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-07-03T07:37:38  *** olexs <olexs!~Leviathan@drms-590c5fb4.pool.mediaWays.net> has joined #aichallenge
+2011-07-03T08:10:42  *** olexs <olexs!~Leviathan@drms-590c5fb4.pool.mediaWays.net> has left #aichallenge
+2011-07-03T08:24:23  *** choas <choas!~lars@p578F6E45.dip.t-dialin.net> has quit IRC (Ping timeout: 240 seconds)
+2011-07-03T08:28:01  *** olexs <olexs!~Leviathan@drms-590c5fb4.pool.mediaWays.net> has joined #aichallenge
+2011-07-03T08:34:57  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has joined #aichallenge
+2011-07-03T08:40:04  *** gobang <gobang!~gobang@89.204.153.227> has joined #aichallenge
+2011-07-03T09:51:50  *** onensora <onensora!c@546BF259.cm-12-4d.dynamic.ziggo.nl> has joined #aichallenge
+2011-07-03T09:53:44  <mcstar> antimatroid1: http://imgur.com/FnUY0
+2011-07-03T09:53:54  <mcstar> http://imgur.com/Dder3
+2011-07-03T09:54:17  <mcstar> non-weighted and weighted a*
+2011-07-03T09:57:45  <mcstar> it finds this path for the non-weighted version 5000 times in 1.5 secs
+2011-07-03T09:58:29  <mcstar> ~0.3 sec, per path, but this includes garbage collecting
+2011-07-03T09:58:48  <mcstar> i think i may imporve on that, but not sure
+2011-07-03T10:01:54  <mcstar> with weighted a* its only 0.116 msec / path
+2011-07-03T10:13:20  *** sigh <sigh!~sigh@ppp114-153.static.internode.on.net> has quit IRC (Remote host closed the connection)
+2011-07-03T10:16:03  *** amstan <amstan!~alex@69-165-136-225.dsl.teksavvy.com> has joined #aichallenge
+2011-07-03T10:16:03  *** ChanServ sets mode: +o amstan
+2011-07-03T10:21:02  *** kashlavor <kashlavor!80ba7a76@gateway/web/freenode/ip.128.186.122.118> has joined #aichallenge
+2011-07-03T10:24:30  *** amstan <amstan!~alex@69-165-136-225.dsl.teksavvy.com> has quit IRC (Ping timeout: 255 seconds)
+2011-07-03T10:25:06  *** jmreardon <jmreardon!~jmreardon@CPE0026f3271b08-CM0026f3271b05.cpe.net.cable.rogers.com> has joined #aichallenge
+2011-07-03T10:27:10  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has joined #aichallenge
+2011-07-03T10:27:11  *** choas <choas!~lars@p578F6E45.dip.t-dialin.net> has joined #aichallenge
+2011-07-03T10:29:07  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has joined #aichallenge
+2011-07-03T10:29:11  <kashlavor> lots of people on the online list, not much going on though
+2011-07-03T10:42:10  <olexs> it's sunday, everybody's chillling out
+2011-07-03T10:45:06  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-07-03T10:50:09  <kashlavor> suppose so
+2011-07-03T10:50:33  <kashlavor>  just found out about all this about a week ago so Im still excited by the novelty
+2011-07-03T10:51:50  <VilleH> Hmm, I tried to create "tools"-folder from scratch and now all of those example bots crashes on testing..
+2011-07-03T10:53:43  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has quit IRC (Quit: Leaving.)
+2011-07-03T10:53:47  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has joined #aichallenge
+2011-07-03T10:54:09  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has joined #aichallenge
+2011-07-03T10:55:07  <VilleH> doh, wrong paths on play_one_game.cmd when moved to tools folder..
+2011-07-03T10:58:15  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has quit IRC (Ping timeout: 255 seconds)
+2011-07-03T10:59:23  <kashlavor> so I did notice that the strategy section is almost completely empty, guessing no one is posting their secret plans or somesuch?
+2011-07-03T10:59:57  <olexs> since the challenge hasn't even started yet, little activity is to be expected
+2011-07-03T11:01:47  <kashlavor> when does it actualy start?
+2011-07-03T11:01:51  <kashlavor> any word on that
+2011-07-03T11:02:52  <olexs> nope, none yet. development is moving on steadily, but a deadline hasn't been set yet, as far as I know. it'll eventually start when most issues have been fixed and most active community members are happy with everything
+2011-07-03T11:02:58  <mcstar> it will start anytime or a little later
+2011-07-03T11:03:36  <mcstar> (sry, i was told almost the same thing, and its nice to give it back to the community)
+2011-07-03T11:03:53  <kashlavor> lol, good enough I suppose
+2011-07-03T11:04:15  <kashlavor> still figuring out map generation, making a server, all that good stuff?
+2011-07-03T11:04:36  <olexs> https://github.com/aichallenge/aichallenge/issues
+2011-07-03T11:05:51  <kashlavor> alright
+2011-07-03T11:06:15  <kashlavor> any of you working on those or just getting a head start on the competition?
+2011-07-03T11:07:55  <olexs> I helped out with a few small things before, might do more sometime soon
+2011-07-03T11:08:33  <VilleH> Hopefully as at the moment the c# upload doesn't work and I can't test my ants
+2011-07-03T11:08:36  <mcstar> kashlavor: did you look at current rankings? there are a lot of bots already
+2011-07-03T11:10:08  <kashlavor> yea it looked like it
+2011-07-03T11:10:35  <kashlavor> oh, didnt notice you could see replays
+2011-07-03T11:10:36  <kashlavor> thats cool
+2011-07-03T11:13:54  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has quit IRC (Quit: Konversation terminated!)
+2011-07-03T11:14:00  *** choas <choas!~lars@p578F6E45.dip.t-dialin.net> has quit IRC (Ping timeout: 260 seconds)
+2011-07-03T11:14:12  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has joined #aichallenge
+2011-07-03T11:14:41  <kashlavor> still wasnt exactly sure how ranking were calculated
+2011-07-03T11:14:48  <kashlavor> true skill?
+2011-07-03T11:17:36  <olexs> yep
+2011-07-03T11:19:31  <kashlavor> what is that?
+2011-07-03T11:19:44  <olexs> http://en.wikipedia.org/wiki/TrueSkill
+2011-07-03T11:22:06  <kashlavor> do you know if thats based off of relative score or just the outcome of the match?
+2011-07-03T11:22:51  <olexs> I'm not sure, but I think it's relative score
+2011-07-03T11:23:21  <olexs> my bot had a few close losses against high-ranked bots and gained skill from those games
+2011-07-03T11:23:43  <jmcarthur> it ranks the players of the match. if you came in first, that's all it knows. it's not aware of how many more points you got over second place
+2011-07-03T11:23:51  *** gobang <gobang!~gobang@89.204.153.227> has quit IRC (Read error: Connection reset by peer)
+2011-07-03T11:23:53  <olexs> really? ok
+2011-07-03T11:24:17  *** gobang <gobang!~gobang@89.204.153.227> has joined #aichallenge
+2011-07-03T11:24:29  <kashlavor> alright
+2011-07-03T11:24:58  <jmcarthur> you can gain some apparent skill from losing though because it still shrinks the range of its estimate of your skill
+2011-07-03T11:25:15  <jmcarthur> just slightly
+2011-07-03T11:26:06  <olexs> is trueskill actually stable now? I remember it being an issue
+2011-07-03T11:26:18  <jmcarthur> stable in what sense?
+2011-07-03T11:26:31  <jmcarthur> if you mean in regards to our implementation of it, i have no idea
+2011-07-03T11:26:45  <olexs> for example, there was a situation some weeks ago where the highest rankings kept going down
+2011-07-03T11:26:52  <jmcarthur> ah
+2011-07-03T11:26:59  <jmcarthur> i have no idea if that has been corrected
+2011-07-03T11:27:16  *** gobang <gobang!~gobang@89.204.153.227> has quit IRC (Read error: Connection reset by peer)
+2011-07-03T11:27:20  <olexs> top1 bot had a skill of 50, was knocked down at some point, and then his "ghost" stayed there for a week as noone could get more than 40 or so
+2011-07-03T11:27:37  *** gobang <gobang!~gobang@89.204.153.227> has joined #aichallenge
+2011-07-03T11:28:12  *** VilleH <VilleH!54fb9a09@gateway/web/freenode/ip.84.251.154.9> has quit IRC (Ping timeout: 252 seconds)
+2011-07-03T11:28:23  <olexs> it seems to be more or less constant the past days, however, the skill gaps between top bots are quite large
+2011-07-03T11:28:30  <kashlavor> theres never any possibility of being in a match against yourself right?
+2011-07-03T11:29:15  <jmcarthur> there shouldn't be
+2011-07-03T11:29:19  <olexs> I've never seen that happen
+2011-07-03T11:29:27  <kashlavor> I suppose that wouldnt really mean anything
+2011-07-03T11:30:08  <olexs> well, if your bot is deterministic, on symmetric maps playing against itself should always end in a draw
+2011-07-03T11:30:25  <kashlavor> I meant more as far as the rankings go
+2011-07-03T11:30:32  <kashlavor> but yes, that would be interesting to see
+2011-07-03T11:31:28  *** gobang <gobang!~gobang@89.204.153.227> has quit IRC (Read error: Connection reset by peer)
+2011-07-03T11:31:49  *** gobang <gobang!~gobang@89.204.153.227> has joined #aichallenge
+2011-07-03T11:33:02  <kashlavor> has anything emerged so far as to "what makes a good bot?"?
+2011-07-03T11:33:58  <olexs> collect all food you see as fast as you can, don't lose ants unneccesarily, control as much terrain as possible, don't time out? :)
+2011-07-03T11:35:57  <kashlavor> sums it all up pretty well
+2011-07-03T11:36:18  <kashlavor> but avoiding losses seems to lead to alot of bouncing back and forth, steady oscillations that is
+2011-07-03T11:36:52  <olexs> a loss = a point to the enemy. you have to figure out what's better for you, lose a square of terrain or lose a point
+2011-07-03T11:36:53  <kashlavor> like a 2 v 1 ant standstill, just because the two ants alternately retreat and advance, just never at the same time
+2011-07-03T11:37:30  <olexs> maybe retreat and let some reinforcements come in, then attack once you have the overwhelming force
+2011-07-03T11:37:46  <kashlavor> sounds like a plan, just trying to figure out how
+2011-07-03T11:37:59  <kashlavor> was just looking at the replays from the top few people, didnt seem to have that y et
+2011-07-03T11:38:32  <olexs> my bot can do that, when it deems it appropriate
+2011-07-03T11:38:36  *** UncleVasya <UncleVasya!kvirc@46.133.36.119> has joined #aichallenge
+2011-07-03T11:39:45  <kashlavor> thats pretty interesting, they must be pretty well organized
+2011-07-03T11:40:20  <olexs> hey UncleVasya! any progress on the testing tool? :)
+2011-07-03T11:40:23  <kashlavor> do orders get passed down from the top or is it more of a spontaneous self organizing thing?
+2011-07-03T11:41:27  <olexs> kashvalor: self-organizing in my case. groups of ants facing enemies are recognized, and a best choice of action is made for the whole group, with multiple possibilities simulated and evaluated
+2011-07-03T11:41:53  <jmcarthur> so i've moved and everything and this contest *still* hasn't started?
+2011-07-03T11:42:27  <jmcarthur> Ants Nukem Forever?
+2011-07-03T11:42:36  <olexs> hehe
+2011-07-03T11:42:38  <UncleVasya> olexs: Hi. About a hour ago I've finally got something that looks like fighting. I'm glad now because it was simple only in my thoughts and to code it was hard enough.
+2011-07-03T11:42:57  <kashlavor> what is this testing tool?
+2011-07-03T11:43:27  <UncleVasya> olexs: Now I have tomorrow's evening + whole day after tomorrow for testing tool.
+2011-07-03T11:44:08  <olexs> UncleVasya: cool, looking forward to the new version, it's quite helpful for fine-tuning
+2011-07-03T11:44:37  <olexs> kashvalor: http://ai-contest.com/forum/viewtopic.php?p=9043#p9043
+2011-07-03T11:45:19  <kashlavor> nice looking
+2011-07-03T11:45:54  <UncleVasya> olexs: Do you need something except optimization? I plan to add additional hideable column that shows game turns for each game.
+2011-07-03T11:46:29  *** kashlavor <kashlavor!80ba7a76@gateway/web/freenode/ip.128.186.122.118> has quit IRC (Quit: Page closed)
+2011-07-03T11:47:03  <olexs> UncleVasya: that's a good idea. What would be really great is if it could save the error output for each bot (using the -E and --error_logs options in playgame.py), so I could check my debug output when I see something weird in a replay
+2011-07-03T11:50:08  <UncleVasya> I'll look how it works. I use mybot.txt for storing all debug information of bot behaviour. Now I even don't know what the -E option does.
+2011-07-03T11:50:39  <jbrechtel> It looks like the Scala starter package crashes when uploaded to the test server.  However when I run it against the test_bot script I get no crash...it is just eliminated in about 22 turns.
+2011-07-03T11:51:12  <jbrechtel> The command line I'm giving test_bot.sh to run the bot includes the classpath.  I can't seem to find what exact command line the server is using to run the bot.
+2011-07-03T11:51:48  <jbrechtel> Well, rather, I can find that and it doesn't seem to include the classpath...so I presume it's just executed in the directory of the bot itself?
+2011-07-03T11:52:11  <olexs> UncleVasya: also, the tool crashes with the current git repo, with an error like this: ''turn": 126'' is not a valid integer value., after the first game. no results are being displayed in the table, and restarting a game, the tool just freezes
+2011-07-03T11:52:59  <jbrechtel> Anyone have any idea where I should start with debugging this?
+2011-07-03T11:53:08  <UncleVasya> yeah, it happens when replay-format is changing.
+2011-07-03T11:53:55  <UncleVasya> it was to olecs.
+2011-07-03T11:54:03  <UncleVasya> *olexs
+2011-07-03T11:54:24  <olexs> anything one can do about it?
+2011-07-03T11:55:40  <UncleVasya> olexs: I want to keep my app compatible with tools.zip because it some kind of official package.
+2011-07-03T11:55:51  <olexs> okay
+2011-07-03T11:58:35  <UncleVasya> We can ask McLeopold or someone else to update tools.zip to the newer git repo. But I don't know how stable the current format is (I mean how long it will stay without another changes).
+2011-07-03T11:59:38  <olexs> hm
+2011-07-03T11:59:51  <olexs> I've just downloaded the tools.zip from the beta and used it, same error
+2011-07-03T12:00:07  <jmcarthur> the starter packages page on the beta site lists the ghc version as 6.8.2. did we revert back to that for some reason?
+2011-07-03T12:01:15  <UncleVasya> I'm afraid that even if I update tool to work with current git repo it soon became uncompatible with another git repo and I'll not be able to fix it while I'm out of computer. I don't know what to do with it.
+2011-07-03T12:02:21  <UncleVasya> olexs: ok, so tools.zip already updated. I missed it. I'll make a compability with it. Thanks for feedbacks.
+2011-07-03T12:03:31  <jmcarthur> hmm, i guess that page is probably just wrong
+2011-07-03T12:04:56  <jbrechtel> jmcarthur: It was wrong for Scala.  The readme in its starter package says 2.8.1 while the site says 2.7.7
+2011-07-03T12:04:59  *** VilleH <VilleH!54fb9a09@gateway/web/freenode/ip.84.251.154.9> has joined #aichallenge
+2011-07-03T12:05:10  <jbrechtel> jmcarthur: Wouldn't surprise me if it were similarly out of date for Haskell
+2011-07-03T12:05:49  <olexs> UncleVasya: ok, thanks. I'm afk for some time now
+2011-07-03T12:06:00  <VilleH> Website down?
+2011-07-03T12:06:17  <olexs> VilleH: works for me...
+2011-07-03T12:07:03  <smiley1983> beta is up, ai-contest.com is probably still down
+2011-07-03T12:07:11  <smiley1983> contestbot: beta
+2011-07-03T12:07:12  <contestbot> smiley1983: beta could be http://aichallengebeta.hypertriangle.com/.
+2011-07-03T12:07:21  <VilleH> Hmh, then there is probably something wrong with my ISP
+2011-07-03T12:07:32  <jbrechtel> Is there a document anywhere describing steps needed to get the server infrastructure up and running?
+2011-07-03T12:08:08  <jbrechtel> Nevermind, found it.
+2011-07-03T12:08:45  <jbrechtel> INSTALL.md in the root of the git repo, in-case anyone else was wondering... :)
+2011-07-03T12:08:54  <smiley1983> it doesn't mention that you need to run worker_setup.py as well
+2011-07-03T12:10:17  <smiley1983> or that you need to run manager/add_maps_to_database.py
+2011-07-03T12:10:42  <smiley1983> unless those are documented somewhere else and I haven't found it
+2011-07-03T12:10:47  <UncleVasya> smiley1983: Hi. I have 2 questions.
+2011-07-03T12:10:56  <smiley1983> UncleVasya: go ahead
+2011-07-03T12:12:30  <smiley1983> that means please ask, in case that wasn't clear :)
+2011-07-03T12:12:34  <UncleVasya> 1. You told me to replace ocamlc with something else wich works only if MinGW binutils installed in case I want my bot to work on another computers. I forgot what it was, cann you repeat it?
+2011-07-03T12:12:34  *** VilleH <VilleH!54fb9a09@gateway/web/freenode/ip.84.251.154.9> has quit IRC (Ping timeout: 252 seconds)
+2011-07-03T12:13:19  <smiley1983> either ocamlopt (direct replacement for ocamlc) or ocamlbuild MyBot.native (replacing the whole build process)
+2011-07-03T12:13:30  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.19.217> has joined #aichallenge
+2011-07-03T12:13:59  <smiley1983> UncleVasya: in case you missed the last answer: either ocamlopt (direct replacement for ocamlc) or
+2011-07-03T12:14:08  <smiley1983> ocamlbuild MyBot.native (replacing the whole build process)
+2011-07-03T12:14:46  <|UncleVasya|> 2. ocamlbuild doesn't work for me because it tries to launch BASH commands.
+2011-07-03T12:15:28  <smiley1983> Oh. I guess the answer to that is Cygwin, but if I remember correctly that's a large install process involving lots of downloads, which is not really viable on dialup
+2011-07-03T12:16:01  <smiley1983> However, ocamlbuild just calls ocamlopt in the end
+2011-07-03T12:16:25  <smiley1983> so if you're happy writing makefiles or compile scripts, I'd use that
+2011-07-03T12:17:03  <smiley1983> ocamlopt directly, that is - its syntax is the same as for ocamlc for basic operations
+2011-07-03T12:17:11  *** UncleVasya <UncleVasya!kvirc@46.133.36.119> has quit IRC (Ping timeout: 260 seconds)
+2011-07-03T12:20:08  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-07-03T12:28:02  *** VilleH <VilleH!54fb9a09@gateway/web/freenode/ip.84.251.154.9> has joined #aichallenge
+2011-07-03T12:32:37  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has quit IRC (Quit: Lost terminal)
+2011-07-03T12:37:15  *** mcstar <mcstar!~mcstar@adsl-89-132-3-104.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-07-03T12:37:33  *** mcstar <mcstar!~mcstar@adsl-89-132-3-104.monradsl.monornet.hu> has joined #aichallenge
+2011-07-03T12:43:24  <VilleH> Any idea what version of Mono is running on beta server? Is it that 1.2.6 that it says on environment page?
+2011-07-03T12:45:21  <VilleH> As the latest version is currently 2.10.2 it would be nice if it was same on server..
+2011-07-03T12:47:20  <gobang> i think, they're just using, what comes with ubuntu natty
+2011-07-03T12:51:13  <VilleH> Ok
+2011-07-03T12:52:18  <sir_macelon> funny game: http://aichallengebeta.hypertriangle.com/visualizer.php?game=57872 I had only one ant left after initial 30 turns and still managed to win :)
+2011-07-03T12:52:31  <VilleH> Gets bit boring when bot beats most of the time the sample bots and cant upload to server to see how it manages against any other..
+2011-07-03T12:53:50  <mcstar> you ate me, i dont like you anymore sir_macelon
+2011-07-03T12:55:31  *** amstan <amstan!~amstan@69-165-136-225.dsl.teksavvy.com> has joined #aichallenge
+2011-07-03T12:55:31  *** ChanServ sets mode: +o amstan
+2011-07-03T13:21:52  * antimatroid1 yawns
+2011-07-03T13:22:15  <mcstar> antimatroid1:
+2011-07-03T13:22:17  <mcstar> antimatroid1:
+2011-07-03T13:22:27  <mcstar> dont  you fall asleep just now
+2011-07-03T13:22:35  <antimatroid1> i already did :P
+2011-07-03T13:22:40  <antimatroid1> i just woke up fromt hat
+2011-07-03T13:22:43  <mcstar> ah
+2011-07-03T13:22:51  <mcstar> well, did you see what i wrote?
+2011-07-03T13:23:06  <antimatroid1> nope, give me a minute
+2011-07-03T13:23:18  <mcstar> ok, 1 minute
+2011-07-03T13:23:21  <mcstar> no more
+2011-07-03T13:25:23  <antimatroid1> so..
+2011-07-03T13:25:32  <antimatroid1> way faster for weighted a*?
+2011-07-03T13:25:38  <antimatroid1> what about compared to min h?
+2011-07-03T13:25:56  <mcstar> pfff dunno
+2011-07-03T13:26:13  <mcstar> so, you said you use priority queue?
+2011-07-03T13:26:21  <mcstar> how is that implemented?
+2011-07-03T13:26:32  *** gobang <gobang!~gobang@89.204.153.227> has quit IRC (Read error: Connection reset by peer)
+2011-07-03T13:26:45  <antimatroid1> c++ has priority queues in stl :P
+2011-07-03T13:26:56  *** gobang <gobang!~gobang@89.204.153.227> has joined #aichallenge
+2011-07-03T13:26:58  <mcstar> because i insert into a sorted list, which is pretty fast for that, but it not a heap/binary tree/self balancing bs
+2011-07-03T13:27:03  <antimatroid1> i just have to write the comparison operators
+2011-07-03T13:27:08  <mcstar> sure, but how is it implemented?
+2011-07-03T13:27:28  <antimatroid1> heap i think
+2011-07-03T13:27:32  <antimatroid1> but i have no idea
+2011-07-03T13:28:06  <mcstar> im looking into heaps now, found a couple if implementations, so im going to switch to one of them
+2011-07-03T13:28:31  <antimatroid1> i might try a*
+2011-07-03T13:28:33  <mcstar> are you planning to increase your's speed?
+2011-07-03T13:28:36  <antimatroid1> how much did you multiply by?
+2011-07-03T13:28:42  <mcstar> in the filename
+2011-07-03T13:28:46  <mcstar> 1,10
+2011-07-03T13:28:54  <mcstar> c as in c*h
+2011-07-03T13:29:07  <mcstar> oh, you cant see the filename there can you?
+2011-07-03T13:30:06  <antimatroid1> nope :)
+2011-07-03T13:35:11  <gobang> mcstar, what do you mean by 'weighted' a* ?
+2011-07-03T13:35:25  <mcstar> f=g+c*h
+2011-07-03T13:35:28  <mcstar> c>1
+2011-07-03T13:35:36  <mcstar> exactly like wikipedia
+2011-07-03T13:36:36  <gobang> weighted mix of forward/backward distance ?
+2011-07-03T13:37:17  <antimatroid1> bobgang: it "weights/preferences" nodes that are closer to the target(s), whether it looks like it could be the shortest path necessarily or slightly under it
+2011-07-03T13:37:36  <mcstar> there it is, interpret it however you like :), it scales up an 'admisssible' heuristic
+2011-07-03T13:37:40  <gobang> ah, ok
+2011-07-03T13:42:05  *** choas <choas!~lars@p578F6E45.dip.t-dialin.net> has joined #aichallenge
+2011-07-03T13:45:48  <jmcarthur> i think i am likely to make a bot this time around, but i probably won't do anything fancy
+2011-07-03T13:46:14  <antimatroid1> jmcarthur: i've been contemplating whether i should or shouldn't
+2011-07-03T13:46:26  <antimatroid1> i don't think i really have that much time avaible
+2011-07-03T13:46:40  <mcstar> :(
+2011-07-03T13:47:11  <antimatroid1> there would be a lot of messing around in getting much out of game trees for battles
+2011-07-03T13:51:56  <jmcarthur> well, during the time that this game has been under development, i've interviewed for a job, gotten a job offer, waited a month before accepted, waited nearly two more months before moving, moved, started working, and am almost settled in now, at it's still not ready. i had originally dropped all this because i thought it would be about over by the time i got a chance to sit down with it
+2011-07-03T13:52:31  <jmcarthur> i also am not really digging this game as much as the last two games we did :\
+2011-07-03T13:53:39  <antimatroid1> yeah, it would have been nice to be ready earlier
+2011-07-03T13:53:48  <antimatroid1> i don't think the game is as interesting
+2011-07-03T13:53:56  <antimatroid1> but i think it's better suited to ai than planet wars
+2011-07-03T13:54:00  <antimatroid1> and offers more to do than tron
+2011-07-03T13:54:07  <jmcarthur> i'm almost considering just trying something highly experimental, because i don't think i'll get much enjoyment from it otherwise
+2011-07-03T13:54:10  <antimatroid1> so i still have decent hopes of it being another great contest
+2011-07-03T13:54:13  <jmcarthur> maybe something like a neural network or something
+2011-07-03T13:54:26  <antimatroid1> i've never played around with path finding before
+2011-07-03T13:54:31  <antimatroid1> so i'm having fun doing that with mcstar
+2011-07-03T13:54:50  <antimatroid1> well, not properly with a* etc.
+2011-07-03T13:55:09  <jmcarthur> path finding is essentially "solved" once you have A* with a heuristic that doesn't overestimate
+2011-07-03T13:55:24  <antimatroid1> jmcarthur: have you played with path finding much? I have an admissible heuristic for multiple targets, h(x) := min_T mdist(x, T) where T are targets
+2011-07-03T13:55:39  <jmcarthur> multiple targets?
+2011-07-03T13:56:04  <antimatroid1> like, say you want to find the shortest food square from one/all of your ants (single/multiple sources for ants)
+2011-07-03T13:56:16  <jmcarthur> ah
+2011-07-03T13:56:21  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.19.217> has quit IRC (Ping timeout: 260 seconds)
+2011-07-03T13:56:26  <jmcarthur> that's actually more interesting then
+2011-07-03T13:56:30  <antimatroid1> you can also "reuse" ants (and future ants) for collecting food
+2011-07-03T13:56:44  <antimatroid1> or you can use information about where enemy ants can reach in what number of turns to avoid them while pathfinding etc.
+2011-07-03T13:58:19  <jmcarthur> i'm curious how well a NN could do just based on training from other bots' games
+2011-07-03T13:58:31  <jmcarthur> it seems like these maps might be well suited for a NN, in fact
+2011-07-03T13:58:38  <antimatroid1> the more cool strategies like that the better
+2011-07-03T13:58:43  <antimatroid1> have you seen my maze maps?
+2011-07-03T13:58:51  <mcstar> what i really want now: is not to dispose of my board which has pretty much information on it(the board where i keep my "closed" set)
+2011-07-03T13:58:54  <jmcarthur> ouch, maze maps might break NN ;)
+2011-07-03T13:59:21  <antimatroid1> http://ants.zeroviz.us/AxIF2/
+2011-07-03T13:59:41  <antimatroid1> http://ants.zeroviz.us/LiFHn/
+2011-07-03T14:00:15  <antimatroid1> there's a couple of examples, i've made a symmetric block maze, removed some extra water blocks, then arbitrarily removed single cell water around the edge
+2011-07-03T14:00:55  <antimatroid1> i think mcleopold wants to save those maps for the official launch
+2011-07-03T14:01:20  <jmcarthur> ah these aren't too "mazy". NN might do decently on those
+2011-07-03T14:01:59  <antimatroid1> jmcarthur: how's the new job anyway? :P
+2011-07-03T14:02:01  <antimatroid1> what are you doing?
+2011-07-03T14:03:21  <antimatroid1> jmcarthur: you know we're using option1/power/occupied/your one for battles again too yeah? :)
+2011-07-03T14:03:30  <jmcarthur> i'm working here: http://www.janestcapital.com/
+2011-07-03T14:03:43  <jmcarthur> yeah i saw that on the beta site
+2011-07-03T14:04:11  <antimatroid1> the damage option allowed blocking way to easily
+2011-07-03T14:04:12  <jmcarthur> noticed a lot more hesitance for bots to attack now, too
+2011-07-03T14:04:45  <antimatroid1> mmm, if i go and get a job, i'm not sure i'd survive wearing a suit every day
+2011-07-03T14:05:10  <antimatroid1> what language are you using?
+2011-07-03T14:05:24  <antimatroid1> i imagine you're in heaven if haskell? :P
+2011-07-03T14:06:08  <jmcarthur> we don't wear suits there :P
+2011-07-03T14:06:15  <jmcarthur> it's ocaml
+2011-07-03T14:06:32  <antimatroid1> that's where the comment came from :P
+2011-07-03T14:06:34  <jmcarthur> but i work with a bunch of haskell heads at least, and ocaml beats C in my book
+2011-07-03T14:06:39  <jmcarthur> ah
+2011-07-03T14:06:49  <jmcarthur> i don't remember what the web site says about dress code
+2011-07-03T14:07:01  <jmcarthur> i've been wearing tshirts and jean shorts for the most part so far
+2011-07-03T14:07:12  <jmcarthur> actually, i have yet to work at a place where i have to dress up
+2011-07-03T14:07:45  <antimatroid1> nice, i turn up to work in board shorts and thongs in the middle of summer
+2011-07-03T14:07:48  <antimatroid1> tis nice
+2011-07-03T14:07:59  <antimatroid1> thongs == sandals in australia
+2011-07-03T14:08:06  <jmcarthur> thanks for clarifying
+2011-07-03T14:08:07  <antimatroid1> not the other ones :P
+2011-07-03T14:08:09  <jmcarthur> i was horrified
+2011-07-03T14:08:46  *** Outopia <Outopia!~chatzilla@metronet96.metro.carnet.hr> has joined #aichallenge
+2011-07-03T14:09:04  <antimatroid1> mcstar: i don't get that improved search path with weighted a* :\
+2011-07-03T14:09:18  <mcstar> :S
+2011-07-03T14:09:40  <mcstar> my 10 is better than your 10 i guess
+2011-07-03T14:09:41  <antimatroid1> oh wait
+2011-07-03T14:11:20  *** amstan <amstan!~amstan@69-165-136-225.dsl.teksavvy.com> has quit IRC (Ping timeout: 260 seconds)
+2011-07-03T14:12:00  <antimatroid1> yeah, hmmm, dunno :(
+2011-07-03T14:14:09  <mcstar> antimatroid1: so what does it do instead?
+2011-07-03T14:14:22  <antimatroid1> pretty much the same as my normal a* i think
+2011-07-03T14:14:35  <mcstar> did you recompile?
+2011-07-03T14:14:54  <antimatroid1> lol, it does get the other optimal path though
+2011-07-03T14:15:02  <antimatroid1> so it's not doing the same search exactly
+2011-07-03T14:15:44  <antimatroid1> http://pastebin.com/TgTK5P4e
+2011-07-03T14:15:47  <antimatroid1> i get those two
+2011-07-03T14:16:47  <mcstar> antimatroid1: thats wong
+2011-07-03T14:16:53  <mcstar> very wong
+2011-07-03T14:16:56  <antimatroid1> what?
+2011-07-03T14:17:09  <mcstar> i mean the weighted version is supposed to scan fewwer nodes
+2011-07-03T14:17:19  <mcstar> but on what you sent it doesnt
+2011-07-03T14:17:29  <antimatroid1> yeah, i'm using a weight of 1.1
+2011-07-03T14:17:32  <antimatroid1> that's what you used yeah?
+2011-07-03T14:17:34  <mcstar> ahhh
+2011-07-03T14:17:36  <mcstar> 10
+2011-07-03T14:17:40  <antimatroid1> ahhh
+2011-07-03T14:18:08  <antimatroid1> there we go
+2011-07-03T14:18:36  <antimatroid1> http://pastebin.com/VNjqeDHp
+2011-07-03T14:18:52  <jmcarthur> oops, i linked to the company but didn't actually answer your questions
+2011-07-03T14:18:57  <mcstar> seems the same
+2011-07-03T14:19:22  <antimatroid1> mcstar: it has a* first, then weighted a*
+2011-07-03T14:19:34  <antimatroid1> the second second search map is different
+2011-07-03T14:19:38  <antimatroid1> more like yours
+2011-07-03T14:20:11  <jmcarthur> i'm liking this job. i'm surrounded by smart people (i hate feeling like i'm the smartest person in the room), the benefits are pretty awesome, and the work is rewarding so far.
+2011-07-03T14:20:31  <antimatroid1> mcstar: what's with the 2 line jump on yours on the bottom right part of the search map?
+2011-07-03T14:20:47  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has quit IRC (Remote host closed the connection)
+2011-07-03T14:20:49  <antimatroid1> jmcarthur: yeah that sounds awesome, along with the website
+2011-07-03T14:21:09  <jmcarthur> and right now i'm mainly involved in the core bookkeeping of all the trades that occur throughout the day across all three offices in the world. diving right in
+2011-07-03T14:21:13  <antimatroid1> i don't mind feeling like i'm "the smartest in the room" provided i'm not there doing something intellectually
+2011-07-03T14:21:17  <antimatroid1> otherwise yeah it's rather boring
+2011-07-03T14:21:27  <mcstar> antimatroid1: can you send me the link? my irc died since i posted those ..
+2011-07-03T14:21:34  <mcstar> oh shat
+2011-07-03T14:21:39  <mcstar> i didnt delete them , ok
+2011-07-03T14:21:42  <antimatroid1> mcstar: http://pastebin.com/VNjqeDHp
+2011-07-03T14:21:59  <mcstar> i mean mine :)
+2011-07-03T14:22:05  <antimatroid1> jmcarthur: awesome :)
+2011-07-03T14:22:30  <antimatroid1> if i went to get a job, i'd be trying to do either something like that or something with ai
+2011-07-03T14:22:35  <jmcarthur> and i don't have to ride the subway to work :D
+2011-07-03T14:22:41  <antimatroid1> bus?
+2011-07-03T14:22:44  <jmcarthur> ferry
+2011-07-03T14:22:52  <jmcarthur> right by the statue of liberty
+2011-07-03T14:22:56  <jmcarthur> and it's free
+2011-07-03T14:23:01  <antimatroid1> can't complain about that
+2011-07-03T14:23:05  <jmcarthur> not a bit
+2011-07-03T14:23:21  <antimatroid1> i ride places as much as possible these days, it
+2011-07-03T14:23:23  <antimatroid1> s super fun
+2011-07-03T14:23:55  *** _flag <_flag!~flag@69-165-173-172.dsl.teksavvy.com> has joined #aichallenge
+2011-07-03T14:24:10  <antimatroid1> mcstar: ordering by min h was still faster
+2011-07-03T14:24:37  <mcstar> antimatroid1: i dont know what lines do you mean
+2011-07-03T14:24:43  <mcstar> my path is a bit different
+2011-07-03T14:24:50  <mcstar> but still optimal
+2011-07-03T14:24:54  <antimatroid1> for weighted?
+2011-07-03T14:24:57  <mcstar> and the 2 finds the same paths
+2011-07-03T14:25:29  <antimatroid1> yeah, http://imgur.com/Dder3 on the white border (visited not searched) part of that
+2011-07-03T14:25:41  <antimatroid1> there are parts where you have like a straight line for 2 cells
+2011-07-03T14:25:47  <antimatroid1> i don't get that?
+2011-07-03T14:26:22  <antimatroid1> well i do above my a, but not elsewhere
+2011-07-03T14:26:44  <mcstar>   .
+2011-07-03T14:26:45  <mcstar>  ..
+2011-07-03T14:26:47  <mcstar> .
+2011-07-03T14:26:49  <mcstar> hell
+2011-07-03T14:26:51  <mcstar> no
+2011-07-03T14:26:56  <mcstar>   .
+2011-07-03T14:26:58  <mcstar>  .
+2011-07-03T14:27:00  <mcstar>  .
+2011-07-03T14:27:02  <mcstar> .
+2011-07-03T14:27:04  <mcstar> this?
+2011-07-03T14:27:14  <mcstar> you want me to explain this?
+2011-07-03T14:27:21  <mcstar> well its just there :)
+2011-07-03T14:27:40  <jmcarthur> ...
+2011-07-03T14:27:43  <mcstar> i dont minimize h, only f
+2011-07-03T14:27:58  <mcstar> the selection when its a tie is uncontrolled
+2011-07-03T14:28:07  <mcstar> i guess thats the reason
+2011-07-03T14:28:13  <mcstar> that its different than yours
+2011-07-03T14:28:58  *** Outopia <Outopia!~chatzilla@metronet96.metro.carnet.hr> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 5.0/20110615151330])
+2011-07-03T14:29:52  <antimatroid1> i'm not minimising h on a draw
+2011-07-03T14:29:59  <antimatroid1> i will title is as such if i do :)
+2011-07-03T14:31:58  <mcstar> it can matter if you use < or <= as i have said
+2011-07-03T14:32:04  <mcstar> for example i used <
+2011-07-03T14:32:38  <mcstar> but since you use a prique, thats different again
+2011-07-03T14:32:46  * jmcarthur makes a new starter from scratch
+2011-07-03T14:32:59  <jmcarthur> i stand by my assertion that my old library was waaay overengineered
+2011-07-03T14:33:16  <antimatroid1> jmcarthur: are you going for grids this time? or sets again?
+2011-07-03T14:33:28  <jmcarthur> hmm?
+2011-07-03T14:33:28  <antimatroid1> i've got a grid with neighbour information set up during turn 0
+2011-07-03T14:33:32  <antimatroid1> so it's like a graph
+2011-07-03T14:33:51  <antimatroid1> then when i get water information i remove the relevant neighbour information
+2011-07-03T14:34:27  <antimatroid1> should be speedier for path finding
+2011-07-03T14:34:34  <jmcarthur> oh i see
+2011-07-03T14:34:40  <jmcarthur> i haven't thought that far yet
+2011-07-03T14:35:11  <jmcarthur> so what is your representation then?
+2011-07-03T14:35:26  <jmcarthur> just an array or some sort of graph structure with pointers?
+2011-07-03T14:35:49  <antimatroid1> i have a grid struct that just has a 2d vector of squares, each square has a vector of locations for neighbours
+2011-07-03T14:35:58  <jmcarthur> ah
+2011-07-03T14:36:22  <jmcarthur> are you certain that is faster than just having a 2d array of the map?
+2011-07-03T14:37:14  *** amstan <amstan!~amstan@69-165-136-225.dsl.teksavvy.com> has joined #aichallenge
+2011-07-03T14:37:14  *** ChanServ sets mode: +o amstan
+2011-07-03T14:37:47  <antimatroid1> what do you mean? instead of what?
+2011-07-03T14:38:24  <antimatroid1> i can use turn 0 (start up turn where bots are passed parameters) to create all the neighbour information, then i just have to remove info whenever i get water information
+2011-07-03T14:38:28  <mcstar> instead of storing nbor information?
+2011-07-03T14:38:41  <jmcarthur> i mean what benefit does this give you vs. just using the map directly?
+2011-07-03T14:38:56  <jmcarthur> in the usual row-column format
+2011-07-03T14:39:32  <antimatroid1> don't search onto water? and don't have to call a get location function that has to wrap your translation etc.
+2011-07-03T14:39:47  <jmcarthur> seeing whether a cell is water is a very fast operation
+2011-07-03T14:39:50  <antimatroid1> sure you skip water, but now you don't even touch it, it's just not something you can come across
+2011-07-03T14:40:20  <antimatroid1> mostly i care about not calling get loc all the time though
+2011-07-03T14:41:19  <mcstar> but you call struct.nbor.N or something like that
+2011-07-03T14:41:35  <jmcarthur> A* can be written completely independently of the underlying representation
+2011-07-03T14:41:48  <antimatroid1> surely indexing a vector is better than calculating a neighbouring location
+2011-07-03T14:41:57  <jmcarthur> calculating?
+2011-07-03T14:41:59  <antimatroid1> and you have to do 4 per node searched
+2011-07-03T14:42:12  <antimatroid1> well if you have a location and you want it's neighbours, you need to calculate them?
+2011-07-03T14:42:16  <mcstar> my 'wrap' function doesnt use mod, or rem, actually, its a recursive wrap, and its pretty fast
+2011-07-03T14:42:25  <jmcarthur> 4 cache-friendly memory accesses can be much friendlier than 3 cache-unfriendly memory accesses though
+2011-07-03T14:42:44  <antimatroid1> hmmmmmm
+2011-07-03T14:43:16  <jmcarthur> but i don't know the details of your structure
+2011-07-03T14:43:22  <jmcarthur> i could be cache friendly for all i know
+2011-07-03T14:43:22  <antimatroid1> http://pastebin.com/YpzEGP4c that's my getLocation function
+2011-07-03T14:43:24  <jmcarthur> *it
+2011-07-03T14:44:29  <jmcarthur> mcstar: a recursive wrap? you mean just substract the height or width until the result is in the correct range?
+2011-07-03T14:44:31  <antimatroid1> to access it from say state, i would call "grid[location].neighbours[neighbourNo]", grid[location] is an inline index function which returns the reference to the square there, then it just indexes a vector?
+2011-07-03T14:44:42  <mcstar> jmcarthur: yes
+2011-07-03T14:44:55  <jmcarthur> yeah that seems like it might actually be nicer than modulus operation, but i don't know
+2011-07-03T14:45:07  <mcstar> its faster for me
+2011-07-03T14:45:38  <jmcarthur> branches can be free if the prediction is right, so yeah that makes sense
+2011-07-03T14:45:44  <mcstar> http://pastebin.com/zjwrRruE
+2011-07-03T14:47:19  <jmcarthur> antimatroid1: that sounds no less expensive than what mcstar is doing, to me
+2011-07-03T14:47:38  <antimatroid1> is it more expensive?
+2011-07-03T14:47:40  <jmcarthur> maybe even more expensive
+2011-07-03T14:47:47  <antimatroid1> once set up it's actually nicer to program with imo
+2011-07-03T14:47:53  <antimatroid1> ah yeah, hmmm oh well
+2011-07-03T14:48:01  <jmcarthur> it may be, but you can always hide the implementation behind a nicer interface
+2011-07-03T14:48:02  <antimatroid1> i'll consider testing times with the other method later
+2011-07-03T14:48:11  <jmcarthur> like i said, A* can be written agnostic to the data structure
+2011-07-03T14:48:29  <antimatroid1> yes, but a* is a sinch to implement
+2011-07-03T14:48:53  <antimatroid1> at least for this, i don't even need the open/closed set stuff, i just have a priority queue for my search queue ordered however I define the operator
+2011-07-03T14:48:57  <jmcarthur> my point is just that you can write the interface you want even if it doesn't match the implementation
+2011-07-03T14:49:44  <antimatroid1> yeah
+2011-07-03T14:49:53  <mcstar> antimatroid1: how come mine with a priority list(not heap) is faster than the cpp version of your's?
+2011-07-03T14:50:01  <jmcarthur> note the complete lack of graph structure in this interface :)  http://hackage.haskell.org/packages/archive/astar/0.2.1/doc/html/Data-Graph-AStar.html
+2011-07-03T14:50:11  <antimatroid1> mcstar: could be numerous reasons :P
+2011-07-03T14:50:39  <jmcarthur> i do wish Set didn't appear in that type signature, actually
+2011-07-03T14:50:55  <antimatroid1> mcstar: let's test, do your simple a* 500 times?
+2011-07-03T14:51:19  <mcstar> i didt the previous search 5000 times in 1.5 seconds
+2011-07-03T14:51:26  <antimatroid1> okay
+2011-07-03T14:51:29  <mcstar> as far as i remember
+2011-07-03T14:51:43  <mcstar> but i wrote that 0.3 ms was for 1 search
+2011-07-03T14:51:47  <jmcarthur> you guys probably have different hardware
+2011-07-03T14:52:06  <mcstar> old amd x2, 512 cache 2000 mhz
+2011-07-03T14:52:09  <antimatroid1> 1868.92 ms for me
+2011-07-03T14:52:19  <antimatroid1> i have no idea what i have :\
+2011-07-03T14:52:29  <mcstar> linux?
+2011-07-03T14:52:30  <jmcarthur> cat /proc/cpuinfo
+2011-07-03T14:52:33  <mcstar> cat /proc/cpuinfo
+2011-07-03T14:52:36  <mcstar> heh
+2011-07-03T14:52:43  <mcstar> i should not have written linux
+2011-07-03T14:52:51  <jmcarthur> always just assume it
+2011-07-03T14:52:58  <jmcarthur> if they don't have linux they deserve the shame anyway
+2011-07-03T14:53:06  <jmcarthur> ;)
+2011-07-03T14:53:10  <mcstar> i mean id come out before you :)
+2011-07-03T14:53:14  <jmcarthur> yeah
+2011-07-03T14:54:02  <antimatroid1> "bash: cat/proc/cpuinfo: No such file or directory"
+2011-07-03T14:54:07  <mcstar> space
+2011-07-03T14:54:08  <jmcarthur> space
+2011-07-03T14:54:11  <jmcarthur> doh
+2011-07-03T14:54:15  <jmcarthur> you win this time
+2011-07-03T14:54:18  <mcstar> :)
+2011-07-03T14:54:34  <jmcarthur> cat <space> /proc/cpuinfo
+2011-07-03T14:55:34  <antimatroid1> bah http://pastebin.com/Vgi7XeX4 :P
+2011-07-03T14:56:00  <jmcarthur> faster than either of ours
+2011-07-03T14:56:27  <antimatroid1> mcstar: are you backtracking the path?
+2011-07-03T14:56:45  <antimatroid1> yeah
+2011-07-03T14:56:52  <antimatroid1> hmmm, note to self, make faster
+2011-07-03T14:57:27  * jmcarthur writes a simpler parser using fewer libraries
+2011-07-03T14:58:02  <jmcarthur> probably will be slower but who gives a shit
+2011-07-03T14:59:42  <jmcarthur> oh i met mightybyte on wednesday
+2011-07-03T15:00:28  <antimatroid1> oh, how did you know who each other were?
+2011-07-03T15:00:44  <jmcarthur> we met intentionally. we and a few other haskellers in NYC at the time
+2011-07-03T15:01:00  <antimatroid1> i think sigh was going to try and meet up with (i think) zannick while in mtv, not sure if it happened
+2011-07-03T15:04:46  <jmcarthur> so you are only told about a particular food location the first time you see it?
+2011-07-03T15:05:07  <jmcarthur> unless you were later told the food has been removed, and then you are told again the next time you see it and there is food there?
+2011-07-03T15:05:29  <antimatroid1> where did you see that?
+2011-07-03T15:05:33  <antimatroid1> we don't have that anymore
+2011-07-03T15:05:44  <antimatroid1> you just get given food information every time a food square is in vision
+2011-07-03T15:06:01  <mcstar> antimatroid1: yes, i walk back on the red squares, by accessing the parents' coordinates
+2011-07-03T15:06:06  <antimatroid1> visible*
+2011-07-03T15:06:36  <jmcarthur> antimatroid1: are you ever told explicitly that food has been removed or is it simply not reported when it's gone?
+2011-07-03T15:06:54  *** UncleVasya <UncleVasya!~Miranda@46.133.81.83> has joined #aichallenge
+2011-07-03T15:07:00  <jmcarthur> http://aichallengebeta.hypertriangle.com/specification.php  <-- includes 'r' lines in the spec
+2011-07-03T15:07:25  <antimatroid1> ah, that's alright, that's old, not my problem :P
+2011-07-03T15:07:29  <antimatroid1> try the github wiki page
+2011-07-03T15:07:33  <jmcarthur> does github have a more up to date spec?
+2011-07-03T15:07:35  <jmcarthur> okay
+2011-07-03T15:07:36  <antimatroid1> yep
+2011-07-03T15:07:41  <jmcarthur> i hope i don't have to change too much now
+2011-07-03T15:07:49  <antimatroid1> nah it should be alright
+2011-07-03T15:08:20  <jmcarthur> water squares are still sent only once, right?
+2011-07-03T15:08:56  <antimatroid1> yep
+2011-07-03T15:09:00  <antimatroid1> the best way i've found for tracking food information out of view is to copy food information before clearing it at the end of each turn, then going through and re-adding it after reading the state and updating vision information if the location isn't currently visible.
+2011-07-03T15:09:17  <antimatroid1> best == easiest
+2011-07-03T15:09:20  <antimatroid1> not fastest
+2011-07-03T15:09:35  <jmcarthur> i'm using a purely functional language. no copy is necessary ;)
+2011-07-03T15:09:46  <antimatroid1> :p
+2011-07-03T15:10:40  <jmcarthur> i also dislike that because it reports food even if you don't know whether it's been destroyed or eaten
+2011-07-03T15:10:59  <antimatroid1> what do you mean?
+2011-07-03T15:11:04  <jmcarthur> i dislike that for the same reason that i dislike assuming a cell is land until you see it
+2011-07-03T15:11:14  <antimatroid1> oh, yeah okay
+2011-07-03T15:11:19  <antimatroid1> i am happy to make those two assumptions
+2011-07-03T15:11:22  <antimatroid1> i think they work well
+2011-07-03T15:11:37  <antimatroid1> from the looks on the beta site, it's worth tracking food outside view
+2011-07-03T15:12:11  <jmcarthur> i'm probably going to tie "certainty" to things i can't see
+2011-07-03T15:12:28  <antimatroid1> my bot on there is still fairly simple, it uses my multi target a* for collecting food, then enemies (if it thinks i have enough ants) then bombs vision information while finding not visible stuff
+2011-07-03T15:12:33  <jmcarthur> with some heuristics based on what i think other players are doing and stuff
+2011-07-03T15:12:57  <jmcarthur> (very very simple heuristics, but better than just assuming the food is still there)
+2011-07-03T15:13:14  <antimatroid1> yeah, i want to track "where enemy ants might be"
+2011-07-03T15:13:16  <jmcarthur> (and better than just assuming an area of land has no food just because i didn't see any last time i was there)
+2011-07-03T15:13:34  <antimatroid1> i'm unsure about whether i want to use markov chains fully or just say yeah an enemy could be here
+2011-07-03T15:13:39  <jmcarthur> hmm... is the spawn rate and/or algorithm specified?
+2011-07-03T15:13:47  <jmcarthur> for food, i mean
+2011-07-03T15:14:00  <antimatroid1> it's a bit messy and not fixed :P
+2011-07-03T15:14:09  <jmcarthur> darn
+2011-07-03T15:14:10  <antimatroid1> mcleopold knows it best, i can give a brief overview..
+2011-07-03T15:14:15  <Zannick> antimatroid1: yes, that happened
+2011-07-03T15:14:21  <jmcarthur> well, i don't even care unless it's speced
+2011-07-03T15:14:49  <antimatroid1> it's not specced anywhere i don't think
+2011-07-03T15:15:28  <jmcarthur> it would make it a lot easier for me to compute confidence levels of food locations is that algorithm and spawn rate was speced in some way
+2011-07-03T15:15:38  <jmcarthur> *if that
+2011-07-03T15:16:07  <antimatroid1> you find a basis for the "symmetrically equivalent squares" on the grid, randomly order the basis, then add that to say a queue with the number of symmetrically equivalent locations (the orbit?) of the chosen one in the queue location, then something like while spawned + queue.front().size() <= turn*spawnrate add food
+2011-07-03T15:16:22  <antimatroid1> but really we're not positive on that being best
+2011-07-03T15:16:25  *** amstan_ <amstan_!~alex@69-165-136-225.dsl.teksavvy.com> has joined #aichallenge
+2011-07-03T15:16:25  *** ChanServ sets mode: +o amstan_
+2011-07-03T15:16:31  <antimatroid1> what do you think about that as a food spawn idea?
+2011-07-03T15:16:46  <jmcarthur> basically designed to ensure some amount of "fairness" i'm guessing?
+2011-07-03T15:16:48  <antimatroid1> also, if an ant resides where a food item is meant to spawn, it just queues up and waits to spawn it there the next turn that location is free
+2011-07-03T15:16:54  <antimatroid1> yeah, i want symmetry
+2011-07-03T15:17:13  <antimatroid1> we've discovered with the introduction of non-tile symmetry that this isn't all that fair all the time though
+2011-07-03T15:17:25  <antimatroid1> as sometimes the "symmetrically equivalent" locations are right next to each other
+2011-07-03T15:18:09  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.81.83> has joined #aichallenge
+2011-07-03T15:18:48  <jmcarthur> i was thinking we could just store the number of times each cell has had food on it (or maybe the number of turns since the last time it had food on it) and weight the next spawn point based on that, otherwise being distributed randomly.
+2011-07-03T15:19:02  <jmcarthur> asymmetry doesn't bother me as much as it bothers you
+2011-07-03T15:19:12  <antimatroid1> that might be best
+2011-07-03T15:19:24  <jmcarthur> to me as long as the asymmetry is uniform then it's okay
+2011-07-03T15:19:26  <antimatroid1> i would like to have this symmetric option at least for testing locally
+2011-07-03T15:19:36  <jmcarthur> s/asymmetry/randomness/
+2011-07-03T15:19:37  <antimatroid1> but yeah, especially with the new problem with different symmetries
+2011-07-03T15:20:19  <jmcarthur> i also think the food spawn rate should be a parameter given on turn 0, especially if we settle down on a spawn algorithm (which i would like to do)
+2011-07-03T15:20:41  <antimatroid1> i think we're trying to hide information like that
+2011-07-03T15:20:46  <antimatroid1> you don't get the number of players etc.
+2011-07-03T15:20:55  <antimatroid1> but i'm unsure of what people would think of that idea
+2011-07-03T15:21:05  <jmcarthur> the spawn rate is a map-uniform property though
+2011-07-03T15:21:21  <antimatroid1> not necessarily
+2011-07-03T15:21:27  <jmcarthur> i don't think it affects your early-game strategy that much
+2011-07-03T15:21:37  <jmcarthur> certainly not as much as knowing the number of players would
+2011-07-03T15:21:38  <antimatroid1> if the dimensions vary significantly, or the number of players, the spawn rate will need to adjust?
+2011-07-03T15:21:50  <jmcarthur> the dimensions are known up front, aren't they?
+2011-07-03T15:21:54  <antimatroid1> yes
+2011-07-03T15:22:16  <jmcarthur> IMO, number of players and spawn rate needn't be very related, at least not independently of map dimensions
+2011-07-03T15:22:41  <antimatroid1> oh, especially not if it's done like i said above
+2011-07-03T15:22:46  <jmcarthur> that is, they will be correlated, but only because they would both correlate to the map dimensions
+2011-07-03T15:23:23  <antimatroid1> i'll have a chat to mcleopold about it next time i see him
+2011-07-03T15:24:12  <antimatroid1> i'm still unsure about asymmetric maps :\
+2011-07-03T15:24:22  <antimatroid1> i could probably make reasonably fair ones though
+2011-07-03T15:24:24  <jmcarthur> we are testing with both right now?
+2011-07-03T15:24:36  <jmcarthur> *are we
+2011-07-03T15:24:39  <antimatroid1> i'd generate like n basis ones like i was making symmetric maps, but then not rotate/tile it
+2011-07-03T15:24:43  * jmcarthur hasn't been watching many games
+2011-07-03T15:24:45  <antimatroid1> nope, they're all symmetric
+2011-07-03T15:24:47  <jmcarthur> ah
+2011-07-03T15:25:02  <jmcarthur> if we don't test with asymmetric maps then we should certainly not introduce them into the main contest
+2011-07-03T15:25:05  <antimatroid1> i wasn't paying much attention, but they decided to just use symmetric at some point, which i wasn't going to argue about :p
+2011-07-03T15:25:34  <jmcarthur> but i would like to at least test with them and see how bad it makes things, if at all
+2011-07-03T15:26:43  <jmcarthur> one thing about symmetry that i don't know that i like that much is the fact that bots can try to guess the kind of symmetry and therefore guess where water is on the rest of the map
+2011-07-03T15:26:53  <jmcarthur> maybe that's not so bad though
+2011-07-03T15:27:32  <jmcarthur> but given that it could happen, i would want symmetry/asymmetry/mixed to be speced
+2011-07-03T15:28:01  <jmcarthur> because if it's not speced then that's an opportunity that some people might not know to take advantage of
+2011-07-03T15:28:39  <antimatroid1> yes, but... we have tile symmetry for any number of players, 5 types of 2 player rotational symmetry, 3 types for 4 players and >1 for 8 player
+2011-07-03T15:28:58  <antimatroid1> and i can translate the rotationally symmetric maps, making the symmetry even harder to detect in some cases
+2011-07-03T15:29:30  <antimatroid1> (rotations including transposes/diagonal rotations of the grid)
+2011-07-03T15:30:23  <jmcarthur> i'm not convinced about the difficulty of detecting the symmetry type. in fact, this might actually make it easier to guess the number of players, too
+2011-07-03T15:30:29  *** UncleVasya <UncleVasya!~Miranda@46.133.81.83> has quit IRC ()
+2011-07-03T15:30:58  <antimatroid1> maybe, the general idea is if you can work it out after all that, good for you
+2011-07-03T15:31:13  <antimatroid1> i'm a big fan of "if it's possible, it's part of the game"
+2011-07-03T15:31:24  <antimatroid1> but i will go out of my way to try and make it harder :)
+2011-07-03T15:31:29  <jmcarthur> i'm a big fan of "if it's part of the game, it's in the specification"
+2011-07-03T15:31:46  <antimatroid1> yes
+2011-07-03T15:32:00  <jmcarthur> or inferrable from the specification, at least
+2011-07-03T15:32:03  <antimatroid1> i will get the really edge case stuff like that once it's finalised
+2011-07-03T15:33:23  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has quit IRC ()
+2011-07-03T15:36:50  *** amstan_ <amstan_!~alex@69-165-136-225.dsl.teksavvy.com> has quit IRC (Ping timeout: 252 seconds)
+2011-07-03T15:46:05  *** Accoun <Accoun!~1@static-213-88-39-97.chebnet.ru> has joined #aichallenge
+2011-07-03T15:49:16  <|UncleVasya|> heheh: http://aichallengebeta.hypertriangle.com/visualizer.php?game=58290&user=26&row=31&col=4&turn=127
+2011-07-03T15:56:52  <jmcarthur> ha
+2011-07-03T15:56:55  <jmcarthur> somebody had to do it
+2011-07-03T16:00:49  <mcstar> i changed my list-based priority queue implementation to a heap-based, and i gained a whole second
+2011-07-03T16:00:55  <mcstar> from 1.3 to 2.3
+2011-07-03T16:01:05  <mcstar> thats not really an improvement it is?
+2011-07-03T16:01:21  <jmcarthur> a whole second measuring what?
+2011-07-03T16:01:30  <jmcarthur> several thousand iterations?
+2011-07-03T16:01:31  <mcstar> the same 5000 paths
+2011-07-03T16:01:59  <mcstar> the problem is that the number increased instead of decreased :(
+2011-07-03T16:02:05  <jmcarthur> oh
+2011-07-03T16:02:20  <jmcarthur> i didn't catch that. i read it the other way around
+2011-07-03T16:02:56  <mcstar> trying the next implementation...
+2011-07-03T16:02:59  <jmcarthur> honestly you can probably get away with an array and linear search
+2011-07-03T16:03:01  <jmcarthur> :P
+2011-07-03T16:03:10  <jmcarthur> these aren't extremely large maps
+2011-07-03T16:03:41  <jmcarthur> do you need this to be really fast?
+2011-07-03T16:03:58  <mcstar> absolutely :D
+2011-07-03T16:04:16  <mcstar> (i dont want antimatroid to beat me in speed)
+2011-07-03T16:04:21  <jmcarthur> lol
+2011-07-03T16:04:33  <jmcarthur> this seems familiar
+2011-07-03T16:04:55  <jmcarthur> oh yeah, antimatroid1 and i were racing our starters quite a while ago
+2011-07-03T16:05:15  <antimatroid1> hehe
+2011-07-03T16:05:23  <antimatroid1> very familiar
+2011-07-03T16:05:39  <antimatroid1> mcstar: maybe your way was better? :P
+2011-07-03T16:06:02  <mcstar> the prique?
+2011-07-03T16:06:20  <jmcarthur> finger trees make pretty nice priority queues too, but i bet they are slower than heap-based ones
+2011-07-03T16:06:38  <mcstar> havent heard of those
+2011-07-03T16:07:06  <antimatroid1> lol, stocha's bot is a pussy
+2011-07-03T16:07:51  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Remote host closed the connection)
+2011-07-03T16:09:07  <jmcarthur> a finger tree basically gives you a sequence with O(log n) random access, O(1) access to the ends, O(log n) concatenation, and, when given some annotations at each node, the ability to keep up-to-date accumulations from left to right without affecting the algorithmic complexity such that you can use that data when searching the tree
+2011-07-03T16:10:07  <jmcarthur> for example, when the accumulation is just the number of elements in the sequence (that is, from left to right the accumulations are 0, 1, 2, 3, 4, ...), you can use those annotations for O(log n) indexing, and also O(1) size/length queries
+2011-07-03T16:10:28  <jmcarthur> if it's min/max operations, you get stuff like priority queues
+2011-07-03T16:11:00  <jmcarthur> there's all sorts of crazy stuff you can do with annotated finger trees
+2011-07-03T16:11:25  <mcstar> sorry, a fly invaded my private airspace
+2011-07-03T16:11:35  <jmcarthur> that is certainly worth your attention
+2011-07-03T16:12:34  <mcstar> i get that its fast an multi-purpose, but how does it look?
+2011-07-03T16:12:48  <mcstar> i mena compared to a fibonacci/binary tree?
+2011-07-03T16:13:38  <mcstar> is it the same thing, with a different branching factor?
+2011-07-03T16:14:12  <jmcarthur> it's a kind of 2-3 tree
+2011-07-03T16:15:04  <jmcarthur> http://scienceblogs.com/goodmath/2010/04/finger_trees_done_right_i_hope.php
+2011-07-03T16:15:21  <mcstar> btw i dont finger trees
+2011-07-03T16:17:12  <mcstar> jmcarthur: is that haskell?
+2011-07-03T16:17:45  <mcstar> yes
+2011-07-03T16:17:52  <|UncleVasya|> Does Global Rank (value in the brackets near the current rank) means average rank or something else?
+2011-07-03T16:18:01  <jmcarthur> yeah finger trees are probably more popular in haskell than in most other languages
+2011-07-03T16:18:09  <jmcarthur> because they are purely function friendly
+2011-07-03T16:18:11  <jmcarthur> *functional
+2011-07-03T16:18:12  *** VilleH <VilleH!54fb9a09@gateway/web/freenode/ip.84.251.154.9> has quit IRC (Quit: Page closed)
+2011-07-03T16:24:09  <|UncleVasya|> Is therea real possibility that Ants will start at September 1,like Planet Wars?
+2011-07-03T16:24:45  <jmcarthur> Ants Nukem Forever starts whenever it's ready
+2011-07-03T16:25:39  <mleise> ants starts in 6 days + testing time for a stable ranking algorithm
+2011-07-03T16:26:06  <jmcarthur> seriously?
+2011-07-03T16:26:10  <mleise> no
+2011-07-03T16:26:13  <jmcarthur> :P
+2011-07-03T16:26:38  <jmcarthur> ants starts in O(n) time
+2011-07-03T16:27:08  <jmcarthur> where n = number of WTFs
+2011-07-03T16:27:47  <jmcarthur> hmm, maybe a misuse of big-O notation
+2011-07-03T16:27:55  <|UncleVasya|> keep going with development  and testing until I come back to the computer ithemiddle August :D
+2011-07-03T16:27:58  <jmcarthur> that's really more of a lower bound i think
+2011-07-03T16:28:05  <mcstar> Ants will start, when Zeno's turtle reaches the finish line
+2011-07-03T16:28:10  <|UncleVasya|> *in the middle
+2011-07-03T16:28:54  <mcstar> jmcarthur: the problem is that you dont know the prefactor :D
+2011-07-03T16:29:52  <jmcarthur> heh
+2011-07-03T16:34:57  *** Naktibalda <Naktibalda!~chatzilla@cpc1-heme9-2-0-cust585.9-1.cable.virginmedia.com> has quit IRC (Quit: ChatZilla 0.9.87 [Firefox 5.0/20110622232440])
+2011-07-03T16:35:52  <mcstar> did you know on github you can have username.github.com domain?
+2011-07-03T16:36:17  <mcstar> why isnt there an aichallenge.github.com? there could be the main site too
+2011-07-03T16:36:21  <mcstar> just a thought
+2011-07-03T16:36:50  <mcstar> yeah, actually it couldnt
+2011-07-03T16:47:12  <mcstar> ok, i tried a supposedly fast heap implementation, give 5.5 seconds compared to ~1.5
+2011-07-03T16:47:18  <mcstar> s
+2011-07-03T16:51:30  *** gobang <gobang!~gobang@89.204.153.227> has quit IRC (Ping timeout: 255 seconds)
+2011-07-03T16:59:50  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has joined #aichallenge
+2011-07-03T17:05:25  *** Apophis <Apophis!~apophis@217-162-217-10.dynamic.hispeed.ch> has joined #aichallenge
+2011-07-03T17:06:01  <mcstar> now 11.6 seconds with another implementation
+2011-07-03T17:08:27  *** nann <nann!~apophis@217-162-217-10.dynamic.hispeed.ch> has quit IRC (Ping timeout: 258 seconds)
+2011-07-03T17:51:41  *** |UncleVasya| <|UncleVasya|!kvirc@46.133.81.83> has quit IRC ()
+2011-07-03T17:55:42  *** sir_macelon <sir_macelon!c06482e4@gateway/web/freenode/ip.192.100.130.228> has quit IRC (Quit: Page closed)
+2011-07-03T17:56:33  *** Palmik <Palmik!~palmik@120-49-80-78.tmcz.cz> has quit IRC (Remote host closed the connection)
+2011-07-03T17:57:13  *** choas <choas!~lars@p578F6E45.dip.t-dialin.net> has quit IRC (Quit: Lost terminal)
+2011-07-03T17:58:06  *** olexs1 <olexs1!~Leviathan@drms-4d015961.pool.mediaWays.net> has joined #aichallenge
+2011-07-03T18:00:48  *** olexs <olexs!~Leviathan@drms-590c5fb4.pool.mediaWays.net> has quit IRC (Ping timeout: 276 seconds)
+2011-07-03T18:00:49  *** nux67 <nux67!51b9bee9@gateway/web/freenode/ip.81.185.190.233> has quit IRC (Quit: Page closed)
+2011-07-03T18:18:24  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-07-03T18:20:44  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has quit IRC (Client Quit)
+2011-07-03T18:23:15  *** sir_macelon <sir_macelon!c06482ee@gateway/web/freenode/ip.192.100.130.238> has joined #aichallenge
+2011-07-03T18:23:35  <sir_macelon> why this game was cut off? http://aichallengebeta.hypertriangle.com/visualizer.php?game=58696
+2011-07-03T18:25:04  <_flag> sir_macelon: It seems to cut games off when one side has a large advantage but isn't killing the other side too much yet, a lot of my games end like that
+2011-07-03T18:27:01  <sir_macelon> _flag: but i thought it is strictly set to cut off when one of the players holds 90% of ants population for 100 turns
+2011-07-03T18:27:47  <_flag> I don't know then, I haven't been paying to much attention to what the cutoff rules are
+2011-07-03T18:27:54  <_flag> s/to/too
+2011-07-03T18:28:41  <sir_macelon> guess i'll have to ask mcleopold about that, seems strange to me
+2011-07-03T18:30:34  <sir_macelon> contestbot: later tell mcleopold http://aichallengebeta.hypertriangle.com/visualizer.php?game=58696 wasn't that game cut off too early?
+2011-07-03T18:30:34  <contestbot> sir_macelon: Ready to serve.
+2011-07-03T18:30:55  *** ltriant <ltriant!~ltriant@lithium.mailguard.com.au> has joined #aichallenge
+2011-07-03T18:36:12  *** sir_macelon <sir_macelon!c06482ee@gateway/web/freenode/ip.192.100.130.238> has quit IRC (Quit: Page closed)
+2011-07-03T19:06:07  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Read error: Connection reset by peer)
+2011-07-03T19:07:12  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has joined #aichallenge
+2011-07-03T19:10:40  *** arakyd <arakyd!ad57d94b@gateway/web/freenode/ip.173.87.217.75> has joined #aichallenge
+2011-07-03T19:12:32  *** arakyd <arakyd!ad57d94b@gateway/web/freenode/ip.173.87.217.75> has quit IRC (Client Quit)
+2011-07-03T19:49:19  *** olexs1 <olexs1!~Leviathan@drms-4d015961.pool.mediaWays.net> has quit IRC (Quit: Leaving.)
+2011-07-03T19:54:50  *** antimatroid1 <antimatroid1!~nick@194.205.dsl.mel.iprimus.net.au> has quit IRC (Ping timeout: 250 seconds)
+2011-07-03T20:16:04  *** parsley <parsley!5ed00294@gateway/web/freenode/ip.94.208.2.148> has joined #aichallenge
+2011-07-03T20:21:24  *** Kingpin13 <Kingpin13!~Kingpin13@Wikipedia/Kingpin13> has quit IRC (Quit: this used to be the life, but I don't need another one)
+2011-07-03T20:23:30  <mleise> mcstar: when antimatroid wrote 1868.92 ms what did he mean? for 500 paths or for 5000?
+2011-07-03T20:23:52  <mcstar> i hope that was for 5e3
+2011-07-03T20:24:51  <mleise> hehe, wasn't he using c++ and you were using haskel? and his cpu was 1.4x faster?
+2011-07-03T20:25:35  <mcstar> common lisp
+2011-07-03T20:25:42  <mcstar> i dont know haskell yet
+2011-07-03T20:26:51  <mcstar> the common wisdom among lispers is that cl can beat C in cases, when the program is very complex, and the cl code is optimized
+2011-07-03T20:26:52  *** Gudradain <Gudradain!60159035@gateway/web/freenode/ip.96.21.144.53> has joined #aichallenge
+2011-07-03T20:27:19  <mleise> hmm ok considering the speed factor of the cpu that would be 0.52 ms per path for antimatroid.
+2011-07-03T20:27:28  <mcstar> in this case it wasnt very complex, but i payed attention to optimizing it, and in fact im still doing it
+2011-07-03T20:28:25  <mcstar> and there's another thing: it seems that the heap based priority queue is an overkill
+2011-07-03T20:28:27  <mleise> ok then I have a rough estimate on how long pathfinding on that test map should take :)
+2011-07-03T20:29:04  <mleise> this one, right? http://pastebin.com/A6uuU4LA
+2011-07-03T20:29:05  <mcstar> i have one implemented using lists proficiently, and i can imagine that the cpp's stl isnt very efficient for small sizes
+2011-07-03T20:29:47  <mcstar> well, on that map the alg. scans all the nodes
+2011-07-03T20:30:09  <mcstar> so it cannot get more complex than that(in that situation)
+2011-07-03T20:30:24  <mleise> hmm that may be. or depending on the data structure there is some copying done under the hood
+2011-07-03T20:30:39  <mcstar> but still, in the game paths will still be shorter
+2011-07-03T20:31:40  <mcstar> so, if you dont want to time out before you win(and say you have quite a lot ants) this can be an issue
+2011-07-03T20:32:01  <Gudradain> hey you guys are working on pathfinding?
+2011-07-03T20:32:13  <Gudradain> is it on a grid map?
+2011-07-03T20:32:26  <mcstar> i will tell antimatroid to try not using the stl's priority queue, see if it help
+2011-07-03T20:32:28  <mcstar> s
+2011-07-03T20:32:50  <mcstar> Gudradain: no, im using a photorealistic vector-map
+2011-07-03T20:32:58  <mcstar> :)
+2011-07-03T20:33:26  <Gudradain> hmmm the name lost me :)
+2011-07-03T20:33:44  <Gudradain> do you mean you use geometric form to find a path?
+2011-07-03T20:33:52  <mcstar> i mean i was joking
+2011-07-03T20:33:57  <Gudradain> lol
+2011-07-03T20:34:06  <mcstar> have you seen an Ants map?
+2011-07-03T20:34:14  <mcstar> on the beta site maybe?
+2011-07-03T20:34:20  <Gudradain> nope, any screen shot around?
+2011-07-03T20:34:26  <mcstar> @beta
+2011-07-03T20:34:27  <contestbot> mcstar: beta could be http://aichallengebeta.hypertriangle.com/.
+2011-07-03T20:34:39  <mleise> C++ has comes with some catches
+2011-07-03T20:34:49  <mcstar> go to current rankings(right side) and choose a play/match and watch it
+2011-07-03T20:34:58  <mcstar> plsxer
+2011-07-03T20:35:03  <mcstar> hell, player
+2011-07-03T20:35:17  <mcstar> mleise: like what?
+2011-07-03T20:36:20  <mleise> like it copies structures often when you just want a pointer
+2011-07-03T20:36:35  <Gudradain> nice, so the goal is to collect the most little circle to win right
+2011-07-03T20:37:45  <mcstar> the goal is to win, and you can collect food, and engage in battle
+2011-07-03T20:37:49  <mleise> Gudradain: more or less, yes. you are also supposed to fight the enemy ants in a way that you lose less ants
+2011-07-03T20:37:51  *** pcavs <pcavs!~paul@c-76-118-176-40.hsd1.ma.comcast.net> has quit IRC (Ping timeout: 255 seconds)
+2011-07-03T20:38:38  <mleise> ...rebooting to Linux
+2011-07-03T20:38:45  <mcstar> mleise: i still dont get it: cpp is explicit about pointers/references/copies, isnt it?
+2011-07-03T20:38:50  *** mleise <mleise!~Marco@dslb-088-070-148-090.pools.arcor-ip.net> has quit IRC (Read error: Connection reset by peer)
+2011-07-03T20:38:58  <mcstar> argh
+2011-07-03T20:39:23  <Gudradain> do you need to implements your own pathfinding algorithm?
+2011-07-03T20:40:52  *** mleise <mleise!~marco@dslb-088-070-148-090.pools.arcor-ip.net> has joined #aichallenge
+2011-07-03T20:41:27  <mleise> ok firing up netbeans
+2011-07-03T20:46:17  <mleise> I'm writing my algorithms in JavaScript first, because you don't need to compile and the html canvas is good for some sketches
+2011-07-03T20:46:32  <mcstar> mleise: i still dont get it: cpp is explicit about pointers/references/copies, isnt it?
+2011-07-03T20:46:37  <jmcarthur> yeah compilers for C-like languages tend to not be as advanced as far as crazier optimizations go
+2011-07-03T20:46:41  <mcstar> i wrote this just before you left
+2011-07-03T20:47:29  <jmcarthur> what they lack on macro optimizations they tend to make up for with micro optimizations, though
+2011-07-03T20:47:53  <mcstar> you mean global, right?
+2011-07-03T20:48:17  <jmcarthur> well, not only global, but that would fit into what i am calling "macro", yes
+2011-07-03T20:48:33  <mcstar> when you say macro i think of a different thing...
+2011-07-03T20:48:50  <jmcarthur> what do you think of?
+2011-07-03T20:48:59  <mcstar> do you know lisp?
+2011-07-03T20:49:09  <jmcarthur> not much
+2011-07-03T20:49:11  <jmcarthur> oh
+2011-07-03T20:49:14  <jmcarthur> you mean a lisp macro
+2011-07-03T20:49:27  <mcstar> or any other language's macro
+2011-07-03T20:49:33  <jmcarthur> i just mean "macro" as in "large scale"
+2011-07-03T20:49:43  <jmcarthur> as opposed to "micro"
+2011-07-03T20:49:55  <mcstar> i know :) but since i use lisp, macro for me is not that kind of macro
+2011-07-03T20:50:01  <jmcarthur> heh
+2011-07-03T20:50:58  <mcstar> so, there are times when cpp copies whole data structures instead of giving a reference to them?
+2011-07-03T20:51:01  <mleise> mcstar: Beginners often accidently copy objects in function returns in C++
+2011-07-03T20:51:30  <mcstar> can you return classes or functions:
+2011-07-03T20:51:32  <mcstar> ?
+2011-07-03T20:51:40  <jmcarthur> that is a common problem, yes, but it's still not the only thing i am talking about
+2011-07-03T20:54:11  <jmcarthur> languages that can give the compiler more information about the meaning and invariants of the program stand to benefit from some pretty insane optimizations, like fusion or vectorization (by which i mean vectorizing very large, complex algorithms, not just for-loops like most C-like language compilers can manage)
+2011-07-03T20:54:44  <mcstar> thats why they hail the haskell type system right?
+2011-07-03T20:54:50  <jmcarthur> well
+2011-07-03T20:54:52  <mcstar> for one example
+2011-07-03T20:55:00  *** amstan <amstan!~amstan@69-165-136-225.dsl.teksavvy.com> has quit IRC (Remote host closed the connection)
+2011-07-03T20:55:03  <mleise> mcstar: classes? there is usually no reflection in c++ so no return of classes.
+2011-07-03T20:55:04  <jmcarthur> those optimizations benefit more from haskell's purity that from its type system
+2011-07-03T20:55:06  <mcstar> or is it rather correctness?
+2011-07-03T20:55:27  <jmcarthur> tight control over side effects helps the compiler a lot
+2011-07-03T20:55:28  <mleise> mcstar: function pointers can be returned of course.
+2011-07-03T20:55:42  <mcstar> mleise: yeah that i know, i did it in c
+2011-07-03T20:56:02  <jmcarthur> yeah, it's that it's easier to prove the correctness of these transformations with purity
+2011-07-03T20:56:25  <jmcarthur> even without purity, though, higher level combinators and stuff can be helpful to a compiler
+2011-07-03T20:57:00  <mcstar> from my brief experience i would say that the lisp compilers are pretty advanced
+2011-07-03T20:57:08  <jmcarthur> i don't know lisp all that well, but i'm sure that lisp macros alone enable some pretty cool optimizations, right? in that you can automate certain kinds of transformations programmatically?
+2011-07-03T20:57:09  <mleise> mcstar: now the trouble is if you return something like a list object which contains large structs, the whole list and its contents is copied by calling the copy constructor
+2011-07-03T20:57:22  <jmcarthur> haskell is lacking in the macro area
+2011-07-03T20:57:52  *** amstan <amstan!~amstan@69-165-136-225.dsl.teksavvy.com> has joined #aichallenge
+2011-07-03T20:57:52  *** ChanServ sets mode: +o amstan
+2011-07-03T20:58:16  <mcstar> jmcarthur: well, imagine that you can expand the language with macros
+2011-07-03T20:58:41  <mleise> mcstar: maybe antimatroid has one such case in his algorithm
+2011-07-03T20:58:47  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has joined #aichallenge
+2011-07-03T20:58:47  <mcstar> you have the tools, the functions, which might be buil-ins, and you combine thjose with macros to build custom syntax
+2011-07-03T20:59:20  <mcstar> macros arent for optimization, its for abstarction
+2011-07-03T20:59:23  <jmcarthur> sure
+2011-07-03T20:59:26  <mcstar> you can hide complex code in them
+2011-07-03T20:59:54  <jmcarthur> are there commonly any mechanisms for introducing "rewrite rules" for the compiler?
+2011-07-03T21:00:09  <jbrechtel> The scala starter package crashes when I submit it.  I suspect it's actually not compiling based on what I see when running the server locally.
+2011-07-03T21:00:19  <jmcarthur> like if some macro expansions reveal an opportunity to replace some pattern with a more efficient version of it?
+2011-07-03T21:00:40  <jbrechtel> I was hoping to submit a pull request to fix it, but I'm at my wits end.
+2011-07-03T21:00:48  <jmcarthur> this is one of the key optimizations in ghc (replacing macro expansion with inlining)
+2011-07-03T21:00:56  <mcstar> you can test argument-types, and behave accordingly even in macro expansion time
+2011-07-03T21:01:05  <jbrechtel> Anyone around that has some familiarity  with the worker, specifically compiler.py?
+2011-07-03T21:02:13  <mcstar> jmcarthur: unfortunately im not yet familiar with those kind of compiler optimizations
+2011-07-03T21:02:24  *** parsley <parsley!5ed00294@gateway/web/freenode/ip.94.208.2.148> has quit IRC (Ping timeout: 252 seconds)
+2011-07-03T21:02:57  <mcstar> i know that for example sbcl's compiler takes many things into account, but i dont know what kind of code transformations are possible
+2011-07-03T21:03:13  *** parsley <parsley!5ed00294@gateway/web/freenode/ip.94.208.2.148> has joined #aichallenge
+2011-07-03T21:03:18  <jmcarthur> mcstar: basically, a library writer can tell the compiler "if, during inlining, you ever see the pattern 'a (b c) d e', replace it with 'f d e'"
+2011-07-03T21:04:03  <jmcarthur> or whatever
+2011-07-03T21:05:03  <mcstar> im kind of tired, and my ideas fuzzy there, so i cant say anything productive
+2011-07-03T21:06:27  <mcstar> mleise: even if the list only contained pointers to those structs?
+2011-07-03T21:07:04  <mleise> mcstar: no, not in that case
+2011-07-03T21:08:15  <mcstar> ok, so this is more like a know-what-you-are-doing situation
+2011-07-03T21:08:34  <jmcarthur> that's *always* the situation in C++
+2011-07-03T21:08:45  <jmcarthur> ;)
+2011-07-03T21:21:46  <mcstar> nite
+2011-07-03T21:21:49  *** mcstar <mcstar!~mcstar@adsl-89-132-3-104.monradsl.monornet.hu> has quit IRC (Quit: WeeChat 0.3.5)
+2011-07-03T21:56:07  *** parsley <parsley!5ed00294@gateway/web/freenode/ip.94.208.2.148> has quit IRC (Quit: Page closed)
+2011-07-03T22:04:54  *** onensora <onensora!c@546BF259.cm-12-4d.dynamic.ziggo.nl> has quit IRC ()
+2011-07-03T22:21:06  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has joined #aichallenge
+2011-07-03T22:36:14  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has joined #aichallenge
+2011-07-03T22:36:32  *** foRei <foRei!~ViT@0x4dd7b24d.adsl.cybercity.dk> has quit IRC (Quit: Bye)
+2011-07-03T22:41:37  *** McLeopold <McLeopold!~Scott.Bri@c-98-247-248-39.hsd1.wa.comcast.net> has left #aichallenge
+2011-07-03T22:53:22  <jmcarthur> ugh, i hate how we don't explicitly tell the bots that a visible cell that is not water is land
+2011-07-03T23:13:51  <mleise> yeah it requires to calculate the difference in vision from one turn to the next just to know what is land
+2011-07-03T23:14:10  <mleise> or what is explored land to be exact
+2011-07-03T23:14:30  <smiley1983> yes, and it's quite a lot of processing in some cases to get it right
+2011-07-03T23:14:39  *** smiley1983 <smiley1983!~smiley@115-64-7-182.static.tpgi.com.au> has quit IRC (Quit: leaving)
+2011-07-03T23:16:01  <mleise> its not like I consider the calculation of vision diff a waste of time though, so its ok for me.
+2011-07-03T23:19:18  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has joined #aichallenge
+2011-07-03T23:19:28  <mleise> for example if you track food items that went out of sight it is useful to compare the 'newly visible' coordinates against the old food list and remove any food that is gone
+2011-07-03T23:22:53  <mleise> Hey, it is interesting to rewrite old routines. The second time I often understand the algorithm I wrote much better and can write shorter code. I just shrinked one function by 50%.
+2011-07-03T23:26:13  *** qacek <qacek!~jacques@c-98-207-37-2.hsd1.ca.comcast.net> has joined #aichallenge
+2011-07-03T23:40:05  *** jbrechtel <jbrechtel!~jbrechtel@c-24-98-101-151.hsd1.ga.comcast.net> has quit IRC (Remote host closed the connection)
+2011-07-03T23:42:33  *** computerwiz_222 <computerwiz_222!~andrew@216-246-251-236.cpe.distributel.net> has quit IRC (Remote host closed the connection)

@@ -1,0 +1,1233 @@
+2010-10-03T00:00:21  <antimatroid2> i've got 11th :(
+2010-10-03T00:00:34  <j3camero> aw damn so close
+2010-10-03T00:00:50  <j3camero> what is the level of sophistication that is needed to be in the top 100 right now? Top 10?
+2010-10-03T00:00:56  <antimatroid2> not that much
+2010-10-03T00:00:57  <j3camero> What sorts of algorithms are we talking here?
+2010-10-03T00:01:02  <antimatroid2> my current one is still mostly heuristic based
+2010-10-03T00:01:18  <antimatroid2> i'm currently working on some kind of approximation to a game tree to try minimax and see how that goes
+2010-10-03T00:01:18  <j3camero> Ugh. That is not good. I wonder what we can do to step it up.
+2010-10-03T00:01:26  *** yasith_ <yasith_!~yasith@112.135.80.168> has joined #aichallenge
+2010-10-03T00:01:26  <antimatroid2> but there's so many choices to be made i have no idea how it will go
+2010-10-03T00:01:28  <j3camero> That would do it haha.
+2010-10-03T00:01:46  <antimatroid2> i tried dynamic programming but too many possibe moves and couldn't see and easy way to reduce that
+2010-10-03T00:02:11  <antimatroid2> i think people are going to be using simplex for choice selection at the top towards the end
+2010-10-03T00:02:11  <j3camero> I find when I am playing Galcon I am doing a bit of a minimax thing in my head. Trying to figure out how to do the pruning will be tough though. It seems like I base it off of a thousand little heuristics.
+2010-10-03T00:02:32  <j3camero> Simplex as in linear programming?
+2010-10-03T00:02:38  <antimatroid2> yep
+2010-10-03T00:02:49  <antimatroid2> fairly simple to set it up for moves to planets you want to make
+2010-10-03T00:03:22  <j3camero> I can see how you would do it up. Each decision variable is the number of ships to send between each pair of planets, and the constraints are zero and the number of ships available at each planet. However, what would you use as a fitness function?
+2010-10-03T00:03:36  <antimatroid2> i don't even mind sharing what my strategies are for this, there are so many and the details are many for each that i don't think it even really matters
+2010-10-03T00:04:00  <antimatroid2> not entirely sure yet, Migi32 had an interesting idea
+2010-10-03T00:04:07  <j3camero> Do you know what it was?
+2010-10-03T00:04:08  *** yasith <yasith!~yasith@112.135.79.120> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T00:04:09  <antimatroid2> maximise expected number of ships at the end of the game
+2010-10-03T00:04:16  <j3camero> You don't say.
+2010-10-03T00:04:38  <antimatroid2> so your ships - their ships + remainingturns(your growth - their growth
+2010-10-03T00:04:47  <j3camero> Ahhhh
+2010-10-03T00:04:50  <j3camero> Not bad.
+2010-10-03T00:05:02  <antimatroid2> i would probably throw something into the mix about position strength
+2010-10-03T00:05:11  <j3camero> And that gets maximized for some time period n turns in the future or what?
+2010-10-03T00:05:53  *** delt0r_ <delt0r_!~delt0r@188-22-162-221.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-03T00:05:56  <j3camero> Like, you have to pick some time t where you evaluate that heuristic.
+2010-10-03T00:05:57  <antimatroid2> yeah, just do it for the end condition if specified, otherwise that one might be a bit wonky
+2010-10-03T00:06:11  <antimatroid2> or you could just try to maximise your number of ships 100 turns into the future or something
+2010-10-03T00:06:18  <antimatroid2> if the end time is unspecified
+2010-10-03T00:07:10  *** delt0r___ <delt0r___!~delt0r@188-22-161-210.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T00:07:14  <j3camero> I was thinking that this problem is great for linear programming. I'm just not sure how to choose weights for the maximization function.
+2010-10-03T00:07:38  <antimatroid2> that's where it gets difficult
+2010-10-03T00:08:11  <antimatroid2> i'm still not sure if the simple way of setting the problem removes the possibility of finding an optimal solution for which no feasible integer solution exists
+2010-10-03T00:08:19  <j3camero> It seems like you sort of want to be able to say if(i_own_planet_n,some_linear_function,some_different_linear_function)
+2010-10-03T00:08:21  <antimatroid2> i think you can set the constraints up such that that doesn't happen
+2010-10-03T00:08:42  <u1tr0n> 7 am ... need to go sleep :(
+2010-10-03T00:08:48  <antimatroid2> night
+2010-10-03T00:09:05  <u1tr0n> mb in my dream i will see better architecture of my bot ;)
+2010-10-03T00:09:21  <j3camero> night ult0n
+2010-10-03T00:09:30  *** u1tr0n <u1tr0n!~u1tr0n@90-131-93-178.pool.ukrtel.net> has quit IRC ()
+2010-10-03T00:09:51  <j3camero> I think there's always going to be a feassible integer solution. You're always free to do nothing: (0,0,...,0)
+2010-10-03T00:10:07  <antimatroid2> yeah, but the planets it spits out to claim as optimal
+2010-10-03T00:10:23  <antimatroid2> i am unsure whether it's possible that there is a real solution without an integer solution to that
+2010-10-03T00:10:47  <antimatroid2> i think it's fine, but i'm not positive
+2010-10-03T00:11:13  <j3camero> The biggest problem is that you sort of need conditionals in the fitness function for the LP, which you can't really do.
+2010-10-03T00:11:29  <antimatroid2> whichever way people go algorithm wise, unless it's got a good heuristic side well built into it, it wont do very well this time
+2010-10-03T00:11:38  <sigh> yup
+2010-10-03T00:11:42  <sigh> at the moment, the quality of the heuristics is the dominating factor
+2010-10-03T00:11:44  <j3camero> I was thinking that some kind of interior point algorithm might work even if you had conditionals in the fitness expression?
+2010-10-03T00:11:45  <antimatroid2> last time you could do reasonably well with a pretty stragith forward minimax implementation
+2010-10-03T00:12:05  <sigh> even later, more sophisticated strategies have to have strong heuristics underlying them
+2010-10-03T00:12:27  <sigh> because brute force search is just not feasible for almost any aspect of this problem
+2010-10-03T00:12:42  <j3camero> I really really want someone to go hardcore on the machine learning to tune their heuristics. It doesn't seem like we've seen anything like that... yet.
+2010-10-03T00:13:02  <antimatroid2> like my idea for minimax is pick some moves from us, them counter that, do that 2 or 3 turns, then estimate their moves with a probability distribution, run each child for a number of turns, evalulate those and run minimax on the tree
+2010-10-03T00:13:25  <antimatroid2> still haven't worked out how to pick possible combinations of moves i and they might make with all of that information
+2010-10-03T00:13:26  <antimatroid2> it's insane
+2010-10-03T00:13:28  <sigh> j3camero: I don't think anyone is at the stage where they know what parameters to use for something like that
+2010-10-03T00:13:35  <sigh> maybe they are, but I wouldn't bet on it
+2010-10-03T00:13:41  <sigh> people are still figuring this stuff out
+2010-10-03T00:13:46  <antimatroid2> i'm playing to let it churn away for a few days at some point trying out different parameter values
+2010-10-03T00:14:06  <j3camero> I wonder what I can do to give people a steeper incentive to really create cool stuff.
+2010-10-03T00:14:27  <antimatroid2> i have fucked around with parameters manually a lot, but need to get the computer to really give it a go once things are better set up, no point doing it now
+2010-10-03T00:14:28  <sigh> let us download the st of  games
+2010-10-03T00:14:34  <sigh> or the set of top games
+2010-10-03T00:14:36  <antimatroid2> j3camero: prizes :P
+2010-10-03T00:14:42  <j3camero> We gotta find some people to do sportscaster-style news coverage of the contest on a daily basis. We could even do Skype interviews with the top contestants and shit.
+2010-10-03T00:14:42  <sigh> that too
+2010-10-03T00:14:49  <antimatroid2> did that person that emailed you the other day pull through with anything?
+2010-10-03T00:15:18  <antimatroid2> j3camero: are we getting a live leaderboard during the final tournament this time? that'd be so much more awesome
+2010-10-03T00:15:22  <sigh> j3camero: I think dmj111 is planning to continue blogging about what he's doing
+2010-10-03T00:15:28  <j3camero> Yeah he was quite nice. Memberships to his AI website. He hasn't got back to me yet though.
+2010-10-03T00:15:28  <antimatroid2> even if not being able to view games
+2010-10-03T00:15:48  <antimatroid2> ah, that's not really much of a prize :P
+2010-10-03T00:16:10  <antimatroid2> don't get me wrong, i'm competing anyway, but prizes do motivate people
+2010-10-03T00:16:25  <j3camero> antimatroid2: no promises, but the odds are higher this time due to open source. I took it down last time because I was so tired of people crying foul, and I knew people would lose their shit every time their ranking moved and blog about how the cotnest is corrupt.
+2010-10-03T00:16:38  <sigh> o_O
+2010-10-03T00:17:04  <antimatroid2> haters gonna hate regardless
+2010-10-03T00:17:13  <j3camero> antimatroid2: yeah, prizes would be so awesome. I wonder if I could put up some prizes...
+2010-10-03T00:17:29  <antimatroid2> have you considered an open paypal account?
+2010-10-03T00:17:32  <j3camero> antimatroid2: actually, I found that if people couldn't see the leaderboard, they quieted right down.
+2010-10-03T00:17:35  <antimatroid2> let people donate for prize money?
+2010-10-03T00:17:37  <antimatroid2> i would
+2010-10-03T00:18:02  <antimatroid2> j3camero: it's a lot of fun to see the leaderboard evolve throughout the tournament though
+2010-10-03T00:18:02  <sigh> j3camero: but you also quieten the people interested in the competition?
+2010-10-03T00:18:14  <j3camero> antimatroid2: ohhh this is a great idea. Maybe say that half the donations go to prizes, and half goes to a slush fund for the next contests. We are starting to make big plans that require at least a bit of dough.
+2010-10-03T00:18:26  <antimatroid2> yep
+2010-10-03T00:18:28  <sigh> a lot of the chat here revolves around the leaderboard, without it this would be less exciting
+2010-10-03T00:18:49  <j3camero> sigh: yeah you're right. This was only during the final tournament after the submission deadline we're talking about.
+2010-10-03T00:19:01  <sigh> contestbot tells us the top 10 every hour, and often that sparks a discussion
+2010-10-03T00:19:02  <antimatroid2> yeah, but that's when it's most exciting :P
+2010-10-03T00:19:02  <contestbot> sigh: I'm sorry Dave, I cannot tells.
+2010-10-03T00:19:15  <sigh> :P
+2010-10-03T00:19:37  <sigh> I think it will hurt more than help if you hide the leaderboard
+2010-10-03T00:19:57  <antimatroid2> if the server could handle people also viewing games, that would be awesome
+2010-10-03T00:20:11  <antimatroid2> otherwise maybe pick a few "cool" games each day to release?
+2010-10-03T00:20:16  <j3camero> sigh: yeah the odds are higher of the leaderboard staying up for the final tourney this time round, since it's all open source. There is much less chance of people being unreasonable about the ranking algorithm and matching procedure and such.
+2010-10-03T00:20:31  <sigh> cool
+2010-10-03T00:20:47  <antimatroid2> how long are you planning to run the final tourny for?
+2010-10-03T00:20:55  <antimatroid2> i think a week would be awesome with a live leaderboard
+2010-10-03T00:21:19  <antimatroid2> and scores need to be reset at the deadline so that everyone starts from scratch, but i think daniel's onto that one
+2010-10-03T00:22:01  <j3camero> sigh: the element of surprise was also a factor though. It's cool to embargo it for a while to build up the anticipation. Otherwise it becomes clear who the winner is pretty early. To tell you the truth, we barely needed the final tourney last time. People were being so crazy about making sure that every top50 person played every other top50 person. After all was said and done, it didn't make much difference. The rankings stayed dead steady for the whol
+2010-10-03T00:22:31  <antimatroid2> also, for next time, would it be possible for people to specify whether they're happy to share their final code and have their profile automatically have it downloadable after the final tournament should they say they're happy for that to happen? would make it a lot cleaner to find shared code at the end of the contest
+2010-10-03T00:22:43  <antimatroid2> google codejam shares everyones code i think
+2010-10-03T00:23:09  <antimatroid2> yeah agreed on the rankings
+2010-10-03T00:23:20  <antimatroid2> i was one of the people bitching about that a lot, but it really was quite steady
+2010-10-03T00:23:26  <j3camero> antimatroid2: yeah I think that's a great idea. People could download the zip file they submitted originally, maybe?
+2010-10-03T00:23:36  <antimatroid2> yep
+2010-10-03T00:23:48  <antimatroid2> they're usually pretty small aren't they?
+2010-10-03T00:23:52  <antimatroid2> mine is
+2010-10-03T00:24:01  <j3camero> for the most part yeah.
+2010-10-03T00:24:34  <antimatroid2> i wouldn't force people to have their code shared, might discourage some people from participating
+2010-10-03T00:24:41  *** FBP <FBP!~chatzilla@207.160.210.187> has quit IRC (Quit: ChatZilla 0.9.86 [Firefox 3.6.10/20100914125854])
+2010-10-03T00:24:45  <antimatroid2> do that once the competition is complete viral :P
+2010-10-03T00:24:54  <j3camero> We could give people a few options actually: (1) dont release (2) release after the deadline (3) release with a one week delay (4) release with a one hour delay.
+2010-10-03T00:25:16  *** pjreddie <pjreddie!8ce9ce82@gateway/web/freenode/ip.140.233.206.130> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T00:26:06  <j3camero> Yeah so today we set up a bunch of workhorse servers on Amazon EC2 to give the bots a bunch more play!
+2010-10-03T00:26:14  <sigh> cool :)
+2010-10-03T00:26:22  <j3camero> The goal is to get it so newly submitted entries have their rankings converge in under one minute.
+2010-10-03T00:26:30  <antimatroid2> that would be awesome
+2010-10-03T00:26:42  <j3camero> How long do you find it takes your bot's ranking to converge after submission?
+2010-10-03T00:26:50  <antimatroid2> a few hours
+2010-10-03T00:26:54  <j3camero> Oh really...
+2010-10-03T00:27:06  <antimatroid2> i'm not too fussed with tcp though :P
+2010-10-03T00:27:18  <antimatroid2> that was yesterday
+2010-10-03T00:27:22  <sigh> my last submission was a week ago
+2010-10-03T00:27:30  <j3camero> The TCP model is a good idea I think.
+2010-10-03T00:27:32  <sigh> that took a day or so to converge I think
+2010-10-03T00:28:01  <j3camero> I am toying with the idea of just letting people run their own bots. They would just connect to a TCP tournament manager. That way if you want to go set your bot up on a bigass cluster you can do that.
+2010-10-03T00:28:03  <antimatroid2> sigh: you also lost your first game didn't you?
+2010-10-03T00:28:07  <sigh> 2nd :P
+2010-10-03T00:28:15  <antimatroid2> j3camero: can't do time limits with that
+2010-10-03T00:28:32  <antimatroid2> tcp has to have a high time limit to account of latency
+2010-10-03T00:28:32  <j3camero> antimatroid2: why not?
+2010-10-03T00:28:45  <antimatroid2> like it's about 5 seconds now i heard
+2010-10-03T00:28:57  <sigh> 10 sec first move, 5 second for the rest
+2010-10-03T00:29:05  <j3camero> Oh yeah latency. Meh. It's not a big issue. Since we're not actually running people's code, I could care less. Your bot could take 1 minute per turn if it wants.
+2010-10-03T00:29:21  <antimatroid2> competition would take ages to run
+2010-10-03T00:29:25  <antimatroid2> oh wait no
+2010-10-03T00:29:26  <antimatroid2> err :P
+2010-10-03T00:29:31  <j3camero> Throughput, my good sir.
+2010-10-03T00:29:39  <antimatroid2> yeah okay, so just remove time limits?
+2010-10-03T00:29:45  <j3camero> We could run thousands of games concurrently.
+2010-10-03T00:30:07  <antimatroid2> you could set some time limit to remove absurdness
+2010-10-03T00:30:16  <j3camero> Yeah we could just remove time limits, or else have one hour time limits or some such.
+2010-10-03T00:30:28  <antimatroid2> i'd say like 30 seconds or a minute
+2010-10-03T00:30:43  <antimatroid2> otherwise the opponent gets stuck in that game for AGES
+2010-10-03T00:30:52  <sigh> absurd time limits is no good I think
+2010-10-03T00:30:57  <sigh> you get less games :(
+2010-10-03T00:31:05  <antimatroid2> sigh: not really
+2010-10-03T00:31:10  <antimatroid2> cause you are always playing someone
+2010-10-03T00:31:13  <j3camero> The average use case will be less than one second per turn. It would only be the pwoer users who take ridiculous amounts of time. Since it doesn't hurt the contest, that's fine. They would udnerstand that the tradeoff is that you get less games in.
+2010-10-03T00:31:19  <antimatroid2> as opposed to waiting for the server to be able to play you
+2010-10-03T00:31:22  <sigh> if it's a minute per moves, then potentially you only start a new game every hour or two
+2010-10-03T00:31:29  <sigh> *minute per move
+2010-10-03T00:31:41  <antimatroid2> 10 seconds then
+2010-10-03T00:31:45  <sigh> assuming that one bot can only play one game at a time
+2010-10-03T00:31:56  <antimatroid2> allows people using "lesser" languages to not bitch
+2010-10-03T00:32:10  <j3camero> Oh, I guess the issue is if you take such a long time that your opponent forfeits by shutting down his bot. Didn't think of that. So we would need some kind of time limit, like 10 seconds.
+2010-10-03T00:32:17  <antimatroid2> although, you might then have lots more timeouts from people with crap connections
+2010-10-03T00:32:19  <sigh> I think the current timeout on tcp is reasonable
+2010-10-03T00:32:23  <antimatroid2> so anyone with a good connection has an advantage?
+2010-10-03T00:32:36  <j3camero> Yeah.
+2010-10-03T00:32:54  <antimatroid2> dear uni, may i please have a port opened, no fuck off
+2010-10-03T00:32:57  <j3camero> Hardware fairness goes out the window if we let people run their own bots. Someone can go run it on a cluster if they want.
+2010-10-03T00:33:03  <sigh> but, overall I think tcp is awesome for an informal tournament and testing, but not very fair at all
+2010-10-03T00:33:30  <antimatroid2> yeah, i think it's better to keep the final tournament on similar machines with similar time limits
+2010-10-03T00:33:40  <antimatroid2> donations :P
+2010-10-03T00:33:42  <j3camero> I think it's a minimal issue, honestly. If the internet is fast enough to play FPS, then latency doesn't matter.
+2010-10-03T00:34:20  <antimatroid2> do there exist places still on dial up?
+2010-10-03T00:34:35  <antimatroid2> can you play fps games on dial up?
+2010-10-03T00:34:40  <antimatroid2> i have no idea for these things
+2010-10-03T00:34:42  <j3camero> Yes. But it's unlikely that anyone who would give us grief about latency is using dial up.
+2010-10-03T00:35:30  <sigh> but yeah, not everyone can get on tcp
+2010-10-03T00:35:57  <antimatroid2> yep, a lot of people keep timing out and just give up
+2010-10-03T00:36:28  <sigh> I kept timing out, but that got fixed when I moved my comp from wireless to wired
+2010-10-03T00:36:37  <sigh> but moving to wired was very annoying for me
+2010-10-03T00:36:48  <j3camero> 2% of people looking at the web page are on dialup.
+2010-10-03T00:37:09  <antimatroid2> isn't it ideal for the competition to be open for everyone?
+2010-10-03T00:37:28  <antimatroid2> what about the ability to upload your submission and have it run by you?
+2010-10-03T00:37:34  <antimatroid2> or run it locally
+2010-10-03T00:37:40  <antimatroid2> so people could upload if they insist
+2010-10-03T00:37:46  <j3camero> Yeah I thought of that.
+2010-10-03T00:37:49  <antimatroid2> that way you'd have less to deal with
+2010-10-03T00:38:22  <j3camero> Or keep it the way it is, but have an option to connect by TCP for the power users. So if anyone wants to bitch about hardware fairness, I give them the connection details and tell them to rent a cluster.
+2010-10-03T00:38:55  <antimatroid2> that's an option
+2010-10-03T00:39:08  <antimatroid2> i personally think it's better to have them all submitted
+2010-10-03T00:40:00  <sigh> ^^ I second that
+2010-10-03T00:40:49  <sigh> I rather this be about who writes the best algorithm, than who can get the best hardware and connection
+2010-10-03T00:42:16  *** keynes <keynes!~AndChat@203.236.22.68> has quit IRC (Ping timeout: 255 seconds)
+2010-10-03T00:42:17  <j3camero> Hardware hackers are hackers too haha.
+2010-10-03T00:42:40  <sigh> :P
+2010-10-03T00:42:41  <j3camero> Of course, if you sample the people who are already taking part (who are all software hackers) then they would prefer hosted bots.  :-)
+2010-10-03T00:43:48  <j3camero> I wonder if we could do some really intense shit where we let top bots have more resources. I wonder if people who like that. I would love to see some people experimenting with parallel algorithms and stuff.
+2010-10-03T00:44:12  <antimatroid2> i'd like to see some games with more planets if possible?
+2010-10-03T00:44:20  <antimatroid2> my bot can handle variable planets
+2010-10-03T00:44:25  <antimatroid2> i assume most people can
+2010-10-03T00:45:00  <j3camero> Yeah we should write a different map generator. The one we have sucks balls. I wrote it on the bus one day just to have maps to test the engine on.
+2010-10-03T00:45:11  <sigh> some purposely degenerate maps would be interesting
+2010-10-03T00:45:35  <antimatroid2> yep
+2010-10-03T00:45:37  <sigh> for example, a regular pattern
+2010-10-03T00:45:52  <j3camero> Cool idea. I should generate some maps that have three-way symetry, with only two of the sides occupied by players to begin with. It would be a fight for control of the remaining side.
+2010-10-03T00:45:53  <antimatroid2> or perfect circles etc.
+2010-10-03T00:46:10  <Sylph> that'd be interesting
+2010-10-03T00:46:10  <antimatroid2> j3camero: that's a really good idea
+2010-10-03T00:46:12  <sigh> or to be evil, hexagonally packed planets at a distance of 1 unit :)
+2010-10-03T00:46:19  <Sylph> start making interesting maps, like starshaped, etc
+2010-10-03T00:46:24  <Sylph> circle, square
+2010-10-03T00:46:26  <sigh> stealth fight :)
+2010-10-03T00:46:27  <Sylph> square with an X
+2010-10-03T00:46:29  <antimatroid2> yes, or do a square lattice of planets distances 1 apart
+2010-10-03T00:46:29  <j3camero> Oh snap that would be interesting. I like the honeycomb map idea.
+2010-10-03T00:46:39  <Sylph> lol
+2010-10-03T00:46:41  <antimatroid2> i really want that now
+2010-10-03T00:46:45  <Sylph> that can be crazy at 1 unit ?
+2010-10-03T00:46:47  <j3camero> Or the square lattice.
+2010-10-03T00:46:47  <Sylph> how many planets ? :|
+2010-10-03T00:46:52  <Sylph> my bot will die :|
+2010-10-03T00:46:56  <antimatroid2> you never see enemy fleets sent from planets distanced 1 apart
+2010-10-03T00:47:02  <Sylph> yeah >.<
+2010-10-03T00:47:04  <j3camero> Oh shit yeah if they're one unit apart then it would be intense.
+2010-10-03T00:47:23  <j3camero> That's a totally different ball game.
+2010-10-03T00:47:33  <antimatroid2> how hard is it for you to add a map?
+2010-10-03T00:47:38  <j3camero> Easy.
+2010-10-03T00:47:45  <j3camero> Give me the map, I will add it.
+2010-10-03T00:47:52  <antimatroid2> does it have to have 23 planets?
+2010-10-03T00:47:57  <j3camero> No
+2010-10-03T00:48:01  <j3camero> Just a text file.
+2010-10-03T00:48:04  <antimatroid2> okay, i'ma make some
+2010-10-03T00:48:08  <j3camero> Yup.
+2010-10-03T00:48:16  <sigh> cool :)
+2010-10-03T00:48:28  <j3camero> Is anyone here a fan of hard glitch music?
+2010-10-03T00:48:33  <Sylph> don't go crazy with number of planets :|
+2010-10-03T00:48:58  <antimatroid2> i wont
+2010-10-03T00:49:09  <antimatroid2> i'll try to keep it below 30
+2010-10-03T00:49:13  <antimatroid2> i WILL*
+2010-10-03T00:49:13  <Sylph> ah ok
+2010-10-03T00:49:15  <Sylph> that's good
+2010-10-03T00:49:18  <j3camero> the square lattice degenerates into a much simpler game.
+2010-10-03T00:49:25  <Sylph> i was like worried you put in 100-200 planets :|
+2010-10-03T00:49:41  <Sylph> that when i got my bot working, it'd just choke >.<
+2010-10-03T00:49:42  <sigh> j3camero: that's assuming all planets are equal
+2010-10-03T00:49:45  <Sylph> get
+2010-10-03T00:49:48  <sigh> more to the game than distance
+2010-10-03T00:49:51  <j3camero> it's basically like a chess board where you stack black or white chips on each square.
+2010-10-03T00:50:27  <antimatroid2> hmm, if i do a c++ function to output to a file on windows, is the normal endl going to go fine on the servers?
+2010-10-03T00:50:39  <j3camero> No, but I'll fix it.
+2010-10-03T00:50:42  <antimatroid2> i have to edit maps with notepad++ for the save to not fuck it up
+2010-10-03T00:50:43  <antimatroid2> okay
+2010-10-03T00:51:33  <j3camero> Crazy thing about the square lattice is that you can actually still go diagonally if you want.
+2010-10-03T00:51:46  <sigh> you can go anywhere
+2010-10-03T00:51:49  <j3camero> It only makes sense to do so over longer distances, but you can do it.
+2010-10-03T00:52:12  <sigh> why only over longer distances?
+2010-10-03T00:52:33  <sigh> hopping from planet to planet is always slower than direct
+2010-10-03T00:52:41  <j3camero> Oh man. People here should check out "Is You" by D.I.M. Make sure you get the original mix, not the dumb remixes. It's glorious coding music.
+2010-10-03T00:53:36  <j3camero> The distance is ceil(x*x+y*y). You would almost never want to jump diagonally by one square, when you could go two sides around the square. Takes the same number of turns, but also gives you the option of turning around.
+2010-10-03T00:53:44  <antimatroid2> this will be done soonish, what kind of lattice ones do you want?
+2010-10-03T00:53:52  <antimatroid2> i will do circular ones going out from the middle after
+2010-10-03T00:54:04  <sigh> j3camero: hopping reduces hte number of units available
+2010-10-03T00:54:04  <antimatroid2> with whatever density for each circle
+2010-10-03T00:54:13  <sigh> becuase of the order that the engine handles things
+2010-10-03T00:54:14  <antimatroid2> i will do 5x5 lattices? 25 planets?
+2010-10-03T00:54:24  <antimatroid2> 1 distance apart? want any other distances apart?
+2010-10-03T00:55:01  <sigh> if you go A -> B -> C then B gets stuck with G(A)+G(B) units
+2010-10-03T00:55:07  <sigh> where G(x) is growth of planet x
+2010-10-03T00:55:39  <sigh> whereas if A and B both go direct to C then B only gets stuck with G(B) units
+2010-10-03T00:55:55  <sigh> it's because you make orders before you process growth and arrivals
+2010-10-03T00:56:01  <antimatroid2> where do you want starting positions? top left and bottom right?
+2010-10-03T00:56:56  <sigh> antimatroid2: it shouldn't matter
+2010-10-03T00:57:12  <antimatroid2> yeah, so which do i pick :P
+2010-10-03T00:57:25  <sigh> flip a coin
+2010-10-03T00:58:51  <contestbot> Top 10 players: ruilov(3903), davidjliu(3853), Hazard(3817), rsergio(3769), felixcoto(3736), EBraun(3723), cfaftw(3711), dmj111(3711), bix0r4ever(3659), sequoh(3648)
+2010-10-03T00:59:25  <sigh> j3camero: simpler way to explain it - hopping takes an extra turn :P so diagonal is also faster
+2010-10-03T00:59:46  <j3camero> yup
+2010-10-03T00:59:47  <antimatroid2> diagonal is two moves
+2010-10-03T00:59:55  <antimatroid2> hoping is just as fast
+2010-10-03T00:59:58  <j3camero> I was assuming that all the planet start empty.
+2010-10-03T01:00:14  <antimatroid2> so you can to left then right or diagonally in the same number of turns
+2010-10-03T01:00:20  <sigh> antimatroid2: the travel time is 2 moves, but you are stuck on middle planet for a move
+2010-10-03T01:00:36  <antimatroid2> you can move there
+2010-10-03T01:00:36  <antimatroid2> on the middle turn
+2010-10-03T01:00:51  <sigh> you can't, you issue order -> then arrivals come -> then execute order
+2010-10-03T01:00:59  <sigh> you can't use the incoming arrivals in your order
+2010-10-03T01:01:16  <antimatroid2> yeah you move left, next turn that arrives and you own that planet, so you then move to the diagonal planet
+2010-10-03T01:01:17  <sigh> jut like you can't use the growth
+2010-10-03T01:01:20  <antimatroid2> total trip length is 2 turns
+2010-10-03T01:01:28  <antimatroid2> you don't get growth for that claim though
+2010-10-03T01:01:33  <antimatroid2> on that turn
+2010-10-03T01:01:50  <antimatroid2> what kind of growth and ships?
+2010-10-03T01:02:02  <sigh> random
+2010-10-03T01:02:06  <j3camero> okay imma play some fucking galcon now. I can't take it any more.
+2010-10-03T01:02:16  <sigh> heh
+2010-10-03T01:02:18  <antimatroid2> i was thinking it'd be cool to have it constant across at least all neutral
+2010-10-03T01:02:31  <sigh> try both
+2010-10-03T01:02:37  <antimatroid2> okay
+2010-10-03T01:02:47  <sigh> my worry is that constant might be a trivial stalemate
+2010-10-03T01:02:59  <antimatroid2> yeah okay
+2010-10-03T01:03:17  <antimatroid2> i have the necessary function in my bot already anyway
+2010-10-03T01:04:41  <sigh> necessary function?
+2010-10-03T01:05:12  <j3camero> def win_now();
+2010-10-03T01:06:40  <antimatroid2> pick a number for me between x and y
+2010-10-03T01:06:54  <j3camero> z?
+2010-10-03T01:07:09  <sigh> x+eplison
+2010-10-03T01:07:29  <sigh> *epsilon
+2010-10-03T01:07:35  <j3camero> z*x+(1-z)*y, 0<=z<=1?
+2010-10-03T01:09:26  <sigh> McLeopold's wormbot is a good idea of what happens if you hop: http://72.44.46.68/getplayer?player=McLeopold.WormBot.py
+2010-10-03T01:09:36  <sigh> units get "stuck" on the intermediate planets
+2010-10-03T01:09:55  <sigh> not sure about the effect on travel time anymore
+2010-10-03T01:10:35  *** askhader <askhader!~askhader@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2010-10-03T01:12:44  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.86> has joined #aichallenge
+2010-10-03T01:14:46  *** jimmerton <jimmerton!~jamespick@142.166.63.86> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T01:14:46  *** jimmerton_ is now known as jimmerton
+2010-10-03T01:15:12  <sigh> hmmm... I think I'm wrong
+2010-10-03T01:17:30  <j3camero> Okay time to do some more art using python. w00t.
+2010-10-03T01:17:34  <j3camero> See yall later.
+2010-10-03T01:17:45  <sigh> bye
+2010-10-03T01:22:44  <rwa> took me awhile to understand what the point of planet hopping was
+2010-10-03T01:23:08  <rwa> at first it seemed really dumb, but a lot of the good bots did it...
+2010-10-03T01:23:14  <sigh> I understand the point, just a matter of whether the delay is worth it
+2010-10-03T01:23:23  <rwa> sigh: yes.
+2010-10-03T01:23:25  <sigh> a lot f good bots also go direct
+2010-10-03T01:23:55  <rwa> there are good times to go direct and good times to hop.  Also, it depends on what bot you're playing...
+2010-10-03T01:24:01  <sigh> :)
+2010-10-03T01:24:29  <sigh> then there's stuff like everyone hop staging planets
+2010-10-03T01:24:41  <sigh> *hop to
+2010-10-03T01:25:31  <sigh> ok, I've decided I was wrong... in the lattice case hopping doesn't perform worse than direct
+2010-10-03T01:25:44  * sigh puts on his dunce cap
+2010-10-03T01:29:38  *** boegel <boegel!~boegel@91.182.122.110> has joined #aichallenge
+2010-10-03T01:29:52  <antimatroid2> can i got with 36 planets?
+2010-10-03T01:29:56  <antimatroid2> it's cooler sizer
+2010-10-03T01:30:06  <sigh> do what you like :P
+2010-10-03T01:35:44  <rwa> you guys are setting up another server or something?
+2010-10-03T01:37:09  <sigh> nah, j3camero said he was interested in the idea of some designed maps
+2010-10-03T01:38:11  <rwa> hmm, contestant designed maps?
+2010-10-03T01:38:27  <askhader> Why not?
+2010-10-03T01:38:59  <rwa> because you could tailor them to what your bot is good at
+2010-10-03T01:39:21  <rwa> if you had a special trick for a certain configuration, put that all over the place...
+2010-10-03T01:39:31  <sigh> rwa: not that in that way, just in the sense of some non-random maps
+2010-10-03T01:40:05  <sigh> such as lattices, regular arrangements, etc
+2010-10-03T01:41:31  <sigh> anyway, the point was about having some maps that were specifically designed to be "interesting"
+2010-10-03T01:41:41  <rwa> don't think that's a good idea either.  perhaps somebody worked out one of those cases ahead of time, and then gets to submit it as an official map.  not fair.
+2010-10-03T01:48:22  *** DaTwinkDaddy <DaTwinkDaddy!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has joined #aichallenge
+2010-10-03T01:49:23  <DaTwinkDaddy> @later tell dhartmei Some of the maps on the TCP server are duplicates: 435 and 436 are the same; 201-300 are the same, too.
+2010-10-03T01:49:23  <contestbot> DaTwinkDaddy: As you wish.
+2010-10-03T01:49:37  <DaTwinkDaddy> @seen dhartmei
+2010-10-03T01:49:37  <contestbot> DaTwinkDaddy: dhartmei was last seen in #aichallenge 3 days, 13 hours, 4 minutes, and 59 seconds ago: <dhartmei> project selection problem?
+2010-10-03T01:50:14  <DaTwinkDaddy> @rankings
+2010-10-03T01:50:15  <contestbot> DaTwinkDaddy: Top 10 players: ruilov(3905), davidjliu(3827), Hazard(3807), rsergio(3757), felixcoto(3722), EBraun(3717), cfaftw(3715), dmj111(3710), bix0r4ever(3647), sequoh(3644)
+2010-10-03T01:50:16  <boegel> rank 112 atm, wondering if my bot could get in the top 100...
+2010-10-03T01:50:47  <DaTwinkDaddy> boegel: I was surprised when I hung out in the 60s for a while.
+2010-10-03T01:50:57  <boegel> DaTwinkDaddy: :)
+2010-10-03T01:50:59  <DaTwinkDaddy> boegel: Now, I've dropped down to above 100. :(
+2010-10-03T01:51:13  <boegel> DaTwinkDaddy: still, not too bad, right? :)
+2010-10-03T01:51:56  *** keynes <keynes!~AndChat@203.236.22.117> has joined #aichallenge
+2010-10-03T01:52:56  <boegel> 'draw' with dhartmei: http://ai-contest.com/visualizer.php?game_id=5276889 \o/
+2010-10-03T01:57:59  *** Zepp <Zepp!~root@taurine.csclub.uwaterloo.ca> has joined #aichallenge
+2010-10-03T01:58:52  <contestbot> Top 10 players: ruilov(3906), davidjliu(3827), Hazard(3808), rsergio(3757), felixcoto(3723), EBraun(3717), cfaftw(3715), dmj111(3710), bix0r4ever(3647), sequoh(3644)
+2010-10-03T01:59:05  <antimatroid2> gah this is retarded
+2010-10-03T01:59:29  <antimatroid2> it's somehow changing the players planets back to neutral for god knows that reason
+2010-10-03T02:08:51  *** krokokrusa <krokokrusa!~zvold@89.31.118.163> has joined #aichallenge
+2010-10-03T02:12:36  <antimatroid2> j3camero: map maker http://codepad.org/byUUbJoO
+2010-10-03T02:12:44  <antimatroid2> eample 5x5 map http://codepad.org/DheND3m8
+2010-10-03T02:12:57  <antimatroid2> with distances of 1 between points
+2010-10-03T02:14:02  <antimatroid2> rwa: i kind of agree with you, but it'd be nice to have some maps like this as well
+2010-10-03T02:14:51  <rwa> antimatroid2:  I understand the draw.  But it's hard to beat random maps for impartiality in a contest setting.
+2010-10-03T02:15:23  <antimatroid2> this is still ranomly picking nuetral ship sizes and growth rates
+2010-10-03T02:16:05  <rwa> true
+2010-10-03T02:16:07  <antimatroid2> you're just specifying dimensions and distances, i've assumed players start with 100 and growth 5, but otherwise it picks a starting location for them too
+2010-10-03T02:17:41  <antimatroid2> i couldn't get it to output the coordinates as actual double values :|
+2010-10-03T02:19:28  <rwa> I'm stuck around 30 at the moment.  My last 5 or 6 ideas haven't panned out very much.
+2010-10-03T02:20:18  <antimatroid2> http://codepad.org/5VyYR4hY
+2010-10-03T02:20:21  <antimatroid2> 6x6 map
+2010-10-03T02:21:15  <antimatroid2> http://codepad.org/DLeYSPZF that's the better generator too, other one was picking starting locations only in top left 2x2 block for all dimensions
+2010-10-03T02:30:48  <sigh> antimatroid2: you need to prefix the lines with a P
+2010-10-03T02:31:35  <sigh> rwa: yeah, I'm having the same problem
+2010-10-03T02:31:55  <rwa> you're stuck considerably higher than me, though...
+2010-10-03T02:32:17  <antimatroid2> that would possibly explain my issues :P
+2010-10-03T02:33:35  <antimatroid2> h'okay, http://codepad.org/GV3F4XLE, sorry about the spam, use that map generator then the files work
+2010-10-03T02:33:42  <sigh> rwa: not much difference, I am closer to you than say dmj111
+2010-10-03T02:35:23  <sigh> only ~100 elo points
+2010-10-03T02:35:32  <antimatroid2> oh wait, i have one more desired fix :P
+2010-10-03T02:37:58  <antimatroid2> http://codepad.org/TYUySfEO final copy of generator :)
+2010-10-03T02:38:30  <antimatroid2> i'm curious how bots would go against each other on it
+2010-10-03T02:39:56  <antimatroid2> hmmm, i think we could do a map where all planets are distances one apart from the others?
+2010-10-03T02:40:04  <antimatroid2> just put all planets in a ball of radius 1?
+2010-10-03T02:40:07  <antimatroid2> that would be interesting
+2010-10-03T02:41:18  <antimatroid2> that's an awesome idea aha
+2010-10-03T02:43:50  <antimatroid2> my bot can handle a 10x10 map still fairly fast
+2010-10-03T02:44:01  <antimatroid2> and i got a winner in 92 turns
+2010-10-03T02:44:14  <antimatroid2> i think we could maybe do much larger maps and not have the turns necessarily blow out so much
+2010-10-03T02:44:37  *** espes <espes!espes@2001:470:1f05:ca1::> has joined #aichallenge
+2010-10-03T02:48:37  *** krokokrusa <krokokrusa!~zvold@89.31.118.163> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T02:48:51  <antimatroid2> sigh: have you played some games on these maps? they're actually pretty cool
+2010-10-03T02:49:01  <sigh> can you paste one?
+2010-10-03T02:49:10  <antimatroid2> what size do you want?
+2010-10-03T02:49:17  <antimatroid2> i am just testing 13x13 but it's pretty slow
+2010-10-03T02:49:22  <sigh> paste the one you thought was most interesting
+2010-10-03T02:49:25  <antimatroid2> still less than 1 second per move though
+2010-10-03T02:49:32  <antimatroid2> i've just been replacing them as i go :P
+2010-10-03T02:49:41  <sigh> 10x10 then
+2010-10-03T02:50:18  <antimatroid2> http://codepad.org/xaJ44xN9
+2010-10-03T02:50:25  <antimatroid2> 8x8 i'll do 10x10 now
+2010-10-03T02:50:31  <sigh> cool
+2010-10-03T02:51:00  <antimatroid2> http://codepad.org/H0Wh5s4K 10x10
+2010-10-03T02:51:52  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has joined #aichallenge
+2010-10-03T02:51:52  <sigh> haha, visualiser doesn't render it very well :P
+2010-10-03T02:52:10  <antimatroid2> the fleets? no :P
+2010-10-03T02:52:19  <sigh> the planets all overlap each other
+2010-10-03T02:52:27  <antimatroid2> oh, i haven;t used canvas
+2010-10-03T02:52:30  *** vizier <vizier!79de81fb@gateway/web/freenode/ip.121.222.129.251> has joined #aichallenge
+2010-10-03T02:52:38  <antimatroid2> did you read my idea for planets ALL spaced 1 apart?
+2010-10-03T02:53:19  <sigh> hmmm... worth trying... dunno if that will be interestingf
+2010-10-03T02:53:42  <sigh> simple enough to generate though
+2010-10-03T02:55:07  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has joined #aichallenge
+2010-10-03T02:55:50  <antimatroid2> yeah, working on it
+2010-10-03T02:56:50  <antimatroid2> http://codepad.org/Y2B8wqNn 7x7 map with distances of 4 between each lattice point
+2010-10-03T02:58:35  <antimatroid2> my bots seems to expand lots on these and then whoever gets the biggest half wins
+2010-10-03T02:58:41  <antimatroid2> are you getting that if you have run them?
+2010-10-03T02:58:51  <contestbot> Top 10 players: ruilov(3919), Hazard(3814), davidjliu(3808), rsergio(3745), cfaftw(3719), felixcoto(3719), dmj111(3715), EBraun(3714), sequoh(3646), bix0r4ever(3624)
+2010-10-03T03:00:36  <antimatroid2> sigh: how bad does it look on canvas visualiser? they look fine on the old one :P
+2010-10-03T03:00:55  <sigh> the distance 4 one looks fine
+2010-10-03T03:01:10  <antimatroid2> i was going to do this one just on a straight line, but then the way i think it displays it, would be better to do it as a circle with certain density of points
+2010-10-03T03:01:27  <antimatroid2> i'll just do the line one first and see what happens
+2010-10-03T03:03:09  <sigh> antimatroid2: sending you screenshot of distance 1
+2010-10-03T03:03:26  <antimatroid2> yep, if it starts :P cheers
+2010-10-03T03:03:28  <sigh> ignore the green numbers, that's just something I added
+2010-10-03T03:03:32  <antimatroid2> it failed
+2010-10-03T03:04:41  <sigh> http://imgur.com/YtxgL
+2010-10-03T03:05:20  <sigh> the green numbers are just me displaying the planet ids
+2010-10-03T03:06:50  <sigh> anyway, no big deal... easy enough to fix the visualiser if I need to
+2010-10-03T03:07:50  <antimatroid2> so what happens play wise?
+2010-10-03T03:09:01  <sigh> my bots expand towards each other and one wipes the other out :P
+2010-10-03T03:09:09  <sigh> 50-100 moves
+2010-10-03T03:12:14  *** keynes <keynes!~AndChat@203.236.22.117> has quit IRC (Remote host closed the connection)
+2010-10-03T03:17:20  <antimatroid2> hmmm well i have these maps made
+2010-10-03T03:17:24  <antimatroid2> but my bots don't do anything
+2010-10-03T03:17:33  <antimatroid2> cause then if the other bot sent everything at you, you lose
+2010-10-03T03:17:47  <sigh> yup, that's what I was afraid of
+2010-10-03T03:17:52  <antimatroid2> i'll try those two being the only two planets 2 apart
+2010-10-03T03:25:36  <antimatroid2> nah, those games are very boring
+2010-10-03T03:31:42  <antimatroid2> okay, i think 50 planets could probably be done, anything above that and maybe not
+2010-10-03T03:31:54  <sigh> heh
+2010-10-03T03:31:55  <antimatroid2> if you expect people to actually do anything
+2010-10-03T03:32:02  <sigh> yeah
+2010-10-03T03:33:40  <antimatroid2> hmmm i had an idea
+2010-10-03T03:36:35  <antimatroid2> http://codepad.org/zeDPrDqF you can generate your own lattice map on that page, just edit the distance and dimension variables in main at the bottom and click run
+2010-10-03T03:36:56  *** xlorm <xlorm!45b57924@gateway/web/freenode/ip.69.181.121.36> has quit IRC (Quit: Page closed)
+2010-10-03T03:38:48  *** rubyist <rubyist!4640a262@gateway/web/freenode/ip.70.64.162.98> has joined #aichallenge
+2010-10-03T03:38:51  *** keynes <keynes!~AndChat@203.236.22.117> has joined #aichallenge
+2010-10-03T03:46:21  *** shades <shades!~shades@cheshire.telephreak.org> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T03:49:36  *** rubyist <rubyist!4640a262@gateway/web/freenode/ip.70.64.162.98> has quit IRC (Quit: Page closed)
+2010-10-03T03:51:13  *** yasith__ <yasith__!~yasith@112.135.85.23> has joined #aichallenge
+2010-10-03T03:52:18  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T03:53:29  *** yasith_ <yasith_!~yasith@112.135.80.168> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T03:57:29  *** jesionaj <jesionaj!~dongs@174-18-20-177.tcso.qwest.net> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T03:58:48  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-03T03:58:52  <contestbot> Top 10 players: ruilov(3868), Hazard(3802), davidjliu(3789), rsergio(3732), dmj111(3714), cfaftw(3708), felixcoto(3695), EBraun(3694), sequoh(3641), bix0r4ever(3591)
+2010-10-03T03:59:42  *** yasith__ <yasith__!~yasith@112.135.85.23> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T04:09:42  *** Olathe <Olathe!~Olathe@pool-98-111-156-209.phlapa.east.verizon.net> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T04:11:58  *** keynes <keynes!~AndChat@203.236.22.117> has quit IRC (Ping timeout: 245 seconds)
+2010-10-03T04:20:37  *** JCS^ <JCS^!jcs@201-92-156-159.dsl.telesp.net.br> has quit IRC (Quit: \x00)
+2010-10-03T04:21:07  *** shades <shades!~shades@cheshire.telephreak.org> has joined #aichallenge
+2010-10-03T04:25:59  *** sinan <sinan!~sinan@80.90.173.81> has joined #aichallenge
+2010-10-03T04:34:44  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-03T04:35:02  <sinan> is anyone using the canvas visualizer (the one used on the official website) locally? if so, are there any instructions anywhere?
+2010-10-03T04:36:39  <sinan> nevermind, i think i found the info on the forums :)
+2010-10-03T04:41:13  *** yasith <yasith!~yasith@112.135.95.190> has joined #aichallenge
+2010-10-03T04:50:51  *** DaTwinkDaddy <DaTwinkDaddy!~bss@76-220-103-20.lightspeed.fyvlar.sbcglobal.net> has quit IRC (Remote host closed the connection)
+2010-10-03T04:51:56  *** HakanD <HakanD!~hakand@78.160.65.83> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T04:58:52  <contestbot> Top 10 players: ruilov(3887), Hazard(3807), davidjliu(3781), rsergio(3737), dmj111(3725), cfaftw(3723), felixcoto(3704), EBraun(3703), sequoh(3648), bix0r4ever(3611)
+2010-10-03T05:01:17  *** Umsturz <Umsturz!~Umsturz@2001:638:204:10:225:4bff:fec0:f3b6> has joined #aichallenge
+2010-10-03T05:01:55  <Umsturz> good morning!
+2010-10-03T05:02:03  <Umsturz> good to be here, once again : )
+2010-10-03T05:11:32  *** Blkt <Blkt!~user@93-33-129-19.ip44.fastwebnet.it> has joined #aichallenge
+2010-10-03T05:15:21  *** yasith <yasith!~yasith@112.135.95.190> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T05:28:57  *** yasith <yasith!~yasith@112.135.70.182> has joined #aichallenge
+2010-10-03T05:37:36  *** Itkovian <Itkovian!~Itkovian@2002:4e16:e2a0:0:21f:5bff:fec8:6e2c> has joined #aichallenge
+2010-10-03T05:54:31  <antimatroid2> the main site seems very unsure of the order in which games were played
+2010-10-03T05:54:34  <antimatroid2> anyone else found that?
+2010-10-03T05:56:41  *** Itkovian <Itkovian!~Itkovian@2002:4e16:e2a0:0:21f:5bff:fec8:6e2c> has quit IRC (Quit: Itkovian)
+2010-10-03T05:58:52  <contestbot> Top 10 players: ruilov(3884), Hazard(3801), davidjliu(3798), rsergio(3753), dmj111(3723), cfaftw(3722), felixcoto(3707), EBraun(3697), sequoh(3656), bix0r4ever(3616)
+2010-10-03T05:58:55  *** Migi32 <Migi32!~migi@d54C25B9C.access.telenet.be> has joined #aichallenge
+2010-10-03T06:24:24  *** krokokrusa <krokokrusa!~zvold@89.31.118.163> has joined #aichallenge
+2010-10-03T06:34:25  *** Itkovian <Itkovian!~Itkovian@2002:4e16:e2a0:0:21f:5bff:fec8:6e2c> has joined #aichallenge
+2010-10-03T06:41:50  *** BtbN <BtbN!~BtbN@p54BB5B92.dip.t-dialin.net> has joined #aichallenge
+2010-10-03T06:43:15  *** Zeiris <Zeiris!~Zeiris@d206-116-158-135.bchsia.telus.net> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T06:58:43  *** vizier <vizier!79de81fb@gateway/web/freenode/ip.121.222.129.251> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T06:58:52  <contestbot> Top 10 players: ruilov(3878), Hazard(3804), davidjliu(3779), rsergio(3739), dmj111(3723), cfaftw(3713), felixcoto(3697), EBraun(3689), sequoh(3648), bix0r4ever(3620)
+2010-10-03T06:59:34  *** ll <ll!4b8198a9@gateway/web/freenode/ip.75.129.152.169> has joined #aichallenge
+2010-10-03T06:59:58  *** ll <ll!4b8198a9@gateway/web/freenode/ip.75.129.152.169> has quit IRC (Client Quit)
+2010-10-03T07:16:24  *** HakanD <HakanD!~HakanD@88.232.10.63> has joined #aichallenge
+2010-10-03T07:16:35  *** Bobng <Bobng!~T@host86-130-158-50.range86-130.btcentralplus.com> has joined #aichallenge
+2010-10-03T07:16:43  <HakanD> evening
+2010-10-03T07:22:26  <Bobng> Morning
+2010-10-03T07:26:06  *** yasith <yasith!~yasith@112.135.70.182> has quit IRC (Ping timeout: 272 seconds)
+2010-10-03T07:27:43  *** boegel <boegel!~boegel@91.182.122.110> has quit IRC (Quit: Leaving)
+2010-10-03T07:42:01  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has quit IRC (Quit: NEVER GONNA GIVE YOU UP NEVER GONNA LET YOU DOWN)
+2010-10-03T07:50:49  *** keynes <keynes!~AndChat@203.236.22.58> has joined #aichallenge
+2010-10-03T07:58:53  <contestbot> Top 10 players: ruilov(3888), Hazard(3803), davidjliu(3802), dmj111(3740), rsergio(3733), cfaftw(3720), felixcoto(3703), EBraun(3689), sequoh(3650), bix0r4ever(3634)
+2010-10-03T08:02:35  <rabidus> hi
+2010-10-03T08:04:13  *** delt0r_ <delt0r_!~delt0r@188-22-162-221.adsl.highway.telekom.at> has quit IRC (Read error: Connection reset by peer)
+2010-10-03T08:05:46  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has quit IRC (Quit: Leaving)
+2010-10-03T08:06:23  *** delt0r_ <delt0r_!~delt0r@178-191-64-223.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-03T08:07:00  *** yasith <yasith!~yasith@112.135.88.175> has joined #aichallenge
+2010-10-03T08:19:35  *** Haggis <Haggis!bc4a41f4@gateway/web/freenode/ip.188.74.65.244> has joined #aichallenge
+2010-10-03T08:35:33  *** u1tr0n <u1tr0n!~u1tr0n@90-131-93-178.pool.ukrtel.net> has joined #aichallenge
+2010-10-03T08:35:39  <u1tr0n> morning
+2010-10-03T08:46:31  *** optimum <optimum!debian-tor@gateway/tor-sasl/optimum> has joined #aichallenge
+2010-10-03T08:58:54  <contestbot> Top 10 players: ruilov(3901), davidjliu(3827), Hazard(3823), rsergio(3776), dmj111(3759), cfaftw(3732), felixcoto(3712), EBraun(3697), sequoh(3671), bix0r4ever(3658)
+2010-10-03T08:59:26  *** Olathe <Olathe!~Olathe@pool-98-111-154-161.phlapa.east.verizon.net> has joined #aichallenge
+2010-10-03T09:06:03  *** HakanD <HakanD!~HakanD@88.232.10.63> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T09:25:46  *** sigh <sigh!~sigh@137.206-50-210.dynamic.dsl.mel.iprimus.net.au> has quit IRC (Remote host closed the connection)
+2010-10-03T09:27:07  *** Haggis <Haggis!bc4a41f4@gateway/web/freenode/ip.188.74.65.244> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T09:28:42  *** u1tr0n <u1tr0n!~u1tr0n@90-131-93-178.pool.ukrtel.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T09:30:10  *** yasith_ <yasith_!~yasith@112.135.84.72> has joined #aichallenge
+2010-10-03T09:30:44  *** yasith <yasith!~yasith@112.135.88.175> has quit IRC (Read error: Connection reset by peer)
+2010-10-03T09:31:28  *** Obeleh <Obeleh!~androirc@541E6AD4.cm-5-7b.dynamic.ziggo.nl> has joined #aichallenge
+2010-10-03T09:33:17  *** u1tr0n <u1tr0n!~u1tr0n@253-51-93-178.pool.ukrtel.net> has joined #aichallenge
+2010-10-03T09:33:53  *** Obeleh <Obeleh!~androirc@541E6AD4.cm-5-7b.dynamic.ziggo.nl> has quit IRC (Client Quit)
+2010-10-03T09:34:19  *** Florian <Florian!~Florian@per92-9-88-160-132-90.fbx.proxad.net> has joined #aichallenge
+2010-10-03T09:34:34  <Florian> hello all
+2010-10-03T09:34:51  <Florian> Can we "debug" on ai-contest ?
+2010-10-03T09:35:08  <Florian> My bot works on tcpserver, local, but not on ai contest S
+2010-10-03T09:35:09  <Florian> :s
+2010-10-03T09:35:22  <u1tr0n> no but you can debug on TCP server
+2010-10-03T09:37:51  <Florian> Arf
+2010-10-03T09:38:00  <Florian> "Florian95 crashed / did not start / timeout."
+2010-10-03T09:38:04  <Florian> is not very explicite
+2010-10-03T09:38:05  <Florian> .. :(
+2010-10-03T09:38:37  <u1tr0n> you count time in debug ?
+2010-10-03T09:39:22  <Florian> for timeout ?
+2010-10-03T09:39:32  <u1tr0n> yep
+2010-10-03T09:39:34  <Florian> no
+2010-10-03T09:39:42  <Florian> but I dont have timeout..
+2010-10-03T09:39:52  <Florian> i regular match take 2sec on my computer :s
+2010-10-03T09:39:55  <Florian> all match
+2010-10-03T09:40:03  <u1tr0n> try to count on tcp server in first step you have 10 sec on public only 1
+2010-10-03T09:40:35  <Florian> its works before :(
+2010-10-03T09:40:37  <Florian> ok
+2010-10-03T09:40:39  <Florian> i will
+2010-10-03T09:41:29  <u1tr0n> try to count or make loop like if(t>0.95){ FinishTurn() }
+2010-10-03T09:41:57  <u1tr0n> better skip step than lose game ;)
+2010-10-03T09:42:50  <Florian> :)
+2010-10-03T09:56:52  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.86> has joined #aichallenge
+2010-10-03T09:58:23  *** ruturaj1 <ruturaj1!~status@115.248.114.51> has joined #aichallenge
+2010-10-03T09:58:54  <contestbot> Top 10 players: ruilov(3894), Hazard(3821), davidjliu(3813), rsergio(3774), dmj111(3751), cfaftw(3736), felixcoto(3729), EBraun(3687), sequoh(3668), bix0r4ever(3639)
+2010-10-03T09:59:00  <ruturaj1> hi! anyone around?
+2010-10-03T09:59:05  *** jimmerton <jimmerton!~jamespick@142.166.63.86> has quit IRC (Ping timeout: 245 seconds)
+2010-10-03T09:59:05  *** jimmerton_ is now known as jimmerton
+2010-10-03T09:59:24  <ruturaj1> wanted help with the ai tcp server running at http://72.44.46.68/
+2010-10-03T09:59:33  <ruturaj1> whats the username and password field there?
+2010-10-03T10:03:27  *** Arekku <Arekku!5965f595@gateway/web/freenode/ip.89.101.245.149> has joined #aichallenge
+2010-10-03T10:05:03  <Florian> ok...
+2010-10-03T10:05:15  <Florian> u1tr0n, its because my bt work on 1.8 but not 1.9
+2010-10-03T10:05:31  <Florian> ruturaj1 -> what do you want, your first match determine your infos
+2010-10-03T10:06:19  <ruturaj1> ohk! so the first username and password will define my credentials.
+2010-10-03T10:06:55  <Florian> yes
+2010-10-03T10:07:02  <ruturaj1> Also, is it known, whether planet IDs are from 0 to sizeof(pw.Planets()) only?
+2010-10-03T10:07:27  <ruturaj1> or can there be k planets and an ID be > K+1
+2010-10-03T10:10:41  <Arekku> naw
+2010-10-03T10:10:48  <Arekku> ids start from 0
+2010-10-03T10:10:59  <Arekku> and go to sizeof(pw.Planets())-1
+2010-10-03T10:14:06  <ruturaj1> And I hope that remains constant across the game. I am getting "issued invalid command" always, and I am not able to get the tools running either .. the tcp server matches are also not running.
+2010-10-03T10:14:38  <Florian> make some test before send a command
+2010-10-03T10:14:41  <Florian> num of ships....
+2010-10-03T10:15:01  <Florian> if source.num_ships > sended_ships && sended_ships > 0
+2010-10-03T10:15:03  <Florian> ...
+2010-10-03T10:15:40  <ruturaj1> Yes, I am keeping them, I feel the mapping from Planets to IDs is going wrong.
+2010-10-03T10:16:07  <ruturaj1> more like, will pw.Planets()[0] have planetID 0? no right?
+2010-10-03T10:16:15  <Arekku> yep
+2010-10-03T10:16:38  <ruturaj1> yep for.. it will be 0?
+2010-10-03T10:16:44  <Arekku> it'll be 0
+2010-10-03T10:20:37  <Arekku> might be the wrong place to ask
+2010-10-03T10:20:57  <Arekku> but does anyone have any hints how I could get a job in programming without any experience?
+2010-10-03T10:21:30  <ruturaj1> experience as in professional work experience or programming experience?
+2010-10-03T10:22:15  <Migi32> Arekku, you mean no provable experience
+2010-10-03T10:22:17  <Migi32> ?
+2010-10-03T10:22:23  <Arekku> no proffesional experience
+2010-10-03T10:22:38  <Arekku> got fornicating loads of hobby experience
+2010-10-03T10:22:58  <Migi32> yes that. What did you study at college/university?
+2010-10-03T10:23:43  <Arekku> Malardalen University, which has not been added yet
+2010-10-03T10:23:53  <Arekku> sorry robotics, misread you
+2010-10-03T10:24:19  <ruturaj1> Arekku: Professional experience is not required for your first job. You can directly apply to companies. mostly from their website like www.company.org/careers
+2010-10-03T10:24:29  <ruturaj1> you can know if positions are open and you can apply.
+2010-10-03T10:27:05  <Migi32> if all jobs required experience, nobody would have a job :)
+2010-10-03T10:29:49  <Arekku> Problem being there always seem to be someone with more experience applying, oh well I'll just keep trying then
+2010-10-03T10:32:45  *** ruturaj1 <ruturaj1!~status@115.248.114.51> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T10:35:01  *** u1tr0n <u1tr0n!~u1tr0n@253-51-93-178.pool.ukrtel.net> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T10:38:41  *** u1tr0n <u1tr0n!~u1tr0n@253-51-93-178.pool.ukrtel.net> has joined #aichallenge
+2010-10-03T10:38:52  <Arekku> wb
+2010-10-03T10:46:11  *** keynes <keynes!~AndChat@203.236.22.58> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T10:51:34  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC ()
+2010-10-03T10:55:09  <Blkt> speaking of experience: does anyone know how to get today's date plus a week in JavaScript?
+2010-10-03T10:55:51  *** sinan <sinan!~sinan@80.90.173.81> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T10:55:54  <Arekku> google probably
+2010-10-03T10:56:49  <Arekku> var myDate=new Date(); myDate.setDate(myDate.getDate()+5);
+2010-10-03T10:57:47  <Blkt> that tells a week from today is friday
+2010-10-03T10:58:54  <contestbot> Top 10 players: ruilov(3896), Hazard(3815), davidjliu(3798), rsergio(3768), dmj111(3753), cfaftw(3734), felixcoto(3720), EBraun(3684), sequoh(3662), bix0r4ever(3633)
+2010-10-03T11:02:27  <Arekku> replace 5 with 7?
+2010-10-03T11:02:36  <Blkt> I did already
+2010-10-03T11:02:42  <Blkt> it says friday
+2010-10-03T11:02:44  <Arekku> hmm
+2010-10-03T11:02:50  <Arekku> jump off a tall building? :D
+2010-10-03T11:03:18  <Blkt> you're welcome
+2010-10-03T11:03:19  <Blkt> :D
+2010-10-03T11:03:59  <Arekku> Right here's how to solve your problem
+2010-10-03T11:04:34  <Arekku> http://uncyclopedia.wikia.com/wiki/HowTo:Commit_Suicide#Method_10:_Overkill
+2010-10-03T11:05:32  *** keynes <keynes!~AndChat@203.236.22.87> has joined #aichallenge
+2010-10-03T11:05:49  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-10-03T11:06:05  <Blkt> hell, lacking friends to do that
+2010-10-03T11:06:34  <Arekku> aaw :(
+2010-10-03T11:06:49  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-03T11:06:52  <Blkt> time problem solved: http://www.w3schools.com/js/tryit.asp?filename=tryjs_timing_clock
+2010-10-03T11:11:38  *** anoek <anoek!~anoek@cpe-071-065-244-249.nc.res.rr.com> has joined #aichallenge
+2010-10-03T11:13:50  *** mcmillen <mcmillen!~mcmillen@mcmillen.xen.prgmr.com> has joined #aichallenge
+2010-10-03T11:20:25  <optimum> Arekku: start stalking employers
+2010-10-03T11:20:46  <Arekku> good idea :D
+2010-10-03T11:21:13  <mcmillen> Arekku: win the contest, apply to google :)
+2010-10-03T11:21:45  <Arekku> yeah, just one problem - I'm not going to win
+2010-10-03T11:22:13  <optimum> i'm thinking i'm not going to win either.  the competition must be fierce, and the problem requires real intelligence
+2010-10-03T11:22:30  <Arekku> dunno
+2010-10-03T11:22:45  <Arekku> my bot is retarded and bugged to boot
+2010-10-03T11:23:08  <Arekku> still at a decent rank
+2010-10-03T11:23:36  <optimum> i haven't decided how to code mine yet, but i am guessing that subject is mostly off-topic here
+2010-10-03T11:24:02  <Arekku> oh right, well are you planning to rank high?
+2010-10-03T11:24:06  <mcmillen> i'm fairly sure i won't win either :) i'll be super happy if i'm in the top 100
+2010-10-03T11:24:12  <Arekku> dude
+2010-10-03T11:24:27  <optimum> the search space is ginormous... in the past i have usually achieved above-average rank in similar contests
+2010-10-03T11:24:27  <Arekku> when I started I would be happy if I was in the top of the middle third :D
+2010-10-03T11:24:37  *** zulkose <zulkose!d14a1d8a@gateway/web/freenode/ip.209.74.29.138> has joined #aichallenge
+2010-10-03T11:24:57  <mcmillen> well, i dunno how much i trust the ranks currently; my existing bot is not very good but jumps around in rank from 1500 to 215
+2010-10-03T11:25:00  <Arekku> opt: attack nearest enemy planet will get you quite high :D
+2010-10-03T11:26:28  *** Florian <Florian!~Florian@per92-9-88-160-132-90.fbx.proxad.net> has quit IRC (Quit: Leaving...)
+2010-10-03T11:27:09  *** Meatkat <Meatkat!d97142e9@gateway/web/freenode/ip.217.113.66.233> has joined #aichallenge
+2010-10-03T11:27:23  *** ruturaj1 <ruturaj1!~status@115.248.114.51> has joined #aichallenge
+2010-10-03T11:27:45  <optimum> i'm a bit curious as to how the tournaments will be structured... in the past, some people have won ai contests by making entries that automatically lose when placed up against the main entry.. that's not permitted by the contest rules, but it's potentially a difficult problem to catch
+2010-10-03T11:28:02  *** u1tr0n <u1tr0n!~u1tr0n@253-51-93-178.pool.ukrtel.net> has quit IRC ()
+2010-10-03T11:28:20  *** sinan <sinan!~sinan@94.142.55.32> has joined #aichallenge
+2010-10-03T11:28:46  <Arekku> true
+2010-10-03T11:28:57  <Arekku> it is a pity you can only have one entry though :(
+2010-10-03T11:29:10  <Arekku> just for fun I would like to see how a bumrush AI would rank
+2010-10-03T11:29:34  <mcmillen> Arekku: submit RageBot as your own and see where it ends up :)
+2010-10-03T11:29:55  <Arekku> only problem is I already have a bot
+2010-10-03T11:31:00  <mcmillen> i actually ended up in a stalemate (draw) with someone because neither of our bots wanted to attack anything :)
+2010-10-03T11:31:22  <mcmillen> so we just ended with 1100 ships each on our home planet
+2010-10-03T11:31:58  *** perror <perror!~fleury@aldebaran.labri.fr> has joined #aichallenge
+2010-10-03T11:32:01  <Arekku> heh, I've seen a game where player A bumrushed player B
+2010-10-03T11:32:17  <Arekku> and player B just moved all ships to defend, can't recal the link
+2010-10-03T11:32:26  *** bryku <bryku!4dfd0919@gateway/web/freenode/ip.77.253.9.25> has joined #aichallenge
+2010-10-03T11:32:28  <mcmillen> yeah i think that's what my bot would do
+2010-10-03T11:32:41  <Arekku> http://ai-contest.com/visualizer.php?game_id=4861921
+2010-10-03T11:32:42  *** sinan <sinan!~sinan@94.142.55.32> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T11:32:54  <Arekku> shortest game I've experienced so far
+2010-10-03T11:33:24  <mcmillen> http://ai-contest.com/visualizer.php?game_id=5306294 longest game that i wish had played to completion, i'm curious whether i'd actually ahve won
+2010-10-03T11:33:49  <optimum> the visualizer appears not to work in konqueror
+2010-10-03T11:34:09  <bryku> hi there. i heared there is somewhere better than standard visualizer(than this, from package). anyone can give me a link?
+2010-10-03T11:34:37  <Arekku> wow that was interesting
+2010-10-03T11:34:43  <optimum> google really needs to work on supporting niche browsers
+2010-10-03T11:35:06  <mcmillen> the visualizer isn't actually a google thing, is it?
+2010-10-03T11:35:34  <mcmillen> i thought most (all?) of the base code was from the University of Waterloo folks
+2010-10-03T11:35:53  <Arekku> well I'd say mcmillen was winning, slightly
+2010-10-03T11:36:10  <mcmillen> i was winning slightly, but i was winning earlier and then the other guy came back
+2010-10-03T11:36:18  <mcmillen> so i'd really wish that one had played for longer
+2010-10-03T11:36:36  <Arekku> sucks to be you :D
+2010-10-03T11:36:38  <mcmillen> most 200-turn games end up with stagnation and one person clearly in control at the end, but here i think it was still anyone's game
+2010-10-03T11:36:57  <Arekku> yeah, usually you can tell the winner after 20 turns
+2010-10-03T11:41:10  <antimatroid2> not always
+2010-10-03T11:41:16  <Arekku> there, done with the list of applications
+2010-10-03T11:41:24  <Arekku> keyword being usually
+2010-10-03T11:41:58  *** Meatkat <Meatkat!d97142e9@gateway/web/freenode/ip.217.113.66.233> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T11:45:11  *** yam <yam!~yam@castor.xenbox.fr> has joined #aichallenge
+2010-10-03T11:46:30  <ruturaj1> I am still getting issued illegal command! And I am not able to test the code locally!
+2010-10-03T11:47:43  <antimatroid2> i was getting them the other day while my code worked locally
+2010-10-03T11:47:58  <antimatroid2> no idea what ended up fixing the problem though sorry, i went through and did a big clean up
+2010-10-03T11:48:15  *** bryku <bryku!4dfd0919@gateway/web/freenode/ip.77.253.9.25> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T11:49:50  <ruturaj1> antimatroid2: can you tell me how to test them locally?
+2010-10-03T11:50:13  <antimatroid2> a game enginge came with your starter package
+2010-10-03T11:51:27  <ruturaj1> and what do we give as player_one and player_two?
+2010-10-03T11:51:55  <antimatroid2> java -jar ./tools/PlayGame.jar ".\maps\map44.txt" 10000 200 log.txt ".\bot\bot\bin\Debug\bot.exe" "java -jar ./example_bots/DualBot.jar" | java -jar ./tools/ShowGame.jar
+2010-10-03T11:52:03  <antimatroid2> my bat file has something like that
+2010-10-03T11:52:09  <antimatroid2> to play an example bot
+2010-10-03T11:55:06  <ruturaj1> antimatroid2: Thanks :D that was very helpful! Thanks a lot!
+2010-10-03T11:58:55  <contestbot> Top 10 players: ruilov(3886), Hazard(3814), davidjliu(3795), rsergio(3762), dmj111(3760), cfaftw(3729), felixcoto(3708), EBraun(3684), sequoh(3664), bix0r4ever(3626)
+2010-10-03T12:03:04  <jmcarthur> i've got the wife playing amnesia, yay
+2010-10-03T12:03:11  *** Haggis <Haggis!81d73b91@gateway/web/freenode/ip.129.215.59.145> has joined #aichallenge
+2010-10-03T12:05:09  <Arekku> well
+2010-10-03T12:05:15  <Arekku> I've got two choices today
+2010-10-03T12:05:23  <Arekku> patch my bot or play civ5
+2010-10-03T12:05:59  <Arekku> the later is what I'd like to do, but the former is what I sort of need to do
+2010-10-03T12:06:13  <mcmillen> "need"
+2010-10-03T12:06:22  <mcmillen> yeah i have the same challenge of trying to not play civ5
+2010-10-03T12:06:28  <mcmillen> or galcon for that matter :)
+2010-10-03T12:06:34  <antimatroid2> i've started trying to built part of a game tree
+2010-10-03T12:06:37  <antimatroid2> gonna take a while though
+2010-10-03T12:06:44  <Arekku> I'm fed up with galcon :D
+2010-10-03T12:06:46  <antimatroid2> my bot is stuck outside the top 10 :(
+2010-10-03T12:06:59  <antimatroid2> "youwillfail" is my official site username
+2010-10-03T12:07:30  <antimatroid2> yeah i got sick of galcon a while ago :P
+2010-10-03T12:08:11  <ruturaj1> I have promised to work on it only on weekends.. I started yesterday, and today will be my last for this week :P
+2010-10-03T12:09:23  <antimatroid2> ha, you're kidding yourself :P
+2010-10-03T12:09:42  <antimatroid2> this competition is worse than crack
+2010-10-03T12:10:05  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T12:10:24  <Arekku> well I'm gonna go with civ 5:D see you
+2010-10-03T12:10:29  *** Arekku <Arekku!5965f595@gateway/web/freenode/ip.89.101.245.149> has quit IRC (Quit: Page closed)
+2010-10-03T12:11:36  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T12:15:00  *** RainCT <RainCT!~RainCT@188.119.216.112> has joined #aichallenge
+2010-10-03T12:15:00  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has joined #aichallenge
+2010-10-03T12:22:13  <jmcarthur> this will be more addictive for me once my bot is finally in a working state
+2010-10-03T12:22:36  <jmcarthur> which might happen faster if my cat would stop crawling all over me while i'm trying to code
+2010-10-03T12:22:40  <antimatroid2> hehe yeah, i start to lose motivation when my bot isn't doing so well
+2010-10-03T12:27:25  *** criis <criis!~criis@farnsworth.parabox.dk> has quit IRC (Ping timeout: 245 seconds)
+2010-10-03T12:30:59  *** Agamemnus <Agamemnus!~Agamemnus@c-24-147-49-50.hsd1.ma.comcast.net> has joined #aichallenge
+2010-10-03T12:31:28  <Agamemnus> hello, i'd like to ask how we could go about having a starter package for my programming language, Freebasic
+2010-10-03T12:33:33  <jmcarthur> Agamemnus: basically you have to provide tested instructions for setting up the prerequisties on the server and probably write your own starter since it's a low demand language
+2010-10-03T12:34:11  <jmcarthur> Agamemnus: you don't necessarily have to provide a starter for others to use though. you can just follow the spec and make a bot without a ready-made starter if you'd rather
+2010-10-03T12:34:42  <jmcarthur> i don't know how quickly the admins are adopting new languages though
+2010-10-03T12:35:07  <Agamemnus> i see
+2010-10-03T12:35:51  <jmcarthur> Agamemnus: if you can test and provide instructions for setting up Freebasic on the server as well as compilation and execution instructions (preferably in the form of a patch to the compile script and stuff) then you can probably get it in. it just takes a little upfront work is all
+2010-10-03T12:36:15  *** yasith__ <yasith__!~yasith@112.135.73.189> has joined #aichallenge
+2010-10-03T12:36:35  *** klkj <klkj!4b8198a9@gateway/web/freenode/ip.75.129.152.169> has joined #aichallenge
+2010-10-03T12:37:08  <Agamemnus> so i am reading the specification but i don't really understand...
+2010-10-03T12:37:19  <antimatroid2> it's the only competition i know of willing to add languages at user request, that is something though
+2010-10-03T12:37:22  <Agamemnus> i upload my exe to the server?
+2010-10-03T12:37:43  <antimatroid2> no, you put your source files into a zip, then the server compiles them itself
+2010-10-03T12:37:54  <antimatroid2> although they're considering binary submissions
+2010-10-03T12:38:03  *** klkj <klkj!4b8198a9@gateway/web/freenode/ip.75.129.152.169> has quit IRC (Client Quit)
+2010-10-03T12:38:19  *** yasith_ <yasith_!~yasith@112.135.84.72> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T12:38:23  <jmcarthur> an ongoing struggle :(
+2010-10-03T12:38:45  <jmcarthur> and i still don't know if all my efforts so far on my bot have been wasted since there is no hope of the server compiling this
+2010-10-03T12:38:58  <antimatroid2> why not?
+2010-10-03T12:39:09  *** JJ_ <JJ_!5ec07533@gateway/web/freenode/ip.94.192.117.51> has joined #aichallenge
+2010-10-03T12:39:11  <antimatroid2> oh wait, you're haskell aren't you?
+2010-10-03T12:39:11  <jmcarthur> requires GHC 7 for at all resonable performance
+2010-10-03T12:39:15  <antimatroid2> yeah
+2010-10-03T12:39:16  <Agamemnus> ok... so i send data to the server by printing the data (stdout), but stdin? I'm not really familiar with this...
+2010-10-03T12:39:20  <jmcarthur> server only have GHC 6.8.2
+2010-10-03T12:39:22  <jmcarthur> *has
+2010-10-03T12:39:59  <antimatroid2> Agamemnus: it's basically taking in a string containing information about the game state, you take that and choose which moves you want and print that back to the engine
+2010-10-03T12:40:35  <Agamemnus> so the program goes into a wait loop and waits for the server to send it data?
+2010-10-03T12:40:56  <antimatroid2> i guess, you have 1 second for each move, otherwise you lose
+2010-10-03T12:41:03  <jmcarthur> yeah, it's basically receive game state then send orders, repeatedly
+2010-10-03T12:41:42  <Agamemnus> :\ I am not sure how to do this in Freebasic without using the actual stolen C commands :-|
+2010-10-03T12:41:50  <dwchandler> Agamemnus: read from stdin until you see a line with "go", then calculate your moves, print out the moves and end with "go"
+2010-10-03T12:41:55  <Agamemnus> (freebasic can include headers like "crt.bi")
+2010-10-03T12:42:04  <Agamemnus> i see
+2010-10-03T12:42:19  <Agamemnus> well it sounds easy enough, though i am not 100% sure how to make the wait loop
+2010-10-03T12:42:25  <dwchandler> surely freebasic has the ability
+2010-10-03T12:42:31  <jmcarthur> antimatroid2: GHC 6.8.2 is... workable... but i'd have to rewrite from scratch. i'm using some GHC 7 specific stuff because i am going for C-like performance. if i can't get that with haskell i'll probably have to just drop to C
+2010-10-03T12:42:51  <Agamemnus> ok, so let's see...
+2010-10-03T12:43:24  <antimatroid2> i'm just using c++, although i intend to learn haskell at some point and will probably convert to being a little fanboy of that
+2010-10-03T12:43:32  <jmcarthur> heh
+2010-10-03T12:43:42  <antimatroid2> i'm a maths student and people say that should follow quite well
+2010-10-03T12:43:52  <dwchandler> yes
+2010-10-03T12:44:11  <Agamemnus> well, freebasic doesn't really need any instructions besides just... copying the freebasic files and doing "<fbc> <file>"
+2010-10-03T12:44:22  <dwchandler> some bits will feel just like home to a maths student, but not everything ;-)
+2010-10-03T12:44:27  *** JCS^ <JCS^!jcs@201-92-156-159.dsl.telesp.net.br> has joined #aichallenge
+2010-10-03T12:44:29  <Agamemnus> so what other kind of instructions would I need to say..?
+2010-10-03T12:44:29  <jmcarthur> yeah with haskell you can kind of forget a lot of things about evaluation order and just think of your problem as a set of math equations
+2010-10-03T12:44:53  <Agamemnus> and where would I post this?
+2010-10-03T12:45:19  <jmcarthur> @where issues
+2010-10-03T12:45:19  <contestbot> jmcarthur: issues = http://code.google.com/p/ai-contest/issues/list
+2010-10-03T12:45:49  <jmcarthur> best to put instructions for installation there, and include a patch for the compilation script and the code that runs the bots
+2010-10-03T12:46:31  <Agamemnus> uh.... code that runs the bots? you mean like a test?
+2010-10-03T12:46:42  <jmcarthur> i mean like in the tournament manager
+2010-10-03T12:46:47  <jmcarthur> the site and backend are open source
+2010-10-03T12:47:31  <Agamemnus> would they accept just installation instructions?
+2010-10-03T12:47:43  <Agamemnus> I can't really be bothered to try to run a server and test it atm.
+2010-10-03T12:48:04  <jmcarthur> if you are really careful with the coding you can just submit an untested patch
+2010-10-03T12:48:14  <jmcarthur> somebody should review it before merging anyway
+2010-10-03T12:49:05  *** optimum <optimum!debian-tor@gateway/tor-sasl/optimum> has quit IRC (Ping timeout: 245 seconds)
+2010-10-03T12:49:09  <jmcarthur> not ideal of course, but not everybody has the time to set up a copy of the server :)
+2010-10-03T12:49:24  <Agamemnus> so the makefile would look like this?
+2010-10-03T12:49:28  <Agamemnus> http://github.com/ckolbeck/Waterloo-AI-Contest---Go-Starter-Kit/blob/master//Makefile
+2010-10-03T12:49:43  <Agamemnus> except with freebasic stuff.
+2010-10-03T12:49:49  <Agamemnus> but this syntax?
+2010-10-03T12:49:51  *** JJ_ <JJ_!5ec07533@gateway/web/freenode/ip.94.192.117.51> has quit IRC (Quit: Page closed)
+2010-10-03T12:49:56  <jmcarthur> i didn't even know any of the languages used makefiles
+2010-10-03T12:49:57  <Agamemnus> I am really not familiar with much of this...
+2010-10-03T12:50:09  <jmcarthur> oh, no, that's unrelated
+2010-10-03T12:50:16  <jmcarthur> h/o
+2010-10-03T12:50:46  <Agamemnus> i mean like... say I have the Freebasic Linux program. (Linux, right?)
+2010-10-03T12:51:07  <jmcarthur> Agamemnus: here is the compilation script: http://code.google.com/p/ai-contest/source/browse/trunk/planet_wars/backend/compile_anything.py
+2010-10-03T12:51:08  <Agamemnus> I have set up freebasic on a linux server before, and all I have to do is just copy the files
+2010-10-03T12:51:16  <jmcarthur> Agamemnus: the runner is in the same project somewhere, but i don't know where
+2010-10-03T12:51:41  <jmcarthur> copy the files where?
+2010-10-03T12:52:07  <jmcarthur> Agamemnus: you have to provide instructions for installing Freebasic on Ubuntu Server 8.04, 32 bit
+2010-10-03T12:52:14  <jmcarthur> Agamemnus: and it's best if Freebasic is in the package manager
+2010-10-03T12:52:34  <Agamemnus> i copy the files to one of my server directories.. doesn't really matter
+2010-10-03T12:52:43  <jmcarthur> what files are you talking about?
+2010-10-03T12:52:58  <Agamemnus> freebasic exe and include files
+2010-10-03T12:53:01  <jmcarthur> oh
+2010-10-03T12:53:05  <jmcarthur> eh, that would not be ideal
+2010-10-03T12:53:17  <jmcarthur> the admins won't like running some binary from a stranger on the internet
+2010-10-03T12:53:38  <jmcarthur> it would be better to get it through from the freebasic project proper
+2010-10-03T12:53:44  <jmcarthur> *get it from
+2010-10-03T12:53:53  <jmcarthur> or through the ubuntu package manager
+2010-10-03T12:53:53  <Agamemnus> yeah, i will put a link to the linux freebasic compiled version
+2010-10-03T12:53:59  <Agamemnus> never used that..
+2010-10-03T12:54:01  <jmcarthur> the package manager would be ideal
+2010-10-03T12:54:30  *** optimum <optimum!debian-tor@gateway/tor-sasl/optimum> has joined #aichallenge
+2010-10-03T12:54:35  <Agamemnus> ok, so do you know anything about http://code.google.com/p/ai-contest/source/browse/trunk/planet_wars/backend/compile_anything.py ?
+2010-10-03T12:54:37  <jmcarthur> i would recommend setting up a VM with ubuntu server 8.04 32bit and testing your installation instructions
+2010-10-03T12:54:54  <jmcarthur> Agamemnus: for compile_anything you should be able to just model your additional code on one of the other languages
+2010-10-03T12:55:07  <jmcarthur> there's a big switch statement in there
+2010-10-03T12:55:19  <jmcarthur> the compile_function function
+2010-10-03T12:55:20  <Agamemnus> i'm thinking C, since Freebasic is very similar to it
+2010-10-03T12:55:22  <mcmillen> http://ubuntuforums.org/showthread.php?t=322684 has some directions on how to compile freebasic on ubuntu (old)
+2010-10-03T12:56:00  <Agamemnus> a linux compiled version wouldn't work, would it? :(
+2010-10-03T12:56:40  <Agamemnus> (i am a total noob at compiles and makefiles and such)
+2010-10-03T12:57:02  <Agamemnus> so i dunno if what i just said makes any sense
+2010-10-03T12:57:45  <jmcarthur> Agamemnus: the admins will want to set it up themselves, not use something that somebody else prepared on their behalf. the server is rather security critical after all
+2010-10-03T12:58:02  <jmcarthur> so you will have to provide detailed instructions how
+2010-10-03T12:58:06  <Agamemnus> it doesn't look like i can do this myself, so i will post what we need in the freebasic forums
+2010-10-03T12:58:11  <jmcarthur> and they can't just be "copy my files into these locations"
+2010-10-03T12:58:31  <Agamemnus> so, a patch to the makefile, instructions to compile freebasic to ubuntu server 8.04,
+2010-10-03T12:58:40  <jmcarthur> what makefile?
+2010-10-03T12:58:41  <Agamemnus> and optionally a test program
+2010-10-03T12:58:44  <Agamemnus> errrr the py file
+2010-10-03T12:58:46  <jmcarthur> no, not a test program
+2010-10-03T12:58:47  <Agamemnus> not makefile
+2010-10-03T12:58:50  <Agamemnus> errr
+2010-10-03T12:58:55  <contestbot> Top 10 players: ruilov(3875), davidjliu(3814), Hazard(3804), rsergio(3752), dmj111(3752), cfaftw(3718), felixcoto(3706), EBraun(3667), sequoh(3652), bix0r4ever(3610)
+2010-10-03T12:58:56  <Agamemnus> optionally a test.. bot?
+2010-10-03T12:59:09  <Agamemnus> optionally, a....???
+2010-10-03T12:59:14  <jmcarthur> you need to patch compile_anything, you need to patch whatever script runs the bot, and you need to submit some installation instructions
+2010-10-03T12:59:20  <jmcarthur> none of that is really optional
+2010-10-03T12:59:51  <jmcarthur> i don't remember which script actually launches the bot. you'll have to just find it yourself
+2010-10-03T12:59:58  <Agamemnus> ok, thanks
+2010-10-03T12:59:58  <jmcarthur> or ask somebody else (anyone?)
+2010-10-03T13:00:20  <jmcarthur> maybe it's the engine that does it
+2010-10-03T13:00:23  <jmcarthur> dunno
+2010-10-03T13:00:28  <Agamemnus> It's ok
+2010-10-03T13:02:10  <Agamemnus> so just to be clear, these instructions are to compile freebasic, or to set it up from the compiled linux version?
+2010-10-03T13:02:22  <Agamemnus> i'm not really clear whether ubuntu code is the same as linux code
+2010-10-03T13:08:18  *** Agamemnus is now known as aga|afk
+2010-10-03T13:15:01  <jmcarthur> aga|afk: these instruction are to set it up on ubuntu however is idiomatic for setting up freebasic on ubuntu. i don't know exactly what that is though. you will need to ask the freebasic guys, most likely
+2010-10-03T13:17:09  *** jimmerton_ <jimmerton_!~jamespick@142.166.63.87> has joined #aichallenge
+2010-10-03T13:19:02  *** jimmerton <jimmerton!~jamespick@142.166.63.86> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T13:19:02  *** jimmerton_ is now known as jimmerton
+2010-10-03T13:20:21  *** optimum <optimum!debian-tor@gateway/tor-sasl/optimum> has quit IRC (Ping timeout: 245 seconds)
+2010-10-03T13:24:02  *** optimum <optimum!debian-tor@gateway/tor-sasl/optimum> has joined #aichallenge
+2010-10-03T13:29:15  *** zulkose <zulkose!d14a1d8a@gateway/web/freenode/ip.209.74.29.138> has quit IRC (Quit: Page closed)
+2010-10-03T13:30:28  *** Palmik <Palmik!~Palmik@2002:93fb:d0e9:9:21f:d0ff:fe5a:66bf> has joined #aichallenge
+2010-10-03T13:31:38  <aga|afk> thanks
+2010-10-03T13:31:48  <aga|afk> I made a post and hopefully someone could make headway.
+2010-10-03T13:31:58  *** aga|afk is now known as Agamemnus
+2010-10-03T13:31:59  <Agamemnus> bye
+2010-10-03T13:32:02  *** Agamemnus <Agamemnus!~Agamemnus@c-24-147-49-50.hsd1.ma.comcast.net> has left #aichallenge
+2010-10-03T13:33:47  *** bhasker <bhasker!~bhasker@adsl-99-54-8-142.dsl.pltn13.sbcglobal.net> has quit IRC (Quit: bhasker)
+2010-10-03T13:35:59  *** Palmik <Palmik!~Palmik@2002:93fb:d0e9:9:21f:d0ff:fe5a:66bf> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T13:50:33  *** pjreddie <pjreddie!8ce9ce82@gateway/web/freenode/ip.140.233.206.130> has joined #aichallenge
+2010-10-03T13:51:19  <pjreddie> so, http://ai-contest.com/visualizer.php?game_id=5356201 and http://ai-contest.com/visualizer.php?game_id=5354694 are being counted as losses for me? any reason for that?
+2010-10-03T13:58:16  <krokokrusa> I've seen some mentions that the visualizer reports crashed bot in reverse
+2010-10-03T13:58:21  <krokokrusa> for example: http://ai-contest.com/forum/viewtopic.php?f=18&t=850
+2010-10-03T13:58:56  <contestbot> Top 10 players: ruilov(3861), davidjliu(3818), Hazard(3802), dmj111(3743), rsergio(3727), cfaftw(3716), felixcoto(3695), EBraun(3662), sequoh(3638), Arekku(3601)
+2010-10-03T14:08:01  *** keynes <keynes!~AndChat@203.236.22.87> has quit IRC (Quit: Bye)
+2010-10-03T14:17:48  <pjreddie> oh ok so it is my fault, cool just checking
+2010-10-03T14:24:50  *** jimmerton <jimmerton!~jamespick@142.166.63.87> has quit IRC (Quit: jimmerton)
+2010-10-03T14:26:04  *** perror <perror!~fleury@aldebaran.labri.fr> has quit IRC (Quit: Bye all !)
+2010-10-03T14:32:40  *** hellman <hellman!~hellman@nat232-248-205-109.tvoe.tv> has quit IRC (Remote host closed the connection)
+2010-10-03T14:35:50  *** jesionaj <jesionaj!~dongs@174-18-20-177.tcso.qwest.net> has joined #aichallenge
+2010-10-03T14:41:12  *** Zeiris <Zeiris!~Zeiris@d206-116-158-135.bchsia.telus.net> has joined #aichallenge
+2010-10-03T14:54:47  *** fawek <fawek!~faw@chello089079023212.chello.pl> has joined #aichallenge
+2010-10-03T14:58:57  <contestbot> Top 10 players: ruilov(3857), davidjliu(3810), Hazard(3782), dmj111(3736), rsergio(3714), cfaftw(3697), felixcoto(3675), EBraun(3645), sequoh(3624), Arekku(3586)
+2010-10-03T15:00:26  *** JensTi <JensTi!~jens@77.109.121.204.adsl.dyn.edpnet.net> has joined #aichallenge
+2010-10-03T15:02:41  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has joined #aichallenge
+2010-10-03T15:14:07  *** rwa <rwa!~rwa@99.178.115.235> has quit IRC (Quit: rwa)
+2010-10-03T15:16:08  *** krokokrusa <krokokrusa!~zvold@89.31.118.163> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T15:27:10  *** Utkarsh <Utkarsh!~admin@117.201.83.31> has joined #aichallenge
+2010-10-03T15:27:51  *** Accoun <Accoun!~1@213.88.2.78> has quit IRC ()
+2010-10-03T15:30:44  *** sinan <sinan!~sinan@94.142.55.32> has joined #aichallenge
+2010-10-03T15:41:00  *** Appleman1234 <Appleman1234!~Appleman1@CPE-60-226-176-19.qld.bigpond.net.au> has joined #aichallenge
+2010-10-03T15:41:01  *** Accoun <Accoun!~1@213.88.2.78> has joined #aichallenge
+2010-10-03T15:41:23  *** HakanD <HakanD!~hakan@78.160.65.83> has joined #aichallenge
+2010-10-03T15:41:44  <FlagCapper> Any admins here?
+2010-10-03T15:42:05  <FlagCapper> I just had someone crash on their first move against me and it counted as my loss
+2010-10-03T15:42:07  *** MartinKonicek <MartinKonicek!~MartinKon@brln-4db9ffd2.pool.mediaWays.net> has joined #aichallenge
+2010-10-03T15:43:28  <MartinKonicek> Hi, everybody still getting "error while compiling submission""
+2010-10-03T15:43:35  <MartinKonicek> for C#?
+2010-10-03T15:45:58  *** HakanD <HakanD!~hakan@78.160.65.83> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T15:46:23  *** boegel <boegel!~boegel@91.182.122.110> has joined #aichallenge
+2010-10-03T15:49:08  *** Jahson <Jahson!44c53a8a@gateway/web/freenode/ip.68.197.58.138> has joined #aichallenge
+2010-10-03T15:53:00  * boegel wrijft zijn kuiten alvast in voor de paintball van morgen
+2010-10-03T15:53:54  <yam> ouep ca a l'air un peut plus élaboré
+2010-10-03T15:54:00  <yam> Oops Sorry
+2010-10-03T15:54:15  *** HakanD <HakanD!~hakand@92.45.173.193> has joined #aichallenge
+2010-10-03T15:57:44  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has quit IRC (Quit: Page closed)
+2010-10-03T15:58:57  <contestbot> Top 10 players: ruilov(3855), davidjliu(3802), Hazard(3788), dmj111(3730), rsergio(3709), cfaftw(3688), felixcoto(3665), EBraun(3643), sequoh(3618), Arekku(3585)
+2010-10-03T16:03:25  *** aerique <aerique!~euqirea@aerique.xs4all.nl> has joined #aichallenge
+2010-10-03T16:04:11  *** amstan <amstan!~alex@75-119-241-68.dsl.teksavvy.com> has joined #aichallenge
+2010-10-03T16:04:11  *** ChanServ sets mode: +o amstan
+2010-10-03T16:04:17  <amstan> yo
+2010-10-03T16:04:23  <HakanD> hey
+2010-10-03T16:06:23  *** delt0r___ <delt0r___!~delt0r@188-22-27-86.adsl.highway.telekom.at> has joined #aichallenge
+2010-10-03T16:07:42  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has joined #aichallenge
+2010-10-03T16:08:04  *** delt0r_ <delt0r_!~delt0r@178-191-64-223.adsl.highway.telekom.at> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T16:09:39  <Frontier> When a submission cannot be compiled, will the server keep the previous submission?
+2010-10-03T16:10:23  <amstan> no
+2010-10-03T16:10:34  <amstan> you have to upload your previous submission back
+2010-10-03T16:12:07  <Frontier> Now that you say it... it seems obvious, because it is listed as the latest submission on the profile page with a compile error.
+2010-10-03T16:16:04  *** foucist <foucist!~foucist@ps14150.dreamhost.com> has joined #aichallenge
+2010-10-03T16:17:17  *** tty2 <tty2!~tty1@Syncleus/Board/JeffreyFreeman> has joined #aichallenge
+2010-10-03T16:17:39  <tty2> howdy
+2010-10-03T16:19:35  *** ramanK <ramanK!~ramanK@89.165.92.189> has joined #aichallenge
+2010-10-03T16:19:51  <Cyndre_> http://ai-contest.com/forum/viewtopic.php?f=18&t=850   howdy - man Im slow at this -  just need to finish out recalculating a planets future after a fleet is sent and Im done with state
+2010-10-03T16:20:06  *** ramanK <ramanK!~ramanK@89.165.92.189> has left #aichallenge
+2010-10-03T16:22:07  *** JensTi <JensTi!~jens@77.109.121.204.adsl.dyn.edpnet.net> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T16:23:10  *** ruturaj1 <ruturaj1!~status@115.248.114.51> has left #aichallenge
+2010-10-03T16:24:58  *** boegel <boegel!~boegel@91.182.122.110> has quit IRC (Quit: Leaving)
+2010-10-03T16:32:02  <Cyndre_> I meant to link http://pastebin.com/tuEETd1w
+2010-10-03T16:32:06  <Cyndre_> sorry
+2010-10-03T16:33:00  <optimum> hi tty2, are you entering the ai challenge?
+2010-10-03T16:33:38  <tty2> optimum, possibly, but its more likely we will support the challenge by offering free assistence to people who participate
+2010-10-03T16:35:18  <optimum> i am considering strategy... basically, i think i should create some kind of rank function that determines which planet to take over next based on factors such as size, proximity to other planets, the enemy's locations, and so forth
+2010-10-03T16:35:43  <optimum> then there's the question as to how much force to use
+2010-10-03T16:35:53  *** JensTi <JensTi!~jens@109.236.131.136> has joined #aichallenge
+2010-10-03T16:36:11  <tty2> optimum, well its a good idea not to ignore deterministic analysis along side non-deterministic AI ... they tend to compliment eachother very well
+2010-10-03T16:37:14  *** BtbN <BtbN!~BtbN@p54BB5B92.dip.t-dialin.net> has quit IRC (Quit: Verlassend)
+2010-10-03T16:39:07  <Cyndre_> when fleets are landing on a planet and the planet is owned by a player, how are the ships calculated?
+2010-10-03T16:39:19  *** ichti <ichti!~ichti@x1-6-00-24-b2-9f-a2-1a.k429.webspeed.dk> has joined #aichallenge
+2010-10-03T16:42:11  *** JensTi1 <JensTi1!~jens@109.236.131.136> has joined #aichallenge
+2010-10-03T16:42:12  *** JensTi <JensTi!~jens@109.236.131.136> has quit IRC (Read error: Connection reset by peer)
+2010-10-03T16:42:32  <nullkuhl> any admins around ?
+2010-10-03T16:42:33  <mcmillen> Cyndre_: see http://ai-contest.com/specification.php for full details
+2010-10-03T16:43:02  <mcmillen> but it's basically "whoever has the most ships wins, current owner wins ties"
+2010-10-03T16:44:05  <optimum> tty2: yes, deterministic analysis will be essential
+2010-10-03T16:45:32  <tty2> optimum, no doubt, typically something like this would use a deterministic weighted model with a non-deterministic AI discovering the weights of the model
+2010-10-03T16:47:11  *** justin_pdx <justin_pdx!~Justin@c-24-20-195-194.hsd1.or.comcast.net> has joined #aichallenge
+2010-10-03T16:48:27  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T16:52:47  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T16:53:25  *** smellyhippy <smellyhippy!~asmodean@about/csharp/regular/smellyhippy> has joined #aichallenge
+2010-10-03T16:53:32  <tty2> If anyone here is participating int he AI-challenge and would like some advice, input, or feedback from a proffessional AI developer (I work for http://www.syncleus.com ) please feel free to msg me in channel or out. For now im just personally trying to help but im going to investigate a more official role me or my company might play in helping you guys
+2010-10-03T16:58:58  <contestbot> Top 10 players: ruilov(3859), davidjliu(3792), Hazard(3788), dmj111(3736), rsergio(3703), cfaftw(3690), felixcoto(3663), EBraun(3641), sequoh(3619), Arekku(3599)
+2010-10-03T16:59:23  *** aerique <aerique!~euqirea@aerique.xs4all.nl> has quit IRC (Quit: ...)
+2010-10-03T16:59:25  <Migi32> tty2, would you or your company expect anything in return?
+2010-10-03T16:59:32  <tty2> Migi32, nope
+2010-10-03T16:59:38  <Migi32> sweet :)
+2010-10-03T16:59:41  <tty2> Migi32, not a thing :)
+2010-10-03T17:01:09  <amstan> tty2: you would end up helping more by writing some blog posts about strategies
+2010-10-03T17:01:21  <amstan> tty2: nothing's stopping you from compeeting either
+2010-10-03T17:01:35  * amstan is one of the organizers
+2010-10-03T17:02:02  *** Arekku <Arekku!5965f595@gateway/web/freenode/ip.89.101.245.149> has joined #aichallenge
+2010-10-03T17:02:26  <tty2> amstan, we may do that as well, although were more a hands on type. Also by helping specific groups we can specifically see how our assistence has an impact based on how well that group performs. So it winds up being a learning expiernce for us as well
+2010-10-03T17:02:31  *** JensTi <JensTi!~jens@109.236.131.176> has joined #aichallenge
+2010-10-03T17:03:41  *** JensTi1 <JensTi1!~jens@109.236.131.136> has quit IRC (Ping timeout: 245 seconds)
+2010-10-03T17:04:19  <Arekku> Well finally
+2010-10-03T17:04:20  <Appleman1234> interesting
+2010-10-03T17:04:36  <Arekku> I think I'm done with my AI, I'm out of feasable ideas and fixes
+2010-10-03T17:04:36  <amstan> tty2: you might want to lurk around in here: http://www.ai-contest.com/forums/viewforum.php?f=17
+2010-10-03T17:05:02  <tty2> amstan, ill check it out
+2010-10-03T17:06:44  <tty2> Arekku, need a sounding board?
+2010-10-03T17:07:27  <Arekku> I reckon I'm fine, thanks for the offer though
+2010-10-03T17:07:31  <tty2> np
+2010-10-03T17:10:26  *** amstan <amstan!~alex@75-119-241-68.dsl.teksavvy.com> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T17:14:49  *** criis <criis!~criis@farnsworth.parabox.dk> has joined #aichallenge
+2010-10-03T17:16:07  *** ichti <ichti!~ichti@x1-6-00-24-b2-9f-a2-1a.k429.webspeed.dk> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T17:18:09  *** genericbob <genericbob!~patm@c-67-190-73-32.hsd1.co.comcast.net> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T17:19:32  *** BtbN <BtbN!~BtbN@p54BB5B92.dip.t-dialin.net> has joined #aichallenge
+2010-10-03T17:22:42  *** davidjliu <davidjliu!473a6d0e@gateway/web/freenode/ip.71.58.109.14> has joined #aichallenge
+2010-10-03T17:32:32  *** water <water!47bebb38@gateway/web/freenode/ip.71.190.187.56> has joined #aichallenge
+2010-10-03T17:34:49  *** water <water!47bebb38@gateway/web/freenode/ip.71.190.187.56> has quit IRC (Client Quit)
+2010-10-03T17:37:05  *** RainCT <RainCT!~RainCT@ubuntu/member/pdpc.student.rainct> has quit IRC (Remote host closed the connection)
+2010-10-03T17:38:11  <Migi32> hey tty2, so would you mind if I'd tell you the way I'd program my bot and then you'd tell me what you think of it?
+2010-10-03T17:38:22  <tty2> Migi32, id be happy to
+2010-10-03T17:38:54  <Migi32> well it'd basically be a minimax search, but with the following difference:
+2010-10-03T17:39:17  *** JensTi1 <JensTi1!~jens@109.236.131.176> has joined #aichallenge
+2010-10-03T17:39:21  *** JensTi <JensTi!~jens@109.236.131.176> has quit IRC (Read error: Connection reset by peer)
+2010-10-03T17:39:40  <Migi32> if you do minimax the original way, you basically let players take turns, allowing one to react on moves by the other he couldn't possibly know yet
+2010-10-03T17:40:54  <Migi32> so instead I would consider each node of the minimax search tree as a zero-sum game and find a mixed strategy Nash equilibrium on it, and use that to get the "score" of that node
+2010-10-03T17:41:17  <tty2> Migi32, interesting approach
+2010-10-03T17:41:25  <tty2> Migi32, bonus points for creativity
+2010-10-03T17:41:39  <tty2> Migi32, i cant say ive ever applied that approach before, although ive worked with minimax
+2010-10-03T17:41:46  <Arekku> does it work well in reality?
+2010-10-03T17:42:12  <Migi32> yeah, but the other problem is that the number of branches is insane and finding a mixed strategy Nash equilibrium requires solving a linear programming problem
+2010-10-03T17:42:40  <Migi32> for which I'd use the simplex algorithm which has exponential complexity...
+2010-10-03T17:42:44  <tty2> Migi32, i tend to be a big supporter of creative ways of mixing and matching AI (my own library i mentioned is specificallygeared towards bewing able to intermix unrelated AI strategies seemlessly)... so i suspect that it has the potential to be very effective
+2010-10-03T17:43:35  <tty2> Migi32, it will be challenging, but you seem to have a good grip on how to do it
+2010-10-03T17:43:36  <Migi32> so to limit the number of branches, I would only branch if the move (one "move" can consist of multiple orders) is an attack that the enemy can't possibly hold or if it's sending reinforcements to defend, and this move wasn't possible on a previous turn (as then we have already branched).
+2010-10-03T17:43:45  <Migi32> but I see 2 major problems with that:
+2010-10-03T17:43:55  <Migi32> 1. there are still an enormous number of branches left, because there are usually a ton of possible ways to partition where you get your attacking ships from
+2010-10-03T17:44:05  <Migi32> 2. it totally ignores positioning of ships, planets in a corner won't move their ships to a more favorable position
+2010-10-03T17:45:11  *** sinan <sinan!~sinan@94.142.55.32> has quit IRC (Ping timeout: 255 seconds)
+2010-10-03T17:46:02  <Arekku> still sounds a lot better than my strategy though m8
+2010-10-03T17:46:06  <tty2> Migi32, well thats one of the things that is appealing about this challenge... like chess, you cant run through every single possible outcome, there are just too many. So if your going to use a search algorithm you need to come up with a creative way to not search every branch (DFS type algorithms here would be fairly useless id imagine)
+2010-10-03T17:46:38  <tty2> Arekku, if it is implementable... there are some unique challenges to his approach which need to be addressed firs t:)
+2010-10-03T17:47:55  <Migi32> well yeah, the most annoying that there's really a mind-boggling number of possible moves each turn
+2010-10-03T17:48:06  <Migi32> chess has about 35 per turn
+2010-10-03T17:48:12  <Migi32> Arimaa 17000
+2010-10-03T17:48:27  <Migi32> this game a 1 with about 20 zero's I guess :P
+2010-10-03T17:48:35  <Migi32> at least in mid-game
+2010-10-03T17:48:50  <tty2> Migi32, yea, per turn maybe, but the overall number of possiblities of turns as a whole are still enourmous.. but yes here the possiblities per turn, rahter than as a whole, makes it even more challenging
+2010-10-03T17:49:24  <tty2> Migi32, which is why i think this challenge will very certainly need some non-deterministic AI to be approached properly (any approach that goes through all the possiblities just has too large a search space)
+2010-10-03T17:50:42  <Appleman1234> isn't it best to just do dimension reduction on the search space ?
+2010-10-03T17:51:50  <tty2> Appleman1234, maybe, if you can effectivly. But i suspect even if you do youll either still have a very large search space, or youll have thrown out vital information.
+2010-10-03T17:52:37  <Appleman1234> tty2, at present I have been to busy with real life, to spend much time on my bot, so I have just been developing ideas
+2010-10-03T17:52:54  <tty2> Appleman1234, i am not, and do not intend to, be int he challenge.
+2010-10-03T17:53:13  <Appleman1234> tty2, I know, I have read your previous statement
+2010-10-03T17:53:44  <tty2> Appleman1234, im just here as a represenative of Syncleus in order to sponsor people in the challenge (sponsor by offering our expertise and advice to specific teams to help them improve their designs)
+2010-10-03T17:53:47  <tty2> oh
+2010-10-03T17:53:47  <tty2> lol
+2010-10-03T17:54:59  <Appleman1234> tty2, I am already aware that
+2010-10-03T17:55:10  <tty2> Appleman1234, yea i saw that in your last message after i said that :)
+2010-10-03T17:55:13  <Appleman1234> aware of that*
+2010-10-03T17:55:22  <Jahson> recursion
+2010-10-03T17:55:40  <Appleman1234> yeah :)
+2010-10-03T17:56:04  *** jfrank <jfrank!4b5c96ac@gateway/web/freenode/ip.75.92.150.172> has joined #aichallenge
+2010-10-03T17:56:09  <Migi32> tty2, the winner of the previous AI contest said a better evaluation heuristic beats deeper searches any time, so how do you think an ANN with reinforcement learning would perform here?
+2010-10-03T17:56:32  <Migi32> or maybe some other kind of ANN
+2010-10-03T17:57:37  <tty2> Migi32, i think a ANN could offer a lot of value to an overall framework.. I dont think it would be the sole component but a good use for an ANN here would be to weight various attributes in a larger framework (for example to determine the aggressiveness of a specific opponent or something)
+2010-10-03T17:58:10  <Migi32> hmm. How would you train that?
+2010-10-03T17:58:59  <contestbot> Top 10 players: ruilov(3829), Hazard(3767), davidjliu(3761), dmj111(3714), rsergio(3683), cfaftw(3676), felixcoto(3641), EBraun(3619), sequoh(3611), youwillfail(3588)
+2010-10-03T17:59:05  <tty2> Migi32, i need to go over the data availible to learn from with a fine tooth comb before i can offer specific input on the data handling to do such a thing. it was just meant as an example i dont know if that specific attribute will apply here or not
+2010-10-03T18:00:03  <Migi32> you made me have an idea that might just be a contest-winning idea
+2010-10-03T18:00:15  <tty2> Migi32, awesome!
+2010-10-03T18:00:17  <Migi32> I'm sorry, I won't say it in this public channel ;)
+2010-10-03T18:00:44  <tty2> Migi32, by the way keep in mind there are unsupervised neural networks to consider too, like SOM, which can help determine features as well
+2010-10-03T18:00:55  <tty2> Migi32, so you may not need to train at all
+2010-10-03T18:01:09  <Migi32> SOM stands for?
+2010-10-03T18:01:21  <tty2> Migi32, if youd like to pm it to me you can, but, considering i might help other groups as well you should do so cautiously
+2010-10-03T18:01:34  <tty2> Migi32, Self Organizing Map, it is synonomous with Kohonen networks
+2010-10-03T18:01:35  <Migi32> but I have a question to other people: can you still download the played games from the server like you could in the Tron contest?
+2010-10-03T18:03:17  <tty2> Migi32, if you go with ANN or SOM you may want to consider the open source AI library i mentioned only because it implements both of them... there are other libraries as well, dANN ( #dANN on here ) is theone i write, and there is Neuroph, another good open source AI library that is specific to neural networks (dANN is more for AI in general and goes beyond just neural networks)
+2010-10-03T18:03:29  <tty2> let me link the dANN library page incase anywhere here might find it useful
+2010-10-03T18:03:55  <tty2> http://wiki.syncleus.com/index.php/DANN that has a bullet point list of all the features in dANN
+2010-10-03T18:04:13  *** sigh <sigh!~sigh@lithium.mailguard.com.au> has joined #aichallenge
+2010-10-03T18:08:23  <antimatroid2> you guys have too much time on your hands :|
+2010-10-03T18:08:31  <antimatroid2> i want time to do lots of machine learning stuff :(
+2010-10-03T18:09:18  <tty2> antimatroid2, i love machine learning, fun stuff... if i had more time on my hands i might enter the contest, but i wotn cause id much rather just tinker at making good AI library than to win at a game (which is why im glad i atleast get to help people here with the AI parts)
+2010-10-03T18:10:02  <mcmillen> btw, i just posted http://ai-contest.com/forum/viewtopic.php?f=17&t=854 which is a basic but non-hacky approach to deciding what to do on your first turn
+2010-10-03T18:10:38  <antimatroid2> i've started the ground work for an approximation to a game tree
+2010-10-03T18:10:51  *** Blkt <Blkt!~user@93-33-129-19.ip44.fastwebnet.it> has quit IRC (Quit: Error: do not makunbound t please!)
+2010-10-03T18:11:03  *** justin_pdx <justin_pdx!~Justin@c-24-20-195-194.hsd1.or.comcast.net> has quit IRC (Quit: justin_pdx)
+2010-10-03T18:11:07  <tty2> antimatroid2, seems a few otehr people had a similar approach
+2010-10-03T18:12:02  <antimatroid2> yep, still not entirely sure how i'm goign to choose the moves to branch off
+2010-10-03T18:12:06  <antimatroid2> but i have a bit of an idea
+2010-10-03T18:12:22  <antimatroid2> i dunno about migi32's idea
+2010-10-03T18:12:50  *** Jahson <Jahson!44c53a8a@gateway/web/freenode/ip.68.197.58.138> has quit IRC (Quit: Page closed)
+2010-10-03T18:15:20  *** coventry <coventry!~user@rrdhcp-108-114.redrover.cornell.edu> has joined #aichallenge
+2010-10-03T18:17:08  *** coventry <coventry!~user@rrdhcp-108-114.redrover.cornell.edu> has left #aichallenge
+2010-10-03T18:19:00  <Migi32> can we use this dANN library? Is it installed on the server?
+2010-10-03T18:19:10  <tty2> by the way for your consideration... this game has the markov property.
+2010-10-03T18:19:33  <Arekku> great, found another thing to patch :(
+2010-10-03T18:20:12  <tty2> Migi32, dANN is an open-source library. if you wish to use it you can just package the library with your source code id imagine. and me, or anyone in #dANN could help with that side of it. But i dont know exactly whats on the AI server itself.
+2010-10-03T18:20:15  <antimatroid2> tty2: had thought of that, still buttloads to work with
+2010-10-03T18:20:53  <Migi32> yea I already ditched the variables that track where a fleet came from or what its total trip length was
+2010-10-03T18:21:46  <tty2> Migi32, :)
+2010-10-03T18:22:07  <Migi32> tty2, unfortunately there's a 2MB limit to the (zip-compressed) source we can upload
+2010-10-03T18:22:17  <Migi32> how big is dANN's source compressed?
+2010-10-03T18:22:55  <Arekku> about this big <---------------------------------------------------------> (not to scale)
+2010-10-03T18:22:56  <tty2> Migi32, you shouldnt need to use all of dANNs source. since its open source you can choose to compile just the segments you need. but let me check what the full thing is
+2010-10-03T18:23:41  <antimatroid2> i have to go to uni now
+2010-10-03T18:23:43  <Migi32> haha Arekku :P
+2010-10-03T18:23:48  <Migi32> see ya
+2010-10-03T18:23:50  <antimatroid2> tty2: i'd be interested to chat about your library some time
+2010-10-03T18:23:59  <antimatroid2> i'm trying to put together a general game theory library
+2010-10-03T18:24:09  <tty2> Migi32, 572KB
+2010-10-03T18:24:14  <Migi32> oh sweet :P
+2010-10-03T18:24:38  <tty2> antimatroid2, join #dANN, we can discuss it anytime, and the rest of the devs are there too (im the founder though so i tend to be more familiar with all the details)
+2010-10-03T18:24:57  <tty2> Migi32, as i siad you can cut that down a lot too, there is a lot of stuff in there that you can cut out for something like this, like all the visualization stuff)
+2010-10-03T18:25:55  <antimatroid2> done so i don't forget later
+2010-10-03T18:25:56  <antimatroid2> bye
+2010-10-03T18:26:05  <tty2> antimatroid2, see ya
+2010-10-03T18:26:25  <antimatroid2> oh bugger, you had me till it was written in java :P
+2010-10-03T18:27:05  <antimatroid2> not keen to switch to c++? :P
+2010-10-03T18:27:59  <Migi32> it is? That might not work as the compilation script doesn't handle one bot using multiple languages I believe
+2010-10-03T18:28:02  <antimatroid2> have you done nd vectors yet?
+2010-10-03T18:28:04  <Migi32> I'm using c++ by the way
+2010-10-03T18:28:11  <tty2> antimatroid2, we have plans to continue our C++ port in the very near future and even sooner to do JNI interface
+2010-10-03T18:28:16  <antimatroid2> i have an implementation for those in c++ i'd be happy to share how we did that
+2010-10-03T18:28:23  <tty2> Migi32, shouldnt be hard to use java from inside C++ if you wanted, we did it tons
+2010-10-03T18:28:55  <antimatroid2> it's basically all stored in a 1d vector, then we use strategy variables for indexing
+2010-10-03T18:28:59  <tty2> Migi32, im not sure about the specific challenges of the build script yet
+2010-10-03T18:29:09  <antimatroid2> so we can store simultaneous games as though they're in a kind of finite tensor
+2010-10-03T18:29:11  <tty2> antimatroid2, and yes we have n-dimensional vectors
+2010-10-03T18:29:33  <tty2> antimatroid2, and conversion between cartesian and hyperspherical coordinate systems as well
+2010-10-03T18:29:44  <antimatroid2> :)
+2010-10-03T18:29:46  <antimatroid2> anyway, i must run
+2010-10-03T18:29:50  <tty2> see ya around
+2010-10-03T18:30:03  <Migi32> bye
+2010-10-03T18:30:56  *** bhasker <bhasker!~bhasker@adsl-99-54-8-142.dsl.pltn13.sbcglobal.net> has joined #aichallenge
+2010-10-03T18:31:21  <Migi32> but my question to everyone went unanswered: can you still download the played games from the server like you could in the Tron contest?
+2010-10-03T18:31:45  <antimatroid2> you mean playback string? yeah, there's a thread somewhere about it
+2010-10-03T18:32:17  <JensTi1> Migi32: yes http://www.ai-contest.com/game_info.php?game_id=1 with game_id the id of the game you want
+2010-10-03T18:32:50  <JensTi1> f.ex. http://www.ai-contest.com/game_info.php?game_id=5373380
+2010-10-03T18:33:21  <Migi32> thanks!
+2010-10-03T18:40:02  *** BtbN <BtbN!~BtbN@p54BB5B92.dip.t-dialin.net> has quit IRC (Quit: Verlassend)
+2010-10-03T18:42:43  *** Utkarsh <Utkarsh!~admin@117.201.83.31> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T18:45:19  <Migi32> tty2, how would you encode the game state as input nodes of an ANN? Specifically regarding fleets, because the number of fleets is variable
+2010-10-03T18:46:20  <tty2> Migi32, im not entierly sure id go that approach at all but id have to get a little deeper into it first to speculate
+2010-10-03T18:46:45  *** fawek <fawek!~faw@chello089079023212.chello.pl> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T18:47:59  *** u1tr0n <u1tr0n!~u1tr0n@253-51-93-178.pool.ukrtel.net> has joined #aichallenge
+2010-10-03T18:48:24  <u1tr0n> im back, if someone care...
+2010-10-03T18:48:25  *** Utkarsh <Utkarsh!~admin@117.201.81.234> has joined #aichallenge
+2010-10-03T18:48:44  <Arekku> wb
+2010-10-03T18:48:49  <Migi32> hi :)
+2010-10-03T18:49:30  <Migi32> tty2, I have to go now. Thanks a ton for all your help, you gave me some amazing new ideas :D
+2010-10-03T18:49:36  <Migi32> you were amazing
+2010-10-03T18:49:44  <Migi32> bye
+2010-10-03T18:50:28  *** Migi32 <Migi32!~migi@d54C25B9C.access.telenet.be> has quit IRC (Quit: http://boinc.berkeley.edu)
+2010-10-03T18:51:19  <tty2> Im glad it helped, good luck!
+2010-10-03T18:54:54  *** Cyndre__ <Cyndre__!~Cyndre@DOCSIS-181-75.cable-lynx.net> has joined #aichallenge
+2010-10-03T18:54:55  *** jesionaj` <jesionaj`!~dongs@174-18-20-177.tcso.qwest.net> has joined #aichallenge
+2010-10-03T18:56:48  *** holmar <holmar!~holmar@89-160-163-48.du.xdsl.is> has joined #aichallenge
+2010-10-03T18:58:20  *** MartinKonicek <MartinKonicek!~MartinKon@brln-4db9ffd2.pool.mediaWays.net> has quit IRC (Quit: Leaving)
+2010-10-03T18:58:32  <tty2> u1tr0n, I care!::big hug::
+2010-10-03T18:58:47  <u1tr0n> ;)
+2010-10-03T18:58:58  <u1tr0n> im so angry today...
+2010-10-03T18:58:59  <contestbot> Top 10 players: ruilov(3827), Hazard(3764), davidjliu(3759), dmj111(3710), rsergio(3681), cfaftw(3674), felixcoto(3639), EBraun(3617), sequoh(3607), youwillfail(3587)
+2010-10-03T18:59:02  <u1tr0n> 3 days make bot
+2010-10-03T18:59:30  *** gerard <gerard!~gerard@cs181141133.pp.htv.fi> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T18:59:31  *** yam <yam!~yam@castor.xenbox.fr> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T18:59:33  *** jesionaj <jesionaj!~dongs@174-18-20-177.tcso.qwest.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T18:59:35  *** Cyndre_ <Cyndre_!~Cyndre@DOCSIS-181-75.cable-lynx.net> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T18:59:35  *** RobotCaleb <RobotCaleb!~RobotCale@cpe-67-9-130-176.austin.res.rr.com> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T18:59:42  <u1tr0n> and he dont want work on public server :(
+2010-10-03T18:59:49  <tty2> u1tr0n, that would be frustrating...
+2010-10-03T18:59:49  *** gerard <gerard!~gerard@cs181141133.pp.htv.fi> has joined #aichallenge
+2010-10-03T18:59:50  <u1tr0n> on TCP works good
+2010-10-03T18:59:51  *** RobotCaleb <RobotCaleb!~RobotCale@cpe-67-9-130-176.austin.res.rr.com> has joined #aichallenge
+2010-10-03T18:59:52  <u1tr0n> with timer all ok
+2010-10-03T19:00:15  <u1tr0n> im even make void loop with TurnEnd anyway dont work
+2010-10-03T19:00:40  <u1tr0n> this is strange magic :(
+2010-10-03T19:02:09  *** Olathe <Olathe!~Olathe@pool-98-111-154-161.phlapa.east.verizon.net> has quit IRC (Ping timeout: 255 seconds)
+2010-10-03T19:03:47  <Sylph> lol
+2010-10-03T19:03:50  <Sylph> sorry to hear that :/
+2010-10-03T19:03:59  <Sylph> I don't have time to code my bot for another week  or two :/
+2010-10-03T19:04:12  <Sylph> Got to make game levels in udk :|
+2010-10-03T19:06:12  *** optimum <optimum!debian-tor@gateway/tor-sasl/optimum> has quit IRC (Ping timeout: 245 seconds)
+2010-10-03T19:09:24  *** Arekku <Arekku!5965f595@gateway/web/freenode/ip.89.101.245.149> has quit IRC (Quit: Page closed)
+2010-10-03T19:13:47  *** jimmerton <jimmerton!~jamespick@142.166.63.86> has joined #aichallenge
+2010-10-03T19:15:37  *** justin_pdx <justin_pdx!~Justin@c-24-20-195-194.hsd1.or.comcast.net> has joined #aichallenge
+2010-10-03T19:20:28  *** amstan <amstan!~amstan@76-10-164-254.dsl.teksavvy.com> has joined #aichallenge
+2010-10-03T19:20:28  *** ChanServ sets mode: +o amstan
+2010-10-03T19:31:42  *** Umsturz <Umsturz!~Umsturz@2001:638:204:10:225:4bff:fec0:f3b6> has left #aichallenge
+2010-10-03T19:37:34  *** jaspervdj <jaspervdj!~jaspervdj@zeus.ugent.be> has quit IRC (Quit: NEVER GONNA GIVE YOU UP NEVER GONNA LET YOU DOWN)
+2010-10-03T19:49:53  <amstan> so.. what's new?
+2010-10-03T19:57:21  *** Olathe <Olathe!~Olathe@pool-98-111-176-190.phlapa.east.verizon.net> has joined #aichallenge
+2010-10-03T19:58:37  *** Bobng <Bobng!~T@host86-130-158-50.range86-130.btcentralplus.com> has quit IRC (Quit: Leaving)
+2010-10-03T19:58:59  <contestbot> Top 10 players: ruilov(3829), davidjliu(3766), Hazard(3765), dmj111(3715), rsergio(3682), cfaftw(3677), felixcoto(3637), EBraun(3616), sequoh(3604), youwillfail(3587)
+2010-10-03T19:59:54  *** yam <yam!~yam@castor.xenbox.fr> has joined #aichallenge
+2010-10-03T20:00:06  <Cyndre__> amstan - http://pastebin.com/tuEETd1w   thats new - rewriting from scratch
+2010-10-03T20:01:06  <amstan> Cyndre__: that's not a lot
+2010-10-03T20:01:10  <u1tr0n> why gameState['maxTurns'] = 205 ?
+2010-10-03T20:01:18  <Cyndre__> so it can be set
+2010-10-03T20:04:25  *** Olathe <Olathe!~Olathe@pool-98-111-176-190.phlapa.east.verizon.net> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T20:05:31  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-242-043.pools.arcor-ip.net> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T20:08:28  <Cyndre__> do you have a bot amstan?
+2010-10-03T20:10:50  <Sylph> he doesn't yet
+2010-10-03T20:10:57  <Sylph> wish i got more time to code my bot
+2010-10-03T20:11:04  <Sylph> but got to spend next week creating a game level
+2010-10-03T20:11:29  *** DirtyKeyboard <DirtyKeyboard!~k3vinmcdo@99-129-33-83.lightspeed.dllstx.sbcglobal.net> has joined #aichallenge
+2010-10-03T20:11:54  *** Olathe <Olathe!~Olathe@pool-71-162-224-30.phlapa.east.verizon.net> has joined #aichallenge
+2010-10-03T20:12:43  *** Frontier <Frontier!~Marco_Lei@dslb-088-071-242-043.pools.arcor-ip.net> has joined #aichallenge
+2010-10-03T20:12:47  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Connection reset by peer)
+2010-10-03T20:14:29  *** Olathe <Olathe!~Olathe@pool-71-162-224-30.phlapa.east.verizon.net> has quit IRC (Read error: Connection reset by peer)
+2010-10-03T20:14:58  *** Olathe <Olathe!~Olathe@pool-71-162-224-30.phlapa.east.verizon.net> has joined #aichallenge
+2010-10-03T20:15:36  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2010-10-03T20:20:19  *** Olathe <Olathe!~Olathe@pool-71-162-224-30.phlapa.east.verizon.net> has quit IRC (Remote host closed the connection)
+2010-10-03T20:35:50  *** justin_pdx <justin_pdx!~Justin@c-24-20-195-194.hsd1.or.comcast.net> has quit IRC (Quit: justin_pdx)
+2010-10-03T20:41:13  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-03T20:59:00  <contestbot> Top 10 players: ruilov(3830), Hazard(3756), davidjliu(3749), dmj111(3703), rsergio(3670), cfaftw(3664), felixcoto(3624), EBraun(3606), sequoh(3595), youwillfail(3574)
+2010-10-03T21:03:16  *** iFire <iFire!~kittens@unaffiliated/ifire> has quit IRC (Read error: Connection reset by peer)
+2010-10-03T21:04:14  <pjreddie> alright guy, a little help? i have not timed out or done on invalid move once on benze, but the same code on the server keeps saying I crashed, dns, or timed out. actually half the time it lists the other person but i lose anyway. anyone think of any reason this could happen? i'm not doing any crazy hard calculations, and my comp is prolly not much faster than the server.
+2010-10-03T21:04:58  <pjreddie> *guys
+2010-10-03T21:05:23  *** iFire <iFire!~kittens@unaffiliated/ifire> has joined #aichallenge
+2010-10-03T21:06:03  <jmcarthur> pjreddie: because the server sucks. there is something very wrong with it :\
+2010-10-03T21:06:57  <pjreddie> oh. ok cool. well, i guess not that cool. but i was bug hunting for a while and couldn't think of anything. guess i'll stick to benze for now thanks.
+2010-10-03T21:08:35  *** krokokrusa <krokokrusa!~zvold@89.31.118.163> has joined #aichallenge
+2010-10-03T21:10:04  *** enzy_me <enzy_me!~Miranda@109.63.134.71> has joined #aichallenge
+2010-10-03T21:11:43  *** enzy_me <enzy_me!~Miranda@109.63.134.71> has quit IRC (Client Quit)
+2010-10-03T21:13:59  *** justin_pdx <justin_pdx!~Justin@75-94-6-182.war.clearwire-wmx.net> has joined #aichallenge
+2010-10-03T21:18:50  *** justin_pdx <justin_pdx!~Justin@75-94-6-182.war.clearwire-wmx.net> has quit IRC (Ping timeout: 265 seconds)
+2010-10-03T21:21:03  *** dmj111 <dmj111!~user@pool-108-1-247-64.altnpa.east.verizon.net> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T21:30:02  *** krokokrusa <krokokrusa!~zvold@89.31.118.163> has quit IRC (Ping timeout: 240 seconds)
+2010-10-03T21:32:58  *** JensTi1 <JensTi1!~jens@109.236.131.176> has quit IRC (Quit: Leaving.)
+2010-10-03T21:46:04  *** u1tr0n <u1tr0n!~u1tr0n@253-51-93-178.pool.ukrtel.net> has quit IRC ()
+2010-10-03T21:55:05  *** Haggis <Haggis!81d73b91@gateway/web/freenode/ip.129.215.59.145> has quit IRC (Quit: Page closed)
+2010-10-03T21:55:58  *** RobotCaleb <RobotCaleb!~RobotCale@cpe-67-9-130-176.austin.res.rr.com> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T21:57:04  *** RobotCaleb <RobotCaleb!~RobotCale@cpe-67-9-130-176.austin.res.rr.com> has joined #aichallenge
+2010-10-03T21:59:01  <contestbot> Top 10 players: ruilov(3830), Hazard(3771), davidjliu(3736), dmj111(3710), rsergio(3681), cfaftw(3673), felixcoto(3629), EBraun(3621), sequoh(3609), Polsky(3580)
+2010-10-03T22:15:18  *** keynes <keynes!~AndChat@203.236.22.87> has joined #aichallenge
+2010-10-03T22:24:43  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has quit IRC (Quit: Page closed)
+2010-10-03T22:26:27  <amstan> so.. who's ruilov?
+2010-10-03T22:26:28  <amstan> and hazard?
+2010-10-03T22:35:23  *** DirtyKeyboard <DirtyKeyboard!~k3vinmcdo@99-129-33-83.lightspeed.dllstx.sbcglobal.net> has quit IRC (Quit: DirtyKeyboard)
+2010-10-03T22:40:22  *** yasith__ <yasith__!~yasith@112.135.73.189> has quit IRC (Ping timeout: 264 seconds)
+2010-10-03T22:40:28  <nullkuhl> amstan: Hello
+2010-10-03T22:40:35  <amstan> nullkuhl: hi
+2010-10-03T22:41:36  <nullkuhl> amstan: i have registered an account on ai-contest.com and i would like to delete my account in order to join as a team, as i didnt make any submissions from my account yet
+2010-10-03T22:41:46  <amstan> nullkuhl: ugh..
+2010-10-03T22:41:56  <amstan> nullkuhl: have you ever used md5 before?
+2010-10-03T22:42:02  <nullkuhl> amstan: yes
+2010-10-03T22:43:14  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has quit IRC (Ping timeout: 272 seconds)
+2010-10-03T22:51:00  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-03T22:51:22  *** yasith__ <yasith__!~yasith@112.135.78.97> has joined #aichallenge
+2010-10-03T22:59:02  <contestbot> Top 10 players: davidjliu(3780), Hazard(3779), dmj111(3734), cfaftw(3696), rsergio(3687), felixcoto(3646), sequoh(3634), EBraun(3632), youwillfail(3600), Polsky(3563)
+2010-10-03T23:02:54  <davidjliu> heh, yah
+2010-10-03T23:03:05  <davidjliu> yay
+2010-10-03T23:06:08  *** pjreddie <pjreddie!8ce9ce82@gateway/web/freenode/ip.140.233.206.130> has quit IRC (Quit: Page closed)
+2010-10-03T23:09:22  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T23:13:02  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-03T23:14:32  *** Mathnerd314 <Mathnerd314!~mathnerd3@dsl.6.28.53.206.cos.dyn.pcisys.net> has joined #aichallenge
+2010-10-03T23:14:40  <wh1teside> good lord, you've knifed ruilov and discretely relocated his corpse to the bottom of some lake while heads were turned
+2010-10-03T23:15:45  <wh1teside> oh, I see... nevermind
+2010-10-03T23:16:43  <wh1teside> think nothing of the fact that I immediately jumped to that conclusion after seeing him nowhere in the top 100, as opposed to the more practical course of assuming he resubmitted
+2010-10-03T23:17:18  <amstan> #rankings
+2010-10-03T23:17:19  <contestbot> amstan: Top 10 players: davidjliu(3783), Hazard(3773), dmj111(3731), cfaftw(3691), rsergio(3678), felixcoto(3640), EBraun(3627), sequoh(3626), youwillfail(3602), DocBot(3566)
+2010-10-03T23:17:27  <amstan> #rankings 30
+2010-10-03T23:17:28  <contestbot> amstan: Top 30 players: davidjliu(3783), Hazard(3773), dmj111(3731), cfaftw(3691), rsergio(3678), felixcoto(3640), EBraun(3627), sequoh(3626), youwillfail(3602), DocBot(3566), Polsky(3566), _iouri_(3534), adumlah(3529), sighbot(3528), McLeopold(3526), medrimonia(3522), bix0r4ever(3517), ofrias(3515), Mistmanovx(3509), goldman(3500), Rexxar(3492), Titannet(3482), savchenko(3480), ClusterTeam(3479), (1 more message)
+2010-10-03T23:17:32  <amstan> #moar
+2010-10-03T23:17:33  <contestbot> amstan: An error occured while trying to show the previous error.
+2010-10-03T23:17:36  <wh1teside> heh
+2010-10-03T23:17:42  <amstan> contestbot: alias add moar more
+2010-10-03T23:17:42  <contestbot> amstan: I come to serve.
+2010-10-03T23:17:46  <amstan> contestbot: moar
+2010-10-03T23:17:46  <contestbot> amstan: sin_sun(3477), kcm1700(3475), Infinity(3462), Killer(3443), Momotebo(3440), Zilog8(3433)
+2010-10-03T23:17:58  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T23:18:09  <amstan> oh man, he's really gone
+2010-10-03T23:18:23  <amstan> a1k0n: where's yours?
+2010-10-03T23:18:32  <wh1teside> yeah he needs some games pronto
+2010-10-03T23:18:47  <sigh> a1k0n was in the 100s last time I saaw
+2010-10-03T23:23:26  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-03T23:43:21  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has quit IRC (Ping timeout: 252 seconds)
+2010-10-03T23:44:38  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-03T23:49:33  *** FlagCapper <FlagCapper!45a5adac@gateway/web/freenode/ip.69.165.173.172> has joined #aichallenge
+2010-10-03T23:49:40  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has quit IRC (Ping timeout: 276 seconds)
+2010-10-03T23:50:31  *** justin_pdx <justin_pdx!~Justin@c-24-20-195-194.hsd1.or.comcast.net> has joined #aichallenge
+2010-10-03T23:55:53  *** Olathe <Olathe!~Olathe@unaffiliated/olathe> has joined #aichallenge
+2010-10-03T23:59:03  <contestbot> Top 10 players: Hazard(3770), davidjliu(3765), dmj111(3723), cfaftw(3690), rsergio(3671), felixcoto(3637), EBraun(3618), sequoh(3617), youwillfail(3600), Polsky(3590)
